@@ -1,6 +1,12 @@
 Ran the following commands on (worker-0 / provision host) on RHEL 8.1
 
-----
+Environment - TBD
+
+Assumption - TBD
+
+---
+
+```bash
 firewall-cmd --zone=public --add-service=http
 firewall-cmd --zone=public --permanent --add-service=http
 
@@ -87,13 +93,14 @@ virsh net-autostart baremetal
 
 # optional - check the networks on virsh
 virsh net-list
- Name                 State      Autostart     Persistent
-----------------------------------------------------------
- baremetal            active     yes           yes
- default              active     yes           yes
- provisioning         active     yes           yes
+```
+> Name                 State      Autostart     Persistent
+>----------------------------------------------------------
+> baremetal            active     yes           yes
+> default              active     yes           yes
+> provisioning         active     yes           yes
 
-
+```bash
 systemctl restart libvirtd
 
 # still need this? i cant remember why. 
@@ -120,13 +127,14 @@ export pullsecret_file=pull-secret.txt
 export extract_dir=$(pwd)
 curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/openshift-client-linux-$VERSION.tar.gz | tar zxvf - oc
 sudo cp oc /usr/local/bin/
+```
+ 
+---
 
+# Create your install-config.yaml file
+## in the following example, some keys have been delete, so it will not work directly
 
-
-----
-#Create your install-config.yaml file
-#I deleted some of my key so it won't work
-
+```yaml
 apiVersion: v1
 baseDomain: cloud.lab.eng.bos.redhat.com
 metadata:
@@ -173,13 +181,13 @@ platform:
         hardwareProfile: default
 pullSecret: '{"auths":{"cloud.openshift.com":{"auth":"XXX","email":"rlopez@redhat.com"},"quay.io":{"auth":"XXX","email":"rlopez@redhat.com"},"registry.connect.redhat.com":{"auth":"XXX","email":"rlopez@redhat.com"},"registry.redhat.io":{"auth":"XXX","email":"rlopez@redhat.com"},"registry.svc.ci.openshift.org": { "auth": "XXX" } } }'
 sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCcwkj59OpeVt9AttLZ4+/AEnkt2/gi7eHKYzRyXUWrBLYTrZ91DBV5PhAmlMNiqbOCFZ2lFEW9Z9eJrPZEoO4zvAPqXd5RgQwAmeXSA5MUQgl+LRjahePZhF70rw52I3M6v6BMiZe3cNjWuXeTqQ7MgMPqqikZf58L+1lZj/bRuge7bVadsQfdVygo3RX6adXrrPKXI6LSX86JZLrlYuIdJexj9xFoa1193TdEShvfxB7/1YI1I9BPurIcU8ZQaSAKNUZl/LAzk7WuLJxrWBnKOmF+dzi4BxQNxoxMBW0PwQ6gjZhPOjrXntK7VyIP/fz0b90ZgvxJfcXEO4mldE6q35O4CEbtLF8Uj+fEs/Kmd/AkdAFkikFcvk6ncosWSJrb/y5HLknk9FavDYgmMnCT66yl3OFvsv0NG695SiXwwUxfXTzQcIu5wiVq3tO7zRHLrZk5MNrbhV827VS2GzgGg96v6cNkmc29EM= kni@worker-0'
-
-
-----
+```
 
 ----
-mkdir ~/testcluster
-cp install-config.yaml ~/testcluster
-cd /home/kni
+
+```bash
+mkdir testcluster
+cp install-config.yaml testcluster/
 ./openshift-baremetal-install --dir testcluster --log-level debug create cluster
+```
 
