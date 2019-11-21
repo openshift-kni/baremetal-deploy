@@ -3,7 +3,7 @@
 Deployment artifacts for Bare Metal OpenShift KNI clusters
 
 ## Current Artifacts
-* [Installion Steps](install-steps.md)
+* [Installation Steps](install-steps.md)
 
 ## To Be Added
 * Additional step for disconnected install
