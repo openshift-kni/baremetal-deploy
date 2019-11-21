@@ -2,7 +2,7 @@ Ran the following commands on (worker-0 / provision host) on RHEL 8.1
 
 Environment - TBD
 
-Assumption - TBD
+Assumptions- TBD
 
 ---
 
@@ -90,10 +90,10 @@ EOF
 virsh net-define baremetal.xml
 virsh net-start baremetal
 virsh net-autostart baremetal
-
-# optional - check the networks on virsh
-virsh net-list
 ```
+
+     # optional - check the networks on virsh
+     virsh net-list
      Name                 State      Autostart     Persistent
      ----------------------------------------------------------
      baremetal            active     yes           yes
@@ -132,7 +132,7 @@ sudo cp oc /usr/local/bin/
 ---
 
 # Create your install-config.yaml file
-## In the following example, some keys have been deleted, so it will not work as is
+#### In the following example, some keys have been deleted, so it will not work as is
 
 ```yaml
 apiVersion: v1
