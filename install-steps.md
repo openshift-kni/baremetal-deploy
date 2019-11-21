@@ -94,11 +94,11 @@ virsh net-autostart baremetal
 # optional - check the networks on virsh
 virsh net-list
 ```
-> Name                 State      Autostart     Persistent
->----------------------------------------------------------
-> baremetal            active     yes           yes
-> default              active     yes           yes
-> provisioning         active     yes           yes
+     Name                 State      Autostart     Persistent
+     ----------------------------------------------------------
+     baremetal            active     yes           yes
+     default              active     yes           yes
+     provisioning         active     yes           yes
 
 ```bash
 systemctl restart libvirtd
@@ -132,7 +132,7 @@ sudo cp oc /usr/local/bin/
 ---
 
 # Create your install-config.yaml file
-## in the following example, some keys have been delete, so it will not work directly
+## In the following example, some keys have been deleted, so it will not work as is
 
 ```yaml
 apiVersion: v1
