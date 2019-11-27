@@ -1,12 +1,12 @@
-**Baremetal-deploy.sh Usage Documentation**
+**Baremetal-prep.sh Usage Documentation**
 
 **Purpose:**
 
-Baremetal-deploy.sh is a script designed to prepare a RHEL8 host for use as a bootstrap/provisioning node to deploy a IPI OpenShift cluster.
+Baremetal-prep.sh is a script designed to prepare a RHEL8 host for use as a bootstrap/provisioning node to deploy a IPI OpenShift cluster.
 
 **What it does:**
 
-Baremetal-deploy.sh does the following to prepare a node:
+Baremetal-prep.sh does the following to prepare a node:
 
 - Installs required dependencies
 - Disables selinux
