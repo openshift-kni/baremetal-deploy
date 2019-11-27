@@ -1,0 +1,32 @@
+{% for host in groups['bootstrap'] %}
+apiVersion: v1
+baseDomain: {{ hostvars[host]['domain'] }}
+metadata:
+  name: {{ hostvars[host]['cluster'] }}
+networking:
+  machineCIDR: {{ hostvars[host]['extcidrnet'] }}
+compute:
+- name: worker
+  replicas: {{ hostvars[host]['numworkers'] }}
+controlPlane:
+  name: master
+  replicas: {{ hostvars[host]['nummasters'] }}
+  platform:
+    baremetal: {}
+platform:
+  baremetal:
+    apiVIP: {{ hostvars[host]['apivip'] }}
+    ingressVIP: {{ hostvars[host]['ingressvip'] }}
+    dnsVIP: {{ hostvars[host]['ns1vip'] }}
+    hosts:
+{% endfor %}
+{% for host in groups['masters'] %}
+      - name: {{ hostvars[host]['name'] }}
+        role: {{ hostvars[host]['role'] }}
+        bmc:
+          address: ipmi://{{ hostvars[host]['ipmi_address'] }}
+          username: {{ hostvars[host]['user'] }}
+          password: {{ hostvars[host]['password'] }}
+        bootMACAddress: {{ hostvars[host]['mac'] }}
+        hardwareProfile: default
+{% endfor %}
