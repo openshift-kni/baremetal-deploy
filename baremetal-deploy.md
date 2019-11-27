@@ -13,6 +13,7 @@ Baremetal-deploy.sh does the following to prepare a node:
 - Configures the default libvirt storage pool
 - Configures a provisioning bridge and baremetal bridge from the interfaces passed at runtime
 - Will generate a install-config.yaml if requested at runtime
+- Will generate a metal3-config.yaml if requested at runtime
 - Will configure a disconnected repository if requested at runtime and update install-config.yaml
 
 **Requirements for use:**
@@ -33,14 +34,15 @@ There are currently 4 switches that can be passed:
 - -p (required) physical interface on host that will be used for provisioning bridge
 - -b (required) physical interface on the host that will be used for the baremetal bride
 - -d (optional) will configure for a disconnected install
-- -g (optional) will generate an install-config.yaml
+- -g (optional) will generate a install-config.yaml
+- -m (optional) will generate a metal3-config.yaml
 
 **Example:**
 
 ./baremetal-prep.sh
 
-Usage: ./baremetal-prep.sh -p \&lt;provisioning interface\&gt; -b \&lt;baremetal interface\&gt; -d (configure for disconnected) -g (generate install-config.yaml)
+Usage: ./baremetal-prep.sh -p (provisioning interface) -b (baremetal interface) -d (configure for disconnected) -g (generate install-config.yaml) -m (generate metal3-config.yaml)
 
-Example: ./baremetal-prep.sh -p ens3 -b ens4 -d -g
+Example: ./baremetal-prep.sh -p ens3 -b ens4 -d -g -m
 
 **To Dos:**
