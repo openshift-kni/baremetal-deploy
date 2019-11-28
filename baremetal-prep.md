@@ -29,6 +29,8 @@ To use baremetal-prep.sh the system needs the following:
 
 **Usage:**
 
+To use baremetal-prep.sh one simply needs to clone the repo down to the provisioning host.  Then set the execute bit on baremetal-prep.sh.  Then copy the hosts.sample file to hosts and update the information in the file according to the deployment environment.
+
 There are currently 4 switches that can be passed:
 
 - -p (required) physical interface on host that will be used for provisioning bridge
