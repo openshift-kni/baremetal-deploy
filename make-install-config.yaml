@@ -1,0 +1,12 @@
+---
+- name: generate install-config.yaml file
+  hosts: all
+  gather_facts: false
+  tasks:
+  - name: generate yaml file
+    template:
+      src: install-config.j2
+      dest: $HOME/install-config.yaml
+      mode: '0644'
+    delegate_to: localhost
+    run_once: True
