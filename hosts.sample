@@ -1,0 +1,18 @@
+[masters]
+master-0 name=master-0 role=master user=admin password=password ipmi_address=192.168.0.11:6241 mac=52:54:00:3d:04:ae
+master-1 name=master-1 role=master user=admin password=password ipmi_address=192.168.0.11:6242 mac=52:54:00:0f:91:f3
+master-2 name=master-2 role=master user=admin password=password ipmi_address=192.168.0.11:6243 mac=52:54:00:ee:d2:f2
+
+[bootstrap]
+rhel8-ocp-boot
+
+[bootstrap:vars]
+domain=schmaustech.com
+cluster=kni5
+extcidrnet=192.168.0.0/24
+dnsvip=192.168.0.198
+numworkers=0
+nummasters=3
+apivip=192.168.0.199
+ingressvip=192.168.0.197
+ns1vip=192.168.0.198
