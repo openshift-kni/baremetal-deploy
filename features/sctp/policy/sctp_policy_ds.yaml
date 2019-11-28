@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sctp-se-ds
+  labels:
+    app: sctp-se-ds
+spec:
+  selector:
+    matchLabels:
+      app: sctp-se-ds
+  template:
+    metadata:
+      labels:
+        app: sctp-se-ds
+    spec:
+      hostNetwork: true
+      containers:
+        - name: sepolicyenable
+          image: fedepaol/sctpsepolicy:v1
+          command: ["/bin/sh", "-c"]
+          args:
+            - cp newsctp.pp /host/tmp;
+              echo "applying policy";
+              chroot /host /usr/sbin/semodule -i /tmp/newsctp.pp;
+              echo "policy applied";
+              while sleep 3600; do :; done;
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /host
+              name: host
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 10
+      volumes:
+        - hostPath:
+            path: /
+            type: Directory
+          name: host
