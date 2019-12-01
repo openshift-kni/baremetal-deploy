@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+ generateName: hugepages-volume-
+spec: 
+ containers: 
+ - image: rhel7:latest
+   command: 
+   - sleep
+   - inf
+   name: example-1
+   volumeMounts: 
+   - mountPath: /dev/hugepages
+     name: hugepage
+   resources: 
+     limits: 
+       hugepages-1Gi: 2Gi
+       memory: 1Gi
+       cpu: 1
+ volumes: 
+ - name: hugepage
+   emptyDir: 
+     medium: HugePages
