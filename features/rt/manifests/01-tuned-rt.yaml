@@ -22,13 +22,6 @@ spec:
       kernel.sched_rt_runtime_us = -1
       vm.stat_interval = 10
       kernel.timer_migration = 0
-      #vm.nr_hugepages=${hugepage_num}
-
-      #TODO - this should probably be removed since cpumask could be set only at an early stage (initramfs/initrd)
-      #[sysfs]
-      #/sys/bus/workqueue/devices/writeback/cpumask = ${not_isolated_cpumask}
-      #/sys/devices/virtual/workqueue/cpumask = ${not_isolated_cpumask}
-      #/sys/devices/system/machinecheck/machinecheck*/ignore_ce = 1
 
       [scheduler]
       isolated_cores=${isolated_cores}
