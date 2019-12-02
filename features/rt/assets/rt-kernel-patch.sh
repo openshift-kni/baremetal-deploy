@@ -7,14 +7,6 @@ then
     # Enable yum repo
     mkdir -p /etc/yum.repos.d
     cat > /etc/yum.repos.d/rhel.repo <<EOF
-[baseos]
-baseurl=${BASEOS_REPO_URL}
-gpgcheck=0
-
-[appstream]
-baseurl=${APPSTREAM_REPO_URL}
-gpgcheck=0
-
 [rt]
 baseurl=${RT_REPO_URL}
 gpgcheck=0
@@ -38,6 +30,5 @@ then
     # TODO: check for RT kernel updates
     echo "RT kernel already installed"
 else
-    rpm-ostree override remove kernel{,-core,-modules,-modules-extra} --install kernel-rt --install kernel-rt-core --install kernel-rt-modules --install kernel-rt-modules-extra
     systemctl reboot
 fi
