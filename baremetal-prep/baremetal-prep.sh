@@ -48,6 +48,9 @@ setup_repository(){
   sudo firewall-cmd --reload
   sudo podman create --name ocpdiscon-registry -p 5000:5000 -v /opt/registry/data:/var/lib/registry:z -v /opt/registry/auth:/auth:z -e "REGISTRY_AUTH=htpasswd" -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry" -e "REGISTRY_HTTP_SECRET=ALongRandomSecretForRegistry" -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd -v /opt/registry/certs:/certs:z -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key docker.io/library/registry:2
   sudo podman start ocpdiscon-registry
+  AUTHSTRING="{\"$HOST_URL:5000\": {\"auth\": \"ZHVtbXk6ZHVtbXk=\",\"email\": \"$USERNAME@redhat.com\"}}"
+  jq ".auths += $AUTHSTRING" < $PULLSECRET > $PULLSECRET.new
+  LOCAL_SECRET_JSON=$PULLSECRET.new
   mirror_images
   update_installconfig
 }
@@ -55,17 +58,17 @@ setup_repository(){
 update_installconfig(){
   echo "Updating install-config.yaml..."
   sed -i -e 's/^/  /' $HOME/domain.crt
-  sed  -i '/^pullSecret/d' $HOME/install-config.yaml
-  echo "pullSecret: '{ \"auths\": { \"$HOST_URL:5000\": {\"auth\": \"ZHVtbXk6ZHVtbXk=\",\"email\": \"$USERNAME@redhat.com\"} } }'" >> $HOME/install-config.yaml
-  echo "additionalTrustBundle: |" >> $HOME/install-config.yaml
-  cat $HOME/domain.crt >> $HOME/install-config.yaml
-  echo "imageContentSources:" >> $HOME/install-config.yaml
-  echo "- mirrors:" >> $HOME/install-config.yaml
-  echo "  - $HOST_URL:5000/ocp4/openshift4" >> $HOME/install-config.yaml
-  echo "  source: registry.svc.ci.openshift.org/ocp/$NEW_RELEASE" >> $HOME/install-config.yaml
-  echo "- mirrors:" >> $HOME/install-config.yaml
-  echo "  - $HOST_URL:5000/ocp4/openshift4" >> $HOME/install-config.yaml
-  echo "  source: registry.svc.ci.openshift.org/ocp/release" >> $HOME/install-config.yaml
+  sed  -i '/^pullSecret/d' $INSTALLCONFIG
+  echo "pullSecret: '`cat $PULLSECRET.new`'" >> $INSTALLCONFIG
+  echo "additionalTrustBundle: |" >> $INSTALLCONFIG
+  cat $HOME/domain.crt >> $INSTALLCONFIG
+  echo "imageContentSources:" >> $INSTALLCONFIG
+  echo "- mirrors:" >> $INSTALLCONFIG
+  echo "  - $HOST_URL:5000/ocp4/openshift4" >> $INSTALLCONFIG
+  echo "  source: registry.svc.ci.openshift.org/ocp/$NEW_RELEASE" >> $INSTALLCONFIG
+  echo "- mirrors:" >> $INSTALLCONFIG
+  echo "  - $HOST_URL:5000/ocp4/openshift4" >> $INSTALLCONFIG
+  echo "  source: registry.svc.ci.openshift.org/ocp/release" >> $INSTALLCONFIG
 
 }
 
@@ -123,7 +126,6 @@ setup_env(){
   UPSTREAM_REPO=$LATEST_CI_IMAGE
   LOCAL_REG="${HOST_URL}:5000"
   LOCAL_REPO='ocp4/openshift4'
-  LOCAL_SECRET_JSON="${HOME}/pull-secret.json"
   export OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE=${LOCAL_REG}/${LOCAL_REPO}:${OCP_RELEASE}
 }
 
