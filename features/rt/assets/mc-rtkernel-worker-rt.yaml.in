@@ -1,0 +1,47 @@
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+    labels:
+        machineconfiguration.openshift.io/role: worker-rt
+    name: 11-rt-kernel-worker-rt
+spec:
+    config:
+        ignition:
+            config: {}
+            security:
+                tls: {}
+            timeouts: {}
+            version: 2.2.0
+        networkd: {}
+        passwd: {}
+        storage:
+            files:
+                - filesystem: root
+                  path: /usr/local/bin/rt-kernel-patch.sh
+                  mode: 0700
+                  contents:
+                      source: data:text/plain;charset=utf-8;base64,_SCRIPT_
+        systemd:
+            units:
+                - contents: |
+                      [Unit]
+                      Description=RT kernel patch
+                      Wants=network-online.target
+                      After=network-online.target
+                      Before=kubelet.service
+
+                      [Service]
+                      Type=exec
+                      RemainAfterExit=true
+
+                      Environment=MICROCODE_URL=http://file.rdu.redhat.com/~walters/microcode_ctl-20190918-3.rhcos.1.el8.x86_64.rpm
+                      Environment=BASEOS_REPO_URL=http://download-node-02.eng.bos.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.1.1/compose/BaseOS/$basearch/os
+                      Environment=APPSTREAM_REPO_URL=http://download-node-02.eng.bos.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.1.1/compose/AppStream/$basearch/os
+                      Environment=RT_REPO_URL=http://download-node-02.eng.bos.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.1.1/compose/RT/$basearch/os
+
+                      ExecStart=/usr/local/bin/rt-kernel-patch.sh
+
+                      [Install]
+                      WantedBy=multi-user.target
+                  enabled: true
+                  name: rt-kernel.service
