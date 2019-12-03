@@ -1,0 +1,44 @@
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+    labels:
+        machineconfiguration.openshift.io/role: worker-rt
+    name: 11-rt-kernel-worker-rt
+spec:
+    kernelArguments:
+        - 'non_iso_cpumask=00000005'
+    config:
+        ignition:
+            config: {}
+            security:
+                tls: {}
+            timeouts: {}
+            version: 2.2.0
+        networkd: {}
+        passwd: {}
+        storage:
+            files:
+                - filesystem: root
+                  path: /usr/local/bin/pre-boot-tuning.sh
+                  mode: 0700
+                  contents:
+                      source: data:text/plain;charset=utf-8;base64,_SCRIPT_
+        systemd:
+            units:
+                - contents: |
+                      [Unit]
+                      Description=Pre boot kernel tuning
+                      Wants=rt-kernel.service
+                      After=rt-kernel.service
+                      Before=kubelet.service
+
+                      [Service]
+                      Type=exec
+                      RemainAfterExit=true
+
+                      ExecStart=/usr/local/bin/pre-boot-tuning.sh
+
+                      [Install]
+                      WantedBy=multi-user.target
+                  enabled: true
+                  name: pre-boot-tuning.service
