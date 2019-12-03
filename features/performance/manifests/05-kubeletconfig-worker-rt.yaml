@@ -6,7 +6,7 @@ spec:
   machineConfigPoolSelector:
     matchLabels:
       worker-rt: ""
-  kubeletConfig: 
+  kubeletConfig:
     systemReserved:
       cpu: 1000m
       memory: 500Mi
@@ -14,5 +14,6 @@ spec:
       cpu: 1000m
       memory: 500Mi
     cpuManagerPolicy: static
+    topologyManagerPolicy: best-effort
 
 # options: https://github.com/kubernetes/kubernetes/blob/release-1.14/pkg/kubelet/apis/config/types.go#L62
