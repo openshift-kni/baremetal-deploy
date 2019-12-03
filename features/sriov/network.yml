@@ -1,0 +1,13 @@
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: ${nic}
+  namespace: ${operatornamespace} 
+spec:
+  ipam: |
+    {
+      "type": "dhcp"
+    }
+  networkNamespace: ${targetnamespace}
+  resourceName: ${nic}
+  vlan: 0
