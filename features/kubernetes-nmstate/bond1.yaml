@@ -2,11 +2,11 @@
 apiVersion: nmstate.io/v1alpha1
 kind: NodeNetworkConfigurationPolicy
 metadata:
-  name: bond1
+  name: ${BOND_NAME}
 spec:
   desiredState:
     interfaces:
-    - name: bond1
+    - name: ${BOND_NAME}
       type: bond
       ipv4:
         auto-dns: false
@@ -20,5 +20,5 @@ spec:
         options:
           miimon: '140'
         slaves:
-        - ens8
-        - ens9
+        - ${MASTER_NIC}
+        - ${SLAVE_NIC}

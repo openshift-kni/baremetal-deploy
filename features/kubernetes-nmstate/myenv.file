@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export BOND_NAME="bond1"
+export MASTER_NIC="ens8"
+export SLAVE_NIC="ens9"
