@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cpumanager-deployment
+  namespace: ${CPUMANAGER_NAMESPACE}
+  labels:
+    app: cpumanager-test
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cpumanager-test
+  template:
+    metadata:
+      labels:
+        app: cpumanager-test
+    spec:
+      containers:
+      - name: cpumanager
+        image: gcr.io/google_containers/pause-amd64:3.0
+        resources:
+          requests:
+            cpu: 1
+            memory: "1G"
+          limits:
+            cpu: 1
+            memory: "1G"
+      nodeSelector:
+        cpumanager: "true"

@@ -1,0 +1,42 @@
+---
+apiVersion: nmstate.io/v1alpha1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: secondary-bond-policy
+spec:
+  desiredState:
+    interfaces:
+    - name: bond1
+      type: bond
+      state: up
+      link-aggregation:
+        mode: balance-rr
+        options:
+          miimon: '140'
+        slaves:
+        - ens8
+        - ens9
+    - name: bond1.20
+      type: vlan
+      state: up
+      ipv4:
+        auto-dns: false
+        auto-gateway: false
+        auto-routes: false
+        dhcp: true
+        enabled: true
+      vlan:
+        base-iface: bond1
+        id: 20
+    - name: bond1.30
+      type: vlan
+      state: up
+      ipv4:
+        auto-dns: false
+        auto-gateway: false
+        auto-routes: false
+        dhcp: true
+        enabled: true
+      vlan:
+        base-iface: bond1
+        id: 30
