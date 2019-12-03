@@ -1,0 +1,16 @@
+apiVersion: ptp.openshift.io/v1
+kind: PtpConfig
+metadata:
+  name: grandmaster
+  namespace: openshift-ptp
+spec:
+  profile:
+  - name: "grandmaster"
+    interface: "eno2"
+    ptp4lOpts: ""
+    phc2sysOpts: "-a -r -r"
+  recommend:
+  - profile: "grandmaster"
+    priority: 4
+    match:
+    - nodeLabel: "ptp/grandmaster"

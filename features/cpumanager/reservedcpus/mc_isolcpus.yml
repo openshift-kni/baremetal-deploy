@@ -1,0 +1,12 @@
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: worker
+  name: 02-worker-isolcpus
+spec:
+  config:
+    ignition:
+       version: 2.2.0
+  kernelArguments:
+  - 'isolcpus=${reserved_cpus}'
