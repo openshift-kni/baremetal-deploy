@@ -1,11 +1,14 @@
 # Performance Tuning
 
+All manifests should be applied automatically on a new cluster via `make deploy`, in case if you want to test each feature separately, refer to the feature section.
+
 ## Huge Pages
 
 To verify huge pages feature functionality:
 
 - label your worker nodes with `oc label node <node_name> machineconfiguration.openshift.io/role=worker-rt`
-- apply huge pages kernel boot parameters config via `oc create -f manifests/05-mc-kargs-worker-rt.yaml`
+- run `make generate`
+- apply huge pages kernel boot parameters config via `oc create -f manifests/generated/02-machine-config-worker-rt-kargs.yaml`
 - wait for workers update
 
 ```bash

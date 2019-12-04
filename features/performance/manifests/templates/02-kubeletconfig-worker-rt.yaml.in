@@ -1,12 +1,12 @@
 apiVersion: machineconfiguration.openshift.io/v1
 kind: KubeletConfig
 metadata:
-  name: kubelet-worker-rt 
+  name: worker-rt
 spec:
   machineConfigPoolSelector:
     matchLabels:
       worker-rt: ""
-  kubeletConfig: 
+  kubeletConfig:
     systemReserved:
       cpu: 1000m
       memory: 500Mi
@@ -14,5 +14,6 @@ spec:
       cpu: 1000m
       memory: 500Mi
     cpuManagerPolicy: static
-
+    cpuManagerReconcilePeriod: 5s
+    reservedSystemCPUs: ${RESERVED_CPUS}
 # options: https://github.com/kubernetes/kubernetes/blob/release-1.14/pkg/kubelet/apis/config/types.go#L62
