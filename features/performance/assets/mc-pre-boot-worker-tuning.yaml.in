@@ -5,8 +5,8 @@ metadata:
         machineconfiguration.openshift.io/role: worker-rt
     name: 11-rt-kernel-worker-rt
 spec:
-    kernelArguments:
-        - 'non_iso_cpumask=00000005'
+    #kernelArguments:
+    #    - 'non_iso_cpumask=00000005'
     config:
         ignition:
             config: {}
