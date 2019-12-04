@@ -8,6 +8,14 @@ This is a list of environment variables that you should export before running `m
 
 - `ISOLATED_CPUS` - CPU's that you want to isolate from the system usage.
 - `RESERVED_CPUS` - CPU's that you want to reserve for the system and does not use for containers workloads.
+- `MICROCODE_URL` - the location of the patched microcode_ctl RPM, as long as it is not part of RHCOS yet.  
+  Defaults to a RH internal URL. For deployments outside the RH network provide the RPM on a reachable host and
+  update this URL.  
+  See https://bugzilla.redhat.com/show_bug.cgi?id=1766178 for more info on this.
+- `RT_REPO_URL` - the location of a yum repo which provides the RT kernel RPMs as long as they are not part of RHCOS yet.  
+  Defaults to a RH internal URL. For deployments outside the RH network provide a yum repo on a reachable host
+  and update this URL.  
+  For providing your own yum repo see e.g. https://access.redhat.com/solutions/3176811
 
 ## Huge Pages
 
@@ -33,7 +41,7 @@ oc -n openshift-machine-config-operator wait machineconfigpools worker --for con
 The realtime kernel will be installed using MachineConfig, which installs a new systemd unit, which runs a script.
 The template for the `MachineConfig` placed under `manifests/templates` and the script located in `assets`. The actual manifest is created by running `make generate`,
 which will base64 encode the script and put it into the template. The result is stored under `manifests/generated/11-machine-config-worker-rt-kernel.yaml`.
-
+  
 ## Topology Manager
 
 To enable the topology manager, you should:
