@@ -2,6 +2,13 @@
 
 All manifests should be applied automatically on a new cluster, in case if you want to test each feature separately, refer to the feature section.
 
+## Environment variables
+
+This is a list of environment variables that you should export before running `make generate`.
+
+- `ISOLATED_CPUS` - CPU's that you want to isolate from the system usage.
+- `RESERVED_CPUS` - CPU's that you want to reserve for the system and does not use for containers workloads.
+
 ## Huge Pages
 
 To verify huge pages feature functionality:
@@ -55,3 +62,9 @@ cat /etc/kubernetes/kubelet.conf
     },
 }
 ```
+
+## RT kernel
+
+The realtime kernel will be installed using MachineConfig, which installs a new systemd unit, which runs a script.
+The template for the `MachineConfig` placed under `manifests/templates` and the script located in `assets`. The actual manifest is created by running `make generate`,
+which will base64 encode the script and put it into the template. The result is stored under `manifests/generated`.
