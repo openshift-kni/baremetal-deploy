@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${demodeployment}
+  namespace: ${targetnamespace}
+  labels:
+    app: ${demodeployment}
+spec:
+  replicas: ${numworkers}
+  selector:
+    matchLabels:
+      app: ${demodeployment}
+  template:
+    metadata:
+      labels:
+        app: ${demodeployment}
+      annotations:
+        k8s.v1.cni.cncf.io/networks: "${targetnamespace}/${sriovnetworkname}"
+    spec:
+      nodeSelector:
+        ${NODESELECTOR}
+      containers:
+      - image: gcr.io/hello-minikube-zero-install/hello-node
+        name: hello-node
+        ports:
+        - containerPort: 8080

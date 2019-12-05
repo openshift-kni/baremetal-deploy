@@ -2,46 +2,68 @@
 set -uo pipefail
 BASEDIR="$(dirname "$0")"
 
-REPO_PATH=${HOME}/git/
-SRIOV_OPERATOR_DIR=${REPO_PATH}/sriov-network-operator
-
 # shellcheck disable=SC1091,SC1090
 . "${BASEDIR}/../lib/functions.sh"
 
-prereq(){
-  for command in git jq skopeo make; do
-    if [ ! -x "$(command -v ${command})" ]; then
-      die "Could not find the executable ${command} in the current PATH"
-    fi
-  done
+[ -f "${BASEDIR}/myvars" ] || die "A 'myvars' file needs to be created, see the README"
+
+# shellcheck disable=SC1091,SC1090
+. "${BASEDIR}/myvars"
+
+# shellcheck disable=SC2154
+# This is needed to split the label=value into label: value required for yaml files...
+export NODESELECTOR="${label%=*}: \"${label##*=}\""
+
+apply_manifest(){
+  FILE=$(eval "echo ${BASEDIR}/*-sriov-${1}.yaml")
+  info "Applying ${FILE}"
+  envsubst < "${FILE}" | oc apply -f - > /dev/null || die "Error creating ${1}"
 }
 
 deploy(){
-  pushd "${SRIOV_OPERATOR_DIR}" || die "pushd to ${SRIOV_OPERATOR_DIR} failed"
-  make deploy-setup
-  popd || die "popd failed"
+  for object in namespace operatorgroup subscription; do
+    apply_manifest ${object}
+  done
 }
 
 # This is needed for multus to create a dhcp-daemon daemonset in order for ipam/dhcp to work
 add_dummy_dhcp(){
-  oc patch networks.operator.openshift.io cluster --type='merge' \
-    -p='{"spec":{"additionalNetworks":[{"name":"dummy-dhcp-network","simpleMacvlanConfig":{"ipamConfig":{"type":"dhcp"},"master":"eth0","mode":"bridge","mtu":1500},"type":"SimpleMacvlan"}]}}' \
-    || die "patch failed"
+  # First verify if it is there just in case
+  if oc get networks.operator.openshift.io/cluster -o jsonpath="{.spec.additionalNetworks[*].name}" | grep -q "dummy-dhcp-network"; then
+    info "dummy-dhcp-network already created"
+  else
+    # If not, patch the cluster network to deploy the dhcp ds
+    info "Patching the cluster network to deploy a dhcp daemonset required for ipam/dhcp"
+    oc patch networks.operator.openshift.io cluster --type='merge' \
+      -p='{"spec":{"additionalNetworks":[{"name":"dummy-dhcp-network","simpleMacvlanConfig":{"ipamConfig":{"type":"dhcp"},"master":"eth0","mode":"bridge","mtu":1500},"type":"SimpleMacvlan"}]}}' \
+      || die "patch failed"
+  fi
+}
+
+# Label the nodes with the sriov capable label
+label_nodes(){
+  for node in $(oc get nodes --selector='!node-role.kubernetes.io/master' -o name); do
+    # shellcheck disable=SC2154
+    oc label "${node}" "${label}"
+  done
+}
+
+# The daemonset will create some udev rules to prevent unneeded dhcp in the VFs when no attached to pods
+daemonset(){
+  # shellcheck disable=SC1083,SC2016
+  # We only need those two variables
+  envsubst '\${nic} \${NODESELECTOR}' < ./10-sriov-daemonset.yaml | oc apply -f - > /dev/null || die "Error creating ds"
 }
 
 configure(){
-  export nic="${nic:-eno1}"
-  export numvfs="${numvfs:-5}"
-  export pciid="${pciid:-0000:01:00.0}"
-  export operatornamespace="${operatornamespace:-openshift-sriov-network-operator}"
-  export targetnamespace="${targetnamespace:-sriov-testing}"
-  envsubst < policy.yml  | oc create -f - > /dev/null || die "deploying policy"
-  envsubst < network.yml | oc create -f - > /dev/null || die "deploying network"
+  for object in networknodepolicy network; do
+    apply_manifest ${object}
+  done
 }
 
 ocp_sanity_check
-prereq
-sync_repo_and_patch sriov-network-operator https://github.com/openshift/sriov-network-operator
 deploy
 add_dummy_dhcp
+label_nodes
+daemonset
 configure
