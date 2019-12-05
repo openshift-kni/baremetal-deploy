@@ -18,6 +18,8 @@ mkdir -p ${MANIFESTS_GENERATED_DIR}
         exit 1
     fi
 
+    export RT_KERNEL_BASE64="$(base64 -w 0 ${ASSETS_DIR}/rt-kernel-patch.sh)"
+    
     for template in $(ls ${TEMPLATES_DIR}); do
         name="$(basename ${template} .in)"
         envsubst < ${TEMPLATES_DIR}/${template} > ${MANIFESTS_GENERATED_DIR}/${name}
