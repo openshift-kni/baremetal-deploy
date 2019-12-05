@@ -3,7 +3,7 @@ kind: MachineConfig
 metadata:
     labels:
         machineconfiguration.openshift.io/role: worker-rt
-    name: worker-rt-kernel
+    name: 11-worker-rt-kernel
 spec:
     config:
         ignition:
