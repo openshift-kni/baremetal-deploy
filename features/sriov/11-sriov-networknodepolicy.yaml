@@ -1,19 +1,19 @@
 apiVersion: sriovnetwork.openshift.io/v1
 kind: SriovNetworkNodePolicy
 metadata:
-  name: ${nic}
+  name: ${sriovnetworknodepolicy}
   namespace: ${operatornamespace}
 spec:
   deviceType: netdevice
   isRdma: false
-  mtu: 1500
+  mtu: ${mtu}
   nicSelector:
     pfNames:
     - ${nic}
     rootDevices:
     - "${pciid}"
   nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: "true"
+    ${NODESELECTOR}
   numVfs: ${numvfs}
-  priority: 10
-  resourceName: ${nic}
+  priority: ${priority}
+  resourceName: ${sriovresourcename}

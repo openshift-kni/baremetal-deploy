@@ -1,0 +1,19 @@
+# Those vars are environment dependant
+export nic="${nic:-eno1}"
+export numvfs="${numvfs:-5}"
+export pciid="${pciid:-0000:01:00.0}"
+export mtu="${mtu:-1500}"
+# https://docs.openshift.com/container-platform/4.2/networking/multiple-networks/configuring-sr-iov.html#install-operator-cli
+export sriovoperatorversion="${sriovoperatorversion:-alpha}"
+export priority="${priority:-10}"
+export vlan="${vlan:-0}"
+export label="${label:-feature.node.kubernetes.io/network-sriov.capable=true}"
+
+# Those variables are probably ok with the default values
+export operatornamespace="${operatornamespace:-openshift-sriov-network-operator}"
+export targetnamespace="${targetnamespace:-sriov-testing}"
+export sriovnetworkname="${sriovnetworkname:-sriov-network}"
+export sriovnetworknodepolicy="${sriovnetworknodepolicy:-sriov-network-node-policy}"
+export sriovresourcename="${sriovresourcename:-sriovnic}"
+export targetnamespace="${targetnamespace:-sriov-testing}"
+export demodeployment="${demodeployment:-sriov-test}"
