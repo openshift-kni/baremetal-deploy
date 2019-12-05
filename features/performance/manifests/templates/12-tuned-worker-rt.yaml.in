@@ -31,7 +31,7 @@ spec:
       [scheduler]
       isolated_cores=${ISOLATED_CPUS}
     name: openshift-realtime-node
-  recommend:  
+  recommend:
   - priority: 30
     profile: openshift-realtime-node
     match:

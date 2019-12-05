@@ -3,7 +3,7 @@ kind: MachineConfig
 metadata:
     labels:
         machineconfiguration.openshift.io/role: worker-rt
-    name: 11-rt-kernel-worker-rt
+    name: 12-rt-pre-boot-worker-tuning
 spec:
     #kernelArguments:
     #    - 'non_iso_cpumask=00000005'
