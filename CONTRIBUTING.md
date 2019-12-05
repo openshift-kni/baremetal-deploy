@@ -5,7 +5,7 @@ GitHub pull requests.
 
 ## Guidelines
 
-* a change should not being merged unless it passes CI or there is a comment/update saying what testing was passed.
+* A change should not being merged unless it passes CI or there is a comment/update saying what testing was passed.
 * PRs should not be merged unless positively reviewed.
 * If a change is adding a feature, it should require a change to the README.md and the review should catch this.
 * If a change is a fix, it should have an issue. The review should make sure the comments state the issue (not just the number) and it should use the keywords that will close the issue on merge.
