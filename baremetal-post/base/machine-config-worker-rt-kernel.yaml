@@ -1,0 +1,5 @@
+apiVersion: com.redhat.cnf.v1
+kind: Base64Transformer
+metadata:
+  name: transform-machine-config-worker0-rt-kernel
+argsOneLiner: ../../features/performance/manifests/templates/01-machine-config-worker-rt-kernel.yaml.in RT_KERNEL_BASE64 ../../features/performance/assets/rt-kernel-patch.sh

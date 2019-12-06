@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Skip the config file name argument.
+shift
+
+TEMPLATE="$1"
+VARNAME="$2"
+VALUE="$3"
+
+export $VARNAME="$(base64 -w 0 $VALUE)"
+envsubst < $TEMPLATE

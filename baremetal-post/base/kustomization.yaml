@@ -1,0 +1,2 @@
+generators:
+  - machine-config-worker-rt-kernel.yaml
