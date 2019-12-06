@@ -8,6 +8,7 @@ howto(){
   echo "Example: ./baremetal-prep.sh -p ens3 -b ens4 -d -g -m"
 }
 
+#disabled, might be removed at a later stage
 disable_selinux(){
   echo -n "Disabling selinux..."
   sudo setenforce permissive >/dev/null 2>&1
@@ -221,7 +222,7 @@ fi
 setup_env
 existing_install_config
 install_depends
-disable_selinux
+#disable_selinux
 setup_default_pool
 setup_bridges
 if ([ "$GENERATEINSTALLCONF" -eq "1" ]) then
