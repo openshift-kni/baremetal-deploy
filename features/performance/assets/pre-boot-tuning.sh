@@ -68,7 +68,19 @@ else
     RHCOS_OSTREE_PATH=$(ls -td /boot/ostree/*/ | head -1)
     cp iso_initrd.img $RHCOS_OSTREE_PATH
     RHCOS_OSTREE_PATH=${RHCOS_OSTREE_PATH#"/boot"}
-    sed -i "s^initrd .*\$^& ${RHCOS_OSTREE_PATH}iso_initrd.img^" /boot/loader/entries/ostree-2-rhcos.conf
+
+    # Get current ostree config file
+    current_ver=1
+    entry_file=""
+    egrep $(uname -r) -lr /boot/loader/entries/ | while read -r line ; do
+        ver=`awk '/version/ {print $2}' $line`
+        if [ "$ver" -gt "$current_ver" ]; then
+           current_ver=$ver
+           entry_file=$line
+        fi
+    done
+
+    sed -i "s^initrd .*\$^& ${RHCOS_OSTREE_PATH}iso_initrd.img^" $entry_file
 
     #TODO - once RHCOS image contains the initrd content we can set parameters with rpm-ostree:
     #rpm-ostree initramfs --enable --arg=-I --arg=/etc/systemd/system.conf
