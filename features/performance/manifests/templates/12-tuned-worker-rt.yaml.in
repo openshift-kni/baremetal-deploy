@@ -25,7 +25,6 @@ spec:
 
       [sysfs]
       /sys/bus/workqueue/devices/writeback/cpumask = ${not_isolated_cpumask}
-      #/sys/devices/virtual/workqueue/cpumask = ${not_isolated_cpumask}
       /sys/devices/system/machinecheck/machinecheck*/ignore_ce = 1   
 
       [scheduler]

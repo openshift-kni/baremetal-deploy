@@ -5,9 +5,6 @@ metadata:
         machineconfiguration.openshift.io/role: worker-rt
     name: 12-rt-pre-boot-worker-tuning
 spec:
-    #kernelArguments:
-    #    - 'non_iso_cpumask=00000005'
-    #    - 'reserved_cpus'=0-2'
     config:
         ignition:
             config: {}

@@ -104,11 +104,12 @@ else
     
     find . | cpio -co >../iso_initrd.img
     cd ..
+    # TODO - find a more robust approach than keeping the last timestamp
     RHCOS_OSTREE_PATH=$(ls -td /boot/ostree/*/ | head -1)
     cp iso_initrd.img $RHCOS_OSTREE_PATH
     RHCOS_OSTREE_PATH=${RHCOS_OSTREE_PATH#"/boot"}
 
-    # Get current ostree config file
+    # Get current ostree config file according to the latest version
     current_ver=1
     entry_file=$(ls -td /boot/loader/entries/* | head -1)
     while read -r line ; do
