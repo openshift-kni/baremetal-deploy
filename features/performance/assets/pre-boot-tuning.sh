@@ -44,7 +44,7 @@ get_cpu_affinity() {
 }
 
 # TODO: improve check for applied configuration
-if grep -Fxq "CPUAffinity" "/etc/systemd/system.conf"; then
+if grep -q "^CPUAffinity" "/etc/systemd/system.conf"; then
     echo "Pre boot tuning configuration already applied"
     echo "Setting kernel rcuo* threads to the housekeeping cpus"
     get_cpu_mask 1
