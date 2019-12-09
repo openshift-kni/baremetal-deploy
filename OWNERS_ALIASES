@@ -1,0 +1,28 @@
+# See the OWNERS docs at https://go.k8s.io/owners
+
+aliases:
+  approvers:
+    - karmab
+    - davidvossel
+  code-reviewers:
+    - karmab
+    - e-minguez
+    - davidvossel
+  cnf-reviewers:
+    - cynepco3hahue
+    - slintes
+    - davidvossel
+    - vladikr
+    - yanirq
+    - fromanirh
+    - MarSik
+    - simon3z
+    - SchSeba
+    - fedepaol
+  cnf-compute-approvers:
+    - MarSik
+    - simon3z
+  cnf-network-approvers:
+    - fedepaol
+    - SchSeba
+    - simon3z

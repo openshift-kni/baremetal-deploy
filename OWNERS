@@ -1,0 +1,34 @@
+# See the OWNERS docs at https://go.k8s.io/owners
+  
+filters:
+  ".*":
+    reviewers:
+      - code-reviewers
+      - cnf-reviewers
+    approvers:
+      - approvers
+  "features/performance/.*":
+    reviewers:
+      - cnf-reviewers
+    approvers:
+      - cnf-compute-approvers
+  "features/cnao/.*":
+    reviewers:
+      - cnf-reviewers
+    approvers:
+      - cnf-network-approvers
+  "features/ptp/.*":
+    reviewers:
+      - cnf-reviewers
+    approvers:
+      - cnf-network-approvers
+  "features/sctp/.*":
+    reviewers:
+      - cnf-reviewers
+    approvers:
+      - cnf-network-approvers
+  "features/sriov/.*":
+    reviewers:
+      - cnf-reviewers
+    approvers:
+      - cnf-network-approvers
