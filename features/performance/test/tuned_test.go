@@ -27,9 +27,8 @@ var _ = Describe("TestPerformanceTuned", func() {
 			Expect(t).ToNot(BeNil())
 			validateProfiles(fileName, t)
 		},
-		// msg, fileName
-		table.Entry(tunedYamls[0], tunedYamls[0]),
-		table.Entry(tunedYamls[1], tunedYamls[1]),
+		table.Entry(fmt.Sprintf("tuned manifest %s", tunedYamls[0]), tunedYamls[0]),
+		table.Entry(fmt.Sprintf("tuned manifest %s", tunedYamls[1]), tunedYamls[1]),
 	)
 })
 
