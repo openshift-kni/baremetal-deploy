@@ -8,6 +8,7 @@ require (
 	github.com/coreos/ignition v0.33.0 // indirect
 	github.com/onsi/ginkgo v1.10.3
 	github.com/onsi/gomega v1.7.1
+	github.com/openshift/api v3.9.1-0.20191002145753-bb291c9def6c+incompatible
 	github.com/openshift/cluster-node-tuning-operator v0.0.0-20191203152732-f11819b297a2
 	github.com/openshift/machine-config-operator v4.2.0-alpha.0.0.20190917115525-033375cbe820+incompatible
 	github.com/smartystreets/goconvey v1.6.4 // indirect
