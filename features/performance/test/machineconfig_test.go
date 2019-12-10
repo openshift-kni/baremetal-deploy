@@ -49,6 +49,7 @@ var _ = Describe("TestPerformanceMachineConfig", func() {
 			mc := loadMC(machineconfigRTKernelYaml)
 			Expect(len(mc.Spec.Config.Systemd.Units)).To(BeNumerically(">=", 1))
 			for _, unitFile := range mc.Spec.Config.Systemd.Units {
+				Expect(unitFile.Enabled).ToNot(BeNil())
 				Expect(*unitFile.Enabled).To(BeTrue())
 				Expect(unitFile.Contents).NotTo(BeEmpty())
 			}
