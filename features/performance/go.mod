@@ -11,7 +11,7 @@ require (
 	github.com/openshift/cluster-node-tuning-operator v0.0.0-20191203152732-f11819b297a2
 	github.com/openshift/machine-config-operator v4.2.0-alpha.0.0.20190917115525-033375cbe820+incompatible
 	github.com/smartystreets/goconvey v1.6.4 // indirect
-	github.com/vincent-petithory/dataurl v0.0.0-20191104211930-d1553a71de50 // indirect
+	github.com/vincent-petithory/dataurl v0.0.0-20191104211930-d1553a71de50
 	go4.org v0.0.0-20191010144846-132d2879e1e9 // indirect
 	gopkg.in/ini.v1 v1.51.0
 	k8s.io/api v0.0.0-20191206001707-7edad22604e1 // indirect

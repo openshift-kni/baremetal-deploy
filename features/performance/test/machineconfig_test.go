@@ -3,7 +3,10 @@ package performance_test
 import (
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"strings"
+
+	"github.com/vincent-petithory/dataurl"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -12,12 +15,14 @@ import (
 	mcfgScheme "github.com/openshift/machine-config-operator/pkg/generated/clientset/versioned/scheme"
 )
 
-const machineconfigYaml = "../manifests/generated/12-machine-config-worker-rt-kargs.yaml" // TODO pass it as a param?
+const machineconfigRTKargsYaml = "../manifests/generated/12-machine-config-worker-rt-kargs.yaml"   // TODO pass it as a param?
+const machineconfigRTKernelYaml = "../manifests/generated/11-machine-config-worker-rt-kernel.yaml" // TODO pass it as a param?
 
 var _ = Describe("TestPerformanceMachineConfig", func() {
-	var _ = Context("Kernel Arguments MachineConfig", func() {
+	Context("Kernel Arguments MachineConfig", func() {
 		It("Should provide syntactically valid kernel arguments", func() {
-			mc := loadMC()
+			mc := loadMC(machineconfigRTKargsYaml)
+			Expect(len(mc.Spec.KernelArguments)).To(BeNumerically(">=", 1))
 			for _, kArg := range mc.Spec.KernelArguments {
 				items := strings.Split(strings.TrimSpace(kArg), "=")
 				// debug aid
@@ -31,11 +36,29 @@ var _ = Describe("TestPerformanceMachineConfig", func() {
 			}
 		})
 	})
+
+	Context("RT Kernel setup MachineConfig", func() {
+		It("Should ship a correctly encoded payload", func() {
+			mc := loadMC(machineconfigRTKernelYaml)
+			Expect(len(mc.Spec.Config.Storage.Files)).To(BeNumerically(">=", 1))
+			for _, encodedFile := range mc.Spec.Config.Storage.Files {
+				validateContentSource(encodedFile.Contents.Source)
+			}
+		})
+		It("Should ship at least an enabled systemd unit", func() {
+			mc := loadMC(machineconfigRTKernelYaml)
+			Expect(len(mc.Spec.Config.Systemd.Units)).To(BeNumerically(">=", 1))
+			for _, unitFile := range mc.Spec.Config.Systemd.Units {
+				Expect(*unitFile.Enabled).To(BeTrue())
+				Expect(unitFile.Contents).NotTo(BeEmpty())
+			}
+		})
+	})
 })
 
-func loadMC() *mcfgv1.MachineConfig {
+func loadMC(filename string) *mcfgv1.MachineConfig {
 	decode := mcfgScheme.Codecs.UniversalDeserializer().Decode
-	mcoyaml, err := ioutil.ReadFile(machineconfigYaml)
+	mcoyaml, err := ioutil.ReadFile(filename)
 	Expect(err).ToNot(HaveOccurred())
 
 	obj, _, err := decode([]byte(mcoyaml), nil, nil)
@@ -43,4 +66,15 @@ func loadMC() *mcfgv1.MachineConfig {
 	mc, ok := obj.(*mcfgv1.MachineConfig)
 	Expect(ok).To(BeTrue())
 	return mc
+}
+
+func validateContentSource(data string) {
+	Expect(data).NotTo(BeEmpty())
+
+	u, err := url.Parse(data)
+	Expect(err).ToNot(HaveOccurred())
+	Expect(u.Scheme).To(Equal("data"))
+
+	_, err = dataurl.DecodeString(data)
+	Expect(err).ToNot(HaveOccurred())
 }
