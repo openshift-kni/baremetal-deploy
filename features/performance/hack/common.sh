@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+PERFORMANCE_DIR="$(
+    cd "$(dirname "$BASH_SOURCE[0]")/../"
+    echo "$(pwd)"
+)"
+
+ASSETS_DIR="${PERFORMANCE_DIR}/assets"
+MANIFESTS_DIR="${PERFORMANCE_DIR}/manifests"
+MANIFESTS_GENERATED_DIR="${MANIFESTS_DIR}/generated"
+TEMPLATES_DIR="${MANIFESTS_DIR}/templates"
+
+ISOLATED_CPUS=${ISOLATED_CPUS:-}
+RESERVED_CPUS=${RESERVED_CPUS:-}

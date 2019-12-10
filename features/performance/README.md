@@ -1,6 +1,6 @@
 # Performance Tuning
 
-All manifests should be applied automatically on a new cluster, in case if you want to test each feature separately, refer to the feature section.
+All manifests should be applied automatically on a new cluster via `make deploy`, in case if you want to test each feature separately, refer to the feature section.
 
 ## Environment variables
 

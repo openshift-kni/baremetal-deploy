@@ -24,7 +24,7 @@ spec:
       kernel.timer_migration = 0
 
       [scheduler]
-      isolated_cores=${isolated_cores}
+      isolated_cores=${ISOLATED_CPUS}
     name: openshift-realtime-node
   recommend:
   - priority: 30
