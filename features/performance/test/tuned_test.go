@@ -16,8 +16,8 @@ import (
 )
 
 var tunedYamls = []string{
-	"../manifests/00-tuned-network-latency.yaml",
-	"../manifests/01-tuned-rt.yaml",
+	"../manifests/generated/00-tuned-network-latency.yaml",
+	"../manifests/generated/12-tuned-worker-rt.yaml",
 }
 
 var _ = Describe("TestPerformanceTuned", func() {

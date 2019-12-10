@@ -12,7 +12,7 @@ import (
 	mcfgScheme "github.com/openshift/machine-config-operator/pkg/generated/clientset/versioned/scheme"
 )
 
-const machineconfigYaml = "../manifests/05-mc-kargs-worker-rt.yaml" // TODO pass it as a param?
+const machineconfigYaml = "../manifests/generated/12-machine-config-worker-rt-kargs.yaml" // TODO pass it as a param?
 
 var _ = Describe("TestPerformanceMachineConfig", func() {
 	var _ = Context("Kernel Arguments MachineConfig", func() {
