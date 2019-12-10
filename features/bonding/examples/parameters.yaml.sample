@@ -1,0 +1,53 @@
+---
+primary:
+  device: bond0
+  kernel_options: mode=1 fail_over_mac=2
+  phy_devices:
+    - device: ens3
+    - device: ens4
+  vlans:
+    - id: 20
+      ipv4:
+        dhcp: true
+    - id: 30
+      ipv4:
+        ip: 10.10.21.220
+        prefix: 24
+        gw: 10.10.21.1
+      ipv6:
+        ip: 2001:db9::1:1
+        prefix: 64
+secondary:
+  device: bond1
+  config:
+    mode: active-backup
+    options:
+      miimon: 140
+  phy_devices:
+    - device: ens8
+    - device: ens9
+  vlans:
+    - id: 20
+      ipv4:
+        dhcp: true
+    - id: 30
+      ipv4:
+        - ip: 10.10.20.220
+          prefix: 24
+      ipv6:
+        - ip: 2001:db8::1:1
+          prefix: 64
+  routes:
+    - dst: 0.0.0.0/0
+      gw: 10.10.20.1
+      iface: bond1.30
+    - dst: ff00::/8
+      gw: 2001:db8::1:2/64
+      iface: bond1.30
+  dns:
+    search:
+      - example.com
+      - example.org
+    nameservers:
+      - 2001:4860:4860::8888
+      - 8.8.8.8

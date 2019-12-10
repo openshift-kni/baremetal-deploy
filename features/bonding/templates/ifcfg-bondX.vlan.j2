@@ -1,0 +1,27 @@
+DEVICE="{{ bond_device }}.{{ id }}"
+{%- if ipv4 %}
+  {%- if ipv4.dhcp %}
+BOOTPROTO="dhcp"
+  {%- else %}
+BOOTPROTO=none
+IPADDR={{ ipv4.ip }}
+PREFIX={{ ipv4.prefix }}
+    {%- if ipv4.gw %}
+GATEWAY={{ ipv4.gw }}
+    {%- endif %}
+  {%- endif %}
+{%- endif %}
+{%- if ipv6 %}
+IPV6INIT=yes
+  {%- if ipv6.dhcp %}
+IPV6_AUTOCONF="no"
+DHCPV6C=”yes”
+  {%- else %}
+IPV6ADDR={{ ipv6.ip }}/{{ ipv6.prefix }}
+    {%- if ipv6.gw %}
+IPV6_DEFAULTGW={{ ipv6.gw }}
+    {%- endif %}
+  {%- endif %}
+{%- endif %}
+ONBOOT="yes"
+VLAN="yes"

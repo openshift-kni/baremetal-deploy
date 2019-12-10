@@ -1,0 +1,92 @@
+---
+apiVersion: nmstate.io/v1alpha1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: {{ device }}-nncp-{{ range(1,10000) |random }}
+spec:
+  desiredState:
+    interfaces:
+    - name: {{ device }}
+      type: bond
+      state: up
+      link-aggregation:
+        mode: {{ config.mode }}
+        options:
+          {%- for opt, value in config.options.items() %}
+          {{ opt }}: '{{ value }}'
+          {%- endfor %}
+        slaves:
+        {%- for dev in phy_devices %}
+        - {{ dev.device }}
+        {%- endfor %}
+    {%- for vlan in vlans %}
+    - name: {{ device }}.{{ vlan.id }}
+      type: vlan
+      state: up
+      {%- if vlan.ipv4 %}
+      ipv4:
+        {%- if vlan.ipv4.dhcp %}
+        auto-dns: false
+        auto-gateway: false
+        auto-routes: false
+        dhcp: true
+        {%- else %}
+        address:
+          {%- for address in vlan.ipv4 %}
+          - ip: {{ address.ip }}
+            prefix-length: {{ address.prefix }}
+          {%- endfor %}
+        {%- endif %}
+        enabled: true
+      {%- endif %}
+      {%- if vlan.ipv6 %}
+      ipv6:
+        {%- if vlan.ipv6.dhcp %}
+        auto-dns: false
+        auto-gateway: false
+        auto-routes: false
+        dhcp: true
+        {%- else %}
+        address:
+          {%- for address in vlan.ipv6 %}
+          - ip: {{ address.ip }}
+            prefix-length: {{ address.prefix }}
+          {%- endfor %}
+        {%- endif %}
+        enabled: true
+      {%- endif %}
+      vlan:
+        base-iface: {{ device }}
+        id: {{ vlan.id }}
+    {%- endfor %}
+    {%- if routes %}
+    routes:
+      config:
+      {%- for route in routes %}
+        - destination: {{ route.dst }}
+          {%- if route.metric %}
+          metric: {{ route.metric }}
+          {%- endif %}
+          {%- if route.gw %}
+          next-hop-address: {{ route.gw }}
+          {%- endif %}
+          {%- if route.iface %}
+          next-hop-interface: {{ route.iface }}
+          {%- endif %}
+          {%- if route.table %}
+          table-id: {{ route.table }}
+          {%- endif %}
+      {%- endfor %}
+    {%- endif %}
+    {%- if dns %}
+    dns-resolver:
+      config:
+        search:
+        {%- for domain in dns.search %}
+          - {{ domain }}
+        {%- endfor %}
+        server:
+        {%- for server in dns.nameservers %}
+          - {{ server }}
+        {%- endfor %}
+    {%- endif %}
