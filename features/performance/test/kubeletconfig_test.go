@@ -19,7 +19,7 @@ const kubeletconfigYaml = "../manifests/generated/12-kubeletconfig-worker-rt.yam
 var _ = Describe("TestPerformanceKubeletConfig", func() {
 	var _ = Context("CPU Manager policy", func() {
 		It("Should set the policy to 'static'", func() {
-			kc := loadKC()
+			kc := loadKubeletConfig()
 			specKubeletConfig, err := decodeKubeletConfig(kc.Spec.KubeletConfig.Raw)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(specKubeletConfig.CPUManagerPolicy).To(Equal("static"))
@@ -27,7 +27,7 @@ var _ = Describe("TestPerformanceKubeletConfig", func() {
 	})
 })
 
-func loadKC() *mcfgv1.KubeletConfig {
+func loadKubeletConfig() *mcfgv1.KubeletConfig {
 	decode := mcfgScheme.Codecs.UniversalDeserializer().Decode
 	kcoyaml, err := ioutil.ReadFile(kubeletconfigYaml)
 	Expect(err).ToNot(HaveOccurred())

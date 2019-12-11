@@ -21,7 +21,7 @@ const machineconfigRTKernelYaml = "../manifests/generated/11-machine-config-work
 var _ = Describe("TestPerformanceMachineConfig", func() {
 	Context("Kernel Arguments MachineConfig", func() {
 		It("Should provide syntactically valid kernel arguments", func() {
-			mc := loadMC(machineconfigRTKargsYaml)
+			mc := loadMachineConfig(machineconfigRTKargsYaml)
 			Expect(len(mc.Spec.KernelArguments)).To(BeNumerically(">=", 1))
 			for _, kArg := range mc.Spec.KernelArguments {
 				items := strings.Split(strings.TrimSpace(kArg), "=")
@@ -39,14 +39,14 @@ var _ = Describe("TestPerformanceMachineConfig", func() {
 
 	Context("RT Kernel setup MachineConfig", func() {
 		It("Should ship a correctly encoded payload", func() {
-			mc := loadMC(machineconfigRTKernelYaml)
+			mc := loadMachineConfig(machineconfigRTKernelYaml)
 			Expect(len(mc.Spec.Config.Storage.Files)).To(BeNumerically(">=", 1))
 			for _, encodedFile := range mc.Spec.Config.Storage.Files {
 				validateContentSource(encodedFile.Contents.Source)
 			}
 		})
 		It("Should ship at least an enabled systemd unit", func() {
-			mc := loadMC(machineconfigRTKernelYaml)
+			mc := loadMachineConfig(machineconfigRTKernelYaml)
 			Expect(len(mc.Spec.Config.Systemd.Units)).To(BeNumerically(">=", 1))
 			for _, unitFile := range mc.Spec.Config.Systemd.Units {
 				Expect(unitFile.Enabled).ToNot(BeNil())
@@ -57,7 +57,7 @@ var _ = Describe("TestPerformanceMachineConfig", func() {
 	})
 })
 
-func loadMC(filename string) *mcfgv1.MachineConfig {
+func loadMachineConfig(filename string) *mcfgv1.MachineConfig {
 	decode := mcfgScheme.Codecs.UniversalDeserializer().Decode
 	mcoyaml, err := ioutil.ReadFile(filename)
 	Expect(err).ToNot(HaveOccurred())
