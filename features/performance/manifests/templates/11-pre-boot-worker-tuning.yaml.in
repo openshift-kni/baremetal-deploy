@@ -3,7 +3,7 @@ kind: MachineConfig
 metadata:
     labels:
         machineconfiguration.openshift.io/role: worker-rt
-    name: 12-rt-pre-boot-worker-tuning
+    name: 11-worker-pre-boot-tuning
 spec:
     config:
         ignition:
@@ -20,7 +20,7 @@ spec:
                   path: /usr/local/bin/pre-boot-tuning.sh
                   mode: 0700
                   contents:
-                      source: data:text/plain;charset=utf-8;base64,_SCRIPT_
+                      source: data:text/plain;charset=utf-8;base64,${PRE_BOOT_BASE64}
         systemd:
             units:
                 - contents: |

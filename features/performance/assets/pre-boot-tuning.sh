@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-reserved_cpus=""
+non_iso_cpus=""
 non_iso_cpumask=""
 cpu_affinity=""
 
@@ -14,7 +14,7 @@ get_reserved_cores() {
         else
             cores+=($part)
         fi
-    done < <( echo $reserved_cpus | tr ',' '\n' )
+    done < <( echo $non_iso_cpus | tr ',' '\n' )
 }
 
 # $1 - 0 for irq balance banned cpus masking , 1 for non isolated cpus masking
@@ -43,23 +43,27 @@ get_cpu_affinity() {
     echo "CPU Affinity set to $cpu_affinity"
 }
 
+# TODO - find a more robust approach than keeping the last timestamp
+RHCOS_OSTREE_PATH=$(ls -td /boot/ostree/*/ | head -1)
+RHCOS_OSTREE_BOOTLOADER_PATH=${RHCOS_OSTREE_PATH#"/boot"}
+
 # TODO: improve check for applied configuration
-if grep -q "^CPUAffinity" "/etc/systemd/system.conf"; then
+if [ -f "$RHCOS_OSTREE_PATH/iso_initrd.img" ]; then
     echo "Pre boot tuning configuration already applied"
     echo "Setting kernel rcuo* threads to the housekeeping cpus"
     get_cpu_mask 1
     pgrep rcuo* | while read line; do taskset -p non_iso_cpumask $line; done
 else
-    if sysctl -a | grep -q reserved_cpus; then
-        reserved_cpus="$(sysctl -q -e -n reserved_cpus)"
+    if sysctl -a | grep -q non_iso_cpus; then
+        non_iso_cpus="$(sysctl -q -e -n non_iso_cpus)"
     else
-        echo "Could not retrive reserved_cpus from kargs"
+        echo "Could not retrive non_iso_cpus from kargs"
         exit 1    
     fi
 
     # Clean up
     rm -rf initrd
-    rm iso_initrd.img
+    rm -f iso_initrd.img
     # Create initrd image
     mkdir initrd
     cd initrd
@@ -93,21 +97,18 @@ else
     done
     fi' > ./usr/lib/dracut/hooks/pre-udev/00-tuned-pre-udev.sh
 
-    # Set CPU affinity according to reserved_cpus
+    # Set CPU affinity according to non_iso_cpus
     get_cpu_affinity
     echo "[Manager]" >> ./etc/systemd/system.conf
     echo "CPUAffinity=$cpu_affinity" >> ./etc/systemd/system.conf
 
-    # Set IRQ banned cpu according to reserved_cpus
+    # Set IRQ banned cpu according to non_iso_cpus
     get_cpu_mask 0
     echo "IRQBALANCE_BANNED_CPUS=$non_iso_cpumask" >> ./etc/sysconfig/irqbalance
     
     find . | cpio -co >../iso_initrd.img
     cd ..
-    # TODO - find a more robust approach than keeping the last timestamp
-    RHCOS_OSTREE_PATH=$(ls -td /boot/ostree/*/ | head -1)
     cp iso_initrd.img $RHCOS_OSTREE_PATH
-    RHCOS_OSTREE_PATH=${RHCOS_OSTREE_PATH#"/boot"}
 
     # Get current ostree config file according to the latest version
     current_ver=1
@@ -120,7 +121,7 @@ else
         fi
     done <<<$(egrep $(uname -r) -lr /boot/loader/entries/)
 
-    sed -i "s^initrd .*\$^& ${RHCOS_OSTREE_PATH}iso_initrd.img^" $entry_file
+    sed -i "s^initrd .*\$^& ${RHCOS_OSTREE_BOOTLOADER_PATH}iso_initrd.img^" $entry_file
 
     #TODO - once RHCOS image contains the initrd content we can set parameters with rpm-ostree:
     #rpm-ostree initramfs --enable --arg=-I --arg=/etc/systemd/system.conf
