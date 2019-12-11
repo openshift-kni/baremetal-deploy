@@ -1,4 +1,4 @@
-module github.com/openshift-kni/baremetal-deploy/sctp
+module github.com/openshift-kni/baremetal-deploy/features
 
 go 1.13
 

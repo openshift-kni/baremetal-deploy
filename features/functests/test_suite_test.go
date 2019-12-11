@@ -7,6 +7,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/reporters"
 	. "github.com/onsi/gomega"
+	_ "github.com/openshift-kni/baremetal-deploy/features/functests/sctp" // this is needed otherwise the sctp test won't be executed
+	"github.com/openshift-kni/baremetal-deploy/features/functests/utils/clients"
 )
 
 var junitPath *string
@@ -22,5 +24,10 @@ func TestTest(t *testing.T) {
 	if junitPath != nil {
 		rr = append(rr, reporters.NewJUnitReporter(*junitPath))
 	}
-	RunSpecsWithDefaultAndCustomReporters(t, "Foo Suite", rr)
+	RunSpecsWithDefaultAndCustomReporters(t, "Test Suite", rr)
 }
+
+var _ = BeforeSuite(func() {
+	clients.Setup()
+	// Add here the setup for additional features
+})
