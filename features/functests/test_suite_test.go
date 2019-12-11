@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/reporters"
 	. "github.com/onsi/gomega"
-	"github.com/openshift-kni/baremetal-deploy/features/functests/sctp"
+	_ "github.com/openshift-kni/baremetal-deploy/features/functests/sctp" // this is needed otherwise the sctp test won't be executed
 	"github.com/openshift-kni/baremetal-deploy/features/functests/utils/clients"
 )
 
@@ -30,5 +30,4 @@ func TestTest(t *testing.T) {
 var _ = BeforeSuite(func() {
 	clients.Setup()
 	// Add here the setup for additional features
-	sctp.Setup()
 })

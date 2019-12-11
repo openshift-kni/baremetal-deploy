@@ -3,7 +3,6 @@ package sctp
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -13,9 +12,7 @@ import (
 
 	"github.com/openshift-kni/baremetal-deploy/features/functests/utils/clients"
 	"github.com/openshift-kni/baremetal-deploy/features/functests/utils/namespace"
-	"github.com/openshift-kni/baremetal-deploy/features/functests/utils/newpointer"
 
-	mcfgClient "github.com/openshift/machine-config-operator/pkg/generated/clientset/versioned"
 	k8sv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -26,23 +23,14 @@ const mcYaml = "../sctp/sctp_module_mc.yaml"
 const hostnameLabel = "kubernetes.io/hostname"
 const testNamespace = "sctptest"
 
-// Setup sets everything is needed in order to have sctp to work
-func Setup() {
-	namespace.Create(testNamespace, clients.K8s)
-	namespace.Clean(testNamespace, clients.K8s)
-
-	var mc *mcfgv1.MachineConfig
-	By("Applying the selinux policy")
-	applySELinuxPolicy(clients.K8s)
-	By("Load the mc config")
-	mc = loadMC()
-	By("Applying the mc config")
-	applyMC(clients.MachineConfig, clients.K8s, mc)
-	By("Creating the sctp service")
-	createSctpService(clients.K8s)
-}
-
-var _ = Describe("Sctp", func() {
+var _ = Describe("sctp", func() {
+	beforeAll(func() {
+		namespace.Create(testNamespace, clients.K8s)
+		namespace.Clean(testNamespace, clients.K8s)
+		checkForSctpReady(clients.K8s)
+		By("Creating the sctp service")
+		createSctpService(clients.K8s)
+	})
 
 	var _ = Context("Client Server Connection", func() {
 		var clientNode string
@@ -106,25 +94,6 @@ func loadMC() *mcfgv1.MachineConfig {
 	return mc
 }
 
-func applyMC(client *mcfgClient.Clientset, k8sClient *kubernetes.Clientset, mc *mcfgv1.MachineConfig) {
-	client.MachineconfigurationV1().MachineConfigs().Create(mc)
-	waitForMCApplied(client)
-	checkForSctpReady(k8sClient)
-}
-
-func waitForMCApplied(client *mcfgClient.Clientset) {
-	Eventually(func() bool {
-		mcp, err := client.MachineconfigurationV1().MachineConfigPools().Get("worker", metav1.GetOptions{})
-		ExpectWithOffset(1, err).ToNot(HaveOccurred())
-		for _, s := range mcp.Status.Configuration.Source {
-			if s.Name == "load-sctp-module" {
-				return true
-			}
-		}
-		return false
-	}, 15*time.Minute, 10*time.Second).Should(Equal(true)) // long timeout since this requires reboots
-}
-
 func checkForSctpReady(client *kubernetes.Clientset) {
 	nodes, err := client.CoreV1().Nodes().List(metav1.ListOptions{
 		LabelSelector: "node-role.kubernetes.io/worker=",
@@ -148,82 +117,6 @@ func checkForSctpReady(client *kubernetes.Clientset) {
 		}
 		return true
 	}, 3*time.Minute, 10*time.Second).Should(Equal(true))
-}
-
-func applySELinuxPolicy(client *kubernetes.Clientset) {
-	nodes, err := client.CoreV1().Nodes().List(metav1.ListOptions{
-		LabelSelector: "node-role.kubernetes.io/worker=",
-	})
-	Expect(err).ToNot(HaveOccurred())
-	for _, n := range nodes.Items {
-		createSEPolicyPods(client, n.ObjectMeta.Labels[hostnameLabel])
-	}
-
-	Eventually(func() bool {
-		pods, err := client.CoreV1().Pods(testNamespace).List(metav1.ListOptions{LabelSelector: "app=sctppolicy"})
-		ExpectWithOffset(1, err).ToNot(HaveOccurred())
-
-		for _, p := range pods.Items {
-			if p.Status.Phase != k8sv1.PodSucceeded {
-				return false
-			}
-		}
-		return true
-	}, 3*time.Minute, 1*time.Second).Should(Equal(true))
-}
-
-func createSEPolicyPods(client *kubernetes.Clientset, node string) {
-	pod := k8sv1.Pod{
-		ObjectMeta: metav1.ObjectMeta{
-			GenerateName: "sctppolicy",
-			Labels: map[string]string{
-				"app": "sctppolicy",
-			},
-			Namespace: testNamespace,
-		},
-		Spec: k8sv1.PodSpec{
-			RestartPolicy: k8sv1.RestartPolicyNever,
-			Containers: []k8sv1.Container{
-				{
-					Name:    "sepolicy",
-					Image:   "fedepaol/sctpsepolicy:v1",
-					Command: []string{"/bin/sh", "-c"},
-					Args: []string{`cp newsctp.pp /host/tmp;
-							echo "applying policy";
-					        chroot /host /usr/sbin/semodule -i /tmp/newsctp.pp;
-					        echo "policy applied";`},
-					SecurityContext: &k8sv1.SecurityContext{
-						Privileged: newpointer.Bool(true),
-					},
-					VolumeMounts: []k8sv1.VolumeMount{
-						k8sv1.VolumeMount{
-							Name:      "host",
-							MountPath: "/host",
-						},
-					},
-				},
-			},
-			Volumes: []k8sv1.Volume{
-				k8sv1.Volume{
-					Name: "host",
-					VolumeSource: k8sv1.VolumeSource{
-						HostPath: &k8sv1.HostPathVolumeSource{
-							Path: "/",
-							Type: newpointer.HostPath(k8sv1.HostPathDirectory),
-						},
-					},
-				},
-			},
-			NodeSelector: map[string]string{
-				hostnameLabel: node,
-			},
-		},
-	}
-
-	_, err := client.CoreV1().Pods(testNamespace).Create(&pod)
-	if err != nil {
-		log.Fatal("Failed to create policy pod", err)
-	}
 }
 
 func createSctpService(client *kubernetes.Clientset) {
