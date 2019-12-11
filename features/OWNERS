@@ -1,0 +1,6 @@
+# See the OWNERS docs at https://go.k8s.io/owners
+
+# cnf-reviewers are assigned at top level already
+
+approvers:
+  - cnf-approvers
