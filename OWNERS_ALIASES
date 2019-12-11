@@ -19,10 +19,10 @@ aliases:
     - simon3z
     - SchSeba
     - fedepaol
-  cnf-compute-approvers:
+  cnf-approvers:
     - MarSik
     - simon3z
-  cnf-network-approvers:
     - fedepaol
     - SchSeba
-    - simon3z
+    - fromanirh
+    - cynepco3hahue

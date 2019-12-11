@@ -7,28 +7,8 @@ filters:
       - cnf-reviewers
     approvers:
       - approvers
-  "features/performance/.*":
+  "features/.*":
     reviewers:
       - cnf-reviewers
     approvers:
-      - cnf-compute-approvers
-  "features/cnao/.*":
-    reviewers:
-      - cnf-reviewers
-    approvers:
-      - cnf-network-approvers
-  "features/ptp/.*":
-    reviewers:
-      - cnf-reviewers
-    approvers:
-      - cnf-network-approvers
-  "features/sctp/.*":
-    reviewers:
-      - cnf-reviewers
-    approvers:
-      - cnf-network-approvers
-  "features/sriov/.*":
-    reviewers:
-      - cnf-reviewers
-    approvers:
-      - cnf-network-approvers
+      - cnf-approvers
