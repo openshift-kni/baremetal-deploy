@@ -2,6 +2,8 @@ package performance_test
 
 import (
 	"flag"
+	"fmt"
+	"os/exec"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
@@ -13,6 +15,19 @@ var junitPath *string
 
 func init() {
 	junitPath = flag.String("junit", "junit.xml", "the path for the junit format report")
+}
+
+func generateManifest(filename, isolatedCpus, reservedCpus string) []byte {
+	generator := "../hack/generate.sh"
+	cmd := exec.Command(generator, filename)
+	// not relevant for this test, so hardcode the simplest value
+	cmd.Env = append(cmd.Env,
+		fmt.Sprintf("ISOLATED_CPUS=%s", isolatedCpus),
+		fmt.Sprintf("RESERVED_CPUS=%s", reservedCpus),
+	)
+	out, err := cmd.Output()
+	Expect(err).ToNot(HaveOccurred())
+	return out
 }
 
 func TestPerformanceManifests(t *testing.T) {
