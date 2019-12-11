@@ -6,7 +6,7 @@ metadata:
 spec:
   profile:
   - name: "slave"
-    interface: "eno2"
+    interface: "${nic}"
     ptp4lOpts: "-s"
     phc2sysOpts: "-a -r"
   recommend:

@@ -1,0 +1,4 @@
+export ptp_operator="${ptp_operator:-quay.io/openshift/origin-ptp-operator}"
+export ptp_daemon="${ptp_daemon:-quay.io/openshift/origin-ptp}"
+export nic="${nic:-eno2}"
+export subscription_source="${subscription_source:-opsrctest}"

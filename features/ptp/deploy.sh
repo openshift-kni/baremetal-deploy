@@ -2,40 +2,49 @@
 set -uo pipefail
 BASEDIR="$(dirname "$0")"
 
-REPO_PATH=${HOME}/git/
-PTP_OPERATOR_DIR=${REPO_PATH}/ptp-operator
+PTP_DEPLOYMENT=${BASEDIR}/deploy
 
 # shellcheck disable=SC1091,SC1090
 . "${BASEDIR}/../lib/functions.sh"
 
-prereq(){
-  for command in git jq skopeo make; do
-    if [ ! -x "$(command -v ${command})" ]; then
-      die "Could not find the executable ${command} in the current PATH"
-    fi
-  done
-}
+[ -f "${BASEDIR}/myvars" ] || die "A 'myvars' file needs to be created, see the README"
+
+# shellcheck disable=SC1091,SC1090
+. "${BASEDIR}/myvars"
 
 deploy(){
-  pushd "${PTP_OPERATOR_DIR}" || die "pushd to ${PTP_OPERATOR_DIR} failed"
-  make deploy-setup
-  popd || die "popd failed"
-  oc apply -f "${BASEDIR}"/ptpconfig-grandmaster.yaml
-  oc apply -f "${BASEDIR}"/ptpconfig-slave.yaml
-}
+  pushd "${PTP_DEPLOYMENT}" || die "pushd to ${PTP_DEPLOYMENT} failed"
+  oc apply -f 01_namespace.yaml
+  oc apply -f 02_operator_group.yaml
 
-label_nodes(){
-  # random_master is a function that returns a random master name
-  # so, we label one of the masters as 'grandmaster' randomly
-  oc label node "$(random_master)" ptp/grandmaster=''
-  # Label the other nodes as 'slaves'
-  for node in $(oc get nodes --selector='!ptp/grandmaster' -o name) ; do 
-    oc label "$node" ptp/slave=''
+  export channel=`oc get packagemanifest ptp-operator -n openshift-marketplace -o jsonpath='{.status.channels[].name}'`
+
+  if [[ ${channel} == "" ]]; then
+    die "failed to find ptp-operator channel"
+  fi
+
+  envsubst < 03_subscription.yaml | oc apply -f -
+
+  while [[ `oc -n openshift-ptp get csv --no-headers | wc -l` != "1" ]]; do
+      sleep 2
   done
+
+  until oc -n openshift-ptp get csv -o yaml | sed "s,image-registry.openshift-image-registry.svc:5000/openshift/ose-ptp-operator@.*,${ptp_operator}:${channel},g" | sed "s,image-registry.openshift-image-registry.svc:5000/openshift/ose-ptp@.*,${ptp_daemon}:${channel},g" | oc apply -f -
+  do
+    echo "failed to update csv images"
+  done
+
+  until oc -n openshift-ptp get deploy -o yaml | sed "s,image-registry.openshift-image-registry.svc:5000/openshift/ose-ptp-operator@.*,${ptp_operator}:${channel},g" | sed "s,image-registry.openshift-image-registry.svc:5000/openshift/ose-ptp@.*,${ptp_daemon}:${channel},g" | oc apply -f -
+  do
+    echo "failed to update deployment images"
+  done
+
+  while [[ `oc -n openshift-ptp get csv --no-headers | grep Succeeded | wc -l` != "1" ]]; do
+      sleep 2
+  done
+
+  popd || die "popd failed"
 }
 
 ocp_sanity_check
-prereq
-sync_repo_and_patch ptp-operator https://github.com/openshift/ptp-operator.git asdf 19
-label_nodes
 deploy
