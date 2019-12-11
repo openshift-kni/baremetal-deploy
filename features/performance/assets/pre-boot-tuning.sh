@@ -11,6 +11,8 @@ get_reserved_cores() {
     while read part; do
         if [[ $part =~ - ]]; then
             cores+=($(seq ${part/-/ }))
+        elif [[ $part =~ , ]]; then
+            continue 
         else
             cores+=($part)
         fi
@@ -26,7 +28,6 @@ get_cpu_mask() {
     fi    
     get_reserved_cores
     for core in ${cores[*]}; do
-        echo $core
         mask[$core]=$1
     done
     cpumaskBinary=`echo ${mask[@]}| rev`
@@ -47,20 +48,20 @@ get_cpu_affinity() {
 RHCOS_OSTREE_PATH=$(ls -td /boot/ostree/*/ | head -1)
 RHCOS_OSTREE_BOOTLOADER_PATH=${RHCOS_OSTREE_PATH#"/boot"}
 
+if sysctl -a | grep -q non_iso_cpus; then
+    non_iso_cpus="$(sysctl -q -e -n non_iso_cpus)"
+else
+    echo "Could not retrive non_iso_cpus from kargs"
+    exit 1    
+fi
+
 # TODO: improve check for applied configuration
 if [ -f "$RHCOS_OSTREE_PATH/iso_initrd.img" ]; then
     echo "Pre boot tuning configuration already applied"
     echo "Setting kernel rcuo* threads to the housekeeping cpus"
     get_cpu_mask 1
-    pgrep rcuo* | while read line; do taskset -p non_iso_cpumask $line; done
+    pgrep rcuo* | while read line; do taskset -p $non_iso_cpumask $line; done
 else
-    if sysctl -a | grep -q non_iso_cpus; then
-        non_iso_cpus="$(sysctl -q -e -n non_iso_cpus)"
-    else
-        echo "Could not retrive non_iso_cpus from kargs"
-        exit 1    
-    fi
-
     # Clean up
     rm -rf initrd
     rm -f iso_initrd.img
