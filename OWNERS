@@ -7,8 +7,4 @@ filters:
       - cnf-reviewers
     approvers:
       - approvers
-  "features/.*":
-    reviewers:
-      - cnf-reviewers
-    approvers:
-      - cnf-approvers
+
