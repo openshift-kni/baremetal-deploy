@@ -17,7 +17,7 @@ for mcp in ${mcps}; do
 done
 
 # apply manifests
-oc apply -R ${MANIFESTS_GENERATED_DIR}
+oc apply -Rf ${MANIFESTS_GENERATED_DIR}
 
 # unpause all machine config pools
 for mcp in ${mcps}; do
