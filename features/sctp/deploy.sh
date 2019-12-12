@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 
-set -uo pipefail
+set -euo pipefail
 
-BASEDIR="$(dirname "$0")"
+source $(dirname "$0")/../hack/common.sh
+source ${LIB_DIR}/functions.sh
+
 MCPOOL="${MACHINE_CONFIG_POOL:-worker}"
-SCTP_MODULE_MANIFEST="${BASEDIR}/sctp_module_mc.yaml"
-
-
-. "${BASEDIR}/../lib/functions.sh"
+SCTP_MODULE_MANIFEST="${SCTP_DIR}/sctp_module_mc.yaml"
 
 unblacklist_module() {
     info "unblacklisting module..."
