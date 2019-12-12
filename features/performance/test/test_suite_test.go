@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os/exec"
+	"path"
+	"runtime"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
@@ -18,7 +20,9 @@ func init() {
 }
 
 func generateManifest(filename, isolatedCpus, reservedCpus string) []byte {
-	generator := "../hack/generate.sh"
+	_, source, _, ok := runtime.Caller(1)
+	Expect(ok).To(BeTrue())
+	generator := path.Join(path.Dir(source), "../hack/generate.sh")
 	cmd := exec.Command(generator, filename)
 	// not relevant for this test, so hardcode the simplest value
 	cmd.Env = append(cmd.Env,
