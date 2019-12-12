@@ -29,7 +29,6 @@ var _ = Describe("TestPerformanceKubeletConfig", func() {
 		})
 	})
 
-	// see: https://github.com/openshift-kni/baremetal-deploy/pull/56
 	table.DescribeTable("KubeletConfig files should be loadable",
 		func(fileName, isolatedCPUs, reservedCPUs string) {
 			kc := loadKubeletConfig(fileName, isolatedCPUs, reservedCPUs)
