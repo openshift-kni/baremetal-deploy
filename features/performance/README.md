@@ -41,7 +41,22 @@ oc -n openshift-machine-config-operator wait machineconfigpools worker --for con
 The realtime kernel will be installed using MachineConfig, which installs a new systemd unit, which runs a script.
 The template for the `MachineConfig` placed under `manifests/templates` and the script located in `assets`. The actual manifest is created by running `make generate`,
 which will base64 encode the script and put it into the template. The result is stored under `manifests/generated/11-machine-config-worker-rt-kernel.yaml`.
-  
+
+## CPU manager
+
+To enable the [CPU manager](https://docs.openshift.com/container-platform/4.2/scalability_and_performance/using-cpu-manager.html), you should:
+
+- label your worker nodes with `oc label node <node_name> machineconfiguration.openshift.io/role=worker-rt`
+- label relevant machine config pool with `worker-rt` label, `oc label machineconfigpool/worker-rt worker-rt`
+- `make generate`
+- enable CPU static policy via `KubeletConfiguration`, `oc create -f manifests/generated/12-kubeletconfig-worker-rt`
+- wait for workers update
+
+```bash
+oc -n openshift-machine-config-operator wait machineconfigpools worker --for condition=Updating --timeout=1800s
+oc -n openshift-machine-config-operator wait machineconfigpools worker --for condition=Updated --timeout=1800s
+```
+
 ## Topology Manager
 
 To enable the topology manager, you should:
