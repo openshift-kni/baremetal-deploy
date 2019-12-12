@@ -15,7 +15,7 @@ import (
 	mcfgScheme "github.com/openshift/machine-config-operator/pkg/generated/clientset/versioned/scheme"
 )
 
-const kubeletconfigYaml = "12-kubeletconfig-worker-rt.yaml" // TODO pass it as a param?
+const kubeletconfigYaml = "12-kubelet-config-worker-rt.yaml" // TODO pass it as a param?
 
 var _ = Describe("TestPerformanceKubeletConfig", func() {
 	var _ = Context("CPU Manager policy", func() {

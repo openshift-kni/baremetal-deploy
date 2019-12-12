@@ -11,7 +11,7 @@ import (
 	configv1 "github.com/openshift/api/config/v1"
 )
 
-var featuregateYaml = "12-fg-latency-sensitive.yaml"
+var featuregateYaml = "12-feature-gate-latency-sensitive.yaml"
 
 var _ = Describe("TestPerformanceFeatureGate", func() {
 	Context("Performance Feature Gates", func() {
