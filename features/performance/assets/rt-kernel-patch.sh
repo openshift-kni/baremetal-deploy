@@ -42,6 +42,7 @@ then
     if [[ $? -eq 77 ]]
     then
       echo "No update available, nothing to do"
+      exit 0
     else
       echo "RT kernel updated, rebooting"
       systemctl reboot
