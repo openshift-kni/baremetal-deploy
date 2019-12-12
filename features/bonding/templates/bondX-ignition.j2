@@ -1,0 +1,30 @@
+{
+  "ignition": { "version": "2.2.0" },
+  "storage": {
+    "files": [{
+      "filesystem": "root",
+      "path": "/etc/sysconfig/network-scripts/{{ filename }}",
+      "mode": 420,
+      "contents": { "source": "data:text/plain;charset=utf-8;base64,{{ b64|string }}" }
+    },
+    {%- for vlan in vlans %}
+    {
+      "filesystem": "root",
+      "path": "/etc/sysconfig/network-scripts/{{ vlan.filename }}",
+      "mode": 420,
+      "contents": { "source": "data:text/plain;charset=utf-8;base64,{{ vlan.b64 }}" }
+    },{%- endfor -%}
+    {%- for dev in phy_devices %}
+    {
+      "filesystem": "root",
+      "path": "/etc/sysconfig/network-scripts/{{ dev.filename }}",
+      "mode": 420,
+      "contents": { "source": "data:text/plain;charset=utf-8;base64,{{ dev.b64 }}" }
+    {%- if not loop.last %}
+    },
+    {%- else %}
+    }]
+    {%- endif -%}
+    {%- endfor %}
+  }
+}
