@@ -14,8 +14,8 @@ functests: ginkgo
 	GOFLAGS=-mod=vendor ginkgo functests -- -junit /tmp/artifacts/unit_report.xml
 
 unittests:
-	GO_PACKAGES=$$(go list ./...| grep -v /functests); \
-	if [ -n "$$GO_PACKAGES" ]; then go test $$GO_PACKAGES; fi; 
+	# functests are marked with "// +build !unittests" and will be skipped
+	GOFLAGS=-mod=vendor go test -v --tags unittests ./...
 
 deploy:
 	for f in $(FEATURES) ; \

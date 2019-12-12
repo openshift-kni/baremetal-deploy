@@ -1,3 +1,5 @@
+// +build !unittests
+
 package test_test
 
 import (
