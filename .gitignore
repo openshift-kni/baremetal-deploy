@@ -1,2 +1,4 @@
 # ignore generated manifests
 features/performance/manifests/generated
+
+features/performance/test/junit.xml
