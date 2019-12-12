@@ -7,16 +7,19 @@ require (
 	github.com/imdario/mergo v0.3.8 // indirect
 	github.com/onsi/ginkgo v1.10.3
 	github.com/onsi/gomega v1.7.1
-	github.com/openshift/api v3.9.1-0.20191201231411-9f834e337466+incompatible // indirect
-	github.com/openshift/client-go v0.0.0-20191001081553-3b0e988f8cb0
+	github.com/openshift/api v3.9.1-0.20191201231411-9f834e337466+incompatible
+	github.com/openshift/client-go v0.0.0-20191022152013-2823239d2298
+	github.com/openshift/cluster-node-tuning-operator v0.0.0-20191211081013-c3b21314f1f2
 	github.com/openshift/machine-config-operator v4.2.0-alpha.0.0.20190917115525-033375cbe820+incompatible
-	github.com/vincent-petithory/dataurl v0.0.0-20191104211930-d1553a71de50 // indirect
+	github.com/vincent-petithory/dataurl v0.0.0-20191104211930-d1553a71de50
 	go4.org v0.0.0-20191010144846-132d2879e1e9 // indirect
 	golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6 // indirect
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
+	gopkg.in/ini.v1 v1.51.0
 	k8s.io/api v0.0.0
 	k8s.io/apimachinery v0.0.0
 	k8s.io/client-go v11.0.0+incompatible
+	k8s.io/kubelet v0.0.0
 	k8s.io/utils v0.0.0-20191114200735-6ca3b61696b6 // indirect
 )
 
