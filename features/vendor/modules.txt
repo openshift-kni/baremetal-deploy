@@ -55,6 +55,7 @@ github.com/modern-go/reflect2
 # github.com/onsi/ginkgo v1.10.3
 github.com/onsi/ginkgo
 github.com/onsi/ginkgo/config
+github.com/onsi/ginkgo/extensions/table
 github.com/onsi/ginkgo/internal/codelocation
 github.com/onsi/ginkgo/internal/containernode
 github.com/onsi/ginkgo/internal/failer
@@ -86,9 +87,12 @@ github.com/onsi/gomega/matchers/support/goraph/util
 github.com/onsi/gomega/types
 # github.com/openshift/api v3.9.1-0.20191201231411-9f834e337466+incompatible => github.com/openshift/api v3.9.1-0.20191201231411-9f834e337466+incompatible
 github.com/openshift/api/config/v1
-# github.com/openshift/client-go v0.0.0-20191001081553-3b0e988f8cb0 => github.com/openshift/client-go v0.0.0-20191125132246-f6563a70e19a
+# github.com/openshift/client-go v0.0.0-20191022152013-2823239d2298 => github.com/openshift/client-go v0.0.0-20191125132246-f6563a70e19a
 github.com/openshift/client-go/config/clientset/versioned/scheme
 github.com/openshift/client-go/config/clientset/versioned/typed/config/v1
+# github.com/openshift/cluster-node-tuning-operator v0.0.0-20191211081013-c3b21314f1f2
+github.com/openshift/cluster-node-tuning-operator/pkg/apis/tuned
+github.com/openshift/cluster-node-tuning-operator/pkg/apis/tuned/v1
 # github.com/openshift/machine-config-operator v4.2.0-alpha.0.0.20190917115525-033375cbe820+incompatible => github.com/openshift/machine-config-operator v0.0.1-0.20191204220237-5e6c4cabf194
 github.com/openshift/machine-config-operator/pkg/apis/machineconfiguration.openshift.io/v1
 github.com/openshift/machine-config-operator/pkg/generated/clientset/versioned
@@ -153,6 +157,8 @@ google.golang.org/appengine/urlfetch
 gopkg.in/fsnotify.v1
 # gopkg.in/inf.v0 v0.9.1
 gopkg.in/inf.v0
+# gopkg.in/ini.v1 v1.51.0
+gopkg.in/ini.v1
 # gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7
 gopkg.in/tomb.v1
 # gopkg.in/yaml.v2 v2.2.4
@@ -295,6 +301,8 @@ k8s.io/client-go/util/homedir
 k8s.io/client-go/util/keyutil
 # k8s.io/klog v1.0.0
 k8s.io/klog
+# k8s.io/kubelet v0.0.0 => k8s.io/kubelet v0.0.0-20190831152136-ba9cf7ec6904
+k8s.io/kubelet/config/v1beta1
 # k8s.io/utils v0.0.0-20191114200735-6ca3b61696b6
 k8s.io/utils/integer
 # sigs.k8s.io/yaml v1.1.0
