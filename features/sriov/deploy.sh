@@ -10,6 +10,9 @@ BASEDIR="$(dirname "$0")"
 # shellcheck disable=SC1091,SC1090
 . "${BASEDIR}/myvars"
 
+# Seconds to wait until the operator is deployed with oc wait
+TIMEOUT=300
+
 # shellcheck disable=SC2154
 # This is needed to split the label=value into label: value required for yaml files...
 export NODESELECTOR="${label%=*}: \"${label##*=}\""
@@ -44,7 +47,7 @@ add_dummy_dhcp(){
 label_nodes(){
   for node in $(oc get nodes --selector='!node-role.kubernetes.io/master' -o name); do
     # shellcheck disable=SC2154
-    oc label "${node}" "${label}"
+    oc label "${node}" "${label}" --overwrite=true
   done
 }
 
@@ -53,6 +56,14 @@ daemonset(){
   # shellcheck disable=SC1083,SC2016
   # We only need those two variables
   envsubst '\${nic} \${NODESELECTOR}' < ./10-sriov-daemonset.yaml | oc apply -f - > /dev/null || die "Error creating ds"
+}
+
+wait_for_ready(){
+  # This is to prevent creating the policy before the operator has been deployed like:
+  # error: unable to recognize “STDIN”: no matches for kind "SriovNetworkNodePolicy" in version "sriovnetwork.openshift.io/v1"
+  info "Waiting for the operator to be ready..."
+  # shellcheck disable=SC2154
+  while ! oc wait --for condition=ready pods -l name=sriov-network-operator -n "${operatornamespace}" --timeout="${TIMEOUT}"s; do sleep 10 ; done
 }
 
 configure(){
@@ -66,4 +77,5 @@ deploy
 add_dummy_dhcp
 label_nodes
 daemonset
+wait_for_ready
 configure
