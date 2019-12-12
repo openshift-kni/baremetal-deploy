@@ -1,7 +1,7 @@
 
 .PHONY: test, ginkgo
 
-export FEATURES?=sctp 
+export FEATURES?=sctp
 
 deps:
 	go mod tidy && \
@@ -11,7 +11,9 @@ ginkgo:
 	go get github.com/onsi/ginkgo/ginkgo
 
 functests: ginkgo
-	GOFLAGS=-mod=vendor ginkgo functests -- -junit /tmp/artifacts/unit_report.xml
+	FOCUS=$$(echo $(FEATURES) | tr ' ' '|') && \
+	echo "Focusing on $$FOCUS" && \
+	GOFLAGS=-mod=vendor ginkgo functests --focus=$$FOCUS -- -junit /tmp/artifacts/unit_report.xml
 
 unittests:
 	GO_PACKAGES=$$(go list ./...| grep -v /functests); \
