@@ -6,7 +6,7 @@ metadata:
 spec:
   profile:
   - name: "grandmaster"
-    interface: "eno2"
+    interface: "${nic}"
     ptp4lOpts: ""
     phc2sysOpts: "-a -r -r"
   recommend:

@@ -11,11 +11,60 @@
 * [OCP4 PTP Operator](https://github.com/openshift/ptp-operator)
 * [ptp4l grand master down with error timed out while polling for tx timestamp](https://access.redhat.com/solutions/2107131)
 
-## TL;DR
+## Instructions
 
-* Create a `ptpconfig.yaml` that fits your environment
+* Create a `myvars` file that fits your environment. You can use the [myvars.example](myvars.example) as inspiration.
 * Run the `deploy.sh` script
 
-It will deploy the PTP operator and select one of the masters randomly to act as the grandmaster and the other nodes as slaves.
+Run the `deploy.sh` script and validate the pods are inplace:
+```bash
+oc get po -n openshift-ptp
+NAME                            READY   STATUS    RESTARTS   AGE
+linuxptp-daemon-6xjnq           1/1     Running   0          18m
+linuxptp-daemon-fkzxj           1/1     Running   0          18m
+linuxptp-daemon-mtpn4           1/1     Running   0          18m
+linuxptp-daemon-r7z5d           1/1     Running   0          18m
+ptp-operator-7f4d4dddf4-v2xzc   1/1     Running   0          19m
+```
 
-For more instructions, see the [README-manual.md](README-manual.md)
+## Testing
+
+Run the `test.sh` file. It will label one of the masters randomly to act as the grandmaster,
+then it will deploy the ptp config yaml files one for the grandmaster and one for the slaves.
+
+
+## Deploying unreleased versions
+
+If you want to test a unreleased version of the PTP operator you need to add a new operator source.
+In case the operator source is private you will need to provide a secret with the login token.
+
+Login token creation example:
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: marketplacesecret
+  namespace: openshift-marketplace
+type: Opaque
+stringData:
+    token: "<token>"
+```
+
+Then you can create the new operator source using the authorization token that was created before
+```yaml
+apiVersion: "operators.coreos.com/v1"
+kind: "OperatorSource"
+metadata:
+  name: "opsrctest"
+  namespace: "openshift-marketplace"
+  labels:
+    opsrc-provider: opsrctest
+spec:
+  authorizationToken:
+    secretName:  marketplacesecret
+  type: appregistry
+  endpoint: "<end-point>"
+  registryNamespace: "<registry-namespace>"
+  displayName: "opsrctest"
+  publisher: "opsrctest"
+```
