@@ -80,3 +80,58 @@ wait_mcp(){
   fi
   until oc wait mcp/$mcp --for condition=updated --timeout 600s ; do sleep 1 ; done
 }
+
+##  E2E
+# Validates every tests inside of CHECKS variable
+# Should be passed like:
+# CHECKS=( 
+#     "KERNEL_PREEMPTION:$(oc debug node/${worker} -- chroot /host uname -v | grep -c PREEMPT)"
+#     "KERNEL_REAL_TIME:$(oc debug node/${worker} -- chroot /host uname -v | grep -c RT)"
+# )
+
+# set -x
+
+function reverse() {
+    # Workaround to match when the expected result is 0 to be compliant with others tests
+    if [ $1 -eq 0 ];then
+        echo '1'
+    else
+        echo '0'
+    fi
+}
+
+function validate_function() {
+    if [ -z "${CHECKS}" ];then
+        die "===> There is not checks general to go through"
+    fi
+
+    for check in "${CHECKS[@]}"
+    do
+        CHECK_NAME="${check%%:*}"
+        CHECK_RESULT=${check##*:}
+        test_results+=("${CHECK_RESULT}")
+        if [ ${CHECK_RESULT} -ge 1 ];then
+            test_ok+=("${CHECK_RESULT}")
+        else
+            test_nok+=("${CHECK_RESULT}")
+            test_failed+=("${CHECK_NAME}: Test Failed!")
+            #if [ ! -z "${worker}" ];then
+            #    echo "${worker} - ${CHECK_NAME}: ${CHECK_RESULT}"
+            #fi
+        fi
+    done
+}
+
+
+function resume() {
+    echo "===> $1 results: (${#test_ok[@]}/${#test_nok[@]}/${#test_results[@]}) (OK/NOK/TESTS)"
+    if [[ ${#test_nok[@]} -ge 1 ]]; then
+        for failed in "${test_failed[@]}"
+        do
+            echo "${failed}"
+        done
+		exit 1
+	else
+		exit 0
+	fi
+}

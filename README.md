@@ -10,6 +10,7 @@ It also contains optional features focused on low-latency workloads, NFV workloa
 
 * [Installation Steps](install-steps.md)
 * [Using Baremetal-prep.sh](baremetal-prep.md)
+* [E2E Feature Tests](features/e2e_tests/README.md)
 
 ## Optional features
 
