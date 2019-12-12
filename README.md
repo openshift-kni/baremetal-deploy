@@ -15,6 +15,8 @@ It also contains optional features focused on low-latency workloads, NFV workloa
 
 * [CPU Manager](features/cpumanager/). CPU Manager manages groups of CPUs and constrains workloads
 to specific CPUs.
+* [Kubernetes NMstate](features/kubernetes-nmstate/). Node-networking configuration driven by Kubernetes and executed
+by nmstate.
 * [PTP](features/ptp). This operator manages cluster wide Precision Time Protocol (PTP) configuration.
 * [SCTP](features/sctp). These assets enables Stream Control Transmission Protocol (SCTP) in the RHCOS
 worker nodes.
