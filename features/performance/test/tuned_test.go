@@ -1,8 +1,8 @@
 package performance_test
 
 import (
+	"bytes"
 	"fmt"
-	"os"
 
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/extensions/table"
@@ -16,28 +16,27 @@ import (
 )
 
 var tunedYamls = []string{
-	"../manifests/generated/00-tuned-network-latency.yaml",
-	"../manifests/generated/12-tuned-worker-rt.yaml",
+	"00-tuned-network-latency.yaml",
+	"12-tuned-worker-rt.yaml",
 }
 
 var _ = Describe("TestPerformanceTuned", func() {
 	table.DescribeTable("Tuned files should provide complete options",
-		func(fileName string) {
+		func(fileName, isolatedCPUs, reservedCPUs string) {
 			t := loadTuned(fileName)
 			Expect(t).ToNot(BeNil())
 			validateProfiles(fileName, t)
 		},
-		table.Entry(fmt.Sprintf("tuned manifest %s", tunedYamls[0]), tunedYamls[0]),
-		table.Entry(fmt.Sprintf("tuned manifest %s", tunedYamls[1]), tunedYamls[1]),
+		// cpu params not relevant here, just use something valid
+		table.Entry(fmt.Sprintf("tuned manifest %s", tunedYamls[0]), tunedYamls[0], "1-15", "0"),
+		table.Entry(fmt.Sprintf("tuned manifest %s", tunedYamls[1]), tunedYamls[1], "1-15", "0"),
 	)
 })
 
-func loadTuned(path string) *tunedv1.Tuned {
-	fd, err := os.Open(path)
-	Expect(err).ToNot(HaveOccurred())
-	defer fd.Close()
+func loadTuned(filename string) *tunedv1.Tuned {
+	out := generateManifest(filename, "0", "0")
 	t := tunedv1.Tuned{}
-	err = yaml.NewYAMLOrJSONDecoder(fd, 1024).Decode(&t)
+	err := yaml.NewYAMLOrJSONDecoder(bytes.NewBuffer(out), 1024).Decode(&t)
 	Expect(err).ToNot(HaveOccurred())
 	return &t
 }

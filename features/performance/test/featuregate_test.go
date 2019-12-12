@@ -1,7 +1,7 @@
 package performance_test
 
 import (
-	"os"
+	"bytes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -12,7 +12,7 @@ import (
 )
 
 // beware the typo (sic)
-var featuregateYaml = "../manifests/generated/12-fg-latency-sensetive.yaml"
+var featuregateYaml = "12-fg-latency-sensetive.yaml"
 
 var _ = Describe("TestPerformanceFeatureGate", func() {
 	Context("Performance Feature Gates", func() {
@@ -25,12 +25,11 @@ var _ = Describe("TestPerformanceFeatureGate", func() {
 	})
 })
 
-func loadFeatureGate(path string) *configv1.FeatureGate {
-	fd, err := os.Open(path)
-	Expect(err).ToNot(HaveOccurred())
-	defer fd.Close()
+func loadFeatureGate(filename string) *configv1.FeatureGate {
+	// not relevant for this test, so hardcode the simplest value
+	out := generateManifest(filename, "0", "0")
 	fg := configv1.FeatureGate{}
-	err = yaml.NewYAMLOrJSONDecoder(fd, 1024).Decode(&fg)
+	err := yaml.NewYAMLOrJSONDecoder(bytes.NewBuffer(out), 1024).Decode(&fg)
 	Expect(err).ToNot(HaveOccurred())
 	return &fg
 }

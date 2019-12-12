@@ -2,7 +2,6 @@ package performance_test
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"strings"
 
@@ -15,13 +14,16 @@ import (
 	mcfgScheme "github.com/openshift/machine-config-operator/pkg/generated/clientset/versioned/scheme"
 )
 
-const machineconfigRTKargsYaml = "../manifests/generated/12-machine-config-worker-rt-kargs.yaml"   // TODO pass it as a param?
-const machineconfigRTKernelYaml = "../manifests/generated/11-machine-config-worker-rt-kernel.yaml" // TODO pass it as a param?
+const (
+	machineconfigRTKernelYaml = "11-machine-config-worker-rt-kernel.yaml" // TODO pass it as a param?
+	machineconfigRTKargsYaml  = "12-machine-config-worker-rt-kargs.yaml"  // TODO pass it as a param?
+)
 
 var _ = Describe("TestPerformanceMachineConfig", func() {
 	Context("Kernel Arguments MachineConfig", func() {
 		It("Should provide syntactically valid kernel arguments", func() {
-			mc := loadMachineConfig(machineconfigRTKargsYaml)
+			// cpu params not relevant here, just use something valid
+			mc := loadMachineConfig(machineconfigRTKargsYaml, "1-15", "0")
 			Expect(len(mc.Spec.KernelArguments)).To(BeNumerically(">=", 1))
 			for _, kArg := range mc.Spec.KernelArguments {
 				items := strings.Split(strings.TrimSpace(kArg), "=")
@@ -39,14 +41,16 @@ var _ = Describe("TestPerformanceMachineConfig", func() {
 
 	Context("RT Kernel setup MachineConfig", func() {
 		It("Should ship a correctly encoded payload", func() {
-			mc := loadMachineConfig(machineconfigRTKernelYaml)
+			// cpu params not relevant here, just use something valid
+			mc := loadMachineConfig(machineconfigRTKernelYaml, "0", "1-15")
 			Expect(len(mc.Spec.Config.Storage.Files)).To(BeNumerically(">=", 1))
 			for _, encodedFile := range mc.Spec.Config.Storage.Files {
 				validateContentSource(encodedFile.Contents.Source)
 			}
 		})
 		It("Should ship at least an enabled systemd unit", func() {
-			mc := loadMachineConfig(machineconfigRTKernelYaml)
+			// cpu params not relevant here, just use something valid
+			mc := loadMachineConfig(machineconfigRTKernelYaml, "1-15", "0")
 			Expect(len(mc.Spec.Config.Systemd.Units)).To(BeNumerically(">=", 1))
 			for _, unitFile := range mc.Spec.Config.Systemd.Units {
 				Expect(unitFile.Enabled).ToNot(BeNil())
@@ -57,12 +61,10 @@ var _ = Describe("TestPerformanceMachineConfig", func() {
 	})
 })
 
-func loadMachineConfig(filename string) *mcfgv1.MachineConfig {
+func loadMachineConfig(filename, isolatedCpus, reservedCpus string) *mcfgv1.MachineConfig {
 	decode := mcfgScheme.Codecs.UniversalDeserializer().Decode
-	mcoyaml, err := ioutil.ReadFile(filename)
-	Expect(err).ToNot(HaveOccurred())
-
-	obj, _, err := decode([]byte(mcoyaml), nil, nil)
+	out := generateManifest(filename, isolatedCpus, reservedCpus)
+	obj, _, err := decode(out, nil, nil)
 	Expect(err).ToNot(HaveOccurred())
 	mc, ok := obj.(*mcfgv1.MachineConfig)
 	Expect(ok).To(BeTrue())
