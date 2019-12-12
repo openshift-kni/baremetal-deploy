@@ -15,6 +15,6 @@ spec:
       memory: 500Mi
     cpuManagerPolicy: static
     cpuManagerReconcilePeriod: 5s
-    reservedSystemCPUs: ${RESERVED_CPUS}
+    reservedSystemCPUs: "${RESERVED_CPUS}"
     topologyManagerPolicy: best-effort
 # options: https://github.com/kubernetes/kubernetes/blob/release-1.14/pkg/kubelet/apis/config/types.go#L62
