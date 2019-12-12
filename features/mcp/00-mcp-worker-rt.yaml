@@ -2,6 +2,8 @@ apiVersion: machineconfiguration.openshift.io/v1
 kind: MachineConfigPool
 metadata:
   name: worker-rt
+  labels:
+    worker-rt: ""
 spec:
   machineConfigSelector:
     matchExpressions:

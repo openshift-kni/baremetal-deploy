@@ -22,7 +22,7 @@ func init() {
 func generateManifest(filename, isolatedCpus, reservedCpus string) []byte {
 	_, source, _, ok := runtime.Caller(1)
 	Expect(ok).To(BeTrue())
-	generator := path.Join(path.Dir(source), "../hack/generate.sh")
+	generator := path.Join(path.Dir(source), "./../generate.sh")
 	cmd := exec.Command(generator, filename)
 	// not relevant for this test, so hardcode the simplest value
 	cmd.Env = append(cmd.Env,
