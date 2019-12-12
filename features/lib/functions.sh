@@ -102,7 +102,7 @@ function reverse() {
 
 function validate_function() {
     if [ -z "${CHECKS}" ];then
-        die "===> There is not checks general to go through"
+        die "There is not checks general to go through"
     fi
 
     for check in "${CHECKS[@]}"
@@ -124,14 +124,14 @@ function validate_function() {
 
 
 function resume() {
-    echo "===> $1 results: (${#test_ok[@]}/${#test_nok[@]}/${#test_results[@]}) (OK/NOK/TESTS)"
     if [[ ${#test_nok[@]} -ge 1 ]]; then
+        die "$1 results: ${#test_ok[@]} Passed | ${#test_nok[@]} Failed | ${#test_results[@]} Total"
         for failed in "${test_failed[@]}"
         do
             echo "${failed}"
         done
 		exit 1
 	else
-		exit 0
+        info "$1 results: ${#test_ok[@]} Passed | ${#test_nok[@]} Failed | ${#test_results[@]} Total"
 	fi
 }

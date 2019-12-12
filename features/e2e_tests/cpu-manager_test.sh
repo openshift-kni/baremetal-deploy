@@ -9,7 +9,7 @@ function local_env() {
 function validate_function_by_worker() {
     WORKERS=("$(oc get node -l node-role.kubernetes.io/worker -o jsonpath="{range .items[*]}{.metadata.name} ")")
     if [ -z "${WORKERS}" ];then
-        die "===> No workers detected, exiting..."
+        die "No workers detected, exiting..."
     fi
 
     for worker in "${WORKERS[@]}"
