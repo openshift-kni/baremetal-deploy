@@ -1,8 +1,8 @@
 package sctp
 
 import (
-	"fmt"
 	"io/ioutil"
+	"os"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -22,6 +22,15 @@ import (
 const mcYaml = "../sctp/sctp_module_mc.yaml"
 const hostnameLabel = "kubernetes.io/hostname"
 const testNamespace = "sctptest"
+
+var testerImage string
+
+func init() {
+	testerImage = os.Getenv("SCTPTEST_IMAGE")
+	if testerImage == "" {
+		testerImage = "fedepaol/sctptest:v1.0"
+	}
+}
 
 var _ = Describe("sctp", func() {
 	beforeAll(func() {
@@ -48,8 +57,8 @@ var _ = Describe("sctp", func() {
 			}
 
 			By("Starting the server")
-			serverArgs := []string{"sctp_test -H localhost -P 30101 -l 2>&1 > sctp.log & while sleep 10; do if grep --quiet SHUTDOWN sctp.log; then exit 0; fi; done"}
-			pod := jobForNode("scptserver", serverNode, "sctpserver", []string{"/bin/bash", "-c"}, serverArgs)
+			serverArgs := []string{"-ip", "0.0.0.0", "-port", "30101", "-server"}
+			pod := scptTestPod("scptserver", serverNode, "sctpserver", serverArgs)
 			pod.Spec.Containers[0].Ports = []k8sv1.ContainerPort{
 				k8sv1.ContainerPort{
 					Name:          "sctpport",
@@ -69,8 +78,8 @@ var _ = Describe("sctp", func() {
 			}, 3*time.Minute, 1*time.Second).Should(Equal(k8sv1.PodRunning))
 
 			By("Connecting a client to the server")
-			clientArgs := []string{fmt.Sprintf("sctp_test -H localhost -P 30100 -h %s -p 30101 -s", runningPod.Status.PodIP)}
-			clientPod := jobForNode("sctpclient", clientNode, "sctpclient", []string{"/bin/bash", "-c"}, clientArgs)
+			clientArgs := []string{"-ip", runningPod.Status.PodIP, "-port", "30101", "-lport", "30102"}
+			clientPod := scptTestPod("sctpclient", clientNode, "sctpclient", clientArgs)
 			clients.K8s.CoreV1().Pods(testNamespace).Create(clientPod)
 
 			Eventually(func() k8sv1.PodPhase {
@@ -143,6 +152,34 @@ func createSctpService(client *kubernetes.Clientset) {
 	}
 	_, err := client.CoreV1().Services(testNamespace).Create(&service)
 	Expect(err).ToNot(HaveOccurred())
+}
+
+func scptTestPod(name, node, app string, args []string) *k8sv1.Pod {
+	res := k8sv1.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			GenerateName: name,
+			Labels: map[string]string{
+				"app": app,
+			},
+			Namespace: testNamespace,
+		},
+		Spec: k8sv1.PodSpec{
+			RestartPolicy: k8sv1.RestartPolicyNever,
+			Containers: []k8sv1.Container{
+				{
+					Name:    name,
+					Image:   testerImage,
+					Command: []string{"/usr/bin/sctptest"},
+					Args:    args,
+				},
+			},
+			NodeSelector: map[string]string{
+				hostnameLabel: node,
+			},
+		},
+	}
+
+	return &res
 }
 
 func jobForNode(name, node, app string, cmd []string, args []string) *k8sv1.Pod {
