@@ -3,8 +3,23 @@
 # Script Prepares Provisioning Node For OpenShift Deployment    #
 #################################################################
 
+set -e
+
+#Defaults
+DEPLOYHOST_IP=$(hostname -i)
+CACHE_URL="http://${DEPLOYHOST_IP}/images"
+RELEASE="4.3.0-0.nightly-2019-12-09-035405"
+
 howto(){
-  echo "Usage: ./baremetal-prep.sh -p <provisioning interface> -b <baremetal interface> -d (configure for disconnected) -g (generate install-config.yaml) -m (generate metal3-config.yaml)"
+  echo "Usage: 
+         ./baremetal-prep.sh \
+           -p <provisioning interface> \
+           -b <baremetal interface> \
+           [-c <cache url>] : default ${CACHE_URL} \
+           [-r <release>] : default ${RELEASE} \
+           [-d] (configure for disconnected) \
+           [-g] (generate install-config.yaml) \
+           [-m] (generate metal3-config.yaml)" 
   echo "Example: ./baremetal-prep.sh -p ens3 -b ens4 -d -g -m"
 }
 
@@ -66,7 +81,7 @@ update_installconfig(){
   echo "imageContentSources:" >> $INSTALLCONFIG
   echo "- mirrors:" >> $INSTALLCONFIG
   echo "  - $HOST_URL:5000/ocp4/openshift4" >> $INSTALLCONFIG
-  echo "  source: registry.svc.ci.openshift.org/ocp/$NEW_RELEASE" >> $INSTALLCONFIG
+  echo "  source: registry.svc.ci.openshift.org/ocp/${VERSION}" >> $INSTALLCONFIG
   echo "- mirrors:" >> $INSTALLCONFIG
   echo "  - $HOST_URL:5000/ocp4/openshift4" >> $INSTALLCONFIG
   echo "  source: registry.svc.ci.openshift.org/ocp/release" >> $INSTALLCONFIG
@@ -75,7 +90,7 @@ update_installconfig(){
 
 mirror_images(){
   echo "Mirroring remote repository to local respository..."
-  /usr/local/bin/oc adm release mirror -a $LOCAL_SECRET_JSON --from=$UPSTREAM_REPO --to-release-image=$LOCAL_REG/$LOCAL_REPO:$OCP_RELEASE --to=$LOCAL_REG/$LOCAL_REPO
+  /usr/local/bin/oc adm release mirror -a $LOCAL_SECRET_JSON --from=$UPSTREAM_REPO --to-release-image=$LOCAL_REG/$LOCAL_REPO:${VERSION} --to=$LOCAL_REG/$LOCAL_REPO
 }
 
 find_pullsecret_file(){
@@ -111,23 +126,19 @@ setup_env(){
   find_pullsecret_file
   find_sshkey_file
   
-  VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/release.txt | grep 'Name:' | awk -F: '{print $2}' | xargs)
-  RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}' | xargs)
+  VERSION=${RELEASE}
+  RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/${VERSION}/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}' | xargs)
   OBICMD=openshift-baremetal-install
   EXTRACTDIR=$(pwd)
-  curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/openshift-client-linux-$VERSION.tar.gz | tar zxvf - oc
+  curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/${VERSION}/openshift-client-linux-$VERSION.tar.gz | tar zxvf - oc
   sudo cp ./oc /usr/local/bin/oc
   /usr/local/bin/oc adm release extract --registry-config "${PULLSECRET}" --command=$OBICMD --to "${EXTRACTDIR}" ${RELEASE_IMAGE}
   sudo cp ./openshift-baremetal-install /usr/local/bin/openshift-baremetal-install
-  LATEST_CI_IMAGE=$(curl https://openshift-release.svc.ci.openshift.org/api/v1/releasestream/4.3.0-0.ci/latest | grep -o 'registry.svc.ci.openshift.org[^"]\+')
-  OPENSHIFT_RELEASE_IMAGE="${OPENSHIFT_RELEASE_IMAGE:-$LATEST_CI_IMAGE}"
+
   GOPATH=$HOME/go
-  OCP_RELEASE=`echo $LATEST_CI_IMAGE|cut -d: -f2`
-  NEW_RELEASE=`echo $OCP_RELEASE|sed s/.0-0.ci//g`
   UPSTREAM_REPO=$LATEST_CI_IMAGE
   LOCAL_REG="${HOST_URL}:5000"
   LOCAL_REPO='ocp4/openshift4'
-  export OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE=${LOCAL_REG}/${LOCAL_REPO}:${OCP_RELEASE}
 }
 
 setup_bridges(){
@@ -200,7 +211,7 @@ ENABLEDISCONNECT=0
 GENERATEINSTALLCONF=0
 GENERATEMETALCONF=0
 
-while getopts p:b:dgmh option
+while getopts p:b:c:r:dgmh option
 do
 case "${option}"
 in
@@ -209,6 +220,8 @@ b) MAIN_CONN=${OPTARG};;
 d) ENABLEDISCONNECT=1;;
 g) GENERATEINSTALLCONF=1;;
 m) GENERATEMETALCONF=1;;
+c) CACHEURL=$(OPTARG);;
+r) RELEASE=$(OPTARG);;
 h) howto; exit 0;;
 \?) howto; exit 1;;
 esac
