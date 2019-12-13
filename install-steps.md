@@ -465,7 +465,7 @@ The following steps need to be performed in order to prepare the environment.
 15. Copy the pull secret (`pull-secret.txt`) generated earlier and place it in the provision node new user home directory
     
 
-## Retrieiving the OpenShift Installer
+## Retrieving the OpenShift Installer
 
 Two approaches:
 
