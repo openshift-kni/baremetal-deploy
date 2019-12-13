@@ -22,6 +22,7 @@ To use baremetal-prep.sh the system needs the following:
 
 - RHEL8 entitled host
 - Two network interfaces: one for provisioning and one for baremetal
+- ansible-repo must be enabled. E.g sudo subscription-manager repos --enable ansible-2.8-for-rhel-8-x86_64-rpms 
 - Should be run as a regular user that has sudo rights for everything
 - Needs a pull-secret.json file regular users home directory
 - Needs a install-config.yaml file in regular users home directory if not generating install-config.yaml

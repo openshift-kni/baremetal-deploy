@@ -18,6 +18,14 @@ disable_selinux(){
 }
 
 setup_default_pool(){
+
+  #libvirt must be running
+  if ( ! systemctl is-active libvirtd) then
+    echo "starting libvirt"
+    sudo systemctl start libvirtd
+    sleep 2
+  fi
+  
   if `sudo virsh pool-info default >/dev/null 2>&1`; then
     echo "Default pool exists...Skipping!"
   else
@@ -96,9 +104,10 @@ find_sshkey_file(){
   elif [ -f $HOME/.ssh/id_rsa.pub ] && ( ssh-keygen -l -f $HOME/.ssh/id_rsa.pub >/dev/null 2>&1 ); then
      SSHKEY="$HOME/.ssh/id_rsa.pub"
   else
-     echo "Failed - $HOME/sshkey or $HOME/.ssh/id_rsa.pub file not found"; exit 1
-  fi
-
+     # Generate user ssh key
+     ssh-keygen -f ~/.ssh/id_rsa -P 
+     SSHKEY="$HOME/.ssh/id_rsa.pub"
+  fi	  
 }
 
 setup_env(){
@@ -148,7 +157,7 @@ setup_bridges(){
 
 install_depends(){
   echo "Installing required dependencies..."
-  sudo yum -y install ansible git usbredir golang libXv virt-install libvirt libvirt-devel libselinux-utils qemu-kvm mkisofs 
+  sudo yum -y install ansible jq git usbredir golang libXv virt-install libvirt libvirt-devel libselinux-utils qemu-kvm mkisofs 
 }
 
 setup_installconfig(){
