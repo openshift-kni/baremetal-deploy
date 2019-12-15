@@ -19,7 +19,7 @@ func init() {
 	junitPath = flag.String("junit", "junit.xml", "the path for the junit format report")
 }
 
-func generateManifest(filename, isolatedCpus, reservedCpus string) []byte {
+func generateManifest(filename, isolatedCpus, reservedCpus string, nonIsolatedCpus string) []byte {
 	_, source, _, ok := runtime.Caller(1)
 	Expect(ok).To(BeTrue())
 	generator := path.Join(path.Dir(source), "./../generate.sh")
@@ -28,6 +28,7 @@ func generateManifest(filename, isolatedCpus, reservedCpus string) []byte {
 	cmd.Env = append(cmd.Env,
 		fmt.Sprintf("ISOLATED_CPUS=%s", isolatedCpus),
 		fmt.Sprintf("RESERVED_CPUS=%s", reservedCpus),
+		fmt.Sprintf("NON_ISOLATED_CPUS=%s", nonIsolatedCpus),
 	)
 	out, err := cmd.Output()
 	Expect(err).ToNot(HaveOccurred())

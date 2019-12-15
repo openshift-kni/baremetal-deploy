@@ -34,7 +34,7 @@ var _ = Describe("TestPerformanceTuned", func() {
 })
 
 func loadTuned(filename string) *tunedv1.Tuned {
-	out := generateManifest(filename, "0", "0")
+	out := generateManifest(filename, "0", "0", "0")
 	t := tunedv1.Tuned{}
 	err := yaml.NewYAMLOrJSONDecoder(bytes.NewBuffer(out), 1024).Decode(&t)
 	Expect(err).ToNot(HaveOccurred())
