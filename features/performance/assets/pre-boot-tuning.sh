@@ -60,7 +60,7 @@ if [ -f "$RHCOS_OSTREE_PATH/iso_initrd.img" ]; then
     echo "Pre boot tuning configuration already applied"
     echo "Setting kernel rcuo* threads to the housekeeping cpus"
     get_cpu_mask 1
-    pgrep rcuo* | while read line; do taskset -p $non_iso_cpumask $line; done
+    pgrep rcuo* | while read line; do taskset -p $non_iso_cpumask $line || true; done
 else
     # Clean up
     rm -rf initrd
