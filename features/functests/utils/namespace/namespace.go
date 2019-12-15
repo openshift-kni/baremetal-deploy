@@ -2,11 +2,12 @@ package namespace
 
 import (
 	. "github.com/onsi/gomega"
-	"github.com/openshift-kni/baremetal-deploy/features/functests/utils/newpointer"
+
 	k8sv1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/utils/pointer"
 )
 
 // Create creates a new namespace with the given name.
@@ -31,6 +32,6 @@ func Clean(namespace string, client *kubernetes.Clientset) {
 		return
 	}
 	client.CoreV1().Pods(namespace).DeleteCollection(&metav1.DeleteOptions{
-		GracePeriodSeconds: newpointer.Int64(0),
+		GracePeriodSeconds: pointer.Int64Ptr(0),
 	}, metav1.ListOptions{})
 }

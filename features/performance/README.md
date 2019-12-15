@@ -4,7 +4,7 @@ All manifests should be applied automatically on a new cluster via `make deploy`
 
 Before you apply any feature, you should:
 
-- add `worker-rt` role to relevant nodes `oc label node <node_name> machineconfiguration.openshift.io/role=worker-rt`
+- add `worker-rt` role to relevant nodes `oc label node <node_name> node-role.kubernetes.io/worker-rt=`
 - add `worker-rt` machine config pool `oc apply -f ../mcp/00-mcp-worker-rt.yaml`
 
 ## Environment variables
@@ -31,8 +31,8 @@ To verify huge pages feature functionality:
 - wait for workers update
 
 ```bash
-oc -n openshift-machine-config-operator wait machineconfigpools worker-rt --for condition=Updating --timeout=1800s
-oc -n openshift-machine-config-operator wait machineconfigpools worker-rt --for condition=Updated --timeout=1800s
+oc wait machineconfigpools worker-rt --for condition=Updating --timeout=1800s
+oc wait machineconfigpools worker-rt --for condition=Updated --timeout=1800s
 ```
 
 - create the huge pages pod via `oc create -f examples/hugepages-pod.yaml`
@@ -55,8 +55,8 @@ To enable the [CPU manager](https://docs.openshift.com/container-platform/4.2/sc
 - wait for workers update
 
 ```bash
-oc -n openshift-machine-config-operator wait machineconfigpools worker-rt --for condition=Updating --timeout=1800s
-oc -n openshift-machine-config-operator wait machineconfigpools worker-rt --for condition=Updated --timeout=1800s
+oc wait machineconfigpools worker-rt --for condition=Updating --timeout=1800s
+oc wait machineconfigpools worker-rt --for condition=Updated --timeout=1800s
 ```
 
 ## Topology Manager
@@ -67,16 +67,16 @@ To enable the topology manager, you should:
 - wait for workers update
 
 ```bash
-oc -n openshift-machine-config-operator wait machineconfigpools worker-rt --for condition=Updating --timeout=1800s
-oc -n openshift-machine-config-operator wait machineconfigpools worker-rt --for condition=Updated --timeout=1800s
+oc wait machineconfigpools worker-rt --for condition=Updating --timeout=1800s
+oc wait machineconfigpools worker-rt --for condition=Updated --timeout=1800s
 ```
 
 - update the kubelet configuration `oc apply -f manifests/12-kubeletconfig-worker-rt.yaml`
 - wait for workers update
 
 ```bash
-oc -n openshift-machine-config-operator wait machineconfigpools worker-rt --for condition=Updating --timeout=1800s
-oc -n openshift-machine-config-operator wait machineconfigpools worker-rt --for condition=Updated --timeout=1800s
+oc wait machineconfigpools worker-rt --for condition=Updating --timeout=1800s
+oc wait machineconfigpools worker-rt --for condition=Updated --timeout=1800s
 ```
 
 - verify that kubelet configuration on the `worker-rt` updated with relevant parameters
