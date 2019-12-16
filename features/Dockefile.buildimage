@@ -10,6 +10,7 @@ RUN dnf -y install \
     $GOVERSION \
     make \
     tar \
+    gettext \
     && dnf clean all
 
 # get required golang tools and OC client
@@ -21,6 +22,14 @@ RUN go get github.com/onsi/ginkgo/ginkgo && \
     tar -xzvf oc.tar.gz && \
     mv oc /usr/local/bin/oc && \
     rm -f oc.tar.gz
+
+RUN export TMP_BIN=$(mktemp -d) && \
+    mv $GOBIN/* $TMP_BIN/ && \
+    rm -rf ${GOPATH} ${GOCACHE} && \
+    mkdir -p ${GOBIN} && \
+    chmod -R 775 ${GOPATH} && \
+    mv $TMP_BIN/* ${GOBIN} && \
+    rm -rf $TMP_BIN
 
 WORKDIR /src/
 
