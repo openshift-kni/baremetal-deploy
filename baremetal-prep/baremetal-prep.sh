@@ -221,9 +221,8 @@ create_manifest_dir(){
   # if the directory already exists, archive it
   if [ -d ${MANIFEST_DIR} ]; then
     mv ${MANIFEST_DIR} ~/$(basename ${MANIFEST_DIR}).archived-$(date '+%Y%m%d%T')
-  else
-    mkdir -p ${MANIFEST_DIR}
   fi
+  mkdir -p ${MANIFEST_DIR}
 }
 
 generate_manifest(){
