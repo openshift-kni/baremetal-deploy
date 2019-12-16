@@ -9,6 +9,7 @@ set -e
 DEPLOYHOST_IP=$(hostname -i)
 CACHE_URL="http://${DEPLOYHOST_IP}/images"
 RELEASE="4.3.0-0.nightly-2019-12-09-035405"
+MANIFEST_DIR="${HOME}/clusterconfigs"
 
 howto(){
   echo "Usage: 
@@ -52,19 +53,15 @@ setup_repository(){
   fi
   sudo yum -y install podman httpd httpd-tools
   sudo mkdir -p /opt/registry/{auth,certs,data}
-  sudo openssl req -newkey rsa:4096 -nodes -sha256 -keyout /opt/registry/certs/domain.key -x509 -days 365 -out /opt/registry/certs/domain.crt -subj "/C=US/ST=Massachussetts/L=Boston/O=Red Hat/OU=Engineering/CN=$HOST_URL"
+  sudo openssl req -newkey rsa:4096 -nodes -sha256 -keyout /opt/registry/certs/domain.key -x509 -days 365 -out /opt/registry/certs/domain.crt -subj "/C=US/ST=Massachussetts/L=Boston/O=Red Hat/OU=Engineering/CN=$HOST_FQDN"
   sudo cp /opt/registry/certs/domain.crt $HOME/domain.crt
   sudo chown $USERNAME:$USERNAME $HOME/domain.crt
   sudo cp /opt/registry/certs/domain.crt /etc/pki/ca-trust/source/anchors/
   sudo update-ca-trust extract
   sudo htpasswd -bBc /opt/registry/auth/htpasswd dummy dummy
-  sudo firewall-cmd --add-port=5000/tcp --zone=libvirt  --permanent
-  sudo firewall-cmd --add-port=5000/tcp --zone=public   --permanent
-  sudo firewall-cmd --add-service=http  --permanent
-  sudo firewall-cmd --reload
   sudo podman create --name ocpdiscon-registry -p 5000:5000 -v /opt/registry/data:/var/lib/registry:z -v /opt/registry/auth:/auth:z -e "REGISTRY_AUTH=htpasswd" -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry" -e "REGISTRY_HTTP_SECRET=ALongRandomSecretForRegistry" -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd -v /opt/registry/certs:/certs:z -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key docker.io/library/registry:2
   sudo podman start ocpdiscon-registry
-  AUTHSTRING="{\"$HOST_URL:5000\": {\"auth\": \"ZHVtbXk6ZHVtbXk=\",\"email\": \"$USERNAME@redhat.com\"}}"
+  AUTHSTRING="{\"$HOST_FQDN:5000\": {\"auth\": \"ZHVtbXk6ZHVtbXk=\",\"email\": \"$USERNAME@redhat.com\"}}"
   jq ".auths += $AUTHSTRING" < $PULLSECRET > $PULLSECRET.new
   LOCAL_SECRET_JSON=$PULLSECRET.new
   mirror_images
@@ -80,10 +77,10 @@ update_installconfig(){
   cat $HOME/domain.crt >> $INSTALLCONFIG
   echo "imageContentSources:" >> $INSTALLCONFIG
   echo "- mirrors:" >> $INSTALLCONFIG
-  echo "  - $HOST_URL:5000/ocp4/openshift4" >> $INSTALLCONFIG
+  echo "  - $HOST_FQDN:5000/ocp4/openshift4" >> $INSTALLCONFIG
   echo "  source: registry.svc.ci.openshift.org/ocp/${VERSION}" >> $INSTALLCONFIG
   echo "- mirrors:" >> $INSTALLCONFIG
-  echo "  - $HOST_URL:5000/ocp4/openshift4" >> $INSTALLCONFIG
+  echo "  - $HOST_FQDN:5000/ocp4/openshift4" >> $INSTALLCONFIG
   echo "  source: registry.svc.ci.openshift.org/ocp/release" >> $INSTALLCONFIG
 
 }
@@ -111,16 +108,16 @@ find_sshkey_file(){
   elif [ -f $HOME/.ssh/id_rsa.pub ] && ( ssh-keygen -l -f $HOME/.ssh/id_rsa.pub >/dev/null 2>&1 ); then
      SSHKEY="$HOME/.ssh/id_rsa.pub"
   else
-     echo "Failed - $HOME/sshkey or $HOME/.ssh/id_rsa.pub file not found"; exit 1
+     SSHKEY="$HOME/.ssh/id_rsa.pub"
+     ssh-keygen -t rsa -f /home/kni/.ssh/id_rsa -N ''     
   fi
 
 }
 
 setup_env(){
   echo "Setting environment..."
-  HOST_URL=`hostname -f`
+  HOST_FQDN=`hostname -f`
   USERNAME=`whoami`
-  HOME=/home/$USERNAME
   INSTALLCONFIG=$HOME/install-config.yaml
   
   find_pullsecret_file
@@ -137,7 +134,7 @@ setup_env(){
 
   GOPATH=$HOME/go
   UPSTREAM_REPO=$LATEST_CI_IMAGE
-  LOCAL_REG="${HOST_URL}:5000"
+  LOCAL_REG="${HOST_FQDN}:5000"
   LOCAL_REPO='ocp4/openshift4'
 }
 
@@ -159,7 +156,18 @@ setup_bridges(){
 
 install_depends(){
   echo "Installing required dependencies..."
-  sudo yum -y install ansible git usbredir golang libXv virt-install libvirt libvirt-devel libselinux-utils qemu-kvm mkisofs 
+  sudo yum -y install ansible git usbredir golang libXv virt-install libvirt libvirt-devel libselinux-utils qemu-kvm mkisofs python3-devel jq ipmitool
+}
+
+enable_service(){
+  sudo systemctl enable firewalld --now
+  sudo firewall-cmd --add-port=5000/tcp --zone=libvirt  --permanent
+  sudo firewall-cmd --add-port=5000/tcp --zone=public   --permanent
+  sudo firewall-cmd --add-service=http  --permanent
+  sudo firewall-cmd --reload
+  
+  systemctl enable libvirtd --now
+  
 }
 
 setup_installconfig(){
@@ -167,6 +175,7 @@ setup_installconfig(){
   /usr/bin/ansible-playbook -i hosts make-install-config.yaml
   echo "pullSecret: '`cat $PULLSECRET`'" >> $INSTALLCONFIG
   echo "sshKey: '`cat $SSHKEY`'" >> $INSTALLCONFIG
+  mv ${INSTALLCONFIG} ${MANIFEST_DIR}/
 }
 
 existing_install_config(){
@@ -176,12 +185,13 @@ existing_install_config(){
       howto
       exit 1
     fi
+    mv ${INSTALLCONFIG} ${MANIFEST_DIR}/
   fi
 }
 
 setup_metalconfig(){
   echo "Creating metal3-config.yaml..."
-  METALCONFIG=$HOME/metal3-config.yaml
+  METALCONFIG=${MANIFEST_DIR}/metal3-config.yaml
   OPENSHIFT_INSTALLER=/usr/local/bin/openshift-baremetal-install
   OPENSHIFT_INSTALL_COMMIT=$($OPENSHIFT_INSTALLER version | grep commit | cut -d' ' -f4)
   OPENSHIFT_INSTALLER_RHCOS=${OPENSHIFT_INSTALLER_RHCOS:-https://raw.githubusercontent.com/openshift/installer/$OPENSHIFT_INSTALL_COMMIT/data/data/rhcos.json}
@@ -205,6 +215,16 @@ setup_metalconfig(){
   echo "  ironic_inspector_endpoint: \"http://172.22.0.3:5050/v1/\"" >> $METALCONFIG
   echo "  cache_url: \"http://192.168.0.246/images\"" >> $METALCONFIG
   echo "  rhcos_image_url: $RHCOS_IMAGE_URL" >> $METALCONFIG
+}
+
+create_manifest(){
+  # if the directory already exists, archive it
+  if [ -d ${MANIFEST_DIR} ]; then
+    mv ${MANIFEST_DIR} ~/$(basename ${MANIFEST_DIR}).archived-$(date '%Y%m%d%T')
+  else
+    mkdir -p ${MANIFEST_DIR}
+  fi
+  openshift-baremetal-install --dir ${MANIFEST_DIR} create manifests
 }
 
 ENABLEDISCONNECT=0
@@ -235,9 +255,11 @@ fi
 setup_env
 existing_install_config
 install_depends
+enable_services
 #disable_selinux
 setup_default_pool
 setup_bridges
+create_manifest
 if ([ "$GENERATEINSTALLCONF" -eq "1" ]) then
   setup_installconfig
 fi
