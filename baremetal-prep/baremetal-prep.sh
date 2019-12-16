@@ -47,26 +47,6 @@ setup_default_pool(){
 }
 
 
-get_RHCOS_image(){
-  IRONIC_DATA_DIR=/opt/ocp/ironic
-  IRONIC_IMAGE=quay.io/metal3-io/ironic:master
-  IRONIC_IPA_DOWNLOADER_IMAGE="quay.io/metal3-io/ironic-ipa-downloader:master"
-  IRONIC_RHCOS_DOWNLOADER_IMAGE=$(oc adm release info --registry-config $PULLSECRET $RELEASE_IMAGE --image-for=ironic-rhcos-downloader)
-  sudo mkdir -p $IRONIC_DATA_DIR
-  sudo podman pod create -n ironic-pod 
-  sudo podman pull $IRONIC_RHCOS_DOWNLOADER_IMAGE --authfile $PULLSECRET
-  sudo podman run -d --net host --privileged --name httpd --pod ironic-pod -v $IRONIC_DATA_DIR:/shared --entrypoint /bin/runhttpd ${IRONIC_IMAGE} 
-  sudo podman run -d --net host --privileged --name ipa-downloader --pod ironic-pod -v $IRONIC_DATA_DIR:/shared ${IRONIC_IPA_DOWNLOADER_IMAGE} /usr/local/bin/get-resource.sh 
-  sudo podman run -d --net host --privileged --name coreos-downloader --pod ironic-pod -v $IRONIC_DATA_DIR:/shared ${IRONIC_RHCOS_DOWNLOADER_IMAGE} /usr/local/bin/get-resource.sh $RHCOS_IMAGE_URL
-  sudo podman wait -i 1000 ipa-downloader coreos-downloader
-  while ! curl --fail http://localhost/images/rhcos-ootpa-latest.qcow2.md5sum ; do sleep 1 ; done
-  while ! curl --fail --head http://localhost/images/ironic-python-agent.initramfs ; do sleep 1; done
-  while ! curl --fail --head http://localhost/images/ironic-python-agent.tar.headers ; do sleep 1; done
-  while ! curl --fail --head http://localhost/images/ironic-python-agent.kernel ; do sleep 1; done
-  sed -i "s#RHCOS_IMAGE_URL#${RHCOS_IMAGE_URL}#" ${METALCONFIG}
-}
-
-
 setup_repository(){
 
   if `sudo podman ps|grep ocpdiscon-registry|grep Up>/dev/null 2>&1`; then
@@ -88,7 +68,6 @@ setup_repository(){
   LOCAL_SECRET_JSON=$PULLSECRET.new
   mirror_images
   update_installconfig
-  get_RHCOS_image
 }
 
 update_installconfig(){
