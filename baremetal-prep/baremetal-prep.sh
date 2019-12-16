@@ -242,8 +242,8 @@ b) MAIN_CONN=${OPTARG};;
 d) ENABLEDISCONNECT=1;;
 g) GENERATEINSTALLCONF=1;;
 m) GENERATEMETALCONF=1;;
-c) CACHEURL=$(OPTARG);;
-r) RELEASE=$(OPTARG);;
+c) CACHEURL=${OPTARG};;
+r) RELEASE=${OPTARG};;
 h) howto; exit 0;;
 \?) howto; exit 1;;
 esac
