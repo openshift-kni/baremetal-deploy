@@ -191,7 +191,7 @@ existing_install_config(){
 
 setup_metalconfig(){
   echo "Creating metal3-config.yaml..."
-  METALCONFIG=${MANIFEST_DIR}/openshift/metal3-config.yaml
+  METALCONFIG=${MANIFEST_DIR}/openshift/99-metal3-config.yaml
   OPENSHIFT_INSTALLER=/usr/local/bin/openshift-baremetal-install
   OPENSHIFT_INSTALL_COMMIT=$($OPENSHIFT_INSTALLER version | grep commit | cut -d' ' -f4)
   OPENSHIFT_INSTALLER_RHCOS=${OPENSHIFT_INSTALLER_RHCOS:-https://raw.githubusercontent.com/openshift/installer/$OPENSHIFT_INSTALL_COMMIT/data/data/rhcos.json}
