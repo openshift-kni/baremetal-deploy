@@ -123,7 +123,7 @@ setup_env(){
   find_pullsecret_file
   find_sshkey_file
   
-  VERSION=${RELEASE}
+  VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/${RELEASE}/release.txt | grep 'Name:' | awk '{print $NF}' | xargs)
   RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/${VERSION}/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}' | xargs)
   OBICMD=openshift-baremetal-install
   EXTRACTDIR=$(pwd)
