@@ -33,16 +33,17 @@ To use baremetal-prep.sh one simply needs to clone the repo down to the provisio
 
 There are currently 7 switches that can be passed:
 
-- -p <nic> (required) physical interface on host that will be used for provisioning bridge
-- -b <nic> (required) physical interface on the host that will be used for the baremetal bride
-- -c <cache url> (optional): default http://<deploy host ip>/images
-- -r <release> (optional) : default 4.3.0-0.nightly-2019-12-09-035405
+- -p \<nic\> (required) physical interface on host that will be used for provisioning bridge
+- -b \<nic\> (required) physical interface on the host that will be used for the baremetal bride
+- -c \<cache url\> (optional): default http://\<deploy host ip\>/images
+- -r \<release\> (optional) : default 4.3.0-0.nightly-2019-12-09-035405
 - -d (optional) will configure for a disconnected install
 - -g (optional) will generate a install-config.yaml
 - -m (optional) will generate a metal3-config.yaml
 
 **Example:**
 
+```bash
 ./baremetal-prep.sh 
 Usage: 
          ./baremetal-prep.sh
@@ -54,5 +55,6 @@ Usage:
            [-g] (generate install-config.yaml)
            [-m] (generate metal3-config.yaml)
 Example: ./baremetal-prep.sh -p ens3 -b ens4 -d -g -m
+```
 
 **To Dos:**
