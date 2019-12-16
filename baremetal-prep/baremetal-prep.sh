@@ -166,7 +166,7 @@ enable_services(){
   sudo firewall-cmd --add-service=http  --permanent
   sudo firewall-cmd --reload
   
-  systemctl enable libvirtd --now
+  sudo systemctl enable libvirtd --now
   
 }
 
