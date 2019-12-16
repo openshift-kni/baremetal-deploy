@@ -3,7 +3,7 @@
 # Script Prepares Provisioning Node For OpenShift Deployment    #
 #################################################################
 
-set -e
+#set -e
 
 #Defaults
 DEPLOYHOST_IP=$(hostname -i)
@@ -191,7 +191,7 @@ existing_install_config(){
 
 setup_metalconfig(){
   echo "Creating metal3-config.yaml..."
-  METALCONFIG=${MANIFEST_DIR}/metal3-config.yaml
+  METALCONFIG=${MANIFEST_DIR}/openshift/metal3-config.yaml
   OPENSHIFT_INSTALLER=/usr/local/bin/openshift-baremetal-install
   OPENSHIFT_INSTALL_COMMIT=$($OPENSHIFT_INSTALLER version | grep commit | cut -d' ' -f4)
   OPENSHIFT_INSTALLER_RHCOS=${OPENSHIFT_INSTALLER_RHCOS:-https://raw.githubusercontent.com/openshift/installer/$OPENSHIFT_INSTALL_COMMIT/data/data/rhcos.json}
@@ -217,13 +217,16 @@ setup_metalconfig(){
   echo "  rhcos_image_url: $RHCOS_IMAGE_URL" >> $METALCONFIG
 }
 
-create_manifest(){
+create_manifest_dir(){
   # if the directory already exists, archive it
   if [ -d ${MANIFEST_DIR} ]; then
     mv ${MANIFEST_DIR} ~/$(basename ${MANIFEST_DIR}).archived-$(date '%Y%m%d%T')
   else
     mkdir -p ${MANIFEST_DIR}
   fi
+}
+
+generate_manifests(){
   openshift-baremetal-install --dir ${MANIFEST_DIR} create manifests
 }
 
@@ -253,16 +256,17 @@ if ([ -z "$PROV_CONN" ] || [ -z "$MAIN_CONN" ]) then
 fi
 
 setup_env
+create_manifest_dir
 existing_install_config
 install_depends
 enable_services
 #disable_selinux
 setup_default_pool
 setup_bridges
-create_manifest
 if ([ "$GENERATEINSTALLCONF" -eq "1" ]) then
   setup_installconfig
 fi
+generate_manifest
 if ([ "$GENERATEMETALCONF" -eq "1" ]) then
   setup_metalconfig
 fi
