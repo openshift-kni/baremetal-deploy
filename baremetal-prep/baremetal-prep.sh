@@ -13,13 +13,13 @@ MANIFEST_DIR="${HOME}/clusterconfigs"
 
 howto(){
   echo "Usage: 
-         ./baremetal-prep.sh \
-           -p <provisioning interface> \
-           -b <baremetal interface> \
-           [-c <cache url>] : default ${CACHE_URL} \
-           [-r <release>] : default ${RELEASE} \
-           [-d] (configure for disconnected) \
-           [-g] (generate install-config.yaml) \
+         ./baremetal-prep.sh
+           -p <provisioning interface>
+           -b <baremetal interface>
+           [-c <cache url>] : default ${CACHE_URL}
+           [-r <release>] : default ${RELEASE}
+           [-d] (configure for disconnected)
+           [-g] (generate install-config.yaml)
            [-m] (generate metal3-config.yaml)" 
   echo "Example: ./baremetal-prep.sh -p ens3 -b ens4 -d -g -m"
 }
@@ -159,7 +159,7 @@ install_depends(){
   sudo yum -y install ansible git usbredir golang libXv virt-install libvirt libvirt-devel libselinux-utils qemu-kvm mkisofs python3-devel jq ipmitool
 }
 
-enable_service(){
+enable_services(){
   sudo systemctl enable firewalld --now
   sudo firewall-cmd --add-port=5000/tcp --zone=libvirt  --permanent
   sudo firewall-cmd --add-port=5000/tcp --zone=public   --permanent
