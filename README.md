@@ -9,7 +9,7 @@ It also contains optional features focused on low-latency workloads, NFV workloa
 ## Installation artifacts
 
 * [Installation Steps](install-steps.md)
-* [Using Baremetal-prep.sh](baremetal-prep.md)
+* [Using Baremetal-prep.sh](baremetal-prep/)
 
 ## Optional features
 

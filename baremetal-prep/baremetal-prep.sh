@@ -51,7 +51,7 @@ get_RHCOS_image(){
   IRONIC_DATA_DIR=/opt/ocp/ironic
   IRONIC_IMAGE=quay.io/metal3-io/ironic:master
   IRONIC_IPA_DOWNLOADER_IMAGE="quay.io/metal3-io/ironic-ipa-downloader:master"
-  IRONIC_RHCOS_DOWNLOADER_IMAGE=$(oc adm release info --registry-config $PULLSECRET $OPENSHIFT_RELEASE_IMAGE --image-for=ironic-rhcos-downloader)
+  IRONIC_RHCOS_DOWNLOADER_IMAGE=$(oc adm release info --registry-config $PULLSECRET $RELEASE_IMAGE --image-for=ironic-rhcos-downloader)
   sudo mkdir -p $IRONIC_DATA_DIR
   sudo podman pod create -n ironic-pod 
   sudo podman pull $IRONIC_RHCOS_DOWNLOADER_IMAGE --authfile $PULLSECRET
@@ -281,7 +281,7 @@ create_manifest_dir
 existing_install_config
 install_depends
 enable_services
-disable_selinux
+#disable_selinux
 setup_default_pool
 setup_bridges
 if ([ "$GENERATEINSTALLCONF" -eq "1" ]) then
