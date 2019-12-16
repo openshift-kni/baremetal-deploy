@@ -10,6 +10,7 @@ RUN dnf -y install \
     $GOVERSION \
     make \
     tar \
+    gettext \
     && dnf clean all
 
 # get required golang tools and OC client
@@ -21,6 +22,8 @@ RUN go get github.com/onsi/ginkgo/ginkgo && \
     tar -xzvf oc.tar.gz && \
     mv oc /usr/local/bin/oc && \
     rm -f oc.tar.gz
+
+
 
 WORKDIR /src/
 
