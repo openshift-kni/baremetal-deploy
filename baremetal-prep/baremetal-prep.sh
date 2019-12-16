@@ -3,7 +3,7 @@
 # Script Prepares Provisioning Node For OpenShift Deployment    #
 #################################################################
 
-#set -e
+set -x
 
 #Defaults
 DEPLOYHOST_IP=$(hostname -i)
@@ -46,7 +46,29 @@ setup_default_pool(){
   fi
 }
 
+
+get_RHCOS_image(){
+  IRONIC_DATA_DIR=/opt/ocp/ironic
+  IRONIC_IMAGE=quay.io/metal3-io/ironic:master
+  IRONIC_IPA_DOWNLOADER_IMAGE="quay.io/metal3-io/ironic-ipa-downloader:master"
+  IRONIC_RHCOS_DOWNLOADER_IMAGE=$(oc adm release info --registry-config $PULLSECRET $OPENSHIFT_RELEASE_IMAGE --image-for=ironic-rhcos-downloader)
+  sudo mkdir -p $IRONIC_DATA_DIR
+  sudo podman pod create -n ironic-pod 
+  sudo podman pull $IRONIC_RHCOS_DOWNLOADER_IMAGE --authfile $PULLSECRET
+  sudo podman run -d --net host --privileged --name httpd --pod ironic-pod -v $IRONIC_DATA_DIR:/shared --entrypoint /bin/runhttpd ${IRONIC_IMAGE} 
+  sudo podman run -d --net host --privileged --name ipa-downloader --pod ironic-pod -v $IRONIC_DATA_DIR:/shared ${IRONIC_IPA_DOWNLOADER_IMAGE} /usr/local/bin/get-resource.sh 
+  sudo podman run -d --net host --privileged --name coreos-downloader --pod ironic-pod -v $IRONIC_DATA_DIR:/shared ${IRONIC_RHCOS_DOWNLOADER_IMAGE} /usr/local/bin/get-resource.sh $RHCOS_IMAGE_URL
+  sudo podman wait -i 1000 ipa-downloader coreos-downloader
+  while ! curl --fail http://localhost/images/rhcos-ootpa-latest.qcow2.md5sum ; do sleep 1 ; done
+  while ! curl --fail --head http://localhost/images/ironic-python-agent.initramfs ; do sleep 1; done
+  while ! curl --fail --head http://localhost/images/ironic-python-agent.tar.headers ; do sleep 1; done
+  while ! curl --fail --head http://localhost/images/ironic-python-agent.kernel ; do sleep 1; done
+  sed -i "s#RHCOS_IMAGE_URL#${RHCOS_IMAGE_URL}#" ${METALCONFIG}
+}
+
+
 setup_repository(){
+
   if `sudo podman ps|grep ocpdiscon-registry|grep Up>/dev/null 2>&1`; then
     sudo podman stop ocpdiscon-registry
     sudo podman rm ocpdiscon-registry
@@ -66,6 +88,7 @@ setup_repository(){
   LOCAL_SECRET_JSON=$PULLSECRET.new
   mirror_images
   update_installconfig
+  get_RHCOS_image
 }
 
 update_installconfig(){
@@ -198,7 +221,6 @@ setup_metalconfig(){
   RHCOS_IMAGE_JSON=$(curl "${OPENSHIFT_INSTALLER_RHCOS}")
   RHCOS_INSTALLER_IMAGE_URL=$(echo "${RHCOS_IMAGE_JSON}" | jq -r '.baseURI + .images.openstack.path')
   RHCOS_IMAGE_URL=${RHCOS_IMAGE_URL:-${RHCOS_INSTALLER_IMAGE_URL}}
-  BAREMETALIP=`ip addr show|grep ens4|grep -o "inet [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*" | grep -o "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*"`
   echo "kind: ConfigMap" > $METALCONFIG
   echo "apiVersion: v1" >> $METALCONFIG
   echo "metadata:" >> $METALCONFIG
@@ -259,7 +281,7 @@ create_manifest_dir
 existing_install_config
 install_depends
 enable_services
-#disable_selinux
+disable_selinux
 setup_default_pool
 setup_bridges
 if ([ "$GENERATEINSTALLCONF" -eq "1" ]) then
