@@ -22,9 +22,15 @@ fi
         exit 1
     fi
 
+    if  [[ -z "${NON_ISOLATED_CPUS}" ]]; then
+        echo "You should provide NON_ISOLATED_CPUS env variable"
+        exit 1
+    fi
+
     export MICROCODE_URL
     export RT_REPO_URL
     export RT_KERNEL_BASE64="$(base64 -w 0 ${PERFORMANCE_ASSETS_DIR}/rt-kernel-patch.sh)"
+    export PRE_BOOT_BASE64="$(base64 -w 0 ${PERFORMANCE_ASSETS_DIR}/pre-boot-tuning.sh)"
 
     if [[ -n "${TEMPLATE}" ]]; then
         envsubst < ${PERFORMANCE_TEMPLATES_DIR}/${TEMPLATE}.in

@@ -26,7 +26,7 @@ var _ = Describe("TestPerformanceFeatureGate", func() {
 
 func loadFeatureGate(filename string) *configv1.FeatureGate {
 	// not relevant for this test, so hardcode the simplest value
-	out := generateManifest(filename, "0", "0")
+	out := generateManifest(filename, "0", "0", "0")
 	fg := configv1.FeatureGate{}
 	err := yaml.NewYAMLOrJSONDecoder(bytes.NewBuffer(out), 1024).Decode(&fg)
 	Expect(err).ToNot(HaveOccurred())
