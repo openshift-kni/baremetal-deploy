@@ -226,7 +226,7 @@ create_manifest_dir(){
   fi
 }
 
-generate_manifests(){
+generate_manifest(){
   openshift-baremetal-install --dir ${MANIFEST_DIR} create manifests
 }
 
