@@ -133,7 +133,7 @@ setup_env(){
   sudo cp ./openshift-baremetal-install /usr/local/bin/openshift-baremetal-install
 
   GOPATH=$HOME/go
-  UPSTREAM_REPO=$LATEST_CI_IMAGE
+  UPSTREAM_REPO=${RELEASE_IMAGE}
   LOCAL_REG="${HOST_FQDN}:5000"
   LOCAL_REPO='ocp4/openshift4'
 }
@@ -265,11 +265,11 @@ setup_bridges
 if ([ "$GENERATEINSTALLCONF" -eq "1" ]) then
   setup_installconfig
 fi
+if ([ "$ENABLEDISCONNECT" -eq "1" ]) then
+  setup_repository
+fi
 generate_manifest
 if ([ "$GENERATEMETALCONF" -eq "1" ]) then
   setup_metalconfig
-fi
-if ([ "$ENABLEDISCONNECT" -eq "1" ]) then
-  setup_repository
 fi
 exit
