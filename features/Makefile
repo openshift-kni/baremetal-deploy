@@ -6,11 +6,8 @@ deps-update:
 	go mod tidy && \
 	go mod vendor
 
-ginkgo:
-	go get github.com/onsi/ginkgo/ginkgo
-
 .PHONY: functests
-functests: ginkgo
+functests:
 	FOCUS=$$(echo $(FEATURES) | tr ' ' '|') && \
 	echo "Focusing on $$FOCUS" && \
 	GOFLAGS=-mod=vendor ginkgo functests --focus=$$FOCUS -- -junit /tmp/artifacts/unit_report.xml
