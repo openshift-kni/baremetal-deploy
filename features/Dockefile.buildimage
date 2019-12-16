@@ -23,7 +23,13 @@ RUN go get github.com/onsi/ginkgo/ginkgo && \
     mv oc /usr/local/bin/oc && \
     rm -f oc.tar.gz
 
-
+RUN export TMP_BIN=$(mktemp -d) && \
+    mv $GOBIN/* $TMP_BIN/ && \
+    rm -rf ${GOPATH} ${GOCACHE} && \
+    mkdir -p ${GOBIN} && \
+    chmod -R 775 ${GOPATH} && \
+    mv $TMP_BIN/* ${GOBIN} && \
+    rm -rf $TMP_BIN
 
 WORKDIR /src/
 
