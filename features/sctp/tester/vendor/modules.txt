@@ -1,2 +1,0 @@
-# github.com/ishidawataru/sctp v0.0.0-20190922091402-408ec287e38c
-github.com/ishidawataru/sctp

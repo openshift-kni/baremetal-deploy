@@ -28,7 +28,7 @@ var testerImage string
 func init() {
 	testerImage = os.Getenv("SCTPTEST_IMAGE")
 	if testerImage == "" {
-		testerImage = "fedepaol/sctptest:v1.0"
+		testerImage = "fedepaol/sctptest:v1.1"
 	}
 }
 
