@@ -27,10 +27,10 @@ var _ = Describe("performance", func() {
 	})
 
 	var _ = Context("RT Kernel Arguments", func() {
-		nodes, err := clients.K8s.CoreV1().Nodes().List(metav1.ListOptions{
-			LabelSelector: "node-role.kubernetes.io/worker=",
-		})
 		It("Nodes should contain kernel arguments set by machine configuration", func() {
+			nodes, err := clients.K8s.CoreV1().Nodes().List(metav1.ListOptions{
+				LabelSelector: "node-role.kubernetes.io/worker=",
+			})
 			Expect(err).ToNot(HaveOccurred())
 			for _, node := range nodes.Items {
 				mcd, err := mcdForNode(&node)
@@ -47,10 +47,10 @@ var _ = Describe("performance", func() {
 	})
 
 	var _ = Context("Pre boot tuning setup", func() {
-		nodes, err := clients.K8s.CoreV1().Nodes().List(metav1.ListOptions{
-			LabelSelector: "node-role.kubernetes.io/worker=",
-		})
 		It("Should contain a custome initrd image in boot loader", func() {
+			nodes, err := clients.K8s.CoreV1().Nodes().List(metav1.ListOptions{
+				LabelSelector: "node-role.kubernetes.io/worker=",
+			})
 			Expect(err).ToNot(HaveOccurred())
 			for _, node := range nodes.Items {
 				mcd, err := mcdForNode(&node)
