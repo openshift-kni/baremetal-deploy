@@ -21,7 +21,7 @@ var _ = Describe("TestPerformanceKubeletConfig", func() {
 	var _ = Context("CPU Manager policy", func() {
 		It("Should set the policy to 'static'", func() {
 			// parameters not really relevant for this test, just use something valid
-			kc := loadKubeletConfig(kubeletconfigYaml, "1-15", "0", "0")
+			kc := loadKubeletConfig(kubeletconfigYaml, "1-15", "0", "0", 1)
 			Expect(kc).ToNot(BeNil())
 			specKubeletConfig, err := decodeKubeletConfig(kc.Spec.KubeletConfig.Raw)
 			Expect(err).ToNot(HaveOccurred())
@@ -30,25 +30,25 @@ var _ = Describe("TestPerformanceKubeletConfig", func() {
 	})
 
 	table.DescribeTable("KubeletConfig files should be loadable",
-		func(fileName, isolatedCPUs, reservedCPUs string, nonIsolatedCpus string) {
-			kc := loadKubeletConfig(fileName, isolatedCPUs, reservedCPUs, nonIsolatedCpus)
+		func(fileName, isolatedCPUs, reservedCPUs string, nonIsolatedCpus string, hugepagesNumber int) {
+			kc := loadKubeletConfig(fileName, isolatedCPUs, reservedCPUs, nonIsolatedCpus, hugepagesNumber)
 			Expect(kc).ToNot(BeNil())
 			_, err := decodeKubeletConfig(kc.Spec.KubeletConfig.Raw)
 			Expect(err).ToNot(HaveOccurred())
 		},
 		// cpu params not relevant here, just use something valid
-		table.Entry(fmt.Sprintf("kubeletconfig manifest %s", kubeletconfigYaml), kubeletconfigYaml, "0", "1-15", "1-15"),
-		table.Entry(fmt.Sprintf("kubeletconfig manifest %s", kubeletconfigYaml), kubeletconfigYaml, "0,1", "2-15", "2-15"),
-		table.Entry(fmt.Sprintf("kubeletconfig manifest %s", kubeletconfigYaml), kubeletconfigYaml, "0-3", "4-15", "4-15"),
-		table.Entry(fmt.Sprintf("kubeletconfig manifest %s", kubeletconfigYaml), kubeletconfigYaml, "1-15", "0", "0"),
-		table.Entry(fmt.Sprintf("kubeletconfig manifest %s", kubeletconfigYaml), kubeletconfigYaml, "2-15", "0,1", "0,1"),
-		table.Entry(fmt.Sprintf("kubeletconfig manifest %s", kubeletconfigYaml), kubeletconfigYaml, "4-15", "0-3", "0-3"),
+		table.Entry(fmt.Sprintf("kubeletconfig manifest %s", kubeletconfigYaml), kubeletconfigYaml, "0", "1-15", "1-15", 1),
+		table.Entry(fmt.Sprintf("kubeletconfig manifest %s", kubeletconfigYaml), kubeletconfigYaml, "0,1", "2-15", "2-15", 1),
+		table.Entry(fmt.Sprintf("kubeletconfig manifest %s", kubeletconfigYaml), kubeletconfigYaml, "0-3", "4-15", "4-15", 1),
+		table.Entry(fmt.Sprintf("kubeletconfig manifest %s", kubeletconfigYaml), kubeletconfigYaml, "1-15", "0", "0", 1),
+		table.Entry(fmt.Sprintf("kubeletconfig manifest %s", kubeletconfigYaml), kubeletconfigYaml, "2-15", "0,1", "0,1", 1),
+		table.Entry(fmt.Sprintf("kubeletconfig manifest %s", kubeletconfigYaml), kubeletconfigYaml, "4-15", "0-3", "0-3", 1),
 	)
 })
 
-func loadKubeletConfig(filename, isolatedCpus, reservedCpus string, nonIsolatedCpus string) *mcfgv1.KubeletConfig {
+func loadKubeletConfig(filename, isolatedCpus, reservedCpus string, nonIsolatedCpus string, hugepagesNumber int) *mcfgv1.KubeletConfig {
 	decode := mcfgScheme.Codecs.UniversalDeserializer().Decode
-	out := generateManifest(filename, isolatedCpus, reservedCpus, nonIsolatedCpus)
+	out := generateManifest(filename, isolatedCpus, reservedCpus, nonIsolatedCpus, hugepagesNumber)
 	obj, _, err := decode(out, nil, nil)
 	Expect(err).ToNot(HaveOccurred())
 	mc, ok := obj.(*mcfgv1.KubeletConfig)

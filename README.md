@@ -13,8 +13,7 @@ It also contains optional features focused on low-latency workloads, NFV workloa
 
 ## Optional features
 
-* [CPU Manager](features/cpumanager/). CPU Manager manages groups of CPUs and constrains workloads
-to specific CPUs.
+* [Performance](features/performance/). Performance related features like Hugepages, Real time kernel, Cpu Manager and Topology Manager.
 * [Kubernetes NMstate](features/kubernetes-nmstate/). Node-networking configuration driven by Kubernetes and executed
 by nmstate.
 * [PTP](features/ptp). This operator manages cluster wide Precision Time Protocol (PTP) configuration.

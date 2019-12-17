@@ -8,7 +8,7 @@ spec:
   kernelArguments:
   - 'default_hugepagesz=1G'
   - 'hugepagesz=1G'
-  - 'hugepages=32'
+  - 'hugepages=${HUGEPAGES_NUMBER}'
   - 'nohz=on'
   - 'nosoftlockup'
   - 'nmi_watchdog=0'

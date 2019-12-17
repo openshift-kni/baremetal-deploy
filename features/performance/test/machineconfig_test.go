@@ -24,7 +24,7 @@ var _ = Describe("TestPerformanceMachineConfig", func() {
 	Context("Kernel Arguments MachineConfig", func() {
 		It("Should provide syntactically valid kernel arguments", func() {
 			// cpu params not relevant here, just use something valid
-			mc := loadMachineConfig(machineconfigRTKargsYaml, "1-15", "0", "0")
+			mc := loadMachineConfig(machineconfigRTKargsYaml, "1-15", "0", "0", 1)
 			Expect(len(mc.Spec.KernelArguments)).To(BeNumerically(">=", 1))
 			for _, kArg := range mc.Spec.KernelArguments {
 				items := strings.Split(strings.TrimSpace(kArg), "=")
@@ -43,7 +43,7 @@ var _ = Describe("TestPerformanceMachineConfig", func() {
 	Context("RT Kernel setup MachineConfig", func() {
 		It("Should ship a correctly encoded payload", func() {
 			// cpu params not relevant here, just use something valid
-			mc := loadMachineConfig(machineconfigRTKernelYaml, "0", "1-15", "1-15")
+			mc := loadMachineConfig(machineconfigRTKernelYaml, "0", "1-15", "1-15", 1)
 			Expect(len(mc.Spec.Config.Storage.Files)).To(BeNumerically(">=", 1))
 			for _, encodedFile := range mc.Spec.Config.Storage.Files {
 				validateContentSource(encodedFile.Contents.Source)
@@ -51,7 +51,7 @@ var _ = Describe("TestPerformanceMachineConfig", func() {
 		})
 		It("Should ship at least an enabled systemd unit", func() {
 			// cpu params not relevant here, just use something valid
-			mc := loadMachineConfig(machineconfigRTKernelYaml, "1-15", "0", "0")
+			mc := loadMachineConfig(machineconfigRTKernelYaml, "1-15", "0", "0", 1)
 			Expect(len(mc.Spec.Config.Systemd.Units)).To(BeNumerically(">=", 1))
 			for _, unitFile := range mc.Spec.Config.Systemd.Units {
 				Expect(unitFile.Enabled).ToNot(BeNil())
@@ -64,7 +64,7 @@ var _ = Describe("TestPerformanceMachineConfig", func() {
 	Context("Pre Boot tuning MachineConfig", func() {
 		It("Should ship a correctly encoded payload", func() {
 			// cpu params not relevant here, just use something valid
-			mc := loadMachineConfig(machineconfigPreBootYaml, "0", "1-15", "1-15")
+			mc := loadMachineConfig(machineconfigPreBootYaml, "0", "1-15", "1-15", 1)
 			Expect(len(mc.Spec.Config.Storage.Files)).To(BeNumerically(">=", 1))
 			for _, encodedFile := range mc.Spec.Config.Storage.Files {
 				validateContentSource(encodedFile.Contents.Source)
@@ -72,7 +72,7 @@ var _ = Describe("TestPerformanceMachineConfig", func() {
 		})
 		It("Should ship at least an enabled systemd unit", func() {
 			// cpu params not relevant here, just use something valid
-			mc := loadMachineConfig(machineconfigPreBootYaml, "1-15", "0", "0")
+			mc := loadMachineConfig(machineconfigPreBootYaml, "1-15", "0", "0", 1)
 			Expect(len(mc.Spec.Config.Systemd.Units)).To(BeNumerically(">=", 1))
 			for _, unitFile := range mc.Spec.Config.Systemd.Units {
 				Expect(unitFile.Enabled).ToNot(BeNil())
@@ -83,9 +83,9 @@ var _ = Describe("TestPerformanceMachineConfig", func() {
 	})
 })
 
-func loadMachineConfig(filename, isolatedCpus, reservedCpus string, nonIsolatedCpus string) *mcfgv1.MachineConfig {
+func loadMachineConfig(filename, isolatedCpus, reservedCpus string, nonIsolatedCpus string, hugepagesNumber int) *mcfgv1.MachineConfig {
 	decode := mcfgScheme.Codecs.UniversalDeserializer().Decode
-	out := generateManifest(filename, isolatedCpus, reservedCpus, nonIsolatedCpus)
+	out := generateManifest(filename, isolatedCpus, reservedCpus, nonIsolatedCpus, hugepagesNumber)
 	obj, _, err := decode(out, nil, nil)
 	Expect(err).ToNot(HaveOccurred())
 	mc, ok := obj.(*mcfgv1.MachineConfig)

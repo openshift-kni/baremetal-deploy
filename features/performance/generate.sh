@@ -13,17 +13,22 @@ fi
 
 (
     if [[ -z "${ISOLATED_CPUS}" ]]; then
-        echo "You should provide ISOLATED_CPUS env variable"
+        echo "You need to provide ISOLATED_CPUS as an env variable"
         exit 1
     fi
 
     if  [[ -z "${RESERVED_CPUS}" ]]; then
-        echo "You should provide RESERVED_CPUS env variable"
+        echo "You need to provide RESERVED_CPUS as an env variable"
         exit 1
     fi
 
     if  [[ -z "${NON_ISOLATED_CPUS}" ]]; then
-        echo "You should provide NON_ISOLATED_CPUS env variable"
+        echo "You need to provide NON_ISOLATED_CPUS as an env variable"
+        exit 1
+    fi
+
+    if  [[ -z "${HUGEPAGES_NUMBER}" ]]; then
+        echo "You need to provide HUGEPAGES_NUMBER as an env variable"
         exit 1
     fi
 

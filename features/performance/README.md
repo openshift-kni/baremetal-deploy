@@ -14,6 +14,7 @@ This is a list of environment variables that you should export before running `m
 - `ISOLATED_CPUS` - CPU's that you want to isolate from the system usage.
 - `NON_ISOLATED_CPUS` - CPU's that you want to reserve for OS system tasks.
 - `RESERVED_CPUS` - CPU's that you want to reserve for the system and does not use for containers workloads.
+- `HUGEPAGES_NUMBER` - Number of 1Gb hugepages to enable.
 - `MICROCODE_URL` - the location of the patched microcode_ctl RPM, as long as it is not part of RHCOS yet.  
   Defaults to a RH internal URL. For deployments outside the RH network provide the RPM on a reachable host and
   update this URL.  
@@ -65,7 +66,7 @@ oc wait machineconfigpools worker-rt --for condition=Updated --timeout=1800s
 
 To enable the topology manager, you should:
 
-- enable the topology manager feature gate `oc apply -f manifests/12-fg-latency-sensetive.yaml`
+- enable the topology manager feature gate `oc replace -f manifests/12-feature-gate-latency-sensitive.yaml`
 - wait for workers update
 
 ```bash
