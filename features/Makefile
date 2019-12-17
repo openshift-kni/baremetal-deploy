@@ -10,7 +10,7 @@ deps-update:
 functests:
 	FOCUS=$$(echo $(FEATURES) | tr ' ' '|') && \
 	echo "Focusing on $$FOCUS" && \
-	GOFLAGS=-mod=vendor ginkgo functests --focus=$$FOCUS -- -junit /tmp/artifacts/unit_report.xml
+	GOFLAGS=-mod=vendor ginkgo --focus=$$FOCUS functests -- -junit /tmp/artifacts/unit_report.xml
 
 .PHONY: unittests
 unittests:
