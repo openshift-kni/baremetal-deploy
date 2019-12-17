@@ -10,7 +10,7 @@ SCTP_MODULE_MANIFEST="${SCTP_DIR}/sctp_module_mc.yaml"
 
 unblacklist_module() {
     info "unblacklisting module..."
-    oc create -f "${SCTP_MODULE_MANIFEST}" > /dev/null || die "unblacklisting the sctp module"
+    oc apply -f "${SCTP_MODULE_MANIFEST}" > /dev/null || die "unblacklisting the sctp module"
 }
 
 unblacklist_module
