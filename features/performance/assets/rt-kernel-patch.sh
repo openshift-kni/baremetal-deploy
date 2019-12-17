@@ -33,20 +33,17 @@ else
     rpm-ostree override replace ${MICROCODE_URL}
 fi
 
+trap '{ if [[ $? -eq 77 ]]; then echo "No update available, nothing to do"; exit 0; else exit $?; fi }' EXIT
+
 # Swap to RT kernel
 kernel=$(uname -a)
 if [[ $kernel =~ "PREEMPT RT" ]]
 then
     echo "RT kernel already installed, checking for updates"
+    # if no upgrade is available the script will exit with code 77, and we will trap it
     rpm-ostree upgrade --unchanged-exit-77
-    if [[ $? -eq 77 ]]
-    then
-      echo "No update available, nothing to do"
-      exit 0
-    else
-      echo "RT kernel updated, rebooting"
-      systemctl reboot
-    fi
+    echo "RT kernel updated, rebooting"
+    systemctl reboot
 else
     echo "Installing RT kernel"
     rpm-ostree override remove kernel{,-core,-modules,-modules-extra} --install kernel-rt-core --install kernel-rt-modules --install kernel-rt-modules-extra

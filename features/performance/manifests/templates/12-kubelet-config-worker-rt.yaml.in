@@ -5,7 +5,9 @@ metadata:
 spec:
   machineConfigPoolSelector:
     matchLabels:
-      worker-rt: ""
+      # worker-rt: ""
+      # W/A for https://bugzilla.redhat.com/show_bug.cgi?id=1777150
+      worker: ""
   kubeletConfig:
     systemReserved:
       cpu: 1000m
