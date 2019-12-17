@@ -1,3 +1,9 @@
+// +build !unittests
+
+/* this ^^^^ is needed because we don't want this file to be built when running
+   repo-wise unit tests. The dependencies are resolved only when building the
+   container */
+
 package main
 
 import (
