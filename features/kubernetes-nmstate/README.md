@@ -81,3 +81,46 @@ For testing you can use the `./testing.sh` script in this folder.
 The test will create a bond interface with the name `bond1` and attach `ens8` and `ens9` as the slave interfaces.
 
 *Note:* You can change the bond name and the slave interface names by editing the `myenv.file` file.
+
+## Node configuration examples
+
+### IP configuration
+
+```
+10: bond1: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether XX:XX:XX:XX:XX:XX brd ff:ff:ff:ff:ff:ff
+    inet 192.X.X.100/24 brd 192.X.X.255 scope global noprefixroute bond1
+       valid_lft forever preferred_lft forever
+11: bond1.20@bond1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether XX:XX:XX:XX:XX:XX brd ff:ff:ff:ff:ff:ff
+    inet 192.X.Y.100/24 brd 192.X.Y.255 scope global noprefixroute bond1.20
+       valid_lft forever preferred_lft forever
+```
+
+### Bond configuration
+
+```
+Ethernet Channel Bonding Driver: v3.7.1 (April 27, 2011)
+
+Bonding Mode: load balancing (round-robin)
+MII Status: up
+MII Polling Interval (ms): 140
+Up Delay (ms): 0
+Down Delay (ms):
+
+Slave Interface: enp3s0f2
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: XX:XX:XX:XX:XX:XX
+Slave queue ID: 0
+
+Slave Interface: enp3s0f3
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: XX:XX:XX:XX:XX:XX
+Slave queue ID: 0
+```
