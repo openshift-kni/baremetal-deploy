@@ -4,6 +4,14 @@ set -euo pipefail
 
 source $(dirname "$0")/../hack/common.sh
 
+# Check if there is at least one worker-rt node
+RTNODES=$(oc get node --selector=node-role.kubernetes.io/worker-rt="")
+if [ "${RTNODES}" == "" ] ; then
+    echo "No node with worker-rt label found"
+    exit 1
+fi
+
+
 # W/A for https://bugzilla.redhat.com/show_bug.cgi?id=1777150
 oc label machineconfigpool/worker worker=
 
