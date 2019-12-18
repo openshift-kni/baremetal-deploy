@@ -23,7 +23,7 @@ To use baremetal-prep.sh the system needs the following:
 - RHEL8 entitled host
 - Two network interfaces: one for provisioning and one for baremetal
 - Should be run as a regular user that has sudo rights for everything
-- Needs a pull-secret\{.json,.txt,\} file regular users home directory
+- Needs a pull-secret\{.json,.txt,\} file in regular user\'s home directory
 - Needs a install-config.yaml file in regular users home directory if not generating install-config.yaml
 - Requires a Ansible host inventory file in regular users home directory of generating install-config.yaml
 
@@ -31,7 +31,7 @@ To use baremetal-prep.sh the system needs the following:
 
 To use baremetal-prep.sh one simply needs to clone the repo down to the provisioning host.  Then set the execute bit on baremetal-prep.sh.  Then copy the hosts.sample file to hosts and update the information in the file according to the deployment environment.
 
-There are currently 7 switches that can be passed:
+There are currently 7 options that can be passed:
 
 - -p \<nic\> (required) physical interface on host that will be used for provisioning bridge
 - -b \<nic\> (required) physical interface on the host that will be used for the baremetal bride
