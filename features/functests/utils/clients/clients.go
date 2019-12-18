@@ -6,6 +6,7 @@ import (
 
 	configClientv1 "github.com/openshift/client-go/config/clientset/versioned/typed/config/v1"
 	mcfgClient "github.com/openshift/machine-config-operator/pkg/generated/clientset/versioned"
+
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
