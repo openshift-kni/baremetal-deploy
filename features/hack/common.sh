@@ -22,5 +22,4 @@ RESERVED_CPUS=${RESERVED_CPUS:-}
 NON_ISOLATED_CPUS=${NON_ISOLATED_CPUS:-}
 
 # RT kernel parameters
-MICROCODE_URL=${MICROCODE_URL:-http://file.rdu.redhat.com/~walters/microcode_ctl-20190918-3.rhcos.1.el8.x86_64.rpm}
 RT_REPO_URL=${RT_REPO_URL:-http://download-node-02.eng.bos.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.1.1/compose/RT/x86_64/os}
