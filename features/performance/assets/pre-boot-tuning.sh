@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-non_iso_cpus=""
+non_iso_cpus=$NON_ISOLATED_CPUS
 non_iso_cpumask=""
 cpu_affinity=""
 
@@ -47,13 +47,6 @@ get_cpu_affinity() {
 # TODO - find a more robust approach than keeping the last timestamp
 RHCOS_OSTREE_PATH=$(ls -td /boot/ostree/*/ | head -1)
 RHCOS_OSTREE_BOOTLOADER_PATH=${RHCOS_OSTREE_PATH#"/boot"}
-
-if sysctl -a | grep -q non_iso_cpus; then
-    non_iso_cpus="$(sysctl -q -e -n non_iso_cpus)"
-else
-    echo "Could not retrive non_iso_cpus from kargs"
-    exit 1    
-fi
 
 # TODO: improve check for applied configuration
 if [ -f "$RHCOS_OSTREE_PATH/iso_initrd.img" ]; then

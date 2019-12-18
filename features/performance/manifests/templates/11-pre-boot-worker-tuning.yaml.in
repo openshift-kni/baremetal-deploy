@@ -34,6 +34,8 @@ spec:
                       Type=exec
                       RemainAfterExit=true
 
+                      Environment=NON_ISOLATED_CPUS=${NON_ISOLATED_CPUS}
+
                       ExecStart=/usr/local/bin/pre-boot-tuning.sh
 
                       [Install]
