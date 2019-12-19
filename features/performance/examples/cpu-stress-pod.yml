@@ -17,4 +17,4 @@ spec:
     - -cpus
     - "1"
   nodeSelector:
-    cpumanager: "true"
+    node-role.kubernetes.io/worker-rt: ""
