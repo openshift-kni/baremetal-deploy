@@ -34,7 +34,6 @@ spec:
                       Type=oneshot
                       RemainAfterExit=true
 
-                      Environment=MICROCODE_URL=${MICROCODE_URL}
                       Environment=RT_REPO_URL=${RT_REPO_URL}
 
                       ExecStart=/usr/local/bin/rt-kernel-patch.sh

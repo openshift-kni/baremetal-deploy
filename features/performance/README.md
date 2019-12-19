@@ -15,10 +15,6 @@ This is a list of environment variables that you should export before running `m
 - `NON_ISOLATED_CPUS` - CPU's that you want to reserve for OS system tasks.
 - `RESERVED_CPUS` - CPU's that you want to reserve for the system and does not use for containers workloads.
 - `HUGEPAGES_NUMBER` - Number of 1Gb hugepages to enable.
-- `MICROCODE_URL` - the location of the patched microcode_ctl RPM, as long as it is not part of RHCOS yet.  
-  Defaults to a RH internal URL. For deployments outside the RH network provide the RPM on a reachable host and
-  update this URL.  
-  See the [bug](https://bugzilla.redhat.com/show_bug.cgi?id=1766178) for more information on this.
 - `RT_REPO_URL` - the location of a yum repo which provides the RT kernel RPMs as long as they are not part of RHCOS yet.  
   Defaults to a RH internal URL. For deployments outside the RH network provide a yum repo on a reachable host
   and update this URL.  

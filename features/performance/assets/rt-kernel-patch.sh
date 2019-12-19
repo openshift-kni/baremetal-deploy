@@ -22,17 +22,6 @@ EOF
 # update cache
 rpm-ostree refresh-md -f
 
-# Install patched microcode
-# see https://src.osci.redhat.com/rpms/microcode_ctl/pull-request/9
-replacedPackages=$(rpm-ostree status --json | jq '.deployments[] | select(.booted == true) | ."layered-commit-meta"."rpmostree.replaced-base-packages"')
-if [[ $replacedPackages =~ "microcode_ctl" ]]
-then
-    echo "microcode_ctl patch already installed"
-else
-    echo "Installing microcode_ctl patch"
-    rpm-ostree override replace ${MICROCODE_URL}
-fi
-
 trap '{ if [[ $? -eq 77 ]]; then echo "No update available, nothing to do"; exit 0; else exit $?; fi }' EXIT
 
 # Swap to RT kernel
