@@ -18,7 +18,7 @@ import (
 
 const testNamespace = "perfomancetest"
 
-var mcKernelArguments = []string{"non_iso_cpus"}
+var mcKernelArguments = []string{"isolcpus"}
 
 var _ = Describe("performance", func() {
 	beforeAll(func() {
