@@ -119,5 +119,5 @@ else
     #rpm-ostree initramfs --enable --arg=-I --arg=/etc/systemd/system.conf
     #rpm-ostree initramfs --enable --arg=-I --arg=/etc/sysconfig/irqbalance
     
-    systemctl reboot
+    touch /var/reboot
 fi
