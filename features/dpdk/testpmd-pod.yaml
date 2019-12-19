@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: testpmd
+  annotations:
+    k8s.v1.cni.cncf.io/networks: sriov-network
+spec:
+  containers:
+    - name: testpmd 
+      image: quay.io/eminguez/testpmd
+      imagePullPolicy: Always
+      securityContext:
+        privileged: true
+      capabilities:
+        add: ["IPC_LOCK"]
+      command: [ "/bin/bash", "-c", "--" ]
+      args: [ "while true; do sleep 300000000; done;" ]
+      resources:
+        limits:
+          cpu: "4"
+          hugepages-1Gi: 8Gi
+          memory: 1000Mi
+          openshift.io/sriovnic: "1"
+        requests:
+          cpu: "4"
+          hugepages-1Gi: 8Gi
+          memory: 1000Mi
+          openshift.io/sriovnic: "1"
+      volumeMounts:
+      - mountPath: /mnt/huge
+        name: hugepage
+        readOnly: False
+      - name: podinfo
+        mountPath: /etc/podinfo
+  volumes:
+  - name: podinfo
+    downwardAPI:
+    items:
+    - path: "annotations"
+      fieldRef:
+        fieldPath: metadata.annotations
+  - name: hugepage
+    emptyDir:
+      medium: HugePages
