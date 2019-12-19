@@ -21,3 +21,5 @@ spec:
  - name: hugepage
    emptyDir: 
      medium: HugePages
+ nodeSelector:
+   node-role.kubernetes.io/worker-rt: ""
