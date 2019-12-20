@@ -424,18 +424,23 @@ The following steps need to be performed in order to prepare the environment.
     # You will be disconnected, but reconnect via your ssh session after running
     export PUB_CONN=<baremetal_nic_name>
     export PROV_CONN=<prov_nic_name>
-    nmcli con delete "$PROV_CONN"
-    nmcli con delete "$PUB_CONN"
-    # RHEL 8.1 appends the word "System" in front of the connection, delete in case it exists
-    nmcli con delete "System $PUB_CONN"
-    nmcli connection add ifname provisioning type bridge con-name provisioning
-    nmcli con add type bridge-slave ifname "$PROV_CONN" master provisioning
-    nmcli connection add ifname baremetal type bridge con-name baremetal
-    nmcli con add type bridge-slave ifname "$PUB_CONN" master baremetal
-    nmcli con down "$PUB_CONN";pkill dhclient;dhclient baremetal
-    nmcli connection modify provisioning ipv4.addresses 172.22.0.1/24 ipv4.method manual
-    nmcli con down provisioning
-    nmcli con up provisioning
+    nohup bash -c '
+        nmcli con down "$PROV_CONN"
+        nmcli con down "$PUB_CONN"
+        nmcli con delete "$PROV_CONN"
+        nmcli con delete "$PUB_CONN"
+        # RHEL 8.1 appends the word "System" in front of the connection, delete in case it exists
+        nmcli con down "System $PUB_CONN"
+        nmcli con delete "System $PUB_CONN"
+        nmcli connection add ifname provisioning type bridge con-name provisioning
+        nmcli con add type bridge-slave ifname "$PROV_CONN" master provisioning
+        nmcli connection add ifname baremetal type bridge con-name baremetal
+        nmcli con add type bridge-slave ifname "$PUB_CONN" master baremetal
+        nmcli con down "$PUB_CONN";pkill dhclient;dhclient baremetal
+        nmcli connection modify provisioning ipv4.addresses 172.22.0.1/24 ipv4.method manual
+        nmcli con down provisioning
+        nmcli con up provisioning
+    '
     ~~~
 <!--
     nmcli con add type bridge ifname provisioning autoconnect yes con-name provisioning stp off
