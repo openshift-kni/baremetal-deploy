@@ -14,6 +14,8 @@ It also contains optional features focused on low-latency workloads, NFV workloa
 ## Optional features
 
 * [Performance](features/performance/). Performance related features like Hugepages, Real time kernel, Cpu Manager and Topology Manager.
+* [Bonding](features/bonding/). A helper script to create bonding devices with ignition and/or nmstate.
+* [DPDK](features/dpdk/). Example workload that uses DPDK libraries for packet processing.
 * [Kubernetes NMstate](features/kubernetes-nmstate/). Node-networking configuration driven by Kubernetes and executed
 by nmstate.
 * [PTP](features/ptp). This operator manages cluster wide Precision Time Protocol (PTP) configuration.
@@ -27,6 +29,7 @@ The [Performance Tuning](features/performance) folder contains some assets inten
 
 * Huge Pages
 * Topology Manager
+* CPU manager
 * Real time kernel (including a new `worker-rt` Kubernetes/OpenShift node role)
 
 Those assets are applied mainly via the [Node Tuning operator](https://github.com/openshift/cluster-node-tuning-operator)
