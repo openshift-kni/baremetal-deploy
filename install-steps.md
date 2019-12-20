@@ -500,8 +500,9 @@ export pullsecret_file=~/pull-secret.txt
 export extract_dir=$(pwd)
 # Get the oc binary
 curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/$VERSION/openshift-client-linux-$VERSION.tar.gz | tar zxvf - oc
+sudo cp ./oc /usr/local/bin/oc
 # Extract the baremetal installer
-./oc adm release extract --registry-config "${pullsecret_file}" --command=$cmd --to "${extract_dir}" ${RELEASE_IMAGE}
+oc adm release extract --registry-config "${pullsecret_file}" --command=$cmd --to "${extract_dir}" ${RELEASE_IMAGE}
 ~~~
 
 ## Configure the install-config and metal3-config
