@@ -11,9 +11,14 @@ if [ "${RTNODES}" == "" ] ; then
     exit 1
 fi
 
-
 # W/A for https://bugzilla.redhat.com/show_bug.cgi?id=1777150
-oc label machineconfigpool/worker worker=
+# Apply 'worker=""' label only if not set already.
+MCPWORKER=$(oc get mcp --selector=worker="" --no-headers)
+if [ "${MCPWORKER}" == "" ] ; then
+    oc label machineconfigpool/worker worker=
+else
+    echo "MCP/worker already has label 'worker='"
+fi
 
 # pause all machine config pools
 mcps=$(oc get machineconfigpool --no-headers -o name)
