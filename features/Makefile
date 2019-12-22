@@ -8,7 +8,6 @@ deps-update:
 
 .PHONY: functests
 functests:
-	source ./hack/test_env.sh && \
 	FOCUS=$$(echo $(FEATURES) | tr ' ' '|') && \
 	echo "Focusing on $$FOCUS" && \
 	GOFLAGS=-mod=vendor ginkgo --focus=$$FOCUS functests -- -junit /tmp/artifacts/unit_report.xml
