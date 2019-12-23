@@ -1,5 +1,5 @@
 
-export FEATURES?=mcp sctp
+export FEATURES?=mcp performance sctp
 
 .PHONY: deps-update
 deps-update:

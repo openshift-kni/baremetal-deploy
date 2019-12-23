@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-non_iso_cpus=""
 non_iso_cpumask=""
 cpu_affinity=""
 
@@ -16,7 +15,7 @@ get_reserved_cores() {
         else
             cores+=($part)
         fi
-    done < <( echo $non_iso_cpus | tr ',' '\n' )
+    done < <( echo ${NON_ISOLATED_CPUS} | tr ',' '\n' )
 }
 
 # $1 - 0 for irq balance banned cpus masking , 1 for non isolated cpus masking
@@ -47,34 +46,28 @@ get_cpu_affinity() {
 # TODO - find a more robust approach than keeping the last timestamp
 RHCOS_OSTREE_PATH=$(ls -td /boot/ostree/*/ | head -1)
 RHCOS_OSTREE_BOOTLOADER_PATH=${RHCOS_OSTREE_PATH#"/boot"}
-
-if sysctl -a | grep -q non_iso_cpus; then
-    non_iso_cpus="$(sysctl -q -e -n non_iso_cpus)"
-else
-    echo "Could not retrive non_iso_cpus from kargs"
-    exit 1    
-fi
+INITRD_GENERATION_DIR="/root/initrd"
+INITRD_NEW_IMAGE="${RHCOS_OSTREE_PATH}/iso_initrd.img"
 
 # TODO: improve check for applied configuration
-if [ -f "$RHCOS_OSTREE_PATH/iso_initrd.img" ]; then
+if [ -f ${INITRD_NEW_IMAGE} ] && grep -qsR "iso_initrd.img" "/boot/loader/entries/"; then
     echo "Pre boot tuning configuration already applied"
     echo "Setting kernel rcuo* threads to the housekeeping cpus"
     get_cpu_mask 1
     pgrep rcuo* | while read line; do taskset -p $non_iso_cpumask $line || true; done
 else
     # Clean up
-    rm -rf initrd
-    rm -f iso_initrd.img
+    rm -rf ${INITRD_GENERATION_DIR}
+    
     # Create initrd image
-    mkdir initrd
-    cd initrd
-    mkdir -p ./usr/lib/dracut/hooks/pre-udev/
-    mkdir -p ./etc/systemd/
-    mkdir -p ./etc/sysconfig/
-    touch ./etc/systemd/system.conf
-    touch ./etc/sysconfig/irqbalance
-    touch ./usr/lib/dracut/hooks/pre-udev/00-tuned-pre-udev.sh
-    chmod +x ./usr/lib/dracut/hooks/pre-udev/00-tuned-pre-udev.sh
+    mkdir ${INITRD_GENERATION_DIR}
+    mkdir -p ${INITRD_GENERATION_DIR}/usr/lib/dracut/hooks/pre-udev/
+    mkdir -p ${INITRD_GENERATION_DIR}/etc/systemd/
+    mkdir -p ${INITRD_GENERATION_DIR}/etc/sysconfig/
+    touch ${INITRD_GENERATION_DIR}/etc/systemd/system.conf
+    touch ${INITRD_GENERATION_DIR}/etc/sysconfig/irqbalance
+    touch ${INITRD_GENERATION_DIR}/usr/lib/dracut/hooks/pre-udev/00-tuned-pre-udev.sh
+    chmod +x ${INITRD_GENERATION_DIR}/usr/lib/dracut/hooks/pre-udev/00-tuned-pre-udev.sh
 
     get_cpu_mask 1
     echo '#!/bin/sh
@@ -96,20 +89,18 @@ else
         log "ERROR: could not write CPU mask for $file"
         fi
     done
-    fi' > ./usr/lib/dracut/hooks/pre-udev/00-tuned-pre-udev.sh
+    fi' > ${INITRD_GENERATION_DIR}/usr/lib/dracut/hooks/pre-udev/00-tuned-pre-udev.sh
 
-    # Set CPU affinity according to non_iso_cpus
+    # Set CPU affinity according to NON_ISOLATED_CPUS
     get_cpu_affinity
-    echo "[Manager]" >> ./etc/systemd/system.conf
-    echo "CPUAffinity=$cpu_affinity" >> ./etc/systemd/system.conf
+    echo "[Manager]" >> ${INITRD_GENERATION_DIR}/etc/systemd/system.conf
+    echo "CPUAffinity=$cpu_affinity" >> ${INITRD_GENERATION_DIR}/etc/systemd/system.conf
 
-    # Set IRQ banned cpu according to non_iso_cpus
+    # Set IRQ banned cpu according to NON_ISOLATED_CPUS
     get_cpu_mask 0
-    echo "IRQBALANCE_BANNED_CPUS=$non_iso_cpumask" >> ./etc/sysconfig/irqbalance
+    echo "IRQBALANCE_BANNED_CPUS=$non_iso_cpumask" >> ${INITRD_GENERATION_DIR}/etc/sysconfig/irqbalance
     
-    find . | cpio -co >../iso_initrd.img
-    cd ..
-    cp iso_initrd.img $RHCOS_OSTREE_PATH
+    find ${INITRD_GENERATION_DIR} | cpio -co >${INITRD_NEW_IMAGE}
 
     # Get current ostree config file according to the latest version
     current_ver=1

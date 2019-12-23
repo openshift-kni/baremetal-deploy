@@ -18,7 +18,7 @@ import (
 
 const testNamespace = "perfomancetest"
 
-var mcKernelArguments = []string{"non_iso_cpus"}
+var mcKernelArguments = []string{"isolcpus"}
 
 var _ = Describe("performance", func() {
 	beforeAll(func() {
@@ -29,7 +29,7 @@ var _ = Describe("performance", func() {
 	var _ = Context("RT Kernel Arguments", func() {
 		It("Nodes should contain kernel arguments set by machine configuration", func() {
 			nodes, err := clients.K8s.CoreV1().Nodes().List(metav1.ListOptions{
-				LabelSelector: "node-role.kubernetes.io/worker=",
+				LabelSelector: "node-role.kubernetes.io/worker-rt=",
 			})
 			Expect(err).ToNot(HaveOccurred())
 			for _, node := range nodes.Items {
@@ -38,9 +38,10 @@ var _ = Describe("performance", func() {
 				mcdName := mcd.ObjectMeta.Name
 				kargsBytes, err := exec.Command("oc", "rsh", "-n", "openshift-machine-config-operator", mcdName,
 					"cat", "/rootfs/proc/cmdline").CombinedOutput()
+				Expect(err).ToNot(HaveOccurred())
 				kargs := string(kargsBytes)
 				for _, v := range mcKernelArguments {
-					Expect(strings.Contains(string(kargs), v)).To(BeTrue())
+					Expect(strings.Contains(kargs, v)).To(BeTrue())
 				}
 			}
 		})
@@ -49,7 +50,7 @@ var _ = Describe("performance", func() {
 	var _ = Context("Pre boot tuning setup", func() {
 		It("Should contain a custome initrd image in boot loader", func() {
 			nodes, err := clients.K8s.CoreV1().Nodes().List(metav1.ListOptions{
-				LabelSelector: "node-role.kubernetes.io/worker=",
+				LabelSelector: "node-role.kubernetes.io/worker-rt=",
 			})
 			Expect(err).ToNot(HaveOccurred())
 			for _, node := range nodes.Items {
@@ -57,7 +58,8 @@ var _ = Describe("performance", func() {
 				Expect(err).ToNot(HaveOccurred())
 				mcdName := mcd.ObjectMeta.Name
 				bootLoaderEntries, err := exec.Command("oc", "rsh", "-n", "openshift-machine-config-operator", mcdName,
-					"cat", "/rootfs/boot/loader/entries/*").CombinedOutput()
+					"grep", "-R", "initrd", "/rootfs/boot/loader/entries/").CombinedOutput()
+				Expect(err).ToNot(HaveOccurred())
 				Expect(strings.Contains(string(bootLoaderEntries), "iso_initrd.img")).To(BeTrue())
 			}
 		})
