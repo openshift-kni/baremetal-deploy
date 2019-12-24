@@ -59,7 +59,7 @@ var _ = Describe("ptp", func() {
 			Expect(len(nodes.Items)).To(BeNumerically("==", grands+slaves), "not nodes are labeled properly")
 
 			By("Checking whether only one Grandmaster exists")
-			Expect(grands).Should(BeNumerically("=="), 1, "there should be one Grandmaster")
+			Expect(grands).Should(BeNumerically("==", 1), "there should be one Grandmaster")
 		})
 
 		It("Should check whether PTP operator appropriate resource exists", func() {
