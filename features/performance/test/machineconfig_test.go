@@ -15,9 +15,8 @@ import (
 )
 
 const (
-	machineconfigPreBootYaml  = "11-pre-boot-worker-tuning.yaml"          // TODO pass it as a param?
+	machineconfigRTKargsYaml  = "10-machine-config-worker-rt-kargs.yaml"  // TODO pass it as a param?
 	machineconfigRTKernelYaml = "11-machine-config-worker-rt-kernel.yaml" // TODO pass it as a param?
-	machineconfigRTKargsYaml  = "12-machine-config-worker-rt-kargs.yaml"  // TODO pass it as a param?
 )
 
 var _ = Describe("TestPerformanceMachineConfig", func() {
@@ -52,27 +51,6 @@ var _ = Describe("TestPerformanceMachineConfig", func() {
 		It("Should ship at least an enabled systemd unit", func() {
 			// cpu params not relevant here, just use something valid
 			mc := loadMachineConfig(machineconfigRTKernelYaml, "1-15", "0", "0", 1)
-			Expect(len(mc.Spec.Config.Systemd.Units)).To(BeNumerically(">=", 1))
-			for _, unitFile := range mc.Spec.Config.Systemd.Units {
-				Expect(unitFile.Enabled).ToNot(BeNil())
-				Expect(*unitFile.Enabled).To(BeTrue())
-				Expect(unitFile.Contents).NotTo(BeEmpty())
-			}
-		})
-	})
-
-	Context("Pre Boot tuning MachineConfig", func() {
-		It("Should ship a correctly encoded payload", func() {
-			// cpu params not relevant here, just use something valid
-			mc := loadMachineConfig(machineconfigPreBootYaml, "0", "1-15", "1-15", 1)
-			Expect(len(mc.Spec.Config.Storage.Files)).To(BeNumerically(">=", 1))
-			for _, encodedFile := range mc.Spec.Config.Storage.Files {
-				validateContentSource(encodedFile.Contents.Source)
-			}
-		})
-		It("Should ship at least an enabled systemd unit", func() {
-			// cpu params not relevant here, just use something valid
-			mc := loadMachineConfig(machineconfigPreBootYaml, "1-15", "0", "0", 1)
 			Expect(len(mc.Spec.Config.Systemd.Units)).To(BeNumerically(">=", 1))
 			for _, unitFile := range mc.Spec.Config.Systemd.Units {
 				Expect(unitFile.Enabled).ToNot(BeNil())
