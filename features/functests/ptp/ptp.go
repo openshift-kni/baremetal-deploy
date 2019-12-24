@@ -56,10 +56,13 @@ var _ = Describe("ptp", func() {
 			}
 
 			By("Checking that all nodes are labeled")
-			Expect(len(nodes.Items)).To(BeNumerically("==", grands+slaves))
+			Expect(len(nodes.Items)).To(BeNumerically("==", grands+slaves), "not nodes are labeled properly")
+
+			By("Checking whether only one Grandmaster exists")
+			Expect(grands).Should(BeNumerically("=="), 1, "there should be one Grandmaster")
 		})
 
-		It("", func() {
+		It("Should check whether PTP operator appropriate resource exists", func() {
 			By("Getting list of available resources")
 			rl, err := clients.K8s.ServerPreferredResources()
 			Expect(err).ToNot(HaveOccurred())

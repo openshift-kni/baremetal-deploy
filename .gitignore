@@ -3,5 +3,3 @@ features/performance/manifests/generated
 
 features/performance/test/junit.xml
 
-# ignore .idea content 
-*.idea*
