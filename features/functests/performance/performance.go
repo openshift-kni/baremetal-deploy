@@ -229,7 +229,7 @@ func mcdForNode(node *k8sv1.Node) (*k8sv1.Pod, error) {
 	if err != nil {
 		return nil, err
 	}
-	// there should be one machine config deamon per node
+	
 	Expect(len(mcdList.Items)).To(Equal(1), "there should be one machine config deamon per node")
 	return &mcdList.Items[0], nil
 }
