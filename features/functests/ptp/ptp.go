@@ -6,10 +6,11 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/openshift-kni/baremetal-deploy/features/functests/utils/clients"
 
 	v1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	
+	"github.com/openshift-kni/baremetal-deploy/features/functests/utils/clients"
 )
 
 const (
