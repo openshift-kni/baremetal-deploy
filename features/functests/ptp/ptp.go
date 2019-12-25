@@ -36,30 +36,28 @@ var _ = Describe("ptp", func() {
 			for _, n := range nodes.Items {
 				if _, ok := n.Labels[ptpGrandmasterNodeLabel]; ok {
 					By(fmt.Sprintf("Checking whether grandmaster %s is labeled as slave", n.Name))
-					if _, ok := n.Labels[ptpSlaveNodeLabel]; ok {
-						Expect(ok).NotTo(BeTrue(),
-							fmt.Sprintf("Grandmaster node %s shouldn't contain %s label", n.Name, ptpSlaveNodeLabel))
-					}
+					_, ok := n.Labels[ptpSlaveNodeLabel]
+					Expect(ok).NotTo(BeTrue(),
+						fmt.Sprintf("Grandmaster node %s shouldn't contain %s label", n.Name, ptpSlaveNodeLabel))
 
 					grands++
 				}
 
 				if _, ok := n.Labels[ptpSlaveNodeLabel]; ok {
 					By(fmt.Sprintf("Checking whether slave %s is labeled as grandmaster", n.Name))
-					if _, ok := n.Labels[ptpGrandmasterNodeLabel]; ok {
-						Expect(ok).NotTo(BeTrue(),
-							fmt.Sprintf("Slave node %s shouldn't contain %s label", n.Name, ptpGrandmasterNodeLabel))
-					}
+					_, ok := n.Labels[ptpGrandmasterNodeLabel]
+					Expect(ok).NotTo(BeTrue(),
+						fmt.Sprintf("Slave node %s shouldn't contain %s label", n.Name, ptpGrandmasterNodeLabel))
 
 					slaves++
 				}
 			}
 
 			By("Checking that all nodes are labeled")
-			Expect(len(nodes.Items)).To(BeNumerically("==", grands+slaves), "not nodes are labeled properly")
+			Expect(len(nodes.Items)).To(Equal(grands+slaves), "not nodes are labeled properly")
 
 			By("Checking whether only one Grandmaster exists")
-			Expect(grands).Should(BeNumerically("==", 1), "there should be one Grandmaster")
+			Expect(grands).To(Equal(1), "there should be one Grandmaster")
 		})
 
 		It("Should check whether PTP operator appropriate resource exists", func() {
