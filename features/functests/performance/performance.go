@@ -7,15 +7,15 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/labels"
-
-	"github.com/openshift-kni/baremetal-deploy/features/functests/utils/clients"
-	"github.com/openshift-kni/baremetal-deploy/features/functests/utils/namespace"
-
 	ocv1 "github.com/openshift/api/config/v1"
 	k8sv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/openshift-kni/baremetal-deploy/features/functests/utils/clients"
+	"github.com/openshift-kni/baremetal-deploy/features/functests/utils/namespace"
 )
 
 const (
@@ -229,7 +229,7 @@ func mcdForNode(node *k8sv1.Node) (*k8sv1.Pod, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	Expect(len(mcdList.Items)).To(Equal(1), "there should be one machine config deamon per node")
 	return &mcdList.Items[0], nil
 }
