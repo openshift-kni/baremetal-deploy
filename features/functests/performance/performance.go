@@ -23,7 +23,7 @@ const (
 	perfWorkerNodesLabel         = "node-role.kubernetes.io/worker-rt="
 	perfWorkerRtKernelMcTemplate = "11-worker-rt-kernel"
 	perfSysctlKernelVersionParam = "kernel.version"
-	perfSysctlKernelOsrelease    = "kernel.osrelease"
+//	perfSysctlKernelOsrelease    = "kernel.osrelease"
 )
 
 var mcKernelArguments = []string{"isolcpus"}
@@ -189,10 +189,10 @@ var _ = Describe("performance", func() {
 						Expect(strings.Contains(value, "PREEMPT")).To(BeTrue(), fmt.Sprintf("kernel parameter %s doesn't contain RT entry", param))
 					}
 
-					if param == perfSysctlKernelOsrelease {
-						By(fmt.Sprintf("checking whether kernel name %s contains 'rt' entry", param))
-						Expect(strings.Contains(value, "rt")).To(BeTrue(), "the kernel doesn't have the 'rt' extension")
-					}
+				//	if param == perfSysctlKernelOsrelease {
+				//		By(fmt.Sprintf("checking whether kernel name %s contains 'rt' entry", param))
+				//		Expect(strings.Contains(value, "rt")).To(BeTrue(), "the kernel doesn't have the 'rt' extension")
+				//	}
 				}
 			}
 		})
