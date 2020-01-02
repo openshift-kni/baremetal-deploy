@@ -14,7 +14,7 @@ spec:
       [cpu]
       # https://github.com/redhat-performance/tuned/blob/master/profiles/latency-performance/tuned.conf
       # https://github.com/redhat-performance/tuned/blob/master/profiles/network-latency/tuned.conf
-      force_latency=cstate.id:1|3
+      #force_latency=cstate.id:1|3
       governor=performance
       energy_perf_bias=performance
       min_perf_pct=100
