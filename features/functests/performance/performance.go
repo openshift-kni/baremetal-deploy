@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
-
+	"time"
+	
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	
+
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/labels"
 	ocv1 "github.com/openshift/api/config/v1"
@@ -19,11 +20,11 @@ import (
 )
 
 const (
-	perfTestNamespace            = "perfomancetest"
-	perfWorkerNodesLabel         = "node-role.kubernetes.io/worker-rt="
-	perfWorkerRtKernelMcTemplate = "11-worker-rt-kernel"
-	perfSysctlKernelVersionParam = "kernel.version"
-//	perfSysctlKernelOsrelease    = "kernel.osrelease"
+	perfTestNamespace                = "perfomancetest"
+	perfWorkerNodesLabel             = "node-role.kubernetes.io/worker-rt="
+	perfMachineConfigDaemonContainer = "machine-config-daemon"
+	perfSysctlTimeout                = 120
+	perfSysctlPollInterval           = 2
 )
 
 var mcKernelArguments = []string{"isolcpus"}
@@ -47,8 +48,8 @@ var _ = Describe("performance", func() {
 				mcd, err := mcdForNode(&node)
 				Expect(err).ToNot(HaveOccurred())
 				mcdName := mcd.ObjectMeta.Name
-				By("executing a command inside the pod " + mcdName)
-				kargsBytes, err := exec.Command("oc", "rsh", "-n", "openshift-machine-config-operator", mcdName,
+				By("executing the command \"cat /rootfs/proc/cmdline\" inside the pod " + mcdName)
+				kargsBytes, err := exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace, mcdName,
 					"cat", "/rootfs/proc/cmdline").CombinedOutput()
 				Expect(err).ToNot(HaveOccurred())
 				kargs := string(kargsBytes)
@@ -71,9 +72,9 @@ var _ = Describe("performance", func() {
 				mcd, err := mcdForNode(&node)
 				Expect(err).ToNot(HaveOccurred())
 				mcdName := mcd.ObjectMeta.Name
-				By("executing a command inside the pod " + mcdName)
-				bootLoaderEntries, err := exec.Command("oc", "rsh", "-n", "openshift-machine-config-operator", mcdName,
-					"grep", "-R", "initrd", "/rootfs/boot/loader/entries/").CombinedOutput()
+				By("executing the command \"grep -R  initrd /rootfs/boot/loader/entries/\" inside the pod " + mcdName)
+				bootLoaderEntries, err := exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace, "-c" ,
+					perfMachineConfigDaemonContainer, mcdName, "grep", "-R", "initrd", "/rootfs/boot/loader/entries/").CombinedOutput()
 				Expect(err).ToNot(HaveOccurred())
 				Expect(strings.Contains(string(bootLoaderEntries), "iso_initrd.img")).To(BeTrue(), "cannot find iso_initrd.img entry among the bootloader entries")
 			}
@@ -104,19 +105,15 @@ var _ = Describe("performance", func() {
 				mcd, err := mcdForNode(&node)
 				Expect(err).ToNot(HaveOccurred())
 				mcdName := mcd.ObjectMeta.Name
-				By("executing a command inside the pod " + mcdName)
-				out, err := exec.Command("oc", "rsh", "-n", "openshift-machine-config-operator", mcdName,
-					"sysctl", "-A").CombinedOutput()
-				Expect(err).ToNot(HaveOccurred())
-
-				for _, str := range strings.Split(string(out), "\n") {
-					line := strings.Split((string(str)), "=")
-					param := strings.TrimSpace(line[0])
-					value := strings.TrimSpace(strings.Join(line[1:], ""))
-					if expected, ok := sysctlMap[param]; ok {
-						By(fmt.Sprintf("checking whether parameter %s value is %s", param, expected))
-						Expect(value).To(Equal(expected), fmt.Sprintf("parameter %s value is not %s", param, expected))
-					}
+				for param, expected := range sysctlMap {
+					By(fmt.Sprintf("executing the command \"sysctl -n %s\" inside the pod %s", param, mcdName))
+					Eventually(func() string {
+						out, err := exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace,
+							"-c", perfMachineConfigDaemonContainer, mcdName, "sysctl", "-n", param).CombinedOutput()
+						Expect(err).ToNot(HaveOccurred())
+						return strings.TrimSpace(string(out))
+					}, perfSysctlTimeout*time.Second, perfSysctlPollInterval*time.Second, ).Should(Equal(expected),
+						fmt.Sprintf("parameter %s value is not %s", param, expected))
 				}
 			}
 		})
@@ -133,7 +130,7 @@ var _ = Describe("performance", func() {
 			}
 
 			nodes, err := clients.K8s.CoreV1().Nodes().List(metav1.ListOptions{
-				LabelSelector: "node-role.kubernetes.io/worker-rt=",
+				LabelSelector: perfWorkerNodesLabel,
 			})
 			Expect(err).ToNot(HaveOccurred())
 			Expect(len(nodes.Items)).Should(BeNumerically(">", 0), "cannot find nodes labeled as "+perfWorkerNodesLabel)
@@ -142,26 +139,26 @@ var _ = Describe("performance", func() {
 				mcd, err := mcdForNode(&node)
 				Expect(err).ToNot(HaveOccurred())
 				mcdName := mcd.ObjectMeta.Name
-				By("executing a command inside the pod " + mcdName)
-				out, err := exec.Command("oc", "rsh", "-n", "openshift-machine-config-operator", mcdName,
-					"sysctl", "-A").CombinedOutput()
-				Expect(err).ToNot(HaveOccurred())
-
-				for _, str := range strings.Split(string(out), "\n") {
-					line := strings.Split((string(str)), "=")
-					param := strings.TrimSpace(line[0])
-					value := strings.TrimSpace(strings.Join(line[1:], ""))
-					if expected, ok := sysctlMap[param]; ok {
-						By(fmt.Sprintf("checking whether parameter %s value is %s", param, expected))
-						Expect(value).To(Equal(expected), fmt.Sprintf("parameter %s value is not %s", param, expected))
-					}
+				for param, expected := range sysctlMap {
+					By(fmt.Sprintf("executing the command \"sysctl -n %s\" inside the pod %s", param, mcdName))
+					Eventually(func() string {
+						out, err := exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace,
+							"-c", perfMachineConfigDaemonContainer, mcdName, "sysctl", "-n", param).CombinedOutput()
+						Expect(err).ToNot(HaveOccurred())
+						return strings.TrimSpace(string(out))
+					}, perfSysctlTimeout*time.Second, perfSysctlPollInterval*time.Second, ).Should(Equal(expected),
+						fmt.Sprintf("parameter %s value is not %s", param, expected))
 				}
 			}
 		})
 	})
 
 	var _ = Context("Essential RT kernel parameters", func() {
-		It("Should contain appropriate entries", func() {
+		const perfSysctlKernelVersionParam = "kernel.version"
+		const perfSysctlKernelVersionValuePreemptEntry = "PREEMPT"
+		const perfSysctlKernelVersionValueRtEntry = "RT"
+		It(fmt.Sprintf("Should contain %s and %s entries",
+			perfSysctlKernelVersionValueRtEntry, perfSysctlKernelVersionValuePreemptEntry), func() {
 			nodes, err := clients.K8s.CoreV1().Nodes().List(metav1.ListOptions{
 				LabelSelector: perfWorkerNodesLabel,
 			})
@@ -172,33 +169,22 @@ var _ = Describe("performance", func() {
 				mcd, err := mcdForNode(&node)
 				Expect(err).ToNot(HaveOccurred())
 				mcdName := mcd.ObjectMeta.Name
-				By("executing a command inside the pod " + mcdName)
-				out, err := exec.Command("oc", "rsh", "-n", "openshift-machine-config-operator", mcdName,
-					"sysctl", "-A").CombinedOutput()
-				Expect(err).ToNot(HaveOccurred())
-
-				for _, str := range strings.Split(string(out), "\n") {
-					line := strings.Split(str, "=")
-					param := strings.TrimSpace(line[0])
-					value := strings.TrimSpace(strings.Join(line[1:], ""))
-					if param == perfSysctlKernelVersionParam {
-						By(fmt.Sprintf("checking whether kernel parameter %s contains PREEMPT entry", param))
-						Expect(strings.Contains(value, "PREEMPT")).To(BeTrue(), fmt.Sprintf("kernel parameter %s doesn't contain PREEMPT entry", param))
-
-						By(fmt.Sprintf("checking whether parameter %s contains RT entry", param))
-						Expect(strings.Contains(value, "PREEMPT")).To(BeTrue(), fmt.Sprintf("kernel parameter %s doesn't contain RT entry", param))
-					}
-
-				//	if param == perfSysctlKernelOsrelease {
-				//		By(fmt.Sprintf("checking whether kernel name %s contains 'rt' entry", param))
-				//		Expect(strings.Contains(value, "rt")).To(BeTrue(), "the kernel doesn't have the 'rt' extension")
-				//	}
-				}
+				By(fmt.Sprintf("executing the command \"sysctl -n %s\" inside the pod %s", perfSysctlKernelVersionParam, mcdName))
+				Eventually(func() bool {
+					out, err := exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace,
+						"-c", perfMachineConfigDaemonContainer, mcdName, "sysctl", "-n", perfSysctlKernelVersionParam).CombinedOutput()
+					Expect(err).ToNot(HaveOccurred())
+					line := strings.TrimSpace(string(out))
+					return strings.Contains(line, perfSysctlKernelVersionValuePreemptEntry) &&
+						strings.Contains(line, perfSysctlKernelVersionValueRtEntry)
+				}, perfSysctlTimeout*time.Second, perfSysctlPollInterval*time.Second, ).Should(BeTrue(), "RT kernel is not installed")
 			}
 		})
 	})
 
 	var _ = Context("Cluster configuration", func() {
+		const perfWorkerRtKernelMcTemplate = "11-worker-rt-kernel"
+
 		It("FeatureSet should be LatencySensitive for FeatureGates spec", func() {
 			fg, err := clients.OcpConfig.FeatureGates().List(metav1.ListOptions{})
 			Expect(err).ToNot(HaveOccurred())
@@ -213,7 +199,7 @@ var _ = Describe("performance", func() {
 
 		It("Should contain worker RT kernel MachineConfiguration template", func() {
 			_, err := clients.MachineConfig.MachineconfigurationV1().MachineConfigs().Get(perfWorkerRtKernelMcTemplate, metav1.GetOptions{})
-			Expect(err).ToNot(HaveOccurred())
+			Expect(err).ToNot(HaveOccurred(), "doesn't contain RT kernel template")
 		})
 	})
 })
@@ -230,7 +216,7 @@ func mcdForNode(node *k8sv1.Node) (*k8sv1.Pod, error) {
 		return nil, err
 	}
 
-	Expect(len(mcdList.Items)).To(Equal(1), "there should be one machine config deamon per node")
+	Expect(len(mcdList.Items)).To(Equal(1), "there should be one machine config daemon per node")
 	return &mcdList.Items[0], nil
 }
 
