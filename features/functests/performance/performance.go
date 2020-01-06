@@ -108,11 +108,10 @@ var _ = Describe("performance", func() {
 				for param, expected := range sysctlMap {
 					By(fmt.Sprintf("executing the command \"sysctl -n %s\" inside the pod %s", param, mcdName))
 					Eventually(func() string {
-						out, err := exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace,
+						out, _:= exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace,
 							"-c", perfMachineConfigDaemonContainer, mcdName, "sysctl", "-n", param).CombinedOutput()
-						Expect(err).ToNot(HaveOccurred())
 						return strings.TrimSpace(string(out))
-					}, perfSysctlTimeout*time.Second, perfSysctlPollInterval*time.Second, ).Should(Equal(expected),
+					}, perfSysctlTimeout*time.Second, perfSysctlPollInterval*time.Second).Should(Equal(expected),
 						fmt.Sprintf("parameter %s value is not %s", param, expected))
 				}
 			}
@@ -142,11 +141,10 @@ var _ = Describe("performance", func() {
 				for param, expected := range sysctlMap {
 					By(fmt.Sprintf("executing the command \"sysctl -n %s\" inside the pod %s", param, mcdName))
 					Eventually(func() string {
-						out, err := exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace,
+						out, _ := exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace,
 							"-c", perfMachineConfigDaemonContainer, mcdName, "sysctl", "-n", param).CombinedOutput()
-						Expect(err).ToNot(HaveOccurred())
 						return strings.TrimSpace(string(out))
-					}, perfSysctlTimeout*time.Second, perfSysctlPollInterval*time.Second, ).Should(Equal(expected),
+					}, perfSysctlTimeout*time.Second, perfSysctlPollInterval*time.Second).Should(Equal(expected),
 						fmt.Sprintf("parameter %s value is not %s", param, expected))
 				}
 			}
@@ -173,11 +171,13 @@ var _ = Describe("performance", func() {
 				Eventually(func() bool {
 					out, err := exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace,
 						"-c", perfMachineConfigDaemonContainer, mcdName, "sysctl", "-n", perfSysctlKernelVersionParam).CombinedOutput()
-					Expect(err).ToNot(HaveOccurred())
+					if err != nil {
+						return false
+					}
 					line := strings.TrimSpace(string(out))
 					return strings.Contains(line, perfSysctlKernelVersionValuePreemptEntry) &&
 						strings.Contains(line, perfSysctlKernelVersionValueRtEntry)
-				}, perfSysctlTimeout*time.Second, perfSysctlPollInterval*time.Second, ).Should(BeTrue(), "RT kernel is not installed")
+				}, perfSysctlTimeout*time.Second, perfSysctlPollInterval*time.Second).Should(BeTrue(), "RT kernel is not installed")
 			}
 		})
 	})
