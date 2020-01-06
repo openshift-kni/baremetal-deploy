@@ -111,7 +111,7 @@ find_sshkey_file(){
      SSHKEY="$HOME/.ssh/id_rsa.pub"
   else
      SSHKEY="$HOME/.ssh/id_rsa.pub"
-     ssh-keygen -t rsa -f /home/kni/.ssh/id_rsa -N ''     
+     ssh-keygen -t rsa -f $HOME/.ssh/id_rsa -N ''     
   fi
 
 }
