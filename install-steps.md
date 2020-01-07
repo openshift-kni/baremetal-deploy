@@ -389,9 +389,10 @@ The following steps need to be performed in order to prepare the environment.
     ~~~
 5. Register your environment using `subscription-manager`
    ~~~sh
-   subscription-manager register --username=<user> --password=<pass>
+   subscription-manager register --username=<user> --password=<pass> --auto-attach
    subscription-manager repos --enable=rhel-8-for-x86_64-appstream-rpms --enable=rhel-8-for-x86_64-baseos-rpms
    ~~~
+   NOTE: For more options on how to use `subscription-manager` visit: https://access.redhat.com/documentation/en-us/red_hat_subscription_management/1/html-single/rhsm/index 
 6. Install the following packages 
    ~~~sh
    dnf install -y libvirt qemu-kvm mkisofs python3-devel jq ipmitool
@@ -424,18 +425,23 @@ The following steps need to be performed in order to prepare the environment.
     # You will be disconnected, but reconnect via your ssh session after running
     export PUB_CONN=<baremetal_nic_name>
     export PROV_CONN=<prov_nic_name>
-    nmcli con delete "$PROV_CONN"
-    nmcli con delete "$PUB_CONN"
-    # RHEL 8.1 appends the word "System" in front of the connection, delete in case it exists
-    nmcli con delete "System $PUB_CONN"
-    nmcli connection add ifname provisioning type bridge con-name provisioning
-    nmcli con add type bridge-slave ifname "$PROV_CONN" master provisioning
-    nmcli connection add ifname baremetal type bridge con-name baremetal
-    nmcli con add type bridge-slave ifname "$PUB_CONN" master baremetal
-    nmcli con down "$PUB_CONN";pkill dhclient;dhclient baremetal
-    nmcli connection modify provisioning ipv4.addresses 172.22.0.1/24 ipv4.method manual
-    nmcli con down provisioning
-    nmcli con up provisioning
+    nohup bash -c '
+        nmcli con down "$PROV_CONN"
+        nmcli con down "$PUB_CONN"
+        nmcli con delete "$PROV_CONN"
+        nmcli con delete "$PUB_CONN"
+        # RHEL 8.1 appends the word "System" in front of the connection, delete in case it exists
+        nmcli con down "System $PUB_CONN"
+        nmcli con delete "System $PUB_CONN"
+        nmcli connection add ifname provisioning type bridge con-name provisioning
+        nmcli con add type bridge-slave ifname "$PROV_CONN" master provisioning
+        nmcli connection add ifname baremetal type bridge con-name baremetal
+        nmcli con add type bridge-slave ifname "$PUB_CONN" master baremetal
+        nmcli con down "$PUB_CONN";pkill dhclient;dhclient baremetal
+        nmcli connection modify provisioning ipv4.addresses 172.22.0.1/24 ipv4.method manual
+        nmcli con down provisioning
+        nmcli con up provisioning
+    '
     ~~~
 <!--
     nmcli con add type bridge ifname provisioning autoconnect yes con-name provisioning stp off
@@ -602,17 +608,17 @@ to fix the ConfigMap for the Metal3 operator. This ConfigMap is used to notify
       namespace: openshift-machine-api
     data:
       cache_url: ''
-      deploy_kernel_url: http://172.22.0.3:6180/images/ironic-python-agent.kernel
-      deploy_ramdisk_url: http://172.22.0.3:6180/images/ironic-python-agent.initramfs
+      deploy_kernel_url: http://<provisioning_ip>:6180/images/ironic-python-agent.kernel
+      deploy_ramdisk_url: http://<provisioning_ip>:6180/images/ironic-python-agent.initramfs
       dhcp_range: 172.22.0.10,172.22.0.100
       http_port: "6180"
-      ironic_endpoint: http://172.22.0.3:6385/v1/
+      ironic_endpoint: http://<provisioning_ip>:6385/v1/
       ironic_inspector_endpoint: http://172.22.0.3:5050/v1/
       provisioning_interface: <NIC1>
-      provisioning_ip: 172.22.0.3/24
+      provisioning_ip: <provisioning_ip>/24
       rhcos_image_url: ${RHCOS_PATH}${RHCOS_URI}
     ~~~
-    NOTE: The `provision_ip` should be modified to an available IP on the `provision` network. The default is `172.22.0.3`
+    NOTE: The `provisioning_ip` should be modified to an available IP on the `provision` network. The default is `172.22.0.3`
 
 5. Create the final ConfigMap
     ~~~sh
@@ -645,6 +651,10 @@ created to set the appropriate amount of router replicas.
 NOTE: By default two routers are deployed. If you have two worker nodes 
 already, this section may be skipped. For more info on ingress operator visit:
 https://docs.openshift.com/container-platform/4.2/networking/ingress-operator.html
+
+NOTE: If you have an environment where no workers are deployed and just master
+nodes, by default two routers will be deployed on the master nodes. This section
+may be skipped if this is your scenario.
 
 The `router-replicas.yaml` file
 
