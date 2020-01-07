@@ -23,7 +23,7 @@ const (
 	perfWorkerNodesLabel                    = "node-role.kubernetes.io/worker-rt="
 	perfMachineConfigDaemonContainer        = "machine-config-daemon"
 	perfClusterNodeTuningOperatorNamespaces = "openshift-cluster-node-tuning-operator"
-	perfSysctlTimeout                       = 10
+	perfSysctlTimeout                       = 240
 	perfSysctlPollInterval                  = 2
 )
 
