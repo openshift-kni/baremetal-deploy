@@ -22,8 +22,8 @@ const (
 	perfWorkerNodesLabel                    = "node-role.kubernetes.io/worker-rt="
 	perfMachineConfigDaemonContainer        = "machine-config-daemon"
 	perfClusterNodeTuningOperatorNamespaces = "openshift-cluster-node-tuning-operator"
-	perfSysctlTimeout                       = 240
-	perfSysctlPollInterval                  = 2
+	perfSysctlTimeout                       = 240 // tuned default sync interval is 60
+	perfPollInterval                        = 2
 )
 
 var mcKernelArguments = []string{"isolcpus"}
@@ -44,8 +44,8 @@ var _ = Describe("performance", func() {
 				"kernel.sched_migration_cost_ns":  "5000000",
 			}
 			const perfNodeNetworkLatencyTuned = "openshift-node-network-latency"
-			_, err := clients.CntoConfig.TunedV1().Tuneds(perfClusterNodeTuningOperatorNamespaces).Get(perfNodeNetworkLatencyTuned,metav1.GetOptions{})
-			Expect(err).ToNot(HaveOccurred(), "cannot find the Cluster Node Tuning Operator object "+ perfNodeNetworkLatencyTuned)
+			_, err := clients.CntoConfig.TunedV1().Tuneds(perfClusterNodeTuningOperatorNamespaces).Get(perfNodeNetworkLatencyTuned, metav1.GetOptions{})
+			Expect(err).ToNot(HaveOccurred(), "cannot find the Cluster Node Tuning Operator object "+perfNodeNetworkLatencyTuned)
 
 			nodes := getListOfNodes()
 			execSysctlOnWorkers(nodes, sysctlMap)
@@ -120,7 +120,7 @@ var _ = Describe("performance", func() {
 					line := strings.TrimSpace(string(out))
 					return strings.Contains(line, perfKernelVersionValuePreemptEntry) &&
 						strings.Contains(line, perfKernelVersionValueRTEntry)
-				}, perfSysctlTimeout*time.Second, perfSysctlPollInterval*time.Second).Should(BeTrue(), "RT kernel is not installed")
+				}, perfSysctlTimeout*time.Second, perfPollInterval*time.Second).Should(BeTrue(), "RT kernel is not installed")
 			}
 		})
 	})
@@ -161,9 +161,9 @@ var _ = Describe("performance", func() {
 			}
 
 			const perfRealTimeNodeProfile = "openshift-realtime-node"
+			_, err := clients.CntoConfig.TunedV1().Tuneds(perfClusterNodeTuningOperatorNamespaces).Get(perfRealTimeNodeProfile, metav1.GetOptions{})
+			Expect(err).ToNot(HaveOccurred(), "cannot find the Cluster Node Tuning Operator object "+perfRealTimeNodeProfile)
 
-			_, err := clients.CntoConfig.TunedV1().Tuneds(perfClusterNodeTuningOperatorNamespaces).Get(perfRealTimeNodeProfile ,metav1.GetOptions{})
-			Expect(err).ToNot(HaveOccurred(), "cannot find the Cluster Node Tuning Operator object "+ perfRealTimeNodeProfile )
 			nodes := getListOfNodes()
 			execSysctlOnWorkers(nodes, sysctlMap)
 		})
@@ -197,19 +197,48 @@ func mcdForNode(node *k8sv1.Node) (*k8sv1.Pod, error) {
 	return &mcdList.Items[0], nil
 }
 
-// execute sysctl command inside container in a MCD pod
+// find tuned pod for appropriate node
+func tunedForNode(node *k8sv1.Node) *k8sv1.Pod {
+	listOptions := metav1.ListOptions{
+		FieldSelector: fields.SelectorFromSet(fields.Set{"spec.nodeName": node.Name}).String(),
+	}
+	listOptions.LabelSelector = labels.SelectorFromSet(labels.Set{"openshift-app": "tuned"}).String()
+
+	var tunedList *k8sv1.PodList
+	var err error
+
+	Eventually(func() bool {
+		tunedList, err = clients.K8s.CoreV1().Pods("openshift-cluster-node-tuning-operator").List(listOptions)
+		if err != nil {
+			return false
+		}
+		if len(tunedList.Items) == 0 {
+			return false
+		}
+		for _, s := range tunedList.Items[0].Status.ContainerStatuses {
+			if s.Ready == false {
+				return false
+			}
+		}
+		return true
+
+	}, 1800*time.Second, perfPollInterval*time.Second).Should(BeTrue(), "there should be one cluster node tuning daemon per node")
+
+	return &tunedList.Items[0]
+}
+
+// execute sysctl command inside container in a tuned pod
 func execSysctlOnWorkers(nodes []k8sv1.Node, sysctlMap map[string]string) {
 	for _, node := range nodes {
-		mcd, err := mcdForNode(&node)
-		Expect(err).ToNot(HaveOccurred())
-		mcdName := mcd.ObjectMeta.Name
+		tuned := tunedForNode(&node)
+		tunedName := tuned.ObjectMeta.Name
 		for param, expected := range sysctlMap {
-			By(fmt.Sprintf("executing the command \"sysctl -n %s\" inside the pod %s", param, mcdName))
+			By(fmt.Sprintf("executing the command \"sysctl -n %s\" inside the pod %s", param, tunedName))
 			Eventually(func() string {
-				out, _ := exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace,
-					"-c", perfMachineConfigDaemonContainer, mcdName, "sysctl", "-n", param).CombinedOutput()
+				out, _ := exec.Command("oc", "rsh", "-n", tuned.ObjectMeta.Namespace,
+					tunedName, "sysctl", "-n", param).CombinedOutput()
 				return strings.TrimSpace(string(out))
-			}, perfSysctlTimeout*time.Second, perfSysctlPollInterval*time.Second).Should(Equal(expected),
+			}, perfSysctlTimeout*time.Second, perfPollInterval*time.Second).Should(Equal(expected),
 				fmt.Sprintf("parameter %s value is not %s", param, expected))
 		}
 	}
@@ -218,14 +247,14 @@ func execSysctlOnWorkers(nodes []k8sv1.Node, sysctlMap map[string]string) {
 // Check whether the "worker-rt" pool is updated and all the nodes labeled as "worker-rt" are ready
 func checkWorkerRtProfileReadiness(nodes []k8sv1.Node) {
 	const rtMachineConfigPool = "worker-rt"
-	By("Ensuring that the \"%s\" pool is updated")
+	By(fmt.Sprintf("Ensuring that the \"%s\" pool is updated", rtMachineConfigPool))
 	Eventually(func() bool {
 		p, err := clients.MachineConfig.MachineconfigurationV1().MachineConfigPools().Get(rtMachineConfigPool, metav1.GetOptions{})
 		if err != nil {
 			return false
 		}
 		return int(p.Status.ReadyMachineCount) == len(nodes)
-	}, 1800*time.Second, perfSysctlPollInterval*time.Second).Should(BeTrue(), rtMachineConfigPool+" is not ready")
+	}, 1800*time.Second, perfPollInterval*time.Second).Should(BeTrue(), rtMachineConfigPool+" is not ready")
 }
 
 // Check whether appropriate file exists on the system
@@ -234,10 +263,9 @@ func checkFileExistence(nodes []k8sv1.Node, file string) {
 		mcd, err := mcdForNode(&node)
 		Expect(err).ToNot(HaveOccurred())
 		mcdName := mcd.ObjectMeta.Name
-		By(fmt.Sprintf("Searching for the file %s.Executing the command \"ls %s\" inside the pod %s", file, file, mcdName))
+		By(fmt.Sprintf("Searching for the file %s.Executing the command \"ls /rootfs/%s\" inside the pod %s", file, file, mcdName))
 		err = exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace, "-c",
 			perfMachineConfigDaemonContainer, mcdName, "ls", "/rootfs/"+file).Run()
 		Expect(err).To(BeNil(), "cannot find the script "+file)
 	}
 }
-
