@@ -19,7 +19,6 @@ import (
 )
 
 const (
-	perfTestNamespace                       = "perfomancetest"
 	perfWorkerNodesLabel                    = "node-role.kubernetes.io/worker-rt="
 	perfMachineConfigDaemonContainer        = "machine-config-daemon"
 	perfClusterNodeTuningOperatorNamespaces = "openshift-cluster-node-tuning-operator"
@@ -53,19 +52,12 @@ var _ = Describe("performance", func() {
 		})
 	})
 
-	// 11-pre-boot-worker-tuning.yaml related verification
+	// 10-machine-config-worker-rt-args.yaml related verification
 	var _ = Context("Pre boot tuning adjusted by the Machine Config Operator ", func() {
-		const perfWorkerPreBootTuning = "11-worker-pre-boot-tuning"
-		It("Should contain Machine Configuration profile "+perfWorkerPreBootTuning, func() {
-			_, err := clients.MachineConfig.MachineconfigurationV1().MachineConfigs().Get(perfWorkerPreBootTuning, metav1.GetOptions{})
-			Expect(err).ToNot(HaveOccurred(), "doesn't contain Machine Configuration profile "+perfWorkerPreBootTuning)
-		})
-
-		const perfRtKernelPrebootTuningScript = "/usr/local/bin/pre-boot-tuning.sh"
-		It(perfRtKernelPrebootTuningScript+" should exist on the nodes", func() {
-			nodes := getListOfNodes()
-			checkWorkerRtProfileReadiness(nodes)
-			checkFileExistense(nodes, perfRtKernelPrebootTuningScript)
+		const perfWorkerRTKargs = "10-worker-rt-kargs"
+		It("Should contain Machine Configuration profile "+perfWorkerRTKargs, func() {
+			_, err := clients.MachineConfig.MachineconfigurationV1().MachineConfigs().Get(perfWorkerRTKargs, metav1.GetOptions{})
+			Expect(err).ToNot(HaveOccurred(), "doesn't contain Machine Configuration profile "+perfWorkerRTKargs)
 		})
 
 		It("Should contain a custom initrd image in the boot loader", func() {
@@ -92,11 +84,20 @@ var _ = Describe("performance", func() {
 			Expect(err).ToNot(HaveOccurred(), "doesn't contain Machine Configuration profile "+perfWorkerRTKernelMC)
 		})
 
+		// Check /usr/local/bin/pre-boot-tuning.sh existence under worker's rootfs
+		const perfRtKernelPrebootTuningScript = "/usr/local/bin/pre-boot-tuning.sh"
+		It(perfRtKernelPrebootTuningScript+" should exist on the nodes", func() {
+			nodes := getListOfNodes()
+			checkWorkerRtProfileReadiness(nodes)
+			checkFileExistence(nodes, perfRtKernelPrebootTuningScript)
+		})
+
+		// Check /usr/local/bin/rt-kernel-patch.sh existence under worker's rootfs
 		const perfRTKernelPatchScript = "/usr/local/bin/rt-kernel-patch.sh"
 		It(perfRTKernelPatchScript+" should exist on the nodes", func() {
 			nodes := getListOfNodes()
 			checkWorkerRtProfileReadiness(nodes)
-			checkFileExistense(nodes, perfRTKernelPatchScript)
+			checkFileExistence(nodes, perfRTKernelPatchScript)
 		})
 
 		const perfKernelVersionValuePreemptEntry = "PREEMPT"
@@ -124,39 +125,12 @@ var _ = Describe("performance", func() {
 		})
 	})
 
-	// 12-worker-rt-kargs.yaml related verifications
-	var _ = Context("RT kernel arguments", func() {
-		const perfWorkerRtKernelArgsMc = "12-worker-rt-kargs"
-		It("Should contain Machine Configuration profile "+perfWorkerRtKernelArgsMc, func() {
-			_, err := clients.MachineConfig.MachineconfigurationV1().MachineConfigs().Get(perfWorkerRtKernelArgsMc, metav1.GetOptions{})
-			Expect(err).ToNot(HaveOccurred(), fmt.Sprintf("doesn't contain %s Machine Configiguration profile", perfWorkerRtKernelArgsMc))
-		})
-
-		It(fmt.Sprintf("Should contain kernel arguments set by %s machine configuration", perfWorkerRtKernelArgsMc), func() {
-			nodes := getListOfNodes()
-			checkWorkerRtProfileReadiness(nodes)
-			for _, node := range nodes {
-				mcd, err := mcdForNode(&node)
-				Expect(err).ToNot(HaveOccurred())
-				mcdName := mcd.ObjectMeta.Name
-				By("executing the command \"cat /rootfs/proc/cmdline\" inside the pod " + mcdName)
-				kargsBytes, err := exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace, mcdName,
-					"cat", "/rootfs/proc/cmdline").CombinedOutput()
-				Expect(err).ToNot(HaveOccurred())
-				kargs := string(kargsBytes)
-				for _, v := range mcKernelArguments {
-					Expect(strings.Contains(kargs, v)).To(BeTrue(), "unable to find kernel argument "+v)
-				}
-			}
-		})
-	})
-
 	// 12-kubelet-config-worker-rt.yaml related verifications
 	var _ = Context("Kubelet configuration", func() {
 		const perfKubeletWorkerRT = "worker-rt"
 		It("Should contain Kubelet Configuration profile "+perfKubeletWorkerRT, func() {
 			_, err := clients.MachineConfig.MachineconfigurationV1().KubeletConfigs().Get(perfKubeletWorkerRT, metav1.GetOptions{})
-			Expect(err).ToNot(HaveOccurred(), fmt.Sprintf("doesn't contain %s Kubelet Configiguration profile", perfKubeletWorkerRT))
+			Expect(err).ToNot(HaveOccurred(), fmt.Sprintf("doesn't contain %s Kubelet Configuration profile", perfKubeletWorkerRT))
 		})
 	})
 
@@ -244,6 +218,7 @@ func execSysctlOnWorkers(nodes []k8sv1.Node, sysctlMap map[string]string) {
 // Check whether the "worker-rt" pool is updated and all the nodes labeled as "worker-rt" are ready
 func checkWorkerRtProfileReadiness(nodes []k8sv1.Node) {
 	const rtMachineConfigPool = "worker-rt"
+	By("Ensuring that the \"%s\" pool is updated")
 	Eventually(func() bool {
 		p, err := clients.MachineConfig.MachineconfigurationV1().MachineConfigPools().Get(rtMachineConfigPool, metav1.GetOptions{})
 		if err != nil {
@@ -254,12 +229,12 @@ func checkWorkerRtProfileReadiness(nodes []k8sv1.Node) {
 }
 
 // Check whether appropriate file exists on the system
-func checkFileExistense(nodes []k8sv1.Node, file string) {
+func checkFileExistence(nodes []k8sv1.Node, file string) {
 	for _, node := range nodes {
 		mcd, err := mcdForNode(&node)
 		Expect(err).ToNot(HaveOccurred())
 		mcdName := mcd.ObjectMeta.Name
-		By(fmt.Sprintf("executing the command \"ls %s\" inside the pod %s", file, mcdName))
+		By(fmt.Sprintf("Searching for the file %s.Executing the command \"ls %s\" inside the pod %s", file, file, mcdName))
 		err = exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace, "-c",
 			perfMachineConfigDaemonContainer, mcdName, "ls", "/rootfs/"+file).Run()
 		Expect(err).To(BeNil(), "cannot find the script "+file)
