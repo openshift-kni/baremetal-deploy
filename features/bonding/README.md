@@ -52,3 +52,5 @@
   ```
 
   At this point the two files can be used to inject the configuration into the nodes.
+
+## [Bonding using machine-config-operator (MCO)](./examples/mco-bonding.md)
