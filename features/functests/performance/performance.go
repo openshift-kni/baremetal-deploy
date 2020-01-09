@@ -2,7 +2,6 @@ package performance
 
 import (
 	"fmt"
-	v1 "github.com/openshift/machine-config-operator/pkg/apis/machineconfiguration.openshift.io/v1"
 	"os/exec"
 	"strings"
 	"time"
@@ -11,6 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	ocv1 "github.com/openshift/api/config/v1"
+	v1 "github.com/openshift/machine-config-operator/pkg/apis/machineconfiguration.openshift.io/v1"
 	k8sv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -102,31 +102,33 @@ var _ = Describe("performance", func() {
 			checkFileExistence(nodes, perfRTKernelPatchScript)
 		})
 
-		const perfKernelVersionValuePreemptEntry = "PREEMPT"
-		const perfKernelVersionValueRTEntry = "RT"
-		It(fmt.Sprintf("Should contain %s and %s entries",
-			perfKernelVersionValueRTEntry, perfKernelVersionValuePreemptEntry), func() {
-			nodes := getListOfNodes()
-			checkWorkerRtProfileReadiness(nodes)
-			for _, node := range nodes {
-				mcd, err := mcdForNode(&node)
-				Expect(err).ToNot(HaveOccurred())
-				mcdName := mcd.ObjectMeta.Name
-				By("executing the command \"uname -v\" inside the pod " + mcdName)
-				var out []byte
-				Eventually(func() bool {
-					out, err = exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace,
-						"-c", perfMachineConfigDaemonContainer, mcdName, "uname", "-v").CombinedOutput()
-					if err != nil {
-						return false
-					}
-					line := strings.TrimSpace(string(out))
-					return strings.Contains(line, perfKernelVersionValuePreemptEntry) &&
-						strings.Contains(line, perfKernelVersionValueRTEntry)
-				}, perfSysctlTimeout*time.Second, perfPollInterval*time.Second).Should(BeTrue(),
-					fmt.Sprintf("RT kernel is not installed. %v", err))
-			}
-		})
+	// TODO: add verification whether kernel was fetched successfully from the repo
+	
+	//	const perfKernelVersionValuePreemptEntry = "PREEMPT"
+	//	const perfKernelVersionValueRTEntry = "RT"
+	//	It(fmt.Sprintf("Should contain %s and %s entries",
+	//		perfKernelVersionValueRTEntry, perfKernelVersionValuePreemptEntry), func() {
+	//		nodes := getListOfNodes()
+	//		checkWorkerRtProfileReadiness(nodes)
+	//		for _, node := range nodes {
+	//			mcd, err := mcdForNode(&node)
+	//			Expect(err).ToNot(HaveOccurred())
+	//			mcdName := mcd.ObjectMeta.Name
+	//			By("executing the command \"uname -v\" inside the pod " + mcdName)
+	//			var out []byte
+	//			Eventually(func() bool {
+	//				out, err = exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace,
+	//					"-c", perfMachineConfigDaemonContainer, mcdName, "uname", "-v").CombinedOutput()
+	//				if err != nil {
+	//					return false
+	//				}
+	//				line := strings.TrimSpace(string(out))
+	//				return strings.Contains(line, perfKernelVersionValuePreemptEntry) &&
+	//					strings.Contains(line, perfKernelVersionValueRTEntry)
+	//			}, perfSysctlTimeout*time.Second, perfPollInterval*time.Second).Should(BeTrue(),
+	//				fmt.Sprintf("RT kernel is not installed. %v", err))
+	//		}
+	//	})
 	})
 
 	// 12-kubelet-config-worker-rt.yaml related verifications
@@ -264,7 +266,7 @@ func checkWorkerRtProfileReadiness(nodes []k8sv1.Node) {
 		}
 		return int(pool.Status.ReadyMachineCount) == len(nodes)
 	}, 1800*time.Second, perfPollInterval*time.Second).Should(BeTrue(),
-		fmt.Sprintf("The pool %s is not ready. %v",rtMachineConfigPool, err))
+		fmt.Sprintf("The pool %s is not ready. %v", rtMachineConfigPool, err))
 }
 
 // Check whether appropriate file exists on the system
