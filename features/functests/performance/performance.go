@@ -2,6 +2,7 @@ package performance
 
 import (
 	"fmt"
+	v1 "github.com/openshift/machine-config-operator/pkg/apis/machineconfiguration.openshift.io/v1"
 	"os/exec"
 	"strings"
 	"time"
@@ -22,7 +23,7 @@ const (
 	perfWorkerNodesLabel                    = "node-role.kubernetes.io/worker-rt="
 	perfMachineConfigDaemonContainer        = "machine-config-daemon"
 	perfClusterNodeTuningOperatorNamespaces = "openshift-cluster-node-tuning-operator"
-	perfSysctlTimeout                       = 240 // tuned default sync interval is 60
+	perfSysctlTimeout                       = 480 // NOTE: tuned default sync interval is 60
 	perfPollInterval                        = 2
 )
 
@@ -71,7 +72,8 @@ var _ = Describe("performance", func() {
 				bootLoaderEntries, err := exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace, "-c",
 					perfMachineConfigDaemonContainer, mcdName, "grep", "-R", "initrd", "/rootfs/boot/loader/entries/").CombinedOutput()
 				Expect(err).ToNot(HaveOccurred())
-				Expect(strings.Contains(string(bootLoaderEntries), "iso_initrd.img")).To(BeTrue(), "cannot find iso_initrd.img entry among the bootloader entries")
+				Expect(strings.Contains(string(bootLoaderEntries), "iso_initrd.img")).To(BeTrue(),
+					"cannot find iso_initrd.img entry among the bootloader entries")
 			}
 		})
 	})
@@ -111,8 +113,9 @@ var _ = Describe("performance", func() {
 				Expect(err).ToNot(HaveOccurred())
 				mcdName := mcd.ObjectMeta.Name
 				By("executing the command \"uname -v\" inside the pod " + mcdName)
+				var out []byte
 				Eventually(func() bool {
-					out, err := exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace,
+					out, err = exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace,
 						"-c", perfMachineConfigDaemonContainer, mcdName, "uname", "-v").CombinedOutput()
 					if err != nil {
 						return false
@@ -120,7 +123,8 @@ var _ = Describe("performance", func() {
 					line := strings.TrimSpace(string(out))
 					return strings.Contains(line, perfKernelVersionValuePreemptEntry) &&
 						strings.Contains(line, perfKernelVersionValueRTEntry)
-				}, perfSysctlTimeout*time.Second, perfPollInterval*time.Second).Should(BeTrue(), "RT kernel is not installed")
+				}, perfSysctlTimeout*time.Second, perfPollInterval*time.Second).Should(BeTrue(),
+					fmt.Sprintf("RT kernel is not installed. %v", err))
 			}
 		})
 	})
@@ -222,24 +226,27 @@ func tunedForNode(node *k8sv1.Node) *k8sv1.Pod {
 		}
 		return true
 
-	}, 1800*time.Second, perfPollInterval*time.Second).Should(BeTrue(), "there should be one cluster node tuning daemon per node")
+	}, 1800*time.Second, perfPollInterval*time.Second).Should(BeTrue(),
+		"there should be one cluster node tuning daemon per node")
 
 	return &tunedList.Items[0]
 }
 
 // execute sysctl command inside container in a tuned pod
 func execSysctlOnWorkers(nodes []k8sv1.Node, sysctlMap map[string]string) {
+	var err error
+	var out []byte
 	for _, node := range nodes {
 		tuned := tunedForNode(&node)
 		tunedName := tuned.ObjectMeta.Name
 		for param, expected := range sysctlMap {
 			By(fmt.Sprintf("executing the command \"sysctl -n %s\" inside the pod %s", param, tunedName))
 			Eventually(func() string {
-				out, _ := exec.Command("oc", "rsh", "-n", tuned.ObjectMeta.Namespace,
+				out, err = exec.Command("oc", "rsh", "-n", tuned.ObjectMeta.Namespace,
 					tunedName, "sysctl", "-n", param).CombinedOutput()
 				return strings.TrimSpace(string(out))
 			}, perfSysctlTimeout*time.Second, perfPollInterval*time.Second).Should(Equal(expected),
-				fmt.Sprintf("parameter %s value is not %s", param, expected))
+				fmt.Sprintf("parameter %s value is not %s. %v", param, expected, err))
 		}
 	}
 }
@@ -248,13 +255,16 @@ func execSysctlOnWorkers(nodes []k8sv1.Node, sysctlMap map[string]string) {
 func checkWorkerRtProfileReadiness(nodes []k8sv1.Node) {
 	const rtMachineConfigPool = "worker-rt"
 	By(fmt.Sprintf("Ensuring that the \"%s\" pool is updated", rtMachineConfigPool))
+	var err error
+	var pool *v1.MachineConfigPool
 	Eventually(func() bool {
-		p, err := clients.MachineConfig.MachineconfigurationV1().MachineConfigPools().Get(rtMachineConfigPool, metav1.GetOptions{})
+		pool, err = clients.MachineConfig.MachineconfigurationV1().MachineConfigPools().Get(rtMachineConfigPool, metav1.GetOptions{})
 		if err != nil {
 			return false
 		}
-		return int(p.Status.ReadyMachineCount) == len(nodes)
-	}, 1800*time.Second, perfPollInterval*time.Second).Should(BeTrue(), rtMachineConfigPool+" is not ready")
+		return int(pool.Status.ReadyMachineCount) == len(nodes)
+	}, 1800*time.Second, perfPollInterval*time.Second).Should(BeTrue(),
+		fmt.Sprintf("The pool %s is not ready. %v",rtMachineConfigPool, err))
 }
 
 // Check whether appropriate file exists on the system
@@ -266,6 +276,6 @@ func checkFileExistence(nodes []k8sv1.Node, file string) {
 		By(fmt.Sprintf("Searching for the file %s.Executing the command \"ls /rootfs/%s\" inside the pod %s", file, file, mcdName))
 		err = exec.Command("oc", "rsh", "-n", mcd.ObjectMeta.Namespace, "-c",
 			perfMachineConfigDaemonContainer, mcdName, "ls", "/rootfs/"+file).Run()
-		Expect(err).To(BeNil(), "cannot find the script "+file)
+		Expect(err).To(BeNil(), "cannot find the file "+file)
 	}
 }
