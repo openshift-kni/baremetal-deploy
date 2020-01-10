@@ -17,7 +17,7 @@ spec:
           mode: 420
           path: /etc/modprobe.d/sctp-blacklist.conf
         - contents:
-            source: data:text/plain;charset=utf-8;base64,c2N0cA==
+            source: data:text/plain;charset=utf-8,sctp
           filesystem: root
           mode: 420
           path: /etc/modules-load.d/sctp-load.conf

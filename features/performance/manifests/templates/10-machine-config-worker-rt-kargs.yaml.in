@@ -3,7 +3,7 @@ kind: MachineConfig
 metadata:
   labels:
     machineconfiguration.openshift.io/role: worker-rt
-  name: 12-worker-rt-kargs
+  name: 10-worker-rt-kargs
 spec:
   kernelArguments:
   - 'default_hugepagesz=1G'
@@ -24,5 +24,3 @@ spec:
   - 'intel_iommu=on'
   - 'iommu=pt'
   - 'isolcpus=${ISOLATED_CPUS}'
-  
-

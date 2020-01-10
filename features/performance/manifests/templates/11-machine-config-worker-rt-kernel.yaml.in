@@ -21,6 +21,11 @@ spec:
                   mode: 0700
                   contents:
                       source: data:text/plain;charset=utf-8;base64,${RT_KERNEL_BASE64}
+                - filesystem: root
+                  path: /usr/local/bin/pre-boot-tuning.sh
+                  mode: 0700
+                  contents:
+                      source: data:text/plain;charset=utf-8;base64,${PRE_BOOT_BASE64}
         systemd:
             units:
                 - contents: |
@@ -28,17 +33,50 @@ spec:
                       Description=RT kernel patch
                       Wants=network-online.target
                       After=network-online.target
-                      Before=kubelet.service
+                      Before=kubelet.service pre-boot-tuning.service
 
                       [Service]
-                      Type=oneshot
-                      RemainAfterExit=true
-
                       Environment=RT_REPO_URL=${RT_REPO_URL}
 
+                      Type=oneshot
+                      RemainAfterExit=true
                       ExecStart=/usr/local/bin/rt-kernel-patch.sh
 
                       [Install]
                       WantedBy=multi-user.target
                   enabled: true
                   name: rt-kernel.service
+                - contents: |
+                      [Unit]
+                      Description=Pre boot kernel tuning
+                      Wants=rt-kernel.service
+                      After=rt-kernel.service
+                      Before=kubelet.service reboot.service
+
+                      [Service]
+                      Environment=NON_ISOLATED_CPUS=${NON_ISOLATED_CPUS}
+                      
+                      Type=oneshot
+                      RemainAfterExit=true
+                      ExecStart=/usr/local/bin/pre-boot-tuning.sh
+
+                      [Install]
+                      WantedBy=multi-user.target
+                  enabled: true
+                  name: pre-boot-tuning.service
+                - contents: |
+                      [Unit]
+                      Description=Reboot
+                      Wants=network-online.target
+                      After=network-online.target
+                      Before=kubelet.service
+
+                      [Service]
+                      Type=oneshot
+                      RemainAfterExit=true
+                      ExecStart=/bin/bash -c "if [[ -f /var/reboot ]]; then rm -f /var/reboot; echo \"File /var/reboot exists, initiate reboot\"; systemctl reboot; fi"
+
+                      [Install]
+                      WantedBy=multi-user.target
+                  enabled: true
+                  name: reboot.service

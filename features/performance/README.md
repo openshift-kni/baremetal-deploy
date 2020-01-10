@@ -20,13 +20,12 @@ This is a list of environment variables that you should export before running `m
   and update this URL.  
   To configure your own yum repo check the [link](https://access.redhat.com/solutions/3176811).
 
-
 ## Huge Pages
 
 To verify huge pages feature functionality:
 
 - run `make generate`
-- apply huge pages kernel boot parameters config via `oc create -f manifests/generated/12-machine-config-worker-rt-kargs.yaml`
+- apply huge pages kernel boot parameters config via `oc create -f manifests/generated/10-machine-config-worker-rt-kargs.yaml`
 - wait for workers update
 
 ```bash
