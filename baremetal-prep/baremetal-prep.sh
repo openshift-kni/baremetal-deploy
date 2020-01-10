@@ -259,10 +259,10 @@ setup_env
 create_manifest_dir
 existing_install_config
 install_depends
+setup_bridges
 enable_services
 #disable_selinux
 setup_default_pool
-setup_bridges
 if ([ "$GENERATEINSTALLCONF" -eq "1" ]) then
   setup_installconfig
 fi
