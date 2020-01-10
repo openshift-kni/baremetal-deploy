@@ -4,16 +4,20 @@ import (
 	"log"
 	"os"
 
-	configClientv1 "github.com/openshift/client-go/config/clientset/versioned/typed/config/v1"
-	mcfgClient "github.com/openshift/machine-config-operator/pkg/generated/clientset/versioned"
-
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+
+	configClientv1 "github.com/openshift/client-go/config/clientset/versioned/typed/config/v1"
+	tunedClient "github.com/openshift/cluster-node-tuning-operator/pkg/generated/clientset/versioned"
+	mcfgClient "github.com/openshift/machine-config-operator/pkg/generated/clientset/versioned"
 )
 
 var K8s *kubernetes.Clientset
 var OcpConfig *configClientv1.ConfigV1Client
 var MachineConfig *mcfgClient.Clientset
+
+// Cluster Node Tuning Operator client
+var CntoConfig *tunedClient.Clientset
 
 func Setup() {
 	kubeconfig := os.Getenv("KUBECONFIG")
@@ -28,4 +32,5 @@ func Setup() {
 	K8s = kubernetes.NewForConfigOrDie(config)
 	OcpConfig = configClientv1.NewForConfigOrDie(config)
 	MachineConfig = mcfgClient.NewForConfigOrDie(config)
+	CntoConfig = tunedClient.NewForConfigOrDie(config)
 }
