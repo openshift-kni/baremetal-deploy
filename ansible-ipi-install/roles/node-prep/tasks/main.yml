@@ -1,0 +1,12 @@
+---
+- include_tasks: 10_validation.yml
+- include_tasks: 20_sub_man_register.yml
+- include_tasks: 30_req_packages.yml 
+- include_tasks: 40_bridge.yml
+- include_tasks: 50_modify_sudo_user.yml
+- include_tasks: 60_enabled_services.yml 
+- include_tasks: 70_enabled_fw_services.yml
+- include_tasks: 80_libvirt_pool.yml  
+- include_tasks: 90_create_config_install_dirs.yml
+- include_tasks: 100_create-install-config.yml
+- include_tasks: 110_power_off_cluster_servers.yml

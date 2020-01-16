@@ -1,0 +1,19 @@
+---
+- name: Define Storage Pool for default
+  virt_pool:
+    command: define
+    name: default
+    xml: '{{ lookup("template", "roles/node-prep/templates/dir.xml.j2") }}'
+  become: yes
+
+- name: Start Storage Pool for default
+  virt_pool:
+    state: active
+    name: default
+  become: yes
+
+- name: Autostart Storage Pool for default
+  virt_pool:
+    autostart: yes
+    name: default
+  become: yes

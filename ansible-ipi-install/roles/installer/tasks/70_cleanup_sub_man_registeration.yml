@@ -1,0 +1,8 @@
+---
+- name: Unregister host via subscription-manager
+  redhat_subscription:
+    activationkey: "{{ activation_key }}"
+    org_id: "{{ org_id }}"
+    state: absent
+  ignore_errors: yes
+

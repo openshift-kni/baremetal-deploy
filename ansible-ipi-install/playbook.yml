@@ -1,0 +1,8 @@
+---
+- name: IPI on Baremetal Installation Playbook
+  hosts: provisioner
+  roles:
+  - node-prep
+  - installer
+
+

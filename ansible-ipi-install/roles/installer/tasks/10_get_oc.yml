@@ -1,0 +1,42 @@
+---
+- name: Create tmp directory to store OpenShift binaries
+  tempfile:
+    state: directory
+    suffix: "{{ release_version }}"
+  register: tempdiroutput
+
+- name: Set fact for tmp directory
+  set_fact:
+    tempdir: "{{ tempdiroutput.path }}"
+  
+
+- name: Get the ocp client tar gunzip file
+  get_url:
+    url: "{{ release_url }}/{{ version }}/openshift-client-linux-{{ release_version }}.tar.gz"
+    dest: "{{ tempdir }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: "Untar the openshift-client-linux-{{ release_version }}.tar.gz"
+  unarchive:
+    src: "{{ tempdir }}/openshift-client-linux-{{ release_version }}.tar.gz"
+    dest: "{{ tempdir }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+    remote_src: yes
+ 
+- name: Copy oc binary to /usr/local/bin
+  copy:
+    src: "{{ tempdir }}/{{ item }}"
+    dest: /usr/local/bin/
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+    remote_src: yes
+  become: yes
+  loop:
+    - kubectl
+    - oc
+

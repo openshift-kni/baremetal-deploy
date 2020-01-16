@@ -1,0 +1,13 @@
+---
+- name: Register host via Activation key
+  redhat_subscription:
+    activationkey: "{{ activation_key }}"
+    org_id: "{{ org_id }}"
+    state: present
+    pool: '^(Red Hat Enterprise Linux Server, Standard (8 sockets) (Unlimited guests))$'
+    force_register: yes
+  ignore_errors: yes
+  become: yes
+  when: 
+    - activation_key != ""
+    - org_id != ""

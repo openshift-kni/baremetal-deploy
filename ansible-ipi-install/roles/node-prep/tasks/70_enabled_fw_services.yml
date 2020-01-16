@@ -1,0 +1,19 @@
+---
+- name: Enable Firewall for HTTP
+  firewalld:
+    service: http
+    permanent: yes
+    state: enabled
+  become: yes
+
+- name: Open Firewall port 5000/tcp, zone libvirt and public
+  firewalld:
+    port: 5000/tcp
+    permanent: yes
+    state: enabled
+    zone: "{{ item }}"
+  become: yes
+  with_items:
+  - libvirt
+  - public
+

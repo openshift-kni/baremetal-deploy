@@ -1,0 +1,12 @@
+---
+- name: Enable Services Firewalld
+  service:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  become: yes
+  with_items:
+  - firewalld
+  - libvirtd
+
+
