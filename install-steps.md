@@ -481,8 +481,9 @@ Two approaches:
 ### Choosing a OpenShift Installer Release from CI
 
 1. Go to [https://openshift-release.svc.ci.openshift.org/](https://openshift-release.svc.ci.openshift.org/) and choose a release which has passed the tests for metal.
-2. Save the release name. e.g: `4.3.0-0.nightly-2019-12-09-035405`
-3. Configure VARS
+2. Verify that the release is available in the OpenShift mirror [https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/](https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/).
+3. Save the release name. e.g: `4.3.0-0.nightly-2019-12-09-035405`
+4. Configure VARS
     ~~~sh
     export VERSION="4.3.0-0.nightly-2019-12-09-035405"
     export RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/$VERSION/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}' | xargs)
