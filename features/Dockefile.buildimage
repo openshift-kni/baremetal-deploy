@@ -1,20 +1,30 @@
 FROM fedora:31
+
 ENV GOPATH /go
 ENV GOBIN /go/bin
 ENV GOCACHE /go/.cache
-ENV PATH=$PATH:$GOPATH/bin
-ENV GOVERSION golang-1.13.5-1.fc31
+ENV GOVERSION 1.13.5
+ENV PATH=$PATH:/root/.gimme/versions/go"$GOVERSION".linux.amd64/bin:$GOBIN
 
 # rpms required for building and running test suites
 RUN dnf -y install \
-    $GOVERSION \
+    gcc \
+    git \
     make \
-    tar \
     gettext \
+    which \
+    findutils \
+    python2 \
     && dnf clean all
 
-# get required golang tools and OC client
-RUN go get github.com/onsi/ginkgo/ginkgo && \
+RUN mkdir ~/bin && \
+    # install Go using gimme
+    curl -sL -o /usr/local/bin/gimme https://raw.githubusercontent.com/travis-ci/gimme/master/gimme && \
+    chmod +x /usr/local/bin/gimme && \
+    eval "$(gimme $GOVERSION)" && \
+    cat $GIMME_ENV >> $HOME/.bashrc && \
+    # get required golang tools and OC client
+    go get github.com/onsi/ginkgo/ginkgo && \
     go get github.com/onsi/gomega/... && \
     go get -u golang.org/x/lint/golint && \
     export latest_oc_client_version=$(curl https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/ 2>/dev/null | grep -o \"openshift-client-linux-4.*tar.gz\" | tr -d \") && \
