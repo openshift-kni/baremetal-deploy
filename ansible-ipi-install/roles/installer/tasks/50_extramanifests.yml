@@ -1,0 +1,10 @@
+---
+- name: Add Manifests from files dir
+  copy:
+    src: "{{ item }}"
+    dest: "{{ dir }}/openshift/"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  with_fileglob:
+    - roles/installer/files/*
+

@@ -1,0 +1,9 @@
+galaxy_info:
+  author: Roger Lopez
+  description: The installer role assists in installing Red Hat OpenShift
+  company: Red Hat, Inc.
+  license: Apache License, Version 2.0
+  min_ansible_version: 2.9
+  galaxy_tags: []
+dependencies: []
+  

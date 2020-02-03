@@ -1,0 +1,5 @@
+---
+# defaults file for node-prep
+activation_key: ""
+org_id: ""
+release_url: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview"

@@ -1,0 +1,54 @@
+- fail: msg="The version is undefined or empty. Use a value such as 'latest-4.3' or 'latest-4.4' or an explicit version."
+  when: (version is undefined) or (version|length == 0)
+
+- fail: msg="The build is undefined or empty. Use a value such as 'dev' or 'ga'."
+  when: (build is undefined) or (build|length == 0)
+
+- fail: msg="A variable regarding install-config.yml is undefined or empty."
+  when: (domain is undefined) or (domain|length == 0) or (cluster is undefined) or (cluster|length == 0) or (extcidrnet is undefined) or (extcidrnet|length == 0) or (dnsvip is undefined) or (dnsvip|length == 0) or (pullsecret is undefined) or (pullsecret|length == 0)
+
+- name: Verify DNS records for API VIP, Wildcard (Ingress) VIP
+  set_fact:
+    apivip: "{{ lookup('dig', 'api.{{ cluster |quote }}.{{ domain | quote }}.')}}"
+    ingressvip: "{{ lookup('dig', 'foo.apps.{{ cluster |quote }}.{{ domain | quote }}.')}}"
+
+- debug: msg="The API VIP is {{ apivip }}"
+- debug: msg="The Wildcard (Ingress) VIP is {{ ingressvip }}"
+
+- fail: msg="The API VIP IP seems to be incorrect. Value was NXDOMAIN."
+  when: (apivip == 'NXDOMAIN')
+
+- fail: msg="The Ingress VIP IP seems to be incorrect. Value was NXDOMAIN."
+  when: (ingressvip == 'NXDOMAIN')
+
+- name: Set fact of release_url
+  set_fact:
+    release_url: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp"
+  when: build == 'ga'
+
+- name: Get Release.txt File
+  uri:
+    url: "{{ release_url }}/{{ version }}/release.txt"
+    return_content: yes
+  register: result
+  failed_when: result.status >= 400
+
+- name: Set Fact for Release Image
+  set_fact:
+    release_version: "{{ result.content | regex_search('Version:.*') | regex_replace('Version:\\s*(.*)', '\\1') }}"
+    release_image: "{{ result.content | regex_search('Pull From:.*') | regex_replace('Pull From:\\s*(.*)', '\\1') }}"
+
+- debug: msg="release version {{ release_version }}"
+- debug: msg="release image {{ release_image }}"
+
+- fail: msg="The {{ item }} group is not defined. Please add [{{ item }}] to the inventory/hosts file"
+  when: "'{{ item }}' not in groups"
+  loop:
+    - masters
+    - workers
+
+- name: Set Fact of num of workers and masters based on inventory
+  set_fact:
+    numworkers: "{{ groups['workers'] | length }}"
+    nummasters: "{{ groups['masters'] | length }}"
+

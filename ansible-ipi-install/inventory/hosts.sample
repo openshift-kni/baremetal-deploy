@@ -1,0 +1,62 @@
+[all:vars]
+
+###############################################################################
+# Required configuration variables for IPI on Baremetal Installations         #
+###############################################################################
+
+# The provisioning NIC (NIC1) used on all baremetal nodes
+prov_nic=eno1
+
+# The public NIC (NIC2) used on all baremetal nodes
+pub_nic=eno2
+
+# (Optional) Activation-key for proper setup of subscription-manager, empty value skips registration
+#activation_key=""
+
+# (Optional) Activation-key org_id for proper setup of subscription-manager, empty value skips registration
+#org_id=""
+
+# The directory used to store the cluster configuration files (install-config.yaml, pull-secret.txt, metal3-config.yaml)
+dir="{{ ansible_user_dir }}/clusterconfigs"
+
+# The version of the openshift-installer, undefined or empty results in the playbook failing with error message.
+# Values accepted: 'latest-4.3', 'latest-4.4', explicit version i.e. 4.3.0-0.nightly-2019-12-09-035405
+version=""
+
+# Enter whether the build should use 'dev' (nightly builds) or 'ga' for Generally Available version of OpenShift
+# Empty value results in playbook failing with error message.
+build=""
+
+# Provisioning IP address (default value)
+prov_ip=172.22.0.3
+
+######################################
+# Vars regarding install-config.yaml #
+######################################
+
+# Base domain, i.e. example.com
+domain=""
+# Name of the cluster, i.e. openshift
+cluster=""
+# The public CIDR address, i.e. 10.1.1.0/21
+extcidrnet=""
+# An IP reserved on the baremetal network. 
+dnsvip=""
+# A copy of your pullsecret from https://cloud.redhat.com/openshift/install/metal/user-provisioned
+pullsecret=""
+
+
+# Master nodes
+[masters]
+master-0 name=master-0 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.1 provision_mac=ec:f4:bb:da:0c:58
+master-1 name=master-1 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.2 provision_mac=ec:f4:bb:da:32:88
+master-2 name=master-2 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.3 provision_mac=ec:f4:bb:da:0d:98
+
+# Worker nodes
+[workers]
+worker-0 name=worker-0 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.4 provision_mac=ec:f4:bb:da:0c:18
+worker-1 name=worker-1 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.5 provision_mac=ec:f4:bb:da:32:28
+
+# Provision Host
+[provisioner]
+provisioner.example.com

@@ -1,0 +1,10 @@
+---
+- name: Create config dir
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+  with_items:
+  - "{{ dir }}"
