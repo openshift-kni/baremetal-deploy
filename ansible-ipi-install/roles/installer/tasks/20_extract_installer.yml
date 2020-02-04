@@ -24,9 +24,3 @@
     mode: '0755'
     remote_src: yes
   become: yes
-
-- name: Delete tmp dir as no longer needed
-  file:
-    path: "{{ tempdir }}"
-    state: absent
-

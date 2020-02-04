@@ -3,7 +3,6 @@
   lineinfile:
     path: "{{ ansible_user_dir }}/.bashrc"
     line: "export KUBECONFIG={{ dir }}/auth/kubeconfig"
-  become: yes
 
 - name: Deploy OpenShift Cluster
   shell: |
