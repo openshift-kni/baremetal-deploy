@@ -334,7 +334,7 @@ additional configuration files to be included during the installation. The
 `installer` role handles this. 
 
 In order to include the extraconfigs, ensure to place your `yaml` files within
-the `roles/installer/files` directory. All the files provided here will be
+the `roles/installer/files/manifests` directory. All the files provided here will be
 included when the OpenShift manifests are created. 
 
 NOTE: By default this directory is empty. 
