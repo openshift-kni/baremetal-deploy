@@ -1,4 +1,11 @@
 ---
+- name: Clear config dir (if any, in case this is a re-run)
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+  - "{{ dir }}"
+
 - name: Create config dir
   file:
     path: "{{ item }}"
