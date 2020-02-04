@@ -1,19 +1,52 @@
 ---
-- name: Enable Firewall for HTTP
-  firewalld:
-    service: http
-    permanent: yes
-    state: enabled
-  become: yes
+- name: Configure firewalld
+  block:
+    - name: Enable HTTP for firewalld
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+      become: yes
 
-- name: Open Firewall port 5000/tcp, zone libvirt and public
-  firewalld:
-    port: 5000/tcp
-    permanent: yes
-    state: enabled
-    zone: "{{ item }}"
-  become: yes
-  with_items:
-  - libvirt
-  - public
+    - name: Open port 5000/tcp, zone libvirt and public, for firewalld
+      firewalld:
+        port: 5000/tcp
+        permanent: yes
+        state: enabled
+        zone: "{{ item }}"
+      become: yes
+      with_items:
+      - libvirt
+      - public
+  when: firewall != "iptables"
 
+- name: Configure iptables
+  block:
+    - name: Enable HTTP for iptables
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "80"
+        jump: ACCEPT
+      become: yes
+
+    - name: Open port 5000/tcp for iptables
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "5000"
+        jump: ACCEPT
+      become: yes
+
+    - name: Allow related and established connections for iptables
+      iptables:
+        chain: INPUT
+        ctstate: ESTABLISHED,RELATED
+        jump: ACCEPT
+      become: yes
+
+    - name: Save iptables configuration
+      shell: |
+        /usr/sbin/iptables-save > /etc/sysconfig/iptables
+      become: yes
+  when: firewall == "iptables"

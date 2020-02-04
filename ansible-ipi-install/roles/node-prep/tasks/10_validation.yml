@@ -53,3 +53,11 @@
     numworkers: "{{ groups['workers'] | length }}"
     nummasters: "{{ groups['masters'] | length }}"
 
+- name:  Gather the rpm package facts
+  package_facts:
+    manager: auto
+
+- name: Set Fact for firewall variable
+  set_fact:
+    firewall: "iptables"
+  when: "'iptables-services' in ansible_facts.packages"
