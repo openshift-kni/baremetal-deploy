@@ -7,6 +7,5 @@
 - include_tasks: 50_extramanifests.yml
 - include_tasks: 60_cleanup_bootstrap.yml
 - include_tasks: 70_deploy_ocp.yml
-- include_tasks: 80_cleanup_sub_man_registeration.yml
 #- include_tasks: 80_cleanup_sub_man_registeration.yml
 
