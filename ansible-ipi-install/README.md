@@ -6,15 +6,17 @@ Table of contents
    * [Prerequisites](#prerequisites)
    * [Tour of the Ansible Playbook](#tour-of-the-ansible-playbook)
    * [Running the Ansible Playbook](#running-the-ansible-playbook)
-      * [Create the `ansible.cfg` file](#create-the-ansiblecfg-file)
+      * [The `ansible.cfg` file](#the-ansiblecfg-file)
       * [Copy local ssh key to provision node](#copy-local-ssh-key-to-provision-node)
       * [Modifying the `inventory/hosts` file](#modifying-the-inventoryhosts-file)
-      * [Reviewing `group_vars/all` file](#reviewing-group_varsall-file)
-      * [Adding Variable Values to the `playbook.yml`](#adding-variable-values-to-the-playbookyml)
+      * [The Ansible `playbook.yml`](#the-ansible-playbookyml)
+      * [Adding Extra Configurations to the OpenShift Installer](#adding-extra-configurations-to-the-openshift-installer)
    * [Verifying Installation](#verifying-installation)
    * [Troubleshooting](#troubleshooting)
       * [Unreachable Host](#unreachable-host)
       * [Permission Denied Trying To Connect To Host](#permission-denied-trying-to-connect-to-host)
+      * [Dig lookup requires the python 'dnspython' library and it is not installed](#dig-lookup-requires-the-python-dnspython-library-and-it-is-not-installed)
+   * [Gotchas](#gotchas)
 <!--te-->
 
 # Introduction
@@ -490,10 +492,10 @@ fatal: [provisioner.example.com]: FAILED! => {"msg": "An unhandled exception occ
 
 PLAY RECAP *************************************************************************************************************************
 provisioner.example.com : ok=2    changed=0    unreachable=0    failed=1    skipped=3    rescued=0    ignored=0 
+~~~
 
 The above issue can be fixed by simply installing `python3-dns` on your local
 system (assuming your using an OS such as Fedora, Red Hat)
-~~~
 
 On a local host running Red Hat 7.x, run: 
 ~~~sh
