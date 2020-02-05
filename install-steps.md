@@ -58,11 +58,11 @@ document.
 | Ingress LB (apps) |  *.apps.\<cluster-name\>.\<domain\>  | \<ip\> |
 | Nameserver | ns1.\<cluster-name\>.\<domain\> | \<ip\> |
 | Provisioning node | provisioner.\<cluster-name\>.<domain\> | \<ip\> |
-| Master-0 | \<cluster-name\>-master-0.<domain\> | \<ip\> |
-| Master-1 | \<cluster-name\>-master-1.<domain\> | \<ip\> |
-| Master-2 | \<cluster-name\>-master-2.<domain\> | \<ip\> |
-| Worker-0 | \<cluster-name\>-worker-0.<domain\> | \<ip\> |
-| Worker-1 | \<cluster-name\>-worker-1.<domain\> | \<ip\> |
+| Master-0 | master-0.\<cluster-name\>.\<domain\> | \<ip\> |
+| Master-1 | master-1.\<cluster-name\>-.\<domain\> | \<ip\> |
+| Master-2 | master-2.\<cluster-name\>.\<domain\> | \<ip\> |
+| Worker-0 | worker-0.\<cluster-name\>.\<domain\> | \<ip\> |
+| Worker-1 | worker-1.\<cluster-name\>.\<domain\> | \<ip\> |
 
 ### DNS Server
 
@@ -471,14 +471,14 @@ The following steps need to be performed in order to prepare the environment.
 15. Copy the pull secret (`pull-secret.txt`) generated earlier and place it in the provision node new user home directory
     
 
-## Retrieving the OpenShift Installer
+## Retrieving the OpenShift Installer (Development)
 
 Two approaches:
 
 1. Choose a successfully deployed release that passed CI
-2. Deploy latest
+2. Deploy latest development version
 
-### Choosing a OpenShift Installer Release from CI
+### Choosing a OpenShift Installer Release from CI (Development)
 
 1. Go to [https://openshift-release.svc.ci.openshift.org/](https://openshift-release.svc.ci.openshift.org/) and choose a release which has passed the tests for metal.
 2. Save the release name. e.g: `4.3.0-0.nightly-2019-12-09-035405`
@@ -488,7 +488,7 @@ Two approaches:
     export RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/$VERSION/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}' | xargs)
     ~~~
 
-### Choosing the latest OpenShift Installer
+### Choosing the latest OpenShift Installer (Development)
 
 1. Configure VARS
     ~~~sh
@@ -496,7 +496,7 @@ Two approaches:
     export RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}' | xargs)
     ~~~
 
-### Extract the Installer
+### Extract the Installer (Development)
 
 Once the installer has been chosen, the next step is to extract it. 
 
@@ -510,6 +510,35 @@ sudo cp ./oc /usr/local/bin/oc
 # Extract the baremetal installer
 oc adm release extract --registry-config "${pullsecret_file}" --command=$cmd --to "${extract_dir}" ${RELEASE_IMAGE}
 ~~~
+
+## Retrieving the OpenShift Installer (GA Release)
+
+The `latest-4.x` (i.e. `latest-4.3`) may be used to deploy the latest 
+Generally Available version of Red Hat OpenShift Platform.
+
+Configure VARS
+    ~~~sh
+    export VERSION=latest-4.3
+    export RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}' | xargs)
+    ~~~
+ 
+
+### Extract the Installer (GA Release)
+
+Once the installer has been chosen, the next step is to extract it. 
+
+~~~sh
+export cmd=openshift-baremetal-install
+export pullsecret_file=~/pull-secret.txt
+export extract_dir=$(pwd)
+# Get the oc binary
+curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/openshift-client-linux-$VERSION.tar.gz | tar zxvf - oc
+sudo cp ./oc /usr/local/bin/oc
+# Extract the baremetal installer
+oc adm release extract --registry-config "${pullsecret_file}" --command=$cmd --to "${extract_dir}" ${RELEASE_IMAGE}
+~~~
+
+
 
 ## Configure the install-config and metal3-config
 
