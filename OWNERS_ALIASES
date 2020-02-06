@@ -4,10 +4,12 @@ aliases:
   approvers:
     - karmab
     - davidvossel
+    - rlopez133
   code-reviewers:
     - karmab
     - e-minguez
     - davidvossel
+    - rlopez133
   cnf-reviewers:
     - cynepco3hahue
     - slintes
