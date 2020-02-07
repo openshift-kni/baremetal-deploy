@@ -4,6 +4,7 @@ metadata:
   name: {{ cluster }}
 networking:
   machineCIDR: {{ extcidrnet }}
+  networkType: {{ network_type }}
 compute:
 - name: worker
   replicas: {{ numworkers }}

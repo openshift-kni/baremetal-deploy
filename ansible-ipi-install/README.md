@@ -269,6 +269,9 @@ cluster=""
 extcidrnet=""
 # An IP reserved on the baremetal network. 
 dnsvip=""
+# Network Type (OpenShiftSDN or OVNKubernetes). Playbook defaults to OVNKubernetes.
+# Uncomment below for OpenShiftSDN
+#network_type="OpenShiftSDN"
 # A copy of your pullsecret from https://cloud.redhat.com/openshift/install/metal/user-provisioned
 pullsecret=""
 
