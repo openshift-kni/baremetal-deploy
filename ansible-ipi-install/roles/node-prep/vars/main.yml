@@ -2,6 +2,7 @@
 # vars file for node-prep
 package_list:
   - firewalld
+  - tar
   - libvirt
   - qemu-kvm
   - python3-devel
