@@ -537,8 +537,8 @@ export RHCOS_QEMU_SHA_UNCOMPRESSED=$(curl -s -S https://raw.githubusercontent.co
 # Get the SHA hash for the RHCOS image that will be deployed on the nodes
 export RHCOS_OPENSTACK_SHA_COMPRESSED=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json  | jq -r '.images.openstack.sha256')
 # Download the images and place them on the default apache directory
-sudo curl -L ${RHCOS_PATH}${RHCOS_QEMU_URI} -o /var/www/html/images/$RHCOS_QEMU_URI
-sudo curl -L ${RHCOS_PATH}${RHCOS_OPENSTACK_URI} -o /var/www/html/$RHCOS_OPENSTACK_URI
+sudo curl -L ${RHCOS_PATH}${RHCOS_QEMU_URI} -o /var/www/html/$RHCOS_QEMU_URI
+sudo curl -L ${RHCOS_PATH}${RHCOS_OPENSTACK_URI} -o /var/www/$RHCOS_OPENSTACK_URI
 ~~~
 
 ## Configure the install-config and metal3-config
