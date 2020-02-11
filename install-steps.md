@@ -551,6 +551,7 @@ oc adm release extract --registry-config "${pullsecret_file}" --command=$cmd --t
       name: <cluster-name>
     networking:
       machineCIDR: <public-cidr>
+      networkType: OVNKubernetes
     compute:
     - name: worker
       replicas: 2
