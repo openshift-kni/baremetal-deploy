@@ -2,3 +2,4 @@
 # vars file for installer
 pullsecret_file: "{{ ansible_user_dir }}/clusterconfigs/pull-secret.txt"
 cmd: openshift-baremetal-install
+default_libvirt_pool_dir: /var/lib/libvirt/images/
