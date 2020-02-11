@@ -594,7 +594,19 @@ NOTE: Ensure to change the appropriate variables to match your environment.
    ipmitool -I lanplus -U <user> -P <password> -H <management-server-ip> power off
    ~~~
 
-4. IMPORTANT: This portion is critical as the OpenShift installation won't complete without
+4. Ensure that old bootstrap resources are removed (if left-over from a previous deployment
+   attempt)
+   ~~~sh
+   for i in $(sudo virsh list | tail -n +3 | grep bootstrap | awk {'print $2'});
+   do
+     sudo virsh destroy $i;
+     sudo virsh undefine $i;
+     sudo virsh vol-delete $i --pool default;
+     sudo virsh vol-delete $i.ign --pool default;
+   done
+   ~~~
+
+5. IMPORTANT: This portion is critical as the OpenShift installation won't complete without
 the metal3-operator being fully operational. This is due to this 
 [issue](https://github.com/openshift/installer/pull/2449) we need 
 to fix the ConfigMap for the Metal3 operator. This ConfigMap is used to notify 
@@ -621,21 +633,21 @@ to fix the ConfigMap for the Metal3 operator. This ConfigMap is used to notify
     ~~~
     NOTE: The `provisioning_ip` should be modified to an available IP on the `provision` network. The default is `172.22.0.3`
 
-5. Create the final ConfigMap
+6. Create the final ConfigMap
     ~~~sh
     export COMMIT_ID=$(./openshift-baremetal-install version | grep '^built from commit' | awk '{print $4}')
     export RHCOS_URI=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json | jq .images.openstack.path | sed 's/"//g')
     export RHCOS_PATH=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json | jq .baseURI | sed 's/"//g')
     envsubst < metal3-config.yaml.sample > metal3-config.yaml
     ~~~
-6. Create the OpenShift manifests
+7. Create the OpenShift manifests
    ~~~sh
    ./openshift-baremetal-install --dir ~/clusterconfigs create manifests
    INFO Consuming Install Config from target directory 
    WARNING Making control-plane schedulable by setting MastersSchedulable to true for Scheduler cluster settings 
    WARNING Discarding the Openshift Manifests that was provided in the target directory because its dependencies are dirty and it needs to be regenerated 
    ~~~
-7. Copy the `metal3-config.yaml` to the `clusterconfigs/openshift` directory
+8. Copy the `metal3-config.yaml` to the `clusterconfigs/openshift` directory
    ~~~sh
    cp ~/metal3-config.yaml clusterconfigs/openshift/99_metal3-config.yaml
    ~~~
