@@ -17,6 +17,7 @@ platform:
     apiVIP: {{ apivip }}
     ingressVIP: {{ ingressvip }}
     dnsVIP: {{ dnsvip }}
+    provisioningNetworkInterface: {{ prov_nic }}
     hosts:
 {% for host in groups['masters'] %}
       - name: {{ hostvars[host]['name'] }}
