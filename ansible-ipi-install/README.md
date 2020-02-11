@@ -110,6 +110,7 @@ The tree structure is shown below:
     │   │   ├── 30_create_metal3.yml
     │   │   ├── 40_create_manifest.yml
     │   │   ├── 50_extramanifests.yml
+    │   │   ├── 59_cleanup_bootstrap.yml
     │   │   ├── 60_deploy_ocp.yml
     │   │   ├── 70_cleanup_sub_man_registeration.yml
     │   │   └── main.yml
