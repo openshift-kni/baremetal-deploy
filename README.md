@@ -22,6 +22,7 @@ by nmstate.
 * [SCTP](features/sctp). These assets enables Stream Control Transmission Protocol (SCTP) in the RHCOS
 worker nodes.
 * [SRIOV](features/sriov). The SR-IOV Network Operator creates and manages the components of the SR-IOV stack.
+* [CNV](features/cnv). Container-native virtualization is an add-on to OpenShift Container Platform that allows you to run and manage virtual machine workloads alongside container workloads.
 
 ## Performance tuning
 
