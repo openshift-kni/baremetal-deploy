@@ -8,4 +8,41 @@
 - name: Deploy OpenShift Cluster
   shell: |
     /usr/local/bin/openshift-baremetal-install --dir {{ dir }} --log-level debug create cluster
+  when:
+    - increase_bootstrap_timeout is not defined
+    - increase_install_timeout is not defined
+  tags: install
+
+- name: Deploy OpenShift Cluster with extended timeouts
+  block:
+    - name: Run OpenShift Cluster install as async task
+      shell: |
+        /usr/local/bin/openshift-baremetal-install --dir {{ dir }} --log-level debug create cluster
+      async: 3600
+      poll: 0
+      ignore_errors: yes
+      register: installer_result
+
+    - name: Wait for kubeconfig file
+      wait_for:
+        path: "{{ dir }}/auth/kubeconfig"
+        timeout: 90
+        msg: Timeout waiting for kubeconfig file
+
+    - name: Wait for Bootstrap Complete
+      shell: |
+        /usr/local/bin/openshift-baremetal-install --dir {{ dir }} --log-level debug wait-for bootstrap-complete
+      register: wait_for_bootstrap_result
+      until: wait_for_bootstrap_result is succeeded
+      retries: "{{ increase_bootstrap_timeout|int }}"
+      delay: 1
+
+    - name: Wait for Install Complete
+      shell: |
+        /usr/local/bin/openshift-baremetal-install --dir {{ dir }} --log-level debug wait-for install-complete
+      register: wait_for_install_result
+      until: wait_for_install_result is succeeded
+      retries: "{{ increase_install_timeout|int }}"
+      delay: 1
+  when: increase_bootstrap_timeout is defined or increase_install_timeout is defined
   tags: install

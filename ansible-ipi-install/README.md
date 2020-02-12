@@ -267,6 +267,29 @@ prov_ip=172.22.0.3
 # (Optional) A list of clock servers to be used in chrony by the masters and workers
 #clock_servers=["pool.ntp.org","clock.redhat.com"]
 
+# (Optional) Provide HTTP proxy settings
+#http_proxy=http://USERNAME:PASSWORD@proxy.example.com:8080
+
+# (Optional) Provide HTTPS proxy settings
+#https_proxy=https://USERNAME:PASSWORD@proxy.example.com:8080
+
+# (Optional) comma-separated list of hosts, IP Addresses, or IP ranges in CIDR format
+# excluded from proxying
+# NOTE: OpenShift does not accept '*' as a wildcard attached to a domain suffix
+# i.e. *.example.com
+# Use '.' as the wildcard for a domain suffix as shown in the example below.
+# i.e. .example.com
+#no_proxy_list="172.22.0.0/24,.example.com"
+
+# The default installer timeouts for the bootstrap and install processes may be too short for some baremetal
+# deployments. The variables below can be used to extend those timeouts.
+
+# (Optional) Increase bootstrap process timeout by N iterations.
+#increase_bootstrap_timeout=2
+
+# (Optional) Increase install process timeout by N iterations.
+#increase_install_timeout=2
+
 ######################################
 # Vars regarding install-config.yaml #
 ######################################
