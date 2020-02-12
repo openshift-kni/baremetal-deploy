@@ -11,6 +11,7 @@
   set_fact:
     apivip: "{{ lookup('dig', 'api.{{ cluster |quote }}.{{ domain | quote }}.')}}"
     ingressvip: "{{ lookup('dig', 'foo.apps.{{ cluster |quote }}.{{ domain | quote }}.')}}"
+  when: ((apivip is undefined) or (ingressvip is undefined) or (apivip|length == 0) or (ingressvip|length == 0))
 
 - debug: msg="The API VIP is {{ apivip }}"
 - debug: msg="The Wildcard (Ingress) VIP is {{ ingressvip }}"
