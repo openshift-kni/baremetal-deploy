@@ -18,6 +18,9 @@ platform:
     apiVIP: {{ apivip }}
     ingressVIP: {{ ingressvip }}
     dnsVIP: {{ dnsvip }}
+{% if (release_version[0]|int >= 4) and (release_version[2]|int > 3) %}
+    provisioningNetworkInterface: {{ prov_nic }}
+{% endif %}
     hosts:
 {% for host in groups['masters'] %}
       - name: {{ hostvars[host]['name'] }}
