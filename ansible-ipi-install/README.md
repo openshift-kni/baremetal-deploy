@@ -112,6 +112,7 @@ The tree structure is shown below:
     │   │   ├── 30_create_metal3.yml
     │   │   ├── 40_create_manifest.yml
     │   │   ├── 50_extramanifests.yml
+    │   │   ├── 59_cleanup_bootstrap.yml
     │   │   ├── 60_deploy_ocp.yml
     │   │   ├── 70_cleanup_sub_man_registeration.yml
     │   │   └── main.yml
@@ -269,6 +270,9 @@ cluster=""
 extcidrnet=""
 # An IP reserved on the baremetal network. 
 dnsvip=""
+# Network Type (OpenShiftSDN or OVNKubernetes). Playbook defaults to OVNKubernetes.
+# Uncomment below for OpenShiftSDN
+#network_type="OpenShiftSDN"
 # A copy of your pullsecret from https://cloud.redhat.com/openshift/install/metal/user-provisioned
 pullsecret=""
 

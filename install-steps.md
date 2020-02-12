@@ -58,11 +58,11 @@ document.
 | Ingress LB (apps) |  *.apps.\<cluster-name\>.\<domain\>  | \<ip\> |
 | Nameserver | ns1.\<cluster-name\>.\<domain\> | \<ip\> |
 | Provisioning node | provisioner.\<cluster-name\>.<domain\> | \<ip\> |
-| Master-0 | \<cluster-name\>-master-0.<domain\> | \<ip\> |
-| Master-1 | \<cluster-name\>-master-1.<domain\> | \<ip\> |
-| Master-2 | \<cluster-name\>-master-2.<domain\> | \<ip\> |
-| Worker-0 | \<cluster-name\>-worker-0.<domain\> | \<ip\> |
-| Worker-1 | \<cluster-name\>-worker-1.<domain\> | \<ip\> |
+| Master-0 | master-0.\<cluster-name\>.\<domain\> | \<ip\> |
+| Master-1 | master-1.\<cluster-name\>-.\<domain\> | \<ip\> |
+| Master-2 | master-2.\<cluster-name\>.\<domain\> | \<ip\> |
+| Worker-0 | worker-0.\<cluster-name\>.\<domain\> | \<ip\> |
+| Worker-1 | worker-1.\<cluster-name\>.\<domain\> | \<ip\> |
 
 ### DNS Server
 
@@ -471,14 +471,14 @@ The following steps need to be performed in order to prepare the environment.
 15. Copy the pull secret (`pull-secret.txt`) generated earlier and place it in the provision node new user home directory
     
 
-## Retrieving the OpenShift Installer
+## Retrieving the OpenShift Installer (Development)
 
 Two approaches:
 
 1. Choose a successfully deployed release that passed CI
-2. Deploy latest
+2. Deploy latest development version
 
-### Choosing a OpenShift Installer Release from CI
+### Choosing a OpenShift Installer Release from CI (Development)
 
 1. Go to [https://openshift-release.svc.ci.openshift.org/](https://openshift-release.svc.ci.openshift.org/) and choose a release which has passed the tests for metal.
 2. Verify that the release is available in the OpenShift mirror [https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/](https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/).
@@ -489,7 +489,7 @@ Two approaches:
     export RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/$VERSION/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}' | xargs)
     ~~~
 
-### Choosing the latest OpenShift Installer
+### Choosing the latest OpenShift Installer (Development)
 
 1. Configure VARS
     ~~~sh
@@ -497,7 +497,7 @@ Two approaches:
     export RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}' | xargs)
     ~~~
 
-### Extract the Installer
+### Extract the Installer (Development)
 
 Once the installer has been chosen, the next step is to extract it. 
 
@@ -551,6 +551,7 @@ sudo curl -L ${RHCOS_PATH}${RHCOS_OPENSTACK_URI} -o /var/www/$RHCOS_OPENSTACK_UR
       name: <cluster-name>
     networking:
       machineCIDR: <public-cidr>
+      networkType: OVNKubernetes
     compute:
     - name: worker
       replicas: 2
@@ -627,7 +628,19 @@ NOTE: Ensure to change the appropriate variables to match your environment.
    ipmitool -I lanplus -U <user> -P <password> -H <management-server-ip> power off
    ~~~
 
-4. IMPORTANT: This portion is critical as the OpenShift installation won't complete without
+4. Ensure that old bootstrap resources are removed (if left-over from a previous deployment
+   attempt)
+   ~~~sh
+   for i in $(sudo virsh list | tail -n +3 | grep bootstrap | awk {'print $2'});
+   do
+     sudo virsh destroy $i;
+     sudo virsh undefine $i;
+     sudo virsh vol-delete $i --pool default;
+     sudo virsh vol-delete $i.ign --pool default;
+   done
+   ~~~
+
+5. IMPORTANT: This portion is critical as the OpenShift installation won't complete without
 the metal3-operator being fully operational. This is due to this 
 [issue](https://github.com/openshift/installer/pull/2449) we need 
 to fix the ConfigMap for the Metal3 operator. This ConfigMap is used to notify 
@@ -654,21 +667,21 @@ to fix the ConfigMap for the Metal3 operator. This ConfigMap is used to notify
     ~~~
     NOTE: The `provisioning_ip` should be modified to an available IP on the `provision` network. The default is `172.22.0.3`
 
-5. Create the final ConfigMap
+6. Create the final ConfigMap
     ~~~sh
     export COMMIT_ID=$(./openshift-baremetal-install version | grep '^built from commit' | awk '{print $4}')
     export RHCOS_URI=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json | jq .images.openstack.path | sed 's/"//g')
     export RHCOS_PATH=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json | jq .baseURI | sed 's/"//g')
     envsubst < metal3-config.yaml.sample > metal3-config.yaml
     ~~~
-6. Create the OpenShift manifests
+7. Create the OpenShift manifests
    ~~~sh
    ./openshift-baremetal-install --dir ~/clusterconfigs create manifests
    INFO Consuming Install Config from target directory 
    WARNING Making control-plane schedulable by setting MastersSchedulable to true for Scheduler cluster settings 
    WARNING Discarding the Openshift Manifests that was provided in the target directory because its dependencies are dirty and it needs to be regenerated 
    ~~~
-7. Copy the `metal3-config.yaml` to the `clusterconfigs/openshift` directory
+8. Copy the `metal3-config.yaml` to the `clusterconfigs/openshift` directory
    ~~~sh
    cp ~/metal3-config.yaml clusterconfigs/openshift/99_metal3-config.yaml
    ~~~

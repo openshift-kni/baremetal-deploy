@@ -1,4 +1,30 @@
 ---
+- name: Find any old tmp dirs with OpenShift related binaries
+  find:
+    paths: /tmp
+    patterns: 'ansible.*'
+    file_type: directory
+  register: tmp_results
+
+- name: Delete any old tmp dirs with OpenShift related binaries
+  file:
+    path: "{{ item['path'] }}"
+    state: absent
+  loop: "{{ tmp_results['files'] }}"
+
+- name: Find any existing /usr/local/bin OpenShift binaries
+  find:
+    paths: /usr/local/bin
+    patterns: 'oc,openshift-baremetal-install,kubectl'
+  register: binary_results
+
+- name: Remove any existing /usr/local/bin OpenShift binaries
+  file:
+    path: "{{ item['path'] }}"
+    state: absent
+  loop: "{{ binary_results['files'] }}"
+  become: yes
+
 - name: Create tmp directory to store OpenShift binaries
   tempfile:
     state: directory
