@@ -23,3 +23,4 @@
     group: "{{ ansible_user }}"
     mode: '0644'
     remote_src: yes
+  when: (release_version[0]|int == 4) and (release_version[2]|int <= 3)
