@@ -30,7 +30,7 @@ platform:
           username: {{ hostvars[host]['ipmi_user'] }}
           password: {{ hostvars[host]['ipmi_password'] }}
         bootMACAddress: {{ hostvars[host]['provision_mac'] }}
-        hardwareProfile: default
+        hardwareProfile: {{ hostvars[host]['hardware_profile'] or "default" }}
 {% endfor %}
 {% for host in groups['workers'] %}
       - name: {{ hostvars[host]['name'] }}
@@ -40,7 +40,7 @@ platform:
           username: {{ hostvars[host]['ipmi_user'] }}
           password: {{ hostvars[host]['ipmi_password'] }}
         bootMACAddress: {{ hostvars[host]['provision_mac'] }}
-        hardwareProfile: unknown
+        hardwareProfile: {{ hostvars[host]['hardware_profile'] or "unknown" }}
 {% endfor %}
 pullSecret: '{{ pullsecret }}'
 sshKey: '{{ key }}'
