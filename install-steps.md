@@ -512,6 +512,32 @@ sudo cp ./oc /usr/local/bin/oc
 oc adm release extract --registry-config "${pullsecret_file}" --command=$cmd --to "${extract_dir}" ${RELEASE_IMAGE}
 ~~~
 
+## Retrieving the OpenShift Installer (GA Release)
+
+The `latest-4.x` (i.e. `latest-4.3`) may be used to deploy the latest 
+Generally Available version of Red Hat OpenShift Platform.
+
+Configure VARS
+~~~sh
+export VERSION=latest-4.3
+export RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}' | xargs)
+~~~
+
+### Extract the Installer (GA Release)
+
+Once the installer has been chosen, the next step is to extract it. 
+
+~~~sh
+export cmd=openshift-baremetal-install
+export pullsecret_file=~/pull-secret.txt
+export extract_dir=$(pwd)
+# Get the oc binary
+curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/openshift-client-linux-$VERSION.tar.gz | tar zxvf - oc
+sudo cp ./oc /usr/local/bin/oc
+# Extract the baremetal installer
+oc adm release extract --registry-config "${pullsecret_file}" --command=$cmd --to "${extract_dir}" ${RELEASE_IMAGE}
+~~~
+
 ### Create RHCOS images cache (Optional)
 
 The installer needs to download two images, the RHCOS image used by the bootrstrap VM and the RHCOS image used by the installer to provision the different nodes.
@@ -538,7 +564,7 @@ export RHCOS_QEMU_SHA_UNCOMPRESSED=$(curl -s -S https://raw.githubusercontent.co
 export RHCOS_OPENSTACK_SHA_COMPRESSED=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json  | jq -r '.images.openstack.sha256')
 # Download the images and place them on the default apache directory
 sudo curl -L ${RHCOS_PATH}${RHCOS_QEMU_URI} -o /var/www/html/$RHCOS_QEMU_URI
-sudo curl -L ${RHCOS_PATH}${RHCOS_OPENSTACK_URI} -o /var/www/$RHCOS_OPENSTACK_URI
+sudo curl -L ${RHCOS_PATH}${RHCOS_OPENSTACK_URI} -o /var/www/html/$RHCOS_OPENSTACK_URI
 ~~~
 
 ## Configure the install-config and metal3-config
