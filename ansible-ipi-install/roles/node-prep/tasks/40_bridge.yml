@@ -68,7 +68,10 @@
     mode: u=rw,g=r,o=r
   become: yes
 
-- name: Get DHCP for baremetal bridge
+- name: Reload baremetal bridge and slave interfaces
   shell: |
-    /usr/sbin/ifdown {{ pub_nic }}; /usr/bin/pkill dhclient ; /usr/sbin/ifdown baremetal ; /usr/sbin/ifup {{ pub_nic }}; /usr/sbin/ifup baremetal
+    /usr/bin/nmcli con reload {{ item }}; /usr/bin/nmcli con up {{ item }}
+  with_items:
+    - baremetal
+    - "{{ pub_nic }}"
   become: yes

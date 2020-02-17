@@ -1,0 +1,57 @@
+---
+- name: Verify if {{ role_path }}/files/customize_filesystem/master/worker is empty
+  find:
+    paths: "{{ role_path }}/files/customize_filesystem/{{ item }}"
+    recurse: yes
+    follow: yes
+  register: filesFound
+  with_items:
+    - "master"
+    - "worker"
+  delegate_to: localhost
+
+- name: Modify Ignition Configs
+  block:
+
+  - name: Create OpenShift Ignition Configs
+    shell: |
+      /usr/local/bin/openshift-baremetal-install --dir {{ dir }} create ignition-configs
+
+  - name: Get Filetranspiler
+    get_url:
+      url: https://raw.githubusercontent.com/ashcrow/filetranspiler/master/filetranspile
+      dest: "{{ tempdir }}/filetranspile.py"
+      mode: '0755'
+
+  - name: Copy Ignition Config Files
+    copy:
+      src: "{{ dir }}/{{ item }}.ign"
+      dest: "{{ dir }}/{{ item }}.ign.orig"
+    with_items:
+      - "master"
+      - "worker"
+
+  - name: Cleanup Any .gitkeep Files in the Fake Root
+    file:
+      path: "{{ role_path }}/files/customize_filesystem/{{ item }}/.gitkeep"
+      state: absent
+      follow: yes
+    with_items:
+      - "master"
+      - "worker"
+    become: true
+
+  - name: Augment Ignition Config Files
+    shell: |
+      {{ tempdir }}/filetranspile.py -i {{ dir }}/{{ item }}.ign.orig -f {{ role_path }}/files/customize_filesystem/{{ item }} -o {{ dir }}/{{ item }}.ign
+    with_items:
+      - "master"
+      - "worker"
+    become: true
+
+  when: (filesFound | json_query('results[*].matched') | sum) > 0
+
+- name: Delete tmp dir as no longer needed
+  file:
+    path: "{{ tempdir }}"
+    state: absent

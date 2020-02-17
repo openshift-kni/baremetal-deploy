@@ -2,6 +2,7 @@
 # tasks file for installer
 - include_tasks: 10_get_oc.yml 
 - include_tasks: 20_extract_installer.yml
+- include_tasks: 25_customize_filesystem.yml
 - include_tasks: 30_create_metal3.yml
   when: (release_version[0]|int == 4) and (release_version[2]|int <= 3)
 - include_tasks: 40_create_manifest.yml

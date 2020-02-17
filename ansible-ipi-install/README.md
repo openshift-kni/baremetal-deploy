@@ -328,13 +328,47 @@ Sample playbook.yml
   - installer
 ~~~
 
+## Customizing the Node Filesystems
+If you need to modify files on the node filesystems, you can augment the "fake"
+roots for the masters and workers under the 
+`roles/installer/files/customize_filesystem/{master,worker}` directories. 
+Any files added here will be included in the ignition config files for each
+of the machine types, leading to permanent changes to the node filesystem.
+
+NOTE: Do not place any files directly in the "fake" root -- only in subdirectories.
+Files in the root will cause the ignition process to fail. (There is a task in the 
+playbook to cleanup the `.gitkeep` file in the root, if it is left in place.)
+
+This will utilize the Ignition 
+[filetranspiler tool](https://github.com/ashcrow/filetranspiler/blob/master/filetranspile), 
+which you can read about for more information on how to use the "fake" root directories.
+
+An example of using this customization is to disable a network interface that
+you need to not receive a DHCP assignment that is outside of the cluster
+configuration. To do this for the `eno1` interface on the master nodes, create
+the appropriate `etc/sysconfig/network-scripts/ifcfg-eno1` file in the "fake" root:
+
+~~~sh
+IFCFG_DIR="roles/installer/files/customize_filesystem/master/etc/sysconfig/network-scripts"
+IFNAME="eno1"
+mkdir -p $IFCFG_DIR
+cat << EOF > $IFCFG_DIR/ifcfg-${IFNAME}
+DEVICE=${IFNAME}
+BOOTPROTO=none
+ONBOOT=no
+EOF
+~~~
+
+NOTE: By default these directories are empty, and the `worker` subdirectory is a
+symbolic link to the `master` subdirectory so that changes are universal.
+
 ## Adding Extra Configurations to the OpenShift Installer
 Prior to the installation of Red Hat OpenShift, you may want to include
 additional configuration files to be included during the installation. The
 `installer` role handles this. 
 
 In order to include the extraconfigs, ensure to place your `yaml` files within
-the `roles/installer/files` directory. All the files provided here will be
+the `roles/installer/files/manifests` directory. All the files provided here will be
 included when the OpenShift manifests are created. 
 
 NOTE: By default this directory is empty. 
