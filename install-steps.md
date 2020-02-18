@@ -540,11 +540,11 @@ oc adm release extract --registry-config "${pullsecret_file}" --command=$cmd --t
 
 ### Create RHCOS images cache (Optional)
 
-The installer needs to download two images, the RHCOS image used by the bootrstrap VM and the RHCOS image used by the installer to provision the different nodes.
+The installer needs to download two images, the RHCOS image used by the bootstrap VM and the RHCOS image used by the installer to provision the different nodes. Image caching is specially useful when running the installer on a network with limited bandwidth.
 
-When running the installer on a network with limited bandwidth sometimes the installer times out while downloading the images, in order to fix that it is recommended to cache the RHCOS images.
+When running the installer on a network with limited bandwidth if the RHCOS images download takes more than 15-20 minutes, the installer will timeout, having these images cached on a local `httpd` will help in such scenarios.
 
-The following steps will install httpd and download the required images:
+The following steps will install `httpd` and download the required images:
 
 ~~~sh
 # Install and run httpd server
@@ -588,7 +588,7 @@ sudo curl -L ${RHCOS_PATH}${RHCOS_OPENSTACK_URI} -o /var/www/html/$RHCOS_OPENSTA
         baremetal: {}
     platform:
       baremetal:
-        # If you are using cached images you need to configure the following properties (bootstrapOSImage and clusterOSImage) so the installer gets the images from the cache
+        # If you are using cached images you need to configure the following properties (bootstrapOSImage and clusterOSImage) so the installer gets the images from the cache https://github.com/openshift-kni/baremetal-deploy/blob/master/install-steps.md#create-rhcos-images-cache-optional
         # bootstrapOSImage: http://172.22.0.1/$RHCOS_QEMU_URI?sha256=$RHCOS_QEMU_SHA_UNCOMPRESSED
         # clusterOSImage: http://172.22.0.1/$RHCOS_OPENSTACK_URI?sha256=$RHCOS_OPENSTACK_SHA_COMPRESSED
         apiVIP: <api-ip>
