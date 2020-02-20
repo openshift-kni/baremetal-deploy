@@ -379,8 +379,8 @@ NOTE: By default this directory is empty.
 
 ## Pre-caching RHCOS Images
 If you wish to have the bootstrap to use cached RHCOS images, set the 
-`use_rhcos_image_cache` variable to true (in your hosts file, via a 
-CLI `-e` argument, etc).
+`use_rhcos_image_cache` variable to `True` in your hosts file (make sure you use
+`True` and not `true`).
 
 When requested, the playbook will pre-download RHCOS images prior to actual cluster
 deployment.  It places these images in an Apache web server on the provisioning
