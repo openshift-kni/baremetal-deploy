@@ -383,15 +383,15 @@ included when the OpenShift manifests are created.
 NOTE: By default this directory is empty. 
 
 ## Pre-caching RHCOS Images
-By default, the playbook will pre-download RHCOS images prior to actual cluster
+If you wish to have the bootstrap to use cached RHCOS images, set the 
+`use_rhcos_image_cache` variable to true (in your hosts file, via a 
+CLI `-e` argument, etc).
+
+When requested, the playbook will pre-download RHCOS images prior to actual cluster
 deployment.  It places these images in an Apache web server on the provisioning
 host, and modifies `metal3-config.yaml` or `install-config.yaml` (depending on 
 whether the version is set to 4.3 or 4.4+) to instruct the bootstrap to
 download the images from that web server during deployment.  
-
-If you wish to force the bootstrap to download the RHCOS images from the Internet,
-set the `use_rhcos_image_cache` variable to false (in your hosts file, via a 
-CLI `-e` argument, etc).
 
 ## Running the `playbook.yml`
 
