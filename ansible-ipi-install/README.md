@@ -109,6 +109,8 @@ The tree structure is shown below:
     │   ├── tasks
     │   │   ├── 10_get_oc.yml
     │   │   ├── 20_extract_installer.yml
+    │   │   ├── 23_rhcos_image_paths.yml
+    │   │   ├── 24_rhcos_image_cache.yml
     │   │   ├── 30_create_metal3.yml
     │   │   ├── 40_create_manifest.yml
     │   │   ├── 50_extramanifests.yml
@@ -118,6 +120,7 @@ The tree structure is shown below:
     │   │   └── main.yml
     │   ├── templates
     │   │   └── metal3-config.j2
+    │   │   └── rhcos-image-md5sum.j2
     │   ├── tests
     │   │   ├── inventory
     │   │   └── test.yml
@@ -378,6 +381,17 @@ the `roles/installer/files/manifests` directory. All the files provided here wil
 included when the OpenShift manifests are created. 
 
 NOTE: By default this directory is empty. 
+
+## Pre-caching RHCOS Images
+By default, the playbook will pre-download RHCOS images prior to actual cluster
+deployment.  It places these images in an Apache web server on the provisioning
+host, and modifies metal3-config.yaml or install-config.yaml (depending on 
+whether the version is set to 4.3 or 4.4+) to instruct the bootstrap to
+download the images from that web server during deployment.  
+
+If you wish to force the bootstrap to download the RHCOS images from the Internet,
+set the `use_rhcos_image_cache` variable to false (in your hosts file, via a 
+CLI `-e` argument, etc).
 
 ## Running the `playbook.yml`
 
