@@ -6,9 +6,15 @@
     rhcos_qemu_sha256: '{{ rhcos_json.json | json_query(''images.qemu."uncompressed-sha256"'') }}'
   when: (release_version[0]|int > 4) or (release_version[2]|int > 3)
 
+<<<<<<< HEAD
 - name: Set fact for RHCOS_SHA256
   set_fact:
     rhcos_sha256: "{{ rhcos_json.json | json_query('images.openstack.sha256') }}"
+=======
+- name: Set fact for RHCOS_OPENSTACK_SHA256
+  set_fact:
+    rhcos_openstack_sha256: "{{ rhcos_json.json | json_query('images.openstack.sha256') }}"
+>>>>>>> Pre-caching for RHCOS images
 
 - name: Check if {{ rhcos_qemu_uri }} is already in cache (4.4+ only)
   stat: 
