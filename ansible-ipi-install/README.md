@@ -385,7 +385,7 @@ NOTE: By default this directory is empty.
 ## Pre-caching RHCOS Images
 By default, the playbook will pre-download RHCOS images prior to actual cluster
 deployment.  It places these images in an Apache web server on the provisioning
-host, and modifies metal3-config.yaml or install-config.yaml (depending on 
+host, and modifies `metal3-config.yaml` or `install-config.yaml` (depending on 
 whether the version is set to 4.3 or 4.4+) to instruct the bootstrap to
 download the images from that web server during deployment.  
 
