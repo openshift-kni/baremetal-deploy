@@ -25,6 +25,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
+    timeout: 3600
   when: ((release_version[0]|int > 4) or (release_version[2]|int > 3)) and (rhcos_qemu_stat.stat.exists == false or rhcos_qemu_stat.stat.checksum != rhcos_qemu_sha256)
   become: yes
 
@@ -42,6 +43,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
+    timeout: 3600
   when: (rhcos_openstack_stat.stat.exists == false or rhcos_openstack_stat.stat.checksum != rhcos_openstack_sha256)
   become: yes
 
