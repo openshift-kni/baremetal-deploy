@@ -1,0 +1,124 @@
+---
+# rhcos_json fact already set in 23_rhcos_image_paths.yaml
+
+- name: Set fact for RHCOS_QEMU_SHA256 (4.4+ only)
+  set_fact:
+    rhcos_qemu_sha256: '{{ rhcos_json.json | json_query(''images.qemu."uncompressed-sha256"'') }}'
+  when: (release_version[0]|int > 4) or (release_version[2]|int > 3)
+
+- name: Set fact for RHCOS_OPENSTACK_SHA256
+  set_fact:
+    rhcos_openstack_sha256: "{{ rhcos_json.json | json_query('images.openstack.sha256') }}"
+
+- name: Check if {{ rhcos_qemu_uri }} is already in cache (4.4+ only)
+  stat: 
+    path: "/var/www/html/{{ rhcos_qemu_uri }}"
+    checksum_algorithm: sha256
+    get_checksum: yes
+  register: rhcos_qemu_stat
+  when: (release_version[0]|int > 4) or (release_version[2]|int > 3)
+
+- name: Download {{ rhcos_qemu_uri }} for cache (4.4+ only)
+  get_url:
+    url:  "{{ rhcos_path }}/{{ rhcos_qemu_uri }}"
+    dest: "/var/www/html/{{ rhcos_qemu_uri }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+  when: ((release_version[0]|int > 4) or (release_version[2]|int > 3)) and (rhcos_qemu_stat.stat.exists == false or rhcos_qemu_stat.stat.checksum != rhcos_qemu_sha256)
+  become: yes
+
+- name: Check if {{ rhcos_openstack_uri }} is already in cache
+  stat: 
+    path: "/var/www/html/{{ rhcos_openstack_uri }}"
+    checksum_algorithm: sha256
+    get_checksum: yes
+  register: rhcos_openstack_stat
+
+- name: Download {{ rhcos_openstack_uri }} for cache
+  get_url:
+    url:  "{{ rhcos_path }}/{{ rhcos_openstack_uri }}"
+    dest: "/var/www/html/{{ rhcos_openstack_uri }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+  when: (rhcos_openstack_stat.stat.exists == false or rhcos_openstack_stat.stat.checksum != rhcos_openstack_sha256)
+  become: yes
+
+# The following cache customizations are required for 4.3, because the installer
+# does not seem to be honoring the rhcos_image_url and cache_url values in the metal3-config
+# yaml config map (perhaps support for them was removed?).  Instead, we just put the 
+# image and its checksum where the bootstrap expects to find them by default.
+- name: Cache customizations needed for 4.3
+  block:
+    - name: Create images dir in httpd root
+      file:
+        path: "/var/www/html/images"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+      become: yes
+
+    - name: Set fact for cache image without gz extension
+      set_fact:
+        rhcos_openstack_uri_minus_gz: "{{ rhcos_openstack_uri[:-3] }}"
+
+    - name: Set fact for cache image compressed qcow2 name
+      set_fact:
+        rhcos_compressed_qcow2: "{{ rhcos_openstack_uri_minus_gz | replace('openstack','compressed') }}"
+
+    - name: Create image sub-dir in httpd root
+      file:
+        path: "/var/www/html/images/{{ rhcos_openstack_uri_minus_gz }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+      become: yes
+
+    # unarchive module does NOT support non-tar gz files, so we have to use shell here
+    - name: Extract {{ rhcos_openstack_uri }} into image cache sub-dir
+      shell: "gunzip -ck /var/www/html/{{ rhcos_openstack_uri }} > /var/www/html/images/{{ rhcos_openstack_uri_minus_gz }}/{{ rhcos_openstack_uri_minus_gz }}"
+      become: true
+
+    - name: Convert image into compressed qcow2
+      shell: "qemu-img convert -O qcow2 -c /var/www/html/images/{{ rhcos_openstack_uri_minus_gz }}/{{ rhcos_openstack_uri_minus_gz }} /var/www/html/images/{{ rhcos_openstack_uri_minus_gz }}/{{ rhcos_compressed_qcow2 }}"
+      become: yes
+    
+    - name: Get md5sum of new compressed qcow2 image
+      shell: "md5sum /var/www/html/images/{{ rhcos_openstack_uri_minus_gz }}/{{ rhcos_compressed_qcow2 }} | awk '{print $1}'"
+      register: rhcos_image_md5sum
+      become: yes
+
+    - name: Create md5sum file in image cache sub-dir
+      template:
+        src: rhcos-image-md5sum.j2
+        dest: "/var/www/html/images/{{ rhcos_openstack_uri_minus_gz }}/{{ rhcos_compressed_qcow2 }}.md5sum"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+      become: yes
+  when: (release_version[0]|int == 4) and (release_version[2]|int <= 3) and ((rhcos_openstack_stat.stat.exists == false or rhcos_openstack_stat.stat.checksum != rhcos_openstack_sha256))
+
+- name: Override existing rhcos_path variable
+  set_fact:
+    rhcos_path: "http://172.22.0.1/"
+
+- name: Inject RHCOS image cache URLs into install-config.yaml (4.4+ only)
+  blockinfile:
+    path: "{{ item }}"
+    insertafter: "dnsVIP:"
+    block: |4
+            bootstrapOSImage: "{{ rhcos_path }}{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256 }}"
+            clusterOSImage: "{{ rhcos_path }}{{ rhcos_openstack_uri }}?sha256={{ rhcos_openstack_sha256 }}"
+  with_items:
+    - "{{ dir }}/install-config.yaml"
+    - "{{ dir }}/install-config.yaml.bkup"
+  when: (release_version[0]|int > 4) or (release_version[2]|int > 3)
+
+- name: Make sure httpd is started
+  systemd:
+    state: started
+    name: httpd
+  become: yes
