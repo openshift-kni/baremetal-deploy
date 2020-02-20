@@ -19,3 +19,4 @@
   set_fact:
     rhcos_qemu_uri: "{{ rhcos_json.json | json_query('images.qemu.path') }}"
   when: ((release_version[0]|int > 4) or (release_version[2]|int > 3)) and use_rhcos_image_cache == true
+  
