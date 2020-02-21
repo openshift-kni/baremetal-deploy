@@ -7,6 +7,11 @@
 - fail: msg="A variable regarding install-config.yml is undefined or empty."
   when: (domain is undefined) or (domain|length == 0) or (cluster is undefined) or (cluster|length == 0) or (extcidrnet is undefined) or (extcidrnet|length == 0) or (dnsvip is undefined) or (dnsvip|length == 0) or (pullsecret is undefined) or (pullsecret|length == 0)
 
+- name: Set fact of use_rhcos_cache
+  set_fact:
+    use_rhcos_image_cache: true
+  when: use_rhcos_image_cache == 'true'
+
 - name: Verify DNS records for API VIP, Wildcard (Ingress) VIP
   set_fact:
     apivip: "{{ lookup('dig', 'api.{{ cluster |quote }}.{{ domain | quote }}.')}}"
