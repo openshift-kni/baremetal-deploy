@@ -6,9 +6,9 @@
     rhcos_qemu_sha256: '{{ rhcos_json.json | json_query(''images.qemu."uncompressed-sha256"'') }}'
   when: (release_version[0]|int > 4) or (release_version[2]|int > 3)
 
-- name: Set fact for RHCOS_OPENSTACK_SHA256
+- name: Set fact for RHCOS_SHA256
   set_fact:
-    rhcos_openstack_sha256: "{{ rhcos_json.json | json_query('images.openstack.sha256') }}"
+    rhcos_sha256: "{{ rhcos_json.json | json_query('images.openstack.sha256') }}"
 
 - name: Check if {{ rhcos_qemu_uri }} is already in cache (4.4+ only)
   stat: 
@@ -29,22 +29,22 @@
   when: ((release_version[0]|int > 4) or (release_version[2]|int > 3)) and (rhcos_qemu_stat.stat.exists == false or rhcos_qemu_stat.stat.checksum != rhcos_qemu_sha256)
   become: yes
 
-- name: Check if {{ rhcos_openstack_uri }} is already in cache
+- name: Check if {{ rhcos_uri }} is already in cache
   stat: 
-    path: "/var/www/html/{{ rhcos_openstack_uri }}"
+    path: "/var/www/html/{{ rhcos_uri }}"
     checksum_algorithm: sha256
     get_checksum: yes
-  register: rhcos_openstack_stat
+  register: rhcos_stat
 
-- name: Download {{ rhcos_openstack_uri }} for cache
+- name: Download {{ rhcos_uri }} for cache
   get_url:
-    url:  "{{ rhcos_path }}/{{ rhcos_openstack_uri }}"
-    dest: "/var/www/html/{{ rhcos_openstack_uri }}"
+    url:  "{{ rhcos_path }}/{{ rhcos_uri }}"
+    dest: "/var/www/html/{{ rhcos_uri }}"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
     timeout: 3600
-  when: (rhcos_openstack_stat.stat.exists == false or rhcos_openstack_stat.stat.checksum != rhcos_openstack_sha256)
+  when: (rhcos_stat.stat.exists == false or rhcos_stat.stat.checksum != rhcos_sha256)
   become: yes
 
 # The following cache customizations are required for 4.3, because the installer
@@ -64,15 +64,15 @@
 
     - name: Set fact for cache image without gz extension
       set_fact:
-        rhcos_openstack_uri_minus_gz: "{{ rhcos_openstack_uri[:-3] }}"
+        rhcos_uri_minus_gz: "{{ rhcos_uri[:-3] }}"
 
     - name: Set fact for cache image compressed qcow2 name
       set_fact:
-        rhcos_compressed_qcow2: "{{ rhcos_openstack_uri_minus_gz | replace('openstack','compressed') }}"
+        rhcos_compressed_qcow2: "{{ rhcos_uri_minus_gz | replace('openstack','compressed') }}"
 
     - name: Create image sub-dir in httpd root
       file:
-        path: "/var/www/html/images/{{ rhcos_openstack_uri_minus_gz }}"
+        path: "/var/www/html/images/{{ rhcos_uri_minus_gz }}"
         state: directory
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
@@ -80,28 +80,28 @@
       become: yes
 
     # unarchive module does NOT support non-tar gz files, so we have to use shell here
-    - name: Extract {{ rhcos_openstack_uri }} into image cache sub-dir
-      shell: "gunzip -ck /var/www/html/{{ rhcos_openstack_uri }} > /var/www/html/images/{{ rhcos_openstack_uri_minus_gz }}/{{ rhcos_openstack_uri_minus_gz }}"
+    - name: Extract {{ rhcos_uri }} into image cache sub-dir
+      shell: "gunzip -ck /var/www/html/{{ rhcos_uri }} > /var/www/html/images/{{ rhcos_uri_minus_gz }}/{{ rhcos_uri_minus_gz }}"
       become: true
 
     - name: Convert image into compressed qcow2
-      shell: "qemu-img convert -O qcow2 -c /var/www/html/images/{{ rhcos_openstack_uri_minus_gz }}/{{ rhcos_openstack_uri_minus_gz }} /var/www/html/images/{{ rhcos_openstack_uri_minus_gz }}/{{ rhcos_compressed_qcow2 }}"
+      shell: "qemu-img convert -O qcow2 -c /var/www/html/images/{{ rhcos_uri_minus_gz }}/{{ rhcos_uri_minus_gz }} /var/www/html/images/{{ rhcos_uri_minus_gz }}/{{ rhcos_compressed_qcow2 }}"
       become: yes
     
     - name: Get md5sum of new compressed qcow2 image
-      shell: "md5sum /var/www/html/images/{{ rhcos_openstack_uri_minus_gz }}/{{ rhcos_compressed_qcow2 }} | awk '{print $1}'"
+      shell: "md5sum /var/www/html/images/{{ rhcos_uri_minus_gz }}/{{ rhcos_compressed_qcow2 }} | awk '{print $1}'"
       register: rhcos_image_md5sum
       become: yes
 
     - name: Create md5sum file in image cache sub-dir
       template:
         src: rhcos-image-md5sum.j2
-        dest: "/var/www/html/images/{{ rhcos_openstack_uri_minus_gz }}/{{ rhcos_compressed_qcow2 }}.md5sum"
+        dest: "/var/www/html/images/{{ rhcos_uri_minus_gz }}/{{ rhcos_compressed_qcow2 }}.md5sum"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0644'
       become: yes
-  when: (release_version[0]|int == 4) and (release_version[2]|int <= 3) and ((rhcos_openstack_stat.stat.exists == false or rhcos_openstack_stat.stat.checksum != rhcos_openstack_sha256))
+  when: (release_version[0]|int == 4) and (release_version[2]|int <= 3) and ((rhcos_stat.stat.exists == false or rhcos_stat.stat.checksum != rhcos_sha256))
 
 - name: Override existing rhcos_path variable
   set_fact:
@@ -113,7 +113,7 @@
     insertafter: "dnsVIP:"
     block: |4
             bootstrapOSImage: "{{ rhcos_path }}{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256 }}"
-            clusterOSImage: "{{ rhcos_path }}{{ rhcos_openstack_uri }}?sha256={{ rhcos_openstack_sha256 }}"
+            clusterOSImage: "{{ rhcos_path }}{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
   with_items:
     - "{{ dir }}/install-config.yaml"
     - "{{ dir }}/install-config.yaml.bkup"
