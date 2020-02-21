@@ -13,7 +13,7 @@
     ifname: provisioning
     autoconnect: yes
     stp: off
-    ip4: 172.22.0.1/24
+    ip4: "{{ prov_ipv4 | default('172.22.0.1/24') }}"
     state: present
   become: yes
 
@@ -61,7 +61,7 @@
 
 - name: Modify the Bridge slave file
   template:
-    src: roles/node-prep/templates/pub_nic.j2
+    src: templates/pub_nic.j2
     dest: "/etc/sysconfig/network-scripts/ifcfg-{{ pub_nic }}"
     owner: root
     group: root
