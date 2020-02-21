@@ -10,9 +10,9 @@
     return_content: yes
   register: rhcos_json
 
-- name: Set Facts for RHCOS_OPENSTACK_URI and RHCOS_PATH
+- name: Set Facts for RHCOS_URI and RHCOS_PATH
   set_fact:
-    rhcos_openstack_uri: "{{ rhcos_json.json | json_query('images.openstack.path') }}"
+    rhcos_uri: "{{ rhcos_json.json | json_query('images.openstack.path') }}"
     rhcos_path: "{{ rhcos_json.json | json_query('baseURI') }}"
 
 - name: Set Fact for RHCOS_QEMU_URI (4.4+ and for cache only)
