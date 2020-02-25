@@ -1,127 +1,91 @@
 ---
-# rhcos_json fact already set in 23_rhcos_image_paths.yaml
+# If we're executing these plays, then:
+# 1. cache_enabled is true
+# 2. Either one or both bootstraposimage/clusterosimage variables are unset
 
-- name: Set fact for RHCOS_QEMU_SHA256 (4.4+ only)
-  set_fact:
-    rhcos_qemu_sha256: '{{ rhcos_json.json | json_query(''images.qemu."uncompressed-sha256"'') }}'
-  when: (release_version[0]|int > 4) or (release_version[2]|int > 3)
-
-- name: Set fact for RHCOS_SHA256
-  set_fact:
-    rhcos_sha256: "{{ rhcos_json.json | json_query('images.openstack.sha256') }}"
-
-- name: Check if {{ rhcos_qemu_uri }} is already in cache (4.4+ only)
-  stat: 
-    path: "/var/www/html/{{ rhcos_qemu_uri }}"
-    checksum_algorithm: sha256
-    get_checksum: yes
-  register: rhcos_qemu_stat
-  when: (release_version[0]|int > 4) or (release_version[2]|int > 3)
-
-- name: Download {{ rhcos_qemu_uri }} for cache (4.4+ only)
-  get_url:
-    url:  "{{ rhcos_path }}/{{ rhcos_qemu_uri }}"
-    dest: "/var/www/html/{{ rhcos_qemu_uri }}"
+- name: Create {{ provision_cache_store }} on provisioning host
+  file:
+    path: "{{ provision_cache_store }}"
+    state: directory
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
+
+# rhcos_json fact already set in 23_rhcos_image_paths.yaml
+- name: Set facts for RHCOS_QEMU_SHA256 and RHCOS_SHA256
+  set_fact:
+    rhcos_qemu_sha256: '{{ rhcos_json.json | json_query(''images.qemu."uncompressed-sha256"'') }}'
+    rhcos_sha256: "{{ rhcos_json.json | json_query('images.openstack.sha256') }}"
+
+- name: Check if {{ rhcos_qemu_uri }} is already in cache
+  stat: 
+    path: "{{ provision_cache_store }}{{ rhcos_qemu_uri }}"
+    checksum_algorithm: sha256
+    get_checksum: yes
+  register: rhcos_qemu_stat
+
+- name: Download {{ rhcos_qemu_uri }} for cache
+  get_url:
+    url:  "{{ rhcos_path }}{{ rhcos_qemu_uri }}"
+    dest: "{{ provision_cache_store }}{{ rhcos_qemu_uri }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
     timeout: 3600
-  when: ((release_version[0]|int > 4) or (release_version[2]|int > 3)) and (rhcos_qemu_stat.stat.exists == false or rhcos_qemu_stat.stat.checksum != rhcos_qemu_sha256)
-  become: yes
+  when: (rhcos_qemu_stat.stat.exists == false or rhcos_qemu_stat.stat.checksum != rhcos_qemu_sha256)
 
 - name: Check if {{ rhcos_uri }} is already in cache
   stat: 
-    path: "/var/www/html/{{ rhcos_uri }}"
+    path: "{{ provision_cache_store }}{{ rhcos_uri }}"
     checksum_algorithm: sha256
     get_checksum: yes
   register: rhcos_stat
 
 - name: Download {{ rhcos_uri }} for cache
   get_url:
-    url:  "{{ rhcos_path }}/{{ rhcos_uri }}"
-    dest: "/var/www/html/{{ rhcos_uri }}"
+    url:  "{{ rhcos_path }}{{ rhcos_uri }}"
+    dest: "{{ provision_cache_store }}{{ rhcos_uri }}"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-    mode: '0755'
+    mode: '0644'
     timeout: 3600
   when: (rhcos_stat.stat.exists == false or rhcos_stat.stat.checksum != rhcos_sha256)
-  become: yes
 
-# The following cache customizations are required for 4.3, because the installer
-# does not seem to be honoring the rhcos_image_url and cache_url values in the metal3-config
-# yaml config map (perhaps support for them was removed?).  Instead, we just put the 
-# image and its checksum where the bootstrap expects to find them by default.
-- name: Cache customizations needed for 4.3
-  block:
-    - name: Create images dir in httpd root
-      file:
-        path: "/var/www/html/images"
-        state: directory
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        mode: '0755'
-      become: yes
-
-    - name: Set fact for cache image without gz extension
-      set_fact:
-        rhcos_uri_minus_gz: "{{ rhcos_uri[:-3] }}"
-
-    - name: Set fact for cache image compressed qcow2 name
-      set_fact:
-        rhcos_compressed_qcow2: "{{ rhcos_uri_minus_gz | replace('openstack','compressed') }}"
-
-    - name: Create image sub-dir in httpd root
-      file:
-        path: "/var/www/html/images/{{ rhcos_uri_minus_gz }}"
-        state: directory
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        mode: '0755'
-      become: yes
-
-    # unarchive module does NOT support non-tar gz files, so we have to use shell here
-    - name: Extract {{ rhcos_uri }} into image cache sub-dir
-      shell: "gunzip -ck /var/www/html/{{ rhcos_uri }} > /var/www/html/images/{{ rhcos_uri_minus_gz }}/{{ rhcos_uri_minus_gz }}"
-      become: true
-
-    - name: Convert image into compressed qcow2
-      shell: "qemu-img convert -O qcow2 -c /var/www/html/images/{{ rhcos_uri_minus_gz }}/{{ rhcos_uri_minus_gz }} /var/www/html/images/{{ rhcos_uri_minus_gz }}/{{ rhcos_compressed_qcow2 }}"
-      become: yes
-    
-    - name: Get md5sum of new compressed qcow2 image
-      shell: "md5sum /var/www/html/images/{{ rhcos_uri_minus_gz }}/{{ rhcos_compressed_qcow2 }} | awk '{print $1}'"
-      register: rhcos_image_md5sum
-      become: yes
-
-    - name: Create md5sum file in image cache sub-dir
-      template:
-        src: rhcos-image-md5sum.j2
-        dest: "/var/www/html/images/{{ rhcos_uri_minus_gz }}/{{ rhcos_compressed_qcow2 }}.md5sum"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        mode: '0644'
-      become: yes
-  when: (release_version[0]|int == 4) and (release_version[2]|int <= 3) and ((rhcos_stat.stat.exists == false or rhcos_stat.stat.checksum != rhcos_sha256))
-
+# Since we're using a local RHCOS image cache, we want override the standard rhcos_path
+# acquired from the version's rhcos_json and point to our provisioning bridge IP instead
 - name: Override existing rhcos_path variable
   set_fact:
     rhcos_path: "http://172.22.0.1/"
 
-- name: Inject RHCOS image cache URLs into install-config.yaml (4.4+ only)
-  blockinfile:
-    path: "{{ item }}"
-    insertafter: "dnsVIP:"
-    block: |4
-            bootstrapOSImage: "{{ rhcos_path }}{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256 }}"
-            clusterOSImage: "{{ rhcos_path }}{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
-  with_items:
-    - "{{ dir }}/install-config.yaml"
-    - "{{ dir }}/install-config.yaml.bkup"
-  when: (release_version[0]|int > 4) or (release_version[2]|int > 3)
+- name: Set bootstrap image URL override if not provided by the user
+  set_fact:
+    bootstrapOSImage: "{{ rhcos_path }}{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256 }}"
+  when: bootstrapOSImage is not defined or bootstrapOSImage|length < 1
 
-- name: Make sure httpd is started
-  systemd:
+- name: Set cluster image URL override if not provided by the user
+  set_fact:
+    clusterOSImage: "{{ rhcos_path }}{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
+  when: clusterOSImage is not defined or clusterOSImage|length < 1
+
+# install-config.yaml is normally generated via the node-prep role, but we need
+# to regenerate it here to incorporate cache values.  We have to do the cache value
+# generation in the installer role, because this role is what downloads the installer
+# binary.  The installer binary is required to determine the commit ID used for the 
+# selected OCP version, and the commit ID is needed to ultimately determine the image 
+# URIs.
+- name: Re-do install-config.yaml generation with cache values
+  include_role:
+    name: node-prep
+    tasks_from: 100_create-install-config
+
+- name: Start RHCOS image cache container
+  podman_container:
+    name: rhcos_image_cache
+    image: httpd
     state: started
-    name: httpd
+    exposed_ports:
+      - 80
+    volumes:
+      - "{{ provision_cache_store }}:/usr/local/apache2/htdocs"
+    network: host
   become: yes
-  
