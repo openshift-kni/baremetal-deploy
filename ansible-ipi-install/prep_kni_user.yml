@@ -1,0 +1,46 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    ssh_path: /root/.ssh
+
+  tasks:
+  - name: Create root user SSH key path
+    file:
+      path: "{{ ssh_path }}"
+      state: directory
+      mode: 0755
+    become: yes
+
+  - name: Generate SSH keypair for root user
+    openssh_keypair:
+      path: "{{ ssh_path }}/id_rsa"
+      owner: root
+      group: root
+    become: yes
+
+  - name: Create kni user
+    user:
+      name: kni
+
+  - name: Add kni to passwordless sudoers
+    lineinfile:
+      path: /etc/sudoers.d/kni
+      line: kni ALL=(root) NOPASSWD:ALL
+      create: yes
+      mode: 0440
+    become: yes
+
+  - name: Create kni user SSH key path
+    file:
+      path: /home/kni/.ssh
+      state: directory
+      mode: 0755
+    become: yes
+
+  - name: Add root user's SSH key to kni user
+    authorized_key:
+      user: kni
+      state: present
+      key: "{{ lookup('file', '{{ ssh_path }}/id_rsa.pub') }}"
+    become: yes
