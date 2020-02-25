@@ -7,10 +7,27 @@
 - fail: msg="A variable regarding install-config.yml is undefined or empty."
   when: (domain is undefined) or (domain|length == 0) or (cluster is undefined) or (cluster|length == 0) or (extcidrnet is undefined) or (extcidrnet|length == 0) or (dnsvip is undefined) or (dnsvip|length == 0) or (pullsecret is undefined) or (pullsecret|length == 0)
 
-- name: Set fact of use_rhcos_cache
+- fail: msg="Both boostrapOSImage and clusterOSImage are empty. Please provide a URL or comment out."
+  when: 
+    - bootstrapOSImage is defined and bootstrapOSImage|length == 0
+    - clusterOSImage is defined and clusterOSImage|length == 0
+
+- name: Conditions to set cache_enabled to true
   set_fact:
-    use_rhcos_image_cache: true
-  when: use_rhcos_image_cache == 'true'
+    cache_enabled: true
+  when: (cache_enabled == 'true') or 
+        (bootstrapOSImage is undefined and clusterOSImage is defined) or 
+        (bootstrapOSImage is defined and clusterOSImage is undefined) or
+        (clusterOSImage is defined and bootstrapOSImage|length == 0) or
+        (bootstrapOSImage is defined and clusterOSImage|length == 0)
+
+- name: Conditions to set cache_enabled to false
+  set_fact:
+    cache_enabled: false
+  when: (cache_enabled == 'false')
+
+- debug:
+    msg: "cache enable {{ cache_enabled }}"
 
 - name: Verify DNS records for API VIP, Wildcard (Ingress) VIP
   set_fact:
