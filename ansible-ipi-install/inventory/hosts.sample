@@ -51,6 +51,11 @@ dnsvip=""
 # Network Type (OpenShiftSDN or OVNKubernetes). Playbook defaults to OVNKubernetes.
 # Uncomment below for OpenShiftSDN
 #network_type="OpenShiftSDN"
+# (Optional) An URL to override the default operating system image for the bootstrap node.
+# The URL must contain a sha256 hash of the image.
+# See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
+#   Example https://mirror.example.com/images/qemu.qcow2.gz?sha256=a07bd...
+#bootstraposimage=""
 # A copy of your pullsecret from https://cloud.redhat.com/openshift/install/metal/user-provisioned
 pullsecret=""
 
