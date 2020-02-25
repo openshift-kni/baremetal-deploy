@@ -1,0 +1,5 @@
+# Those variables are probably ok with the default values
+export operatornamespace="${operatornamespace:-openshift-cnv}"
+export cnv_version="${cnv_version:-2.2.0}"
+export cnv_channel="${cnv_channel:-2.2}"
+export cnv_approval="${cnv_approval:-Automatic}"
