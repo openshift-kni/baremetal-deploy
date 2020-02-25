@@ -1,0 +1,217 @@
+---
+- name: Install packages
+  yum:
+    name: "{{ yum_packages }}"
+    state: latest
+  become: yes
+
+- name: Get Badfish pod image
+  podman_image:
+    name: "{{ badfish_pod_image }}"
+    pull: yes
+    force: yes
+
+- name: Clean network interfaces created by lab automation
+  shell: |
+    /root/clean-interfaces.sh --nuke
+  become: true
+  ignore_errors: true
+
+- name: Delete {{ pub_nic }} due to modify nmcli bug
+  nmcli:
+    conn_name: "{{ pub_nic }}"
+    type: ethernet
+    state: absent
+  become: yes
+
+- name: Create Bridge labeled baremetal
+  nmcli:
+    conn_name: baremetal
+    type: bridge
+    ifname: baremetal
+    autoconnect: yes
+    stp: off
+    ip4_method: manual
+    ip4: 192.168.222.1/24
+    #Adding dns entries here seems broken
+    #dns4:
+    #  - 192.168.222.1
+    state: present
+  become: yes
+
+#Moving the dns entry to this task because of above problem
+- name: Set Bridge DNS priority
+  shell: |
+    nmcli con mod baremetal ipv4.dns 192.168.222.1 ipv4.dns-priority 10
+  become: yes
+
+- name: Create Bridge slave on {{ pub_nic }}
+  nmcli:
+    conn_name: "{{ pub_nic }}"
+    type: bridge-slave
+    hairpin: no
+    ifname: "{{ pub_nic }}"
+    master: baremetal
+    autoconnect: yes
+    state: present
+  become: yes
+
+- name: Reload baremetal bridge and slave interfaces
+  shell: |
+    /usr/bin/nmcli con reload {{ item }}; /usr/bin/nmcli con up {{ item }}
+  with_items:
+    - baremetal
+    - "{{ pub_nic }}"
+  become: yes
+
+#TODO: This only works with Dell nodes
+
+- name: Power on master nodes
+  redfish_command:
+    category: Systems
+    command: PowerOn
+    baseuri: "mgmt-{{ item }}"
+    username: "{{ lab_ipmi_user }}"
+    password: "{{ lab_ipmi_password }}"
+  with_items: "{{ master_fqdns }}"
+  register: power_on_masters
+  until: power_on_masters is succeeded
+  retries: 3
+  delay: 30
+
+- name: Power on worker nodes
+  redfish_command:
+    category: Systems
+    command: PowerOn
+    baseuri: "mgmt-{{ item }}"
+    username: "{{ lab_ipmi_user }}"
+    password: "{{ lab_ipmi_password }}"
+  with_items: "{{ worker_fqdns }}"
+  register: power_on_workers
+  until: power_on_workers is succeeded
+  retries: 3
+  delay: 30
+
+- name: Wait for master nodes to start
+  shell: |
+    /usr/bin/ipmitool -I lanplus -H mgmt-{{ item }} -U {{ lab_ipmi_user }} -P {{ lab_ipmi_password }} power status
+  with_items: "{{ master_fqdns }}"
+  register: ipmi_power_status
+  until: ipmi_power_status.stdout.find("on") != -1
+  retries: 10
+  delay: 30
+
+- name: Wait for worker nodes to start
+  shell: |
+    /usr/bin/ipmitool -I lanplus -H mgmt-{{ item }} -U {{ lab_ipmi_user }} -P {{ lab_ipmi_password }} power status
+  with_items: "{{ worker_fqdns }}"
+  register: ipmi_power_status
+  until: ipmi_power_status.stdout.find("on") != -1
+  retries: 10
+  delay: 30
+
+- name: Clear master nodes redfish job queue
+  shell: |
+    {{ badfish_cmd }}{{ item }} --clear-jobs
+  with_items: "{{ master_fqdns }}"
+  register: master_redfish
+  until: master_redfish is succeeded
+  retries: 3
+  delay: 30
+  tags:
+    - clearjobs
+
+- name: Clear worker nodes redfish job queue
+  shell: |
+    {{ badfish_cmd }}{{ item }} --clear-jobs
+  with_items: "{{ worker_fqdns }}"
+  register: worker_redfish
+  until: worker_redfish is succeeded
+  retries: 3
+  delay: 30
+  tags:
+    - clearjobs
+
+- name: Set master nodes to director boot order
+  shell: |
+    {{ badfish_cmd }}{{ item }} -t director
+  with_items: "{{ master_fqdns }}"
+  register: master_boot_order
+  until: master_boot_order is succeeded
+  retries: 3
+  delay: 60
+  tags:
+    - bootorder
+
+- name: Set worker nodes to director boot order
+  shell: |
+    {{ badfish_cmd }}{{ item }} -t director
+  with_items: "{{ worker_fqdns }}"
+  register: worker_boot_order
+  until: worker_boot_order is succeeded
+  retries: 3
+  delay: 60
+  tags:
+    - bootorder
+
+#TODO: Add wait for node reboot
+
+- name: Set SELinux permissive
+  selinux:
+    policy: targeted
+    state: permissive
+  become: yes
+
+- name: Configure dnsmasq for baremetal
+  template:
+    src: ocp4-lab.dnsmasq.conf.j2
+    dest: /etc/dnsmasq.d/ocp4-lab.conf
+    mode: 0640
+  become: yes
+
+#FIXME
+- name: Configure firewall
+  iptables:
+    flush: yes
+  become: yes
+
+- name: Configure NAT
+  iptables:
+    table: nat
+    chain: POSTROUTING
+    source: 192.168.222.0/24
+    destination: "!192.168.222.0/24"
+    out_interface: "{{ lab_pub_nic }}"
+    jump: MASQUERADE
+  become: yes
+
+- name: Save iptables configuration
+  shell: |
+    /usr/sbin/iptables-save > /etc/sysconfig/iptables
+  become: yes
+
+- name: Enable and restart dnsmasq service
+  systemd:
+    name: dnsmasq
+    state: restarted
+    enabled: yes
+  become: yes
+
+- name: Set fake root directory path
+  set_fact:
+    fake_root: "{{ playbook_dir }}/roles/installer/files/customize_filesystem/master/etc/sysconfig/network-scripts"
+
+- name: Create fake root directory
+  file:
+    path: "{{ fake_root }}"
+    state: directory
+    mode: 0777
+  become: yes
+
+- name: Create ifcfg files to disable NICs
+  template:
+    src: ocp4-lab.ifcfg-template.j2
+    dest: "{{ fake_root }}/ifcfg-{{ item }}"
+    mode: 0644
+  become: yes
+  with_items: "{{ disable_nics }}"
