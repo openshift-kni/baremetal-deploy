@@ -59,13 +59,13 @@
 
 - name: Set bootstrap image URL override if not provided by the user
   set_fact:
-    bootstrapOSImage: "{{ rhcos_path }}{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256 }}"
-  when: bootstrapOSImage is not defined or bootstrapOSImage|length < 1
+    bootstraposimage: "{{ rhcos_path }}{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256 }}"
+  when: bootstraposimage is not defined or bootstraposimage|length < 1
 
 - name: Set cluster image URL override if not provided by the user
   set_fact:
-    clusterOSImage: "{{ rhcos_path }}{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
-  when: clusterOSImage is not defined or clusterOSImage|length < 1
+    clusterosimage: "{{ rhcos_path }}{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
+  when: clusterosimage is not defined or clusterosimage|length < 1
 
 # install-config.yaml is normally generated via the node-prep role, but we need
 # to regenerate it here to incorporate cache values.  We have to do the cache value
