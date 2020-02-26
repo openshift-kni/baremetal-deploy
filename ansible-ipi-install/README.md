@@ -392,13 +392,13 @@ If you wish to set up a local cache of RHCOS images on your provisioning host,
 set the `cache_enabled` variable to `True` in your hosts file.  When requested, 
 the playbook will pre-download RHCOS images prior to actual cluster deployment.  
 It places these images in an Apache web server container on the provisioning host 
-and modifies `install-config.yaml` to instruct the bootstrap to download the 
+and modifies `install-config.yaml` to instruct the bootstrap VM to download the 
 images from that web server during deployment.  
 
-NOTE: If you set the `clusterosimage` and `bootstraposimage` variables, then
-`cache_enabled` will automatically be set to `False`, since the combined  
-presence of these values indicates that your RHCOS images are already available
-elsewhere.
+WARNING: If you set the `clusterosimage` and `bootstraposimage` variables, then
+`cache_enabled` will automatically be set to `False`.  Setting these variables 
+leaves the responsibility to the end user in ensuring the RHCOS images are readily 
+available and accessible to the provision host.
 
 ## Running the `playbook.yml`
 
