@@ -391,7 +391,7 @@ web server container on the provisioning host and modifies `install-config.yaml`
 to instruct the bootstrap to download the images from that web server during 
 deployment.  
 
-NOTE: If you set the `clusterOSImage` and `bootstrapOSImage` variables, then
+NOTE: If you set the `clusterosimage` and `bootstraposimage` variables, then
 `cache_enabled` will automatically be set to `False`, since the combined  
 presence of these values indicates that your RHCOS images are already available
 elsewhere.
