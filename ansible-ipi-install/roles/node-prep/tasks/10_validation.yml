@@ -24,7 +24,8 @@
 - name: Conditions to set cache_enabled to false
   set_fact:
     cache_enabled: false
-  when: (cache_enabled == 'false')
+  when: (cache_enabled == 'false') or
+        (bootstraposimage is defined and clusterosimage is defined)
 
 - debug:
     msg: "cache enable {{ cache_enabled }}"
