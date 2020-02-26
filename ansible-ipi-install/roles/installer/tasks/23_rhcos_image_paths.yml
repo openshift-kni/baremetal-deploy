@@ -12,11 +12,7 @@
 
 - name: Set Facts for RHCOS_URI and RHCOS_PATH
   set_fact:
+    rhcos_qemu_uri: "{{ rhcos_json.json | json_query('images.qemu.path') }}"
     rhcos_uri: "{{ rhcos_json.json | json_query('images.openstack.path') }}"
     rhcos_path: "{{ rhcos_json.json | json_query('baseURI') }}"
-
-- name: Set Fact for RHCOS_QEMU_URI (4.4+ and for cache only)
-  set_fact:
-    rhcos_qemu_uri: "{{ rhcos_json.json | json_query('images.qemu.path') }}"
-  when: ((release_version[0]|int > 4) or (release_version[2]|int > 3)) and use_rhcos_image_cache == true
   

@@ -21,6 +21,9 @@ platform:
 {% if (release_version[0]|int > 4) or ((release_version[0]|int == 4) and (release_version[2]|int > 3)) %}
     provisioningNetworkInterface: {{ prov_nic }}
 {% endif %}
+{% if bootstraposimage is defined and bootstraposimage|length %}
+    bootstrapOSImage: {{ bootstraposimage }}
+{% endif %}
     hosts:
 {% for host in groups['masters'] %}
       - name: {{ hostvars[host]['name'] }}

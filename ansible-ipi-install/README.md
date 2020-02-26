@@ -282,6 +282,11 @@ dnsvip=""
 # Network Type (OpenShiftSDN or OVNKubernetes). Playbook defaults to OVNKubernetes.
 # Uncomment below for OpenShiftSDN
 #network_type="OpenShiftSDN"
+# (Optional) An URL to override the default operating system image for the bootstrap node.
+# The URL must contain a sha256 hash of the image.
+# See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
+#   Example https://mirror.example.com/images/qemu.qcow2.gz?sha256=a07bd...
+#bootstraposimage=""
 # A copy of your pullsecret from https://cloud.redhat.com/openshift/install/metal/user-provisioned
 pullsecret=""
 
@@ -378,15 +383,17 @@ included when the OpenShift manifests are created.
 NOTE: By default this directory is empty. 
 
 ## Pre-caching RHCOS Images
-If you wish to have the bootstrap to use cached RHCOS images, set the 
-`use_rhcos_image_cache` variable to `True` in your hosts file (make sure you use
-`True` and not `true`).
+If you wish to set up a local cache of RHCOS images on your provisioning host,
+set the `cache_enabled` variable to `True` in your hosts file.  When requested, 
+the playbook will pre-download RHCOS images prior to actual cluster deployment.  
+It places these images in an Apache web server container on the provisioning host 
+and modifies `install-config.yaml` to instruct the bootstrap VM to download the 
+images from that web server during deployment.  
 
-When requested, the playbook will pre-download RHCOS images prior to actual cluster
-deployment.  It places these images in an Apache web server on the provisioning
-host, and modifies `metal3-config.yaml` or `install-config.yaml` (depending on 
-whether the version is set to 4.3 or 4.4+) to instruct the bootstrap to
-download the images from that web server during deployment.  
+WARNING: If you set the `clusterosimage` and `bootstraposimage` variables, then
+`cache_enabled` will automatically be set to `False`.  Setting these variables 
+leaves the responsibility to the end user in ensuring the RHCOS images are readily 
+available and accessible to the provision host.
 
 ## Running the `playbook.yml`
 
