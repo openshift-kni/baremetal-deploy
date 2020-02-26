@@ -23,6 +23,7 @@
     checksum_algorithm: sha256
     get_checksum: yes
   register: rhcos_qemu_stat
+  when: bootstraposimage is not defined or bootstraposimage|length < 1
 
 - name: Download {{ rhcos_qemu_uri }} for cache
   get_url:
@@ -32,7 +33,7 @@
     group: "{{ ansible_user }}"
     mode: '0644'
     timeout: 3600
-  when: (rhcos_qemu_stat.stat.exists == false or rhcos_qemu_stat.stat.checksum != rhcos_qemu_sha256)
+  when: (bootstraposimage is not defined or bootstraposimage|length < 1) and (rhcos_qemu_stat.stat.exists == false or rhcos_qemu_stat.stat.checksum != rhcos_qemu_sha256)
 
 - name: Check if {{ rhcos_uri }} is already in cache
   stat: 
@@ -40,6 +41,7 @@
     checksum_algorithm: sha256
     get_checksum: yes
   register: rhcos_stat
+  when: clusterosimage is not defined or clusterosimage|length < 1
 
 - name: Download {{ rhcos_uri }} for cache
   get_url:
@@ -49,22 +51,16 @@
     group: "{{ ansible_user }}"
     mode: '0644'
     timeout: 3600
-  when: (rhcos_stat.stat.exists == false or rhcos_stat.stat.checksum != rhcos_sha256)
-
-# Since we're using a local RHCOS image cache, we want override the standard rhcos_path
-# acquired from the version's rhcos_json and point to our provisioning bridge IP instead
-- name: Override existing rhcos_path variable
-  set_fact:
-    rhcos_path: "http://172.22.0.1/"
+  when: (clusterosimage is not defined or clusterosimage|length < 1) and (rhcos_stat.stat.exists == false or rhcos_stat.stat.checksum != rhcos_sha256)
 
 - name: Set bootstrap image URL override if not provided by the user
   set_fact:
-    bootstraposimage: "{{ rhcos_path }}{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256 }}"
+    bootstraposimage: "http://172.22.0.1/{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256 }}"
   when: bootstraposimage is not defined or bootstraposimage|length < 1
 
 - name: Set cluster image URL override if not provided by the user
   set_fact:
-    clusterosimage: "{{ rhcos_path }}{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
+    clusterosimage: "http://172.22.0.1/{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
   when: clusterosimage is not defined or clusterosimage|length < 1
 
 # install-config.yaml is normally generated via the node-prep role, but we need
