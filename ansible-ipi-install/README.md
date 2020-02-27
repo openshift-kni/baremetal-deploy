@@ -120,7 +120,6 @@ The tree structure is shown below:
     │   │   └── main.yml
     │   ├── templates
     │   │   └── metal3-config.j2
-    │   │   └── rhcos-image-md5sum.j2
     │   ├── tests
     │   │   ├── inventory
     │   │   └── test.yml
