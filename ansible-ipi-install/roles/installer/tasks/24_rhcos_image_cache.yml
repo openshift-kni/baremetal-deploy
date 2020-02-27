@@ -77,12 +77,11 @@
 - name: Start RHCOS image cache container
   podman_container:
     name: rhcos_image_cache
-    image: httpd
+    image: registry.centos.org/centos/httpd-24-centos7:latest
     state: started
-    exposed_ports:
-      - 80
+    publish:
+      - "80:8080"
     volumes:
-      - "{{ provision_cache_store }}:/usr/local/apache2/htdocs"
-    network: host
+      - "{{ provision_cache_store }}:/var/www/html"
   become: yes
   
