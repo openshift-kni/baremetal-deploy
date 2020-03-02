@@ -55,12 +55,12 @@
 
 - name: Set bootstrap image URL override if not provided by the user
   set_fact:
-    bootstraposimage: "http://{{ ansible_provisioning.ipv4.address }}/{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256 }}"
+    bootstraposimage: "http://{{ ansible_provisioning.ipv4.address }}:8080/{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256 }}"
   when: bootstraposimage is not defined or bootstraposimage|length < 1
 
 - name: Set cluster image URL override if not provided by the user
   set_fact:
-    clusterosimage: "http://{{ ansible_provisioning.ipv4.address }}/{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
+    clusterosimage: "http://{{ ansible_provisioning.ipv4.address }}:8080/{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
   when: clusterosimage is not defined or clusterosimage|length < 1
 
 # install-config.yaml is normally generated via the node-prep role, but we need
@@ -74,13 +74,38 @@
     name: node-prep
     tasks_from: 100_create-install-config
 
+- name: Open port 8080/tcp, zone public, for cache for firewalld
+  firewalld:
+    port: 8080/tcp
+    permanent: yes
+    state: enabled
+    zone: "public"
+  become: yes
+  when: firewall != "iptables"
+
+- name: Configure iptables for cache
+  block:
+    - name: Open port 8080/tcp for iptables
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "8080"
+        jump: ACCEPT
+      become: yes
+
+    - name: Save iptables configuration
+      shell: |
+        /usr/sbin/iptables-save > /etc/sysconfig/iptables
+      become: yes
+  when: firewall == "iptables"
+
 - name: Start RHCOS image cache container
   podman_container:
     name: rhcos_image_cache
     image: registry.centos.org/centos/httpd-24-centos7:latest
     state: started
     publish:
-      - "80:8080"
+      - "8080:8080"
     volumes:
       - "{{ provision_cache_store }}:/var/www/html"
   become: yes
