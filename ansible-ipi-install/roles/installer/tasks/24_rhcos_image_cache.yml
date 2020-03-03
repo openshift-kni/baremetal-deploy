@@ -10,6 +10,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
+    setype: httpd_sys_content_t
 
 # rhcos_json fact already set in 23_rhcos_image_paths.yaml
 - name: Set facts for RHCOS_QEMU_SHA256 and RHCOS_SHA256
@@ -32,6 +33,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
+    setype: httpd_sys_content_t
     timeout: 3600
   when: (bootstraposimage is not defined or bootstraposimage|length < 1) and (rhcos_qemu_stat.stat.exists == false or rhcos_qemu_stat.stat.checksum != rhcos_qemu_sha256)
 
@@ -50,6 +52,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
+    setype: httpd_sys_content_t
     timeout: 3600
   when: (clusterosimage is not defined or clusterosimage|length < 1) and (rhcos_stat.stat.exists == false or rhcos_stat.stat.checksum != rhcos_sha256)
 
