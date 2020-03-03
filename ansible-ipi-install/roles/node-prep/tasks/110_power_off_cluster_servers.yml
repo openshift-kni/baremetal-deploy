@@ -4,6 +4,7 @@
     name: "{{ hostvars[item]['ipmi_address'] }}"
     user: "{{ hostvars[item]['ipmi_user'] }}"
     password: "{{ hostvars[item]['ipmi_password'] }}"
+    port: "{{ hostvars[item]['ipmi_port'] | default(623) }}"
     state: off
   with_items:
     - "{{ groups['masters'] }}"
