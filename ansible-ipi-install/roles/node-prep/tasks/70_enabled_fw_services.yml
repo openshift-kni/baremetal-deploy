@@ -18,6 +18,15 @@
       with_items:
       - libvirt
       - public
+
+    - name: Open port 8080/tcp, zone public, for cache for firewalld
+      firewalld:
+        port: 8080/tcp
+        permanent: yes
+        state: enabled
+        zone: "public"
+      become: yes
+      when: cache_enabled == True
   when: firewall != "iptables"
 
 - name: Configure iptables
@@ -37,6 +46,15 @@
         destination_port: "5000"
         jump: ACCEPT
       become: yes
+
+    - name: Open port 8080/tcp for cache for iptables
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "8080"
+        jump: ACCEPT
+      become: yes
+      when: cache_enabled == True
 
     - name: Allow related and established connections for iptables
       iptables:
