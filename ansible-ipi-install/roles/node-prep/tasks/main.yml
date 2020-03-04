@@ -8,5 +8,4 @@
 - include_tasks: 70_enabled_fw_services.yml
 - include_tasks: 80_libvirt_pool.yml  
 - include_tasks: 90_create_config_install_dirs.yml
-- include_tasks: 100_create-install-config.yml
-- include_tasks: 110_power_off_cluster_servers.yml
+- include_tasks: 100_power_off_cluster_servers.yml

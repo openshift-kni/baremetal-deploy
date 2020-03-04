@@ -66,17 +66,6 @@
     clusterosimage: "http://{{ ansible_provisioning.ipv4.address }}:8080/{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
   when: clusterosimage is not defined or clusterosimage|length < 1
 
-# install-config.yaml is normally generated via the node-prep role, but we need
-# to regenerate it here to incorporate cache values.  We have to do the cache value
-# generation in the installer role, because this role is what downloads the installer
-# binary.  The installer binary is required to determine the commit ID used for the 
-# selected OCP version, and the commit ID is needed to ultimately determine the image 
-# URIs.
-- name: Re-do install-config.yaml generation with cache values
-  include_role:
-    name: node-prep
-    tasks_from: 100_create-install-config
-
 - name: Start RHCOS image cache container
   podman_container:
     name: rhcos_image_cache
