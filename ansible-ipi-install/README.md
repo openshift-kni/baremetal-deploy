@@ -554,7 +554,7 @@ system (assuming your using an OS such as Fedora, Red Hat)
 
 On a local host running Red Hat 7.x, run: 
 ~~~sh
-# sudo yum install python3-dns
+# sudo yum install python2-dns
 ~~~
 
 On a local host running Red Hat 8.x, run: 
