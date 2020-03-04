@@ -609,6 +609,28 @@ will modify the home directory to that of the root user (i.e. `/root`) instead
 of using the home directory of your privileged user, `kni` with a home dir of
 `/home/kni`
 
+## Using a HTTP/HTTPS Proxy with your Ansible playbook
+
+When running behind a proxy, it is important to properly set the environment
+to handle such scenario such that you can run the Ansible playbook. The following
+is a simple modification that may be done to handle proxies.
+
+Sample playbook.yml
+~~~sh
+---
+- name: IPI on Baremetal Installation Playbook
+  hosts: provisioner
+  roles:
+  - node-prep
+  - installer
+
+  environment:
+    https_proxy: https://proxy.example.com:8080
+~~~
+
+NOTE: If using HTTP proxy instead, change the variable to `http_proxy`. For
+more info on using Ansible with proxies, visit: https://docs.ansible.com/ansible/latest/user_guide/playbooks_environment.html
+
 # Appendix A. Using Ansible Tags with the playbook.yml
 
 As this playbook continues to grow, there may be times when it is useful
@@ -738,12 +760,3 @@ Example 1
 ~~~sh
 ansible-playbook -i inventory/hosts playbook.yml --skip-tags "network,packages"
 ~~~
-
-
-
-
-
-
-
-
-
