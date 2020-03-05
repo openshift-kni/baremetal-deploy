@@ -2,6 +2,6 @@
 - name: Install required packages
   package:
     name: "{{ item }}"
-    state: latest
+    state: present
   with_items: "{{ package_list }}"
   become: yes
