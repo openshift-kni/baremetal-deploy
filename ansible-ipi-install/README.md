@@ -11,6 +11,7 @@ Table of contents
       * [Modifying the `inventory/hosts` file](#modifying-the-inventoryhosts-file)
       * [The Ansible `playbook.yml`](#the-ansible-playbookyml)
       * [Adding Extra Configurations to the OpenShift Installer](#adding-extra-configurations-to-the-openshift-installer)
+      * [Pre-caching RHCOS Images](#pre-caching-rhcos-images)
    * [Verifying Installation](#verifying-installation)
    * [Troubleshooting](#troubleshooting)
       * [Unreachable Host](#unreachable-host)
@@ -109,7 +110,11 @@ The tree structure is shown below:
     │   ├── tasks
     │   │   ├── 10_get_oc.yml
     │   │   ├── 20_extract_installer.yml
+    │   │   ├── 23_rhcos_image_paths.yml
+    │   │   ├── 24_rhcos_image_cache.yml
+    │   │   ├── 25_create-install-config.yml
     │   │   ├── 30_create_metal3.yml
+    │   │   ├── 35_customize_filesystem.yml
     │   │   ├── 40_create_manifest.yml
     │   │   ├── 50_extramanifests.yml
     │   │   ├── 59_cleanup_bootstrap.yml
@@ -117,6 +122,7 @@ The tree structure is shown below:
     │   │   ├── 70_cleanup_sub_man_registeration.yml
     │   │   └── main.yml
     │   ├── templates
+    |   │   ├── install-config.j2
     │   │   └── metal3-config.j2
     │   ├── tests
     │   │   ├── inventory
@@ -133,7 +139,6 @@ The tree structure is shown below:
         ├── meta
         │   └── main.yml
         ├── tasks
-        │   ├── 100_create-install-config.yml
         |   ├── 10_validation.yml
         │   ├── 110_power_off_cluster_servers.yml
         │   ├── 20_sub_man_register.yml
@@ -147,7 +152,6 @@ The tree structure is shown below:
         │   └── main.yml
         ├── templates
         │   ├── dir.xml.j2
-        │   ├── install-config.j2
         │   └── pub_nic.j2
         ├── tests
         │   ├── inventory
@@ -257,6 +261,10 @@ build=""
 
 # Provisioning IP address (default value)
 prov_ip=172.22.0.3
+
+# (Optional) Enable playbook to pre-download RHCOS images prior to cluster deployment and use them as a local
+# cache.  Default is false.
+#cache_enabled=True
 
 ######################################
 # Vars regarding install-config.yaml #
@@ -383,6 +391,19 @@ the `roles/installer/files/manifests` directory. All the files provided here wil
 included when the OpenShift manifests are created. 
 
 NOTE: By default this directory is empty. 
+
+## Pre-caching RHCOS Images
+If you wish to set up a local cache of RHCOS images on your provisioning host,
+set the `cache_enabled` variable to `True` in your hosts file.  When requested, 
+the playbook will pre-download RHCOS images prior to actual cluster deployment.  
+It places these images in an Apache web server container on the provisioning host 
+and modifies `install-config.yaml` to instruct the bootstrap VM to download the 
+images from that web server during deployment.  
+
+WARNING: If you set the `clusterosimage` and `bootstraposimage` variables, then
+`cache_enabled` will automatically be set to `False`.  Setting these variables 
+leaves the responsibility to the end user in ensuring the RHCOS images are readily 
+available and accessible to the provision host.
 
 ## Running the `playbook.yml`
 

@@ -1,0 +1,79 @@
+---
+# If we're executing these plays, then:
+# 1. cache_enabled is true
+# 2. Either one or both bootstraposimage/clusterosimage variables are unset
+
+- name: Create {{ provision_cache_store }} on provisioning host
+  file:
+    path: "{{ provision_cache_store }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+    setype: httpd_sys_content_t
+
+# rhcos_json fact already set in 23_rhcos_image_paths.yaml
+- name: Set facts for RHCOS_QEMU_SHA256 and RHCOS_SHA256
+  set_fact:
+    rhcos_qemu_sha256: '{{ rhcos_json.json | json_query(''images.qemu."uncompressed-sha256"'') }}'
+    rhcos_sha256: "{{ rhcos_json.json | json_query('images.openstack.sha256') }}"
+
+- name: Check if {{ rhcos_qemu_uri }} is already in cache
+  stat: 
+    path: "{{ provision_cache_store }}{{ rhcos_qemu_uri }}"
+    checksum_algorithm: sha256
+    get_checksum: yes
+  register: rhcos_qemu_stat
+  when: bootstraposimage is not defined or bootstraposimage|length < 1
+
+- name: Download {{ rhcos_qemu_uri }} for cache
+  get_url:
+    url:  "{{ rhcos_path }}{{ rhcos_qemu_uri }}"
+    dest: "{{ provision_cache_store }}{{ rhcos_qemu_uri }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+    setype: httpd_sys_content_t
+    timeout: 3600
+  when: (bootstraposimage is not defined or bootstraposimage|length < 1) and (rhcos_qemu_stat.stat.exists == false or rhcos_qemu_stat.stat.checksum != rhcos_qemu_sha256)
+
+- name: Check if {{ rhcos_uri }} is already in cache
+  stat: 
+    path: "{{ provision_cache_store }}{{ rhcos_uri }}"
+    checksum_algorithm: sha256
+    get_checksum: yes
+  register: rhcos_stat
+  when: clusterosimage is not defined or clusterosimage|length < 1
+
+- name: Download {{ rhcos_uri }} for cache
+  get_url:
+    url:  "{{ rhcos_path }}{{ rhcos_uri }}"
+    dest: "{{ provision_cache_store }}{{ rhcos_uri }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+    setype: httpd_sys_content_t
+    timeout: 3600
+  when: (clusterosimage is not defined or clusterosimage|length < 1) and (rhcos_stat.stat.exists == false or rhcos_stat.stat.checksum != rhcos_sha256)
+
+- name: Set bootstrap image URL override if not provided by the user
+  set_fact:
+    bootstraposimage: "http://{{ ansible_provisioning.ipv4.address }}:8080/{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256 }}"
+  when: bootstraposimage is not defined or bootstraposimage|length < 1
+
+- name: Set cluster image URL override if not provided by the user
+  set_fact:
+    clusterosimage: "http://{{ ansible_provisioning.ipv4.address }}:8080/{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
+  when: clusterosimage is not defined or clusterosimage|length < 1
+
+- name: Start RHCOS image cache container
+  podman_container:
+    name: rhcos_image_cache
+    image: registry.centos.org/centos/httpd-24-centos7:latest
+    state: started
+    publish:
+      - "8080:8080"
+    volumes:
+      - "{{ provision_cache_store }}:/var/www/html"
+  become: yes
+  

@@ -7,6 +7,29 @@
 - fail: msg="A variable regarding install-config.yml is undefined or empty."
   when: (domain is undefined) or (domain|length == 0) or (cluster is undefined) or (cluster|length == 0) or (extcidrnet is undefined) or (extcidrnet|length == 0) or (dnsvip is undefined) or (dnsvip|length == 0) or (pullsecret is undefined) or (pullsecret|length == 0)
 
+- fail: msg="Both bootraposimage and clusterosimage are empty. Please provide a URL or comment out."
+  when: 
+    - bootstraposimage is defined and bootstraposimage|length == 0
+    - clusterosimage is defined and clusterosimage|length == 0
+
+- name: Conditions to set cache_enabled to true
+  set_fact:
+    cache_enabled: true
+  when: (cache_enabled == 'true') or 
+        (bootstraposimage is undefined and clusterosimage is defined) or 
+        (bootstraposimage is defined and clusterosimage is undefined) or
+        (clusterosimage is defined and bootstraposimage|length == 0) or
+        (bootstraposimage is defined and clusterosimage|length == 0)
+
+- name: Conditions to set cache_enabled to false
+  set_fact:
+    cache_enabled: false
+  when: (cache_enabled == 'false') or
+        (bootstraposimage is defined and clusterosimage is defined)
+
+- debug:
+    msg: "cache enable {{ cache_enabled }}"
+
 - name: Verify DNS records for API VIP, Wildcard (Ingress) VIP
   set_fact:
     apivip: "{{ lookup('dig', 'api.{{ cluster |quote }}.{{ domain | quote }}.')}}"
