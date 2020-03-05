@@ -1,2 +1,4 @@
 ---
 # defaults file for installer
+cache_enabled: false
+provision_cache_store: "{{ ansible_env.HOME }}/rhcos_image_cache/"

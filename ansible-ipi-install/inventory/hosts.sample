@@ -30,6 +30,10 @@ build=""
 # Provisioning IP address (default value)
 prov_ip=172.22.0.3
 
+# (Optional) Enable playbook to pre-download RHCOS images prior to cluster deployment and use them as a local
+# cache.  Default is false.
+#cache_enabled=True
+
 ######################################
 # Vars regarding install-config.yaml #
 ######################################

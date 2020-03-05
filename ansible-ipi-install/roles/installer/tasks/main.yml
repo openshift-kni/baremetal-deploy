@@ -2,9 +2,14 @@
 # tasks file for installer
 - include_tasks: 10_get_oc.yml 
 - include_tasks: 20_extract_installer.yml
-- include_tasks: 25_customize_filesystem.yml
+- include_tasks: 23_rhcos_image_paths.yml
+  when: ((release_version[0]|int == 4) and (release_version[2]|int <= 3)) or cache_enabled == True
+- include_tasks: 24_rhcos_image_cache.yml
+  when: cache_enabled == True
+- include_tasks: 25_create-install-config.yml
 - include_tasks: 30_create_metal3.yml
   when: (release_version[0]|int == 4) and (release_version[2]|int <= 3)
+- include_tasks: 35_customize_filesystem.yml
 - include_tasks: 40_create_manifest.yml
 - include_tasks: 50_extramanifests.yml
 - include_tasks: 59_cleanup_bootstrap.yml
