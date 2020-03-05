@@ -225,10 +225,10 @@ user input for the playbook to run.
 
 The hosts file also ensure to set up all your nodes that will be used to deploy
 IPI on baremetal. There are 3 groups: `masters`, `workers`, and `provisioner`. 
-The `masters` and `workers` group collects information about the host such as
-its name, role, user management (i.e. iDRAC) user, user management (i.e. iDRAC)
-password, ipmi_address to access the server and the provision mac address (NIC1)
-that resides on the provisioning network. 
+The `masters` and `workers` group collects information about the host such as 
+its name, role, user management (i.e. iDRAC) user, user management (i.e. iDRAC) 
+password, ipmi_address, ipmi_port to access the server and the provision mac 
+address (NIC1) that resides on the provisioning network.
 
 Below is a sample of the inventory/hosts file
 
@@ -306,15 +306,16 @@ pullsecret=""
 # Master nodes
 # The hardware_profile is used by the baremetal operator to match the hardware discovered on the host
 # See https://github.com/metal3-io/baremetal-operator/blob/master/docs/api.md#baremetalhost-status
+# ipmi_port is optional for each host. 623 is the common default used if omitted
 [masters]
-master-0 name=master-0 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.1 provision_mac=ec:f4:bb:da:0c:58 hardware_profile=default
-master-1 name=master-1 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.2 provision_mac=ec:f4:bb:da:32:88 hardware_profile=default
-master-2 name=master-2 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.3 provision_mac=ec:f4:bb:da:0d:98 hardware_profile=default
+master-0 name=master-0 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.1 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:58 hardware_profile=default
+master-1 name=master-1 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.2 ipmi_port=623 provision_mac=ec:f4:bb:da:32:88 hardware_profile=default
+master-2 name=master-2 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.3 ipmi_port=623 provision_mac=ec:f4:bb:da:0d:98 hardware_profile=default
 
 # Worker nodes
 [workers]
-worker-0 name=worker-0 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.4 provision_mac=ec:f4:bb:da:0c:18 hardware_profile=unknown
-worker-1 name=worker-1 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.5 provision_mac=ec:f4:bb:da:32:28 hardware_profile=unknown
+worker-0 name=worker-0 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.4 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:18 hardware_profile=unknown
+worker-1 name=worker-1 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.5 ipmi_port=623 provision_mac=ec:f4:bb:da:32:28 hardware_profile=unknown
 
 # Provision Host
 [provisioner]
@@ -324,10 +325,11 @@ provisioner.example.com
 NOTE: The `ipmi_address` can take a fully qualified name assuming it is 
 resolvable.
 
+NOTE: The `ipmi_port` examples above show how a user can specify a different `ipmi_port` for each host within their inventory file. If the `ipmi_port` variable is omitted from the inventory file, the default of 623 will be used.
+
 NOTE: A detailed description of the vars under the section 
 `Vars regarding install-config.yaml` 
-may be reviewed within  
-[Configure the install-config and metal3-config](https://github.com/openshift-kni/baremetal-deploy/blob/master/install-steps.md#configure-the-install-config-and-metal3-config)
+may be reviewed within  [Configure the install-config and metal3-config](https://github.com/openshift-kni/baremetal-deploy/blob/master/install-steps.md#configure-the-install-config-and-metal3-config)
 if unsure how to populate. 
 
 WARNING: If no `workers` are included, do not remove the workers group 
