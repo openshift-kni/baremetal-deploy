@@ -11,6 +11,7 @@ Table of contents
       * [Modifying the `inventory/hosts` file](#modifying-the-inventoryhosts-file)
       * [The Ansible `playbook.yml`](#the-ansible-playbookyml)
       * [Adding Extra Configurations to the OpenShift Installer](#adding-extra-configurations-to-the-openshift-installer)
+      * [Pre-caching RHCOS Images](#pre-caching-rhcos-images)
    * [Verifying Installation](#verifying-installation)
    * [Troubleshooting](#troubleshooting)
       * [Unreachable Host](#unreachable-host)
@@ -260,6 +261,10 @@ build=""
 
 # Provisioning IP address (default value)
 prov_ip=172.22.0.3
+
+# (Optional) Enable playbook to pre-download RHCOS images prior to cluster deployment and use them as a local
+# cache.  Default is false.
+#cache_enabled=True
 
 ######################################
 # Vars regarding install-config.yaml #
