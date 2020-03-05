@@ -4,11 +4,7 @@ metadata:
   name: metal3-config
   namespace: openshift-machine-api
 data:
-{% if clusterosimage is defined and clusterosimage|length %}
   cache_url: ''
-{% else %}
-  cache_url: {{ rhcos_path }}
-{% endif %}
   deploy_kernel_url: http://{{ prov_ip }}:6180/images/ironic-python-agent.kernel
   deploy_ramdisk_url: http://{{ prov_ip }}:6180/images/ironic-python-agent.initramfs
   dhcp_range: 172.22.0.10,172.22.0.100
