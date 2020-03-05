@@ -111,8 +111,9 @@ The tree structure is shown below:
     │   │   ├── 20_extract_installer.yml
     │   │   ├── 23_rhcos_image_paths.yml
     │   │   ├── 24_rhcos_image_cache.yml
+    │   │   ├── 25_create-install-config.yml
     │   │   ├── 30_create_metal3.yml
-    │   │   ├── 35_create-install-config.yml
+    │   │   ├── 35_customize_filesystem.yml
     │   │   ├── 40_create_manifest.yml
     │   │   ├── 50_extramanifests.yml
     │   │   ├── 59_cleanup_bootstrap.yml
@@ -120,7 +121,7 @@ The tree structure is shown below:
     │   │   ├── 70_cleanup_sub_man_registeration.yml
     │   │   └── main.yml
     │   ├── templates
-        │   ├── install-config.j2
+    |   │   ├── install-config.j2
     │   │   └── metal3-config.j2
     │   ├── tests
     │   │   ├── inventory
