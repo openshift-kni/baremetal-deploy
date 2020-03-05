@@ -5,7 +5,7 @@ metadata:
   namespace: openshift-machine-api
 data:
 {% if clusterosimage is defined and clusterosimage|length %}
-  cache_url: {{ (clusterosimage.split("/")[:-1])|join("/") }}
+  cache_url: ''
 {% else %}
   cache_url: {{ rhcos_path }}
 {% endif %}
