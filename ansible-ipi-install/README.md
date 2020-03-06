@@ -18,6 +18,9 @@ Table of contents
       * [Permission Denied Trying To Connect To Host](#permission-denied-trying-to-connect-to-host)
       * [Dig lookup requires the python 'dnspython' library and it is not installed](#dig-lookup-requires-the-python-dnspython-library-and-it-is-not-installed)
    * [Gotchas](#gotchas)
+   * [Appendix A](#appendix-a-using-ansible-tags-with-the-playbookyml)
+      * [How to use the Ansible tags](#how-to-use-the-ansible-tags)
+      * [Skipping particular tasks using Ansible tags](#skipping-particular-tasks-using-ansible-tags)
 <!--te-->
 
 # Introduction
@@ -593,9 +596,9 @@ Re-run the Ansible playbook
 $ ansible-playbook -i inventory/hosts playbook.yml 
 ~~~
 
-## Gotchas
+# Gotchas
 
-### Using become: yes within ansible.cfg or inside playbook.yml 
+## Using become: yes within ansible.cfg or inside playbook.yml 
 
 This Ansible playbook takes advantage of the `ansible_user_dir` variable. As 
 such, it is important to note that if within your `ansible.cfg` or within
@@ -603,6 +606,142 @@ the `playbook.yml` file the privilege escalation of `become: yes` is used, this
 will modify the home directory to that of the root user (i.e. `/root`) instead
 of using the home directory of your privileged user, `kni` with a home dir of
 `/home/kni`
+
+# Appendix A. Using Ansible Tags with the playbook.yml
+
+As this playbook continues to grow, there may be times when it is useful
+to run specific portions of the playbook rather than running everything the
+Ansible playbook offers. 
+
+For example, a user may only want to run the networking piece of the playbook
+or create just the pull-secret.txt file, or just clean up the environment -- 
+just to name a few. 
+
+As such the existing playbook has many tags that can be used for such purposes.
+By running the following command you can see what options are available.
+
+~~~sh
+$ ansible-playbook -i inventory/hosts playbook.yml --list-tasks --list-tags
+
+playbook: playbook.yml
+
+  play #1 (provisioner): IPI on Baremetal Installation Playbook	TAGS: []
+    tasks:
+      include_tasks	TAGS: [validation]
+      include_tasks	TAGS: [subscription]
+      include_tasks	TAGS: [packages]
+      include_tasks	TAGS: [network]
+      include_tasks	TAGS: [user]
+      include_tasks	TAGS: [services]
+      include_tasks	TAGS: [firewall]
+      include_tasks	TAGS: [storagepool]
+      include_tasks	TAGS: [clusterconfigs]
+      include_tasks	TAGS: [powerservers]
+      include_tasks	TAGS: [cleanup, getoc]
+      include_tasks	TAGS: [extract, pullsecret]
+      include_tasks	TAGS: [rhcospath]
+      include_tasks	TAGS: [cache]
+      include_tasks	TAGS: [installconfig]
+      include_tasks	TAGS: [metal3config]
+      include_tasks	TAGS: [customfs]
+      include_tasks	TAGS: [manifests]
+      include_tasks	TAGS: [extramanifests]
+      include_tasks	TAGS: [cleanup]
+      include_tasks	TAGS: [install]
+      TASK TAGS: [cache, cleanup, clusterconfigs, customfs, extract, extramanifests, firewall, getoc, install, installconfig, manifests, metal3config, network, packages, powerservers, pullsecret, rhcospath, services, storagepool, subscription, user, validation]
+~~~
+
+To break this down further, the following is a description of each tag.
+
+* validation - this verifies that everything in your environment is set and ready
+for OpenShift deployment and sets some required internal variables. It is *not*
+recommended to ever not include this task. It is always required. 
+
+* subscription - subscribe via Red Hat subscription manager
+
+* packages - install required package for OpenShift
+
+* network - setup the provisioning and baremetal network bridges and bridge slaves
+
+* user - add remote user to libvirt group and generate ssh keys
+
+* services - enable appropriate services for OpenShift
+
+* firewall - set firewall rules for OpenShift
+
+* storagepool - define, create, auto start the default storage pool
+
+* clusterconfigs - directory that stores all configuration files for OpenShift
+
+* powerservers - power off all servers that will be part of the OpenShift cluster
+
+* getoc - get the appropriate oc binary, extract it and place within /usr/local/bin
+
+* extract - extract the OpenShift installer
+
+* pullsecret - copy the pullsecret to the pull-secret.txt file under the remote
+user home dir
+
+* rhcospath - set the RHCOS path
+
+* cache - tasks related to enabling RHCOS image caching
+
+* installconfig - generates the install-config.yaml
+
+* metal3config - generates the metal3-config.yaml
+
+* customfs - deals with customizing the filesystem via ignition files
+
+* manifests - create the manifests dir
+
+* extramanifests - include any extra manifests files
+
+* install - Deploy OpenShift
+
+* cleanup - clean up the environment within the provisioning node. Does not remove
+networking
+
+
+## How to use the Ansible tags
+
+The following is an example on how to use the `--tags` option. In this example, 
+we will just install the packages to the provision node. 
+
+Example 1
+~~~sh
+ansible-playbook -i inventory/hosts playbook.yml --tags "packages"
+~~~
+
+In the next example, we will show how to call multiple tags at the same time.
+
+Example 2
+~~~sh
+ansible-playbook -i inventory/hosts playbook.yml --tags "network,packages"
+~~~
+
+The example above calls for the setup of the networking and installation of
+the packages from the Ansible playbook. Only the tasks with these specific
+tags will run.
+
+
+## Skipping particular tasks using Ansible tags
+
+In the event that you want to always skip certain tasks of the playbook this
+can be done via the `--skip-tag` option. 
+
+We will use similar example as above where we want to skip the network setup
+and the package installation.
+
+Example 1
+~~~sh
+ansible-playbook -i inventory/hosts playbook.yml --skip-tags "network,packages"
+~~~
+
+
+
+
+
+
 
 
 

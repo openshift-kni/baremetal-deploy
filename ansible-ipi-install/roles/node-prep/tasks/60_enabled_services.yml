@@ -8,5 +8,6 @@
   with_items:
   - "{{ firewall }}"
   - libvirtd
+  tags: services
 
 

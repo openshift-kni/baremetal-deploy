@@ -11,12 +11,14 @@
     group: "{{ ansible_user }}"
     mode: '0755'
     setype: httpd_sys_content_t
+  tags: cache
 
 # rhcos_json fact already set in 23_rhcos_image_paths.yaml
 - name: Set facts for RHCOS_QEMU_SHA256 and RHCOS_SHA256
   set_fact:
     rhcos_qemu_sha256: '{{ rhcos_json.json | json_query(''images.qemu."uncompressed-sha256"'') }}'
     rhcos_sha256: "{{ rhcos_json.json | json_query('images.openstack.sha256') }}"
+  tags: cache
 
 - name: Check if {{ rhcos_qemu_uri }} is already in cache
   stat: 
@@ -25,6 +27,7 @@
     get_checksum: yes
   register: rhcos_qemu_stat
   when: bootstraposimage is not defined or bootstraposimage|length < 1
+  tags: cache
 
 - name: Download {{ rhcos_qemu_uri }} for cache
   get_url:
@@ -36,6 +39,7 @@
     setype: httpd_sys_content_t
     timeout: 3600
   when: (bootstraposimage is not defined or bootstraposimage|length < 1) and (rhcos_qemu_stat.stat.exists == false or rhcos_qemu_stat.stat.checksum != rhcos_qemu_sha256)
+  tags: cache
 
 - name: Check if {{ rhcos_uri }} is already in cache
   stat: 
@@ -44,6 +48,7 @@
     get_checksum: yes
   register: rhcos_stat
   when: clusterosimage is not defined or clusterosimage|length < 1
+  tags: cache
 
 - name: Download {{ rhcos_uri }} for cache
   get_url:
@@ -55,16 +60,19 @@
     setype: httpd_sys_content_t
     timeout: 3600
   when: (clusterosimage is not defined or clusterosimage|length < 1) and (rhcos_stat.stat.exists == false or rhcos_stat.stat.checksum != rhcos_sha256)
+  tags: cache
 
 - name: Set bootstrap image URL override if not provided by the user
   set_fact:
     bootstraposimage: "http://{{ ansible_provisioning.ipv4.address }}:8080/{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256 }}"
   when: bootstraposimage is not defined or bootstraposimage|length < 1
+  tags: cache
 
 - name: Set cluster image URL override if not provided by the user
   set_fact:
     clusterosimage: "http://{{ ansible_provisioning.ipv4.address }}:8080/{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
   when: clusterosimage is not defined or clusterosimage|length < 1
+  tags: cache
 
 - name: Start RHCOS image cache container
   podman_container:
@@ -76,4 +84,5 @@
     volumes:
       - "{{ provision_cache_store }}:/var/www/html"
   become: yes
+  tags: cache
   

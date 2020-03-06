@@ -8,3 +8,4 @@
   with_items:
     - "{{ groups['masters'] }}"
     - "{{ groups['workers'] }}"
+  tags: powerservers

@@ -9,6 +9,7 @@
     - "master"
     - "worker"
   delegate_to: localhost
+  tags: customfs
 
 - name: Modify Ignition Configs
   block:
@@ -50,8 +51,10 @@
     become: true
 
   when: (filesFound | json_query('results[*].matched') | sum) > 0
+  tags: customfs
 
 - name: Delete tmp dir as no longer needed
   file:
     path: "{{ tempdir }}"
     state: absent
+  tags: customfs

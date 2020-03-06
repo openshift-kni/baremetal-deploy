@@ -7,6 +7,9 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
+  tags: 
+  - pullsecret
+  - extract
 
 - name: Extracting the installer
   shell: |
@@ -14,6 +17,7 @@
   args:
     chdir: "{{ tempdir }}"
     executable: /bin/bash
+  tags: extract
 
 - name: Copy openshift-baremetal-install binary to /usr/local/bin
   copy:
@@ -24,3 +28,4 @@
     mode: '0755'
     remote_src: yes
   become: yes
+  tags: extract

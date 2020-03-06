@@ -1,77 +1,74 @@
 ---
-- name: Delete {{ prov_nic }} due to modify nmcli bug
-  nmcli: 
-    conn_name: "{{ prov_nic }}"
-    type: ethernet
-    state: absent
-  become: yes
+- name: Setup Bridge Creation
+  block:
+    - name: Delete {{ prov_nic }} due to modify nmcli bug
+      nmcli: 
+        conn_name: "{{ prov_nic }}"
+        type: ethernet
+        state: absent
+        
+    - name: Create Bridge labeled provisioning
+      nmcli:
+        conn_name: provisioning
+        type: bridge
+        ifname: provisioning
+        autoconnect: yes
+        stp: off
+        ip4: 172.22.0.1/24
+        state: present
     
-- name: Create Bridge labeled provisioning
-  nmcli:
-    conn_name: provisioning
-    type: bridge
-    ifname: provisioning
-    autoconnect: yes
-    stp: off
-    ip4: 172.22.0.1/24
-    state: present
-  become: yes
-
-- name: Create Bridge slave on {{ prov_nic }}
-  nmcli:
-    conn_name: "{{ prov_nic }}"
-    type: bridge-slave
-    hairpin: no
-    ip4_method: manual
-    ifname: "{{ prov_nic }}"
-    master: provisioning
-    autoconnect: yes
-    state: present
-  become: yes
+    - name: Create Bridge slave on {{ prov_nic }}
+      nmcli:
+        conn_name: "{{ prov_nic }}"
+        type: bridge-slave
+        hairpin: no
+        ip4_method: manual
+        ifname: "{{ prov_nic }}"
+        master: provisioning
+        autoconnect: yes
+        state: present
+        
+    - name: Create Bridge labeled baremetal
+      nmcli:
+        conn_name: baremetal
+        type: bridge
+        ifname: baremetal
+        autoconnect: yes
+        stp: off
+        state: present
     
-- name: Create Bridge labeled baremetal
-  nmcli:
-    conn_name: baremetal
-    type: bridge
-    ifname: baremetal
-    autoconnect: yes
-    stp: off
-    state: present
+    - name: Create Bridge slave on {{ pub_nic }}
+      nmcli:
+        conn_name: "{{ pub_nic }}"
+        type: bridge-slave
+        hairpin: no
+        ifname: "{{ pub_nic }}"
+        master: baremetal
+        autoconnect: yes
+        state: present
+    
+    - name: Register the UUID of {{ pub_nic }}
+      shell: |
+        nmcli c show | grep {{ pub_nic }} | awk '{ print $2 }' | grep -v {{ pub_nic }}
+      register: uuidoutput
+    
+    - name: Set Fact for UUID
+      set_fact:
+        uuid: "{{ uuidoutput.stdout }}"
+    
+    - name: Modify the Bridge slave file
+      template:
+        src: roles/node-prep/templates/pub_nic.j2
+        dest: "/etc/sysconfig/network-scripts/ifcfg-{{ pub_nic }}"
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+    
+    - name: Reload baremetal bridge and slave interfaces
+      shell: |
+        /usr/bin/nmcli con reload {{ item }}; /usr/bin/nmcli con up {{ item }}
+      with_items:
+        - baremetal
+        - "{{ pub_nic }}"
   become: yes
-
-- name: Create Bridge slave on {{ pub_nic }}
-  nmcli:
-    conn_name: "{{ pub_nic }}"
-    type: bridge-slave
-    hairpin: no
-    ifname: "{{ pub_nic }}"
-    master: baremetal
-    autoconnect: yes
-    state: present
-  become: yes
-
-- name: Register the UUID of {{ pub_nic }}
-  shell: |
-    nmcli c show | grep {{ pub_nic }} | awk '{ print $2 }' | grep -v {{ pub_nic }}
-  register: uuidoutput
-
-- name: Set Fact for UUID
-  set_fact:
-    uuid: "{{ uuidoutput.stdout }}"
-
-- name: Modify the Bridge slave file
-  template:
-    src: roles/node-prep/templates/pub_nic.j2
-    dest: "/etc/sysconfig/network-scripts/ifcfg-{{ pub_nic }}"
-    owner: root
-    group: root
-    mode: u=rw,g=r,o=r
-  become: yes
-
-- name: Reload baremetal bridge and slave interfaces
-  shell: |
-    /usr/bin/nmcli con reload {{ item }}; /usr/bin/nmcli con up {{ item }}
-  with_items:
-    - baremetal
-    - "{{ pub_nic }}"
-  become: yes
+  tags: network

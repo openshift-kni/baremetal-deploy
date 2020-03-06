@@ -1,16 +1,20 @@
 - fail: msg="The version is undefined or empty. Use a value such as 'latest-4.3' or 'latest-4.4' or an explicit version."
   when: (version is undefined) or (version|length == 0)
+  tags: validation
 
 - fail: msg="The build is undefined or empty. Use a value such as 'dev' or 'ga'."
   when: (build is undefined) or (build|length == 0)
+  tags: validation
 
 - fail: msg="A variable regarding install-config.yml is undefined or empty."
   when: (domain is undefined) or (domain|length == 0) or (cluster is undefined) or (cluster|length == 0) or (extcidrnet is undefined) or (extcidrnet|length == 0) or (dnsvip is undefined) or (dnsvip|length == 0) or (pullsecret is undefined) or (pullsecret|length == 0)
+  tags: validation
 
 - fail: msg="Both bootraposimage and clusterosimage are empty. Please provide a URL or comment out."
   when: 
     - bootstraposimage is defined and bootstraposimage|length == 0
     - clusterosimage is defined and clusterosimage|length == 0
+  tags: validation
 
 - name: Conditions to set cache_enabled to true
   set_fact:
@@ -20,35 +24,44 @@
         (bootstraposimage is defined and clusterosimage is undefined) or
         (clusterosimage is defined and bootstraposimage|length == 0) or
         (bootstraposimage is defined and clusterosimage|length == 0)
+  tags: validation
 
 - name: Conditions to set cache_enabled to false
   set_fact:
     cache_enabled: false
   when: (cache_enabled == 'false') or
         (bootstraposimage is defined and clusterosimage is defined)
+  tags: validation
 
 - debug:
     msg: "cache enable {{ cache_enabled }}"
+  tags: validation
 
 - name: Verify DNS records for API VIP, Wildcard (Ingress) VIP
   set_fact:
     apivip: "{{ lookup('dig', 'api.{{ cluster |quote }}.{{ domain | quote }}.')}}"
     ingressvip: "{{ lookup('dig', 'foo.apps.{{ cluster |quote }}.{{ domain | quote }}.')}}"
   when: ((apivip is undefined) or (ingressvip is undefined) or (apivip|length == 0) or (ingressvip|length == 0))
+  tags: validation
 
 - debug: msg="The API VIP is {{ apivip }}"
+  tags: validation
 - debug: msg="The Wildcard (Ingress) VIP is {{ ingressvip }}"
+  tags: validation
 
 - fail: msg="The API VIP IP seems to be incorrect. Value was NXDOMAIN."
   when: (apivip == 'NXDOMAIN')
+  tags: validation
 
 - fail: msg="The Ingress VIP IP seems to be incorrect. Value was NXDOMAIN."
   when: (ingressvip == 'NXDOMAIN')
+  tags: validation
 
 - name: Set fact of release_url
   set_fact:
     release_url: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp"
   when: build == 'ga'
+  tags: validation
 
 - name: Get Release.txt File
   uri:
@@ -56,31 +69,39 @@
     return_content: yes
   register: result
   failed_when: result.status >= 400
+  tags: validation
 
 - name: Set Fact for Release Image
   set_fact:
     release_version: "{{ result.content | regex_search('Version:.*') | regex_replace('Version:\\s*(.*)', '\\1') }}"
     release_image: "{{ result.content | regex_search('Pull From:.*') | regex_replace('Pull From:\\s*(.*)', '\\1') }}"
+  tags: validation
 
 - debug: msg="release version {{ release_version }}"
+  tags: validation
 - debug: msg="release image {{ release_image }}"
+  tags: validation
 
 - fail: msg="The {{ item }} group is not defined. Please add [{{ item }}] to the inventory/hosts file"
   when: "'{{ item }}' not in groups"
   loop:
     - masters
     - workers
+  tags: validation
 
 - name: Set Fact of num of workers and masters based on inventory
   set_fact:
     numworkers: "{{ groups['workers'] | length }}"
     nummasters: "{{ groups['masters'] | length }}"
+  tags: validation
 
 - name:  Gather the rpm package facts
   package_facts:
     manager: auto
+  tags: validation
 
 - name: Set Fact for firewall variable
   set_fact:
     firewall: "iptables"
   when: "'iptables-services' in ansible_facts.packages"
+  tags: validation

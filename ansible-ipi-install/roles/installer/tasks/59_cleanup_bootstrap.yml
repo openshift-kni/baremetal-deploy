@@ -4,6 +4,7 @@
     command: list_vms
   register: all_vms
   become: yes
+  tags: cleanup
 
 - name: Get list of all running VMs
   virt:
@@ -11,6 +12,7 @@
     state: running
   register: running_vms
   become: yes
+  tags: cleanup
 
 - name: Destroy old bootstrap VMs, if any
   virt:
@@ -19,6 +21,7 @@
   with_items: "{{ running_vms.list_vms }}"
   when: item is search("bootstrap")
   become: yes
+  tags: cleanup
 
 - name: Undefine old bootstrap VMs, if any
   virt:
@@ -27,6 +30,7 @@
   with_items: "{{ all_vms.list_vms }}"
   when: item is search("bootstrap")
   become: yes
+  tags: cleanup
 
 - name: Find old bootstrap VM Storage
   find:
@@ -34,6 +38,7 @@
     patterns: '*-bootstrap,*-bootstrap.ign'
   register: find_results
   become: yes
+  tags: cleanup
 
 - name: Delete old bootstrap VMs Storage
   file:
@@ -41,3 +46,4 @@
     state: absent
   loop: "{{ find_results['files'] }}"
   become: yes
+  tags: cleanup

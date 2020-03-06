@@ -11,3 +11,4 @@
   when: 
     - activation_key != ""
     - org_id != ""
+  tags: subscription
