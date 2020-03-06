@@ -16,3 +16,6 @@ package_list:
   - policycoreutils-python3
   - https://trunk.rdoproject.org/rhel8-master/deps/latest/Packages/python3-crypto-2.6.1-18.el8ost.x86_64.rpm
   - https://trunk.rdoproject.org/rhel8-master/deps/latest/Packages/python3-pyghmi-1.0.22-2.el8ost.noarch.rpm
+
+cache_package_list:
+  - podman

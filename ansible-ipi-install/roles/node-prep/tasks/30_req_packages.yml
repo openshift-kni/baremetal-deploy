@@ -1,8 +1,15 @@
 ---
-- name: Install required packages
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items: "{{ package_list }}"
-  become: yes
+- name: Install packages
+  block:
+  - name: Create list of packages to be installed
+    set_fact:
+      package_list: "{{ package_list + cache_package_list }}"
+    when: cache_enabled == True
+
+  - name: Install required packages
+    package:
+      name: "{{ item }}"
+      state: present
+    with_items: "{{ package_list }}"
+    become: yes
   tags: packages
