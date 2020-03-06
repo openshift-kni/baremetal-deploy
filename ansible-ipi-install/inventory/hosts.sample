@@ -72,15 +72,16 @@ pullsecret=""
 # Master nodes
 # The hardware_profile is used by the baremetal operator to match the hardware discovered on the host
 # See https://github.com/metal3-io/baremetal-operator/blob/master/docs/api.md#baremetalhost-status
+# ipmi_port is optional for each host. 623 is the common default used if omitted
 [masters]
-master-0 name=master-0 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.1 provision_mac=ec:f4:bb:da:0c:58 hardware_profile=default
-master-1 name=master-1 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.2 provision_mac=ec:f4:bb:da:32:88 hardware_profile=default
-master-2 name=master-2 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.3 provision_mac=ec:f4:bb:da:0d:98 hardware_profile=default
+master-0 name=master-0 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.1 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:58 hardware_profile=default
+master-1 name=master-1 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.2 ipmi_port=623 provision_mac=ec:f4:bb:da:32:88 hardware_profile=default
+master-2 name=master-2 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.3 ipmi_port=623 provision_mac=ec:f4:bb:da:0d:98 hardware_profile=default
 
 # Worker nodes
 [workers]
-worker-0 name=worker-0 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.4 provision_mac=ec:f4:bb:da:0c:18 hardware_profile=unknown
-worker-1 name=worker-1 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.5 provision_mac=ec:f4:bb:da:32:28 hardware_profile=unknown
+worker-0 name=worker-0 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.4 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:18 hardware_profile=unknown
+worker-1 name=worker-1 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.5 ipmi_port=623 provision_mac=ec:f4:bb:da:32:28 hardware_profile=unknown
 
 # Provision Host
 [provisioner]
