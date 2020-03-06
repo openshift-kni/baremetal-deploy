@@ -5,3 +5,4 @@
     state: present
   with_items: "{{ package_list }}"
   become: yes
+  tags: packages

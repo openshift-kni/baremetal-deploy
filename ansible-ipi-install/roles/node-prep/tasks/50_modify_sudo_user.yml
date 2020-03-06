@@ -7,4 +7,5 @@
     state: present 
     generate_ssh_key: yes
   become: yes
+  tags: user
 

@@ -1,18 +1,34 @@
 ---
 # tasks file for installer
 - include_tasks: 10_get_oc.yml 
+  tags:
+  - cleanup
+  - getoc
 - include_tasks: 20_extract_installer.yml
+  tags:
+  - pullsecret
+  - extract
 - include_tasks: 23_rhcos_image_paths.yml
   when: ((release_version[0]|int == 4) and (release_version[2]|int <= 3)) or cache_enabled == True
+  tags: rhcospath
 - include_tasks: 24_rhcos_image_cache.yml
   when: cache_enabled == True
+  tags: cache
 - include_tasks: 25_create-install-config.yml
+  tags: installconfig
 - include_tasks: 30_create_metal3.yml
   when: (release_version[0]|int == 4) and (release_version[2]|int <= 3)
+  tags: metal3config
 - include_tasks: 35_customize_filesystem.yml
+  tags: customfs
 - include_tasks: 40_create_manifest.yml
+  tags: manifests
 - include_tasks: 50_extramanifests.yml
+  tags: extramanifests
 - include_tasks: 59_cleanup_bootstrap.yml
+  tags: cleanup
 - include_tasks: 60_deploy_ocp.yml
+  tags: install
 #- include_tasks: 70_cleanup_sub_man_registeration.yml
+#  tags: unregister
 

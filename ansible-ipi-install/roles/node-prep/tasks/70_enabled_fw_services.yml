@@ -28,6 +28,7 @@
       become: yes
       when: cache_enabled == True
   when: firewall != "iptables"
+  tags: firewall
 
 - name: Configure iptables
   block:
@@ -68,3 +69,4 @@
         /usr/sbin/iptables-save > /etc/sysconfig/iptables
       become: yes
   when: firewall == "iptables"
+  tags: firewall

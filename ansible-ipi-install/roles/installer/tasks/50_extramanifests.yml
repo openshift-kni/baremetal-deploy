@@ -7,4 +7,5 @@
     group: "{{ ansible_user }}"
   with_fileglob:
     - roles/installer/files/manifests/*
+  tags: extramanifest
 

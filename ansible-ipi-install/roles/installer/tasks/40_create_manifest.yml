@@ -2,6 +2,7 @@
 - name: Create OpenShift Manifest
   shell: |
     /usr/local/bin/openshift-baremetal-install --dir {{ dir }} create manifests
+  tags: manifest
 
 - name: Ensure the manifests dir is owned by {{ ansible_user }}
   file:
@@ -14,6 +15,7 @@
   with_items:
   - "{{ dir }}/openshift"
   - "{{ dir }}/manifests"
+  tags: manifest
   
 - name: Copy the metal3-config.yaml to {{ dir }}/openshift directory
   copy:
@@ -24,3 +26,4 @@
     mode: '0644'
     remote_src: yes
   when: (release_version[0]|int == 4) and (release_version[2]|int <= 3)
+  tags: manifest
