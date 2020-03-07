@@ -83,6 +83,5 @@
       - "8080:8080"
     volumes:
       - "{{ provision_cache_store }}:/var/www/html"
-  become: yes
   tags: cache
   
