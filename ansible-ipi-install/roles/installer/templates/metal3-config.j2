@@ -5,12 +5,12 @@ metadata:
   namespace: openshift-machine-api
 data:
   cache_url: ''
-  deploy_kernel_url: http://{{ prov_ip }}:6180/images/ironic-python-agent.kernel
-  deploy_ramdisk_url: http://{{ prov_ip }}:6180/images/ironic-python-agent.initramfs
+  deploy_kernel_url: http://{{ prov_ip|ipaddr|ipwrap }}:6180/images/ironic-python-agent.kernel
+  deploy_ramdisk_url: http://{{ prov_ip|ipaddr|ipwrap }}:6180/images/ironic-python-agent.initramfs
   dhcp_range: 172.22.0.10,172.22.0.100
   http_port: "6180"
-  ironic_endpoint: http://{{ prov_ip }}:6385/v1/
-  ironic_inspector_endpoint: http://{{ prov_ip }}:5050/v1/
+  ironic_endpoint: http://{{ prov_ip|ipaddr|ipwrap }}:6385/v1/
+  ironic_inspector_endpoint: http://{{ prov_ip|ipaddr|ipwrap }}:5050/v1/
   provisioning_interface: {{ prov_nic }}
   provisioning_ip: {{ prov_ip }}/24
 {% if clusterosimage is defined and clusterosimage|length %}
