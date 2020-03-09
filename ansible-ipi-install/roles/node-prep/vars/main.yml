@@ -19,3 +19,5 @@ package_list:
 
 cache_package_list:
   - podman
+
+qtype: "{{ 'qtype=AAAA' if ipv6_enabled is defined and ipv6_enabled|bool else 'qtype=A' }}"

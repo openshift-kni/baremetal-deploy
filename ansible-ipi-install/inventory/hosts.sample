@@ -71,7 +71,6 @@ dnsvip=""
 # A copy of your pullsecret from https://cloud.redhat.com/openshift/install/metal/user-provisioned
 pullsecret=""
 
-
 # Master nodes
 # The hardware_profile is used by the baremetal operator to match the hardware discovered on the host
 # See https://github.com/metal3-io/baremetal-operator/blob/master/docs/api.md#baremetalhost-status
