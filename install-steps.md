@@ -5,12 +5,12 @@ This write-up will guide you through the process of deploying a Baremetal IPI in
 
 * 6 Physical servers (1 provision node, 3 master and 2 worker nodes)
 * Each server needs 2 NICs pre-configured. NIC1 for the private network and NIC2 for the external network. NIC interface names need to be identical. See [issue](https://github.com/openshift/installer/issues/2762)
-* Each server should have a RAID-1 configured and initialized
+* It is recommended each server have a RAID-1 configured and initialized (though not enforced)
 * Each server must have IPMI configured
 * Each server must have DHCP setup for external NICs
 * Each server must have DNS setup for the API, wildcard applications
 * A DNS VIP is IP on the `baremetal` network is required for reservation. Reservation is done via our DHCP server (though not required).  
-* Optional - Include DNS entries for the external hostnames for each of the servers
+* Include DNS entries for the external hostnames for each of the servers
 * Download a copy of your [Pull secret](https://cloud.redhat.com/openshift/install/metal/user-provisioned)
 * Append to the `pull-secret.txt` the [Pull secret](https://docs.google.com/document/d/1pWRtk7IbnfPo6cSDsopUMrxS22t3VJ2PuN39MJp9tHM/edit) with access to `registry.svc.ci.openshift.org` and `registry.redhat.io`
 
