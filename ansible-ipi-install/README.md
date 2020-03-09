@@ -11,12 +11,16 @@ Table of contents
       * [Modifying the `inventory/hosts` file](#modifying-the-inventoryhosts-file)
       * [The Ansible `playbook.yml`](#the-ansible-playbookyml)
       * [Adding Extra Configurations to the OpenShift Installer](#adding-extra-configurations-to-the-openshift-installer)
+      * [Pre-caching RHCOS Images](#pre-caching-rhcos-images)
    * [Verifying Installation](#verifying-installation)
    * [Troubleshooting](#troubleshooting)
       * [Unreachable Host](#unreachable-host)
       * [Permission Denied Trying To Connect To Host](#permission-denied-trying-to-connect-to-host)
       * [Dig lookup requires the python 'dnspython' library and it is not installed](#dig-lookup-requires-the-python-dnspython-library-and-it-is-not-installed)
    * [Gotchas](#gotchas)
+   * [Appendix A](#appendix-a-using-ansible-tags-with-the-playbookyml)
+      * [How to use the Ansible tags](#how-to-use-the-ansible-tags)
+      * [Skipping particular tasks using Ansible tags](#skipping-particular-tasks-using-ansible-tags)
 <!--te-->
 
 # Introduction
@@ -109,7 +113,11 @@ The tree structure is shown below:
     │   ├── tasks
     │   │   ├── 10_get_oc.yml
     │   │   ├── 20_extract_installer.yml
+    │   │   ├── 23_rhcos_image_paths.yml
+    │   │   ├── 24_rhcos_image_cache.yml
+    │   │   ├── 25_create-install-config.yml
     │   │   ├── 30_create_metal3.yml
+    │   │   ├── 35_customize_filesystem.yml
     │   │   ├── 40_create_manifest.yml
     │   │   ├── 50_extramanifests.yml
     │   │   ├── 59_cleanup_bootstrap.yml
@@ -117,6 +125,7 @@ The tree structure is shown below:
     │   │   ├── 70_cleanup_sub_man_registeration.yml
     │   │   └── main.yml
     │   ├── templates
+    |   │   ├── install-config.j2
     │   │   └── metal3-config.j2
     │   ├── tests
     │   │   ├── inventory
@@ -133,7 +142,6 @@ The tree structure is shown below:
         ├── meta
         │   └── main.yml
         ├── tasks
-        │   ├── 100_create-install-config.yml
         |   ├── 10_validation.yml
         │   ├── 110_power_off_cluster_servers.yml
         │   ├── 20_sub_man_register.yml
@@ -147,7 +155,6 @@ The tree structure is shown below:
         │   └── main.yml
         ├── templates
         │   ├── dir.xml.j2
-        │   ├── install-config.j2
         │   └── pub_nic.j2
         ├── tests
         │   ├── inventory
@@ -218,10 +225,10 @@ user input for the playbook to run.
 
 The hosts file also ensure to set up all your nodes that will be used to deploy
 IPI on baremetal. There are 3 groups: `masters`, `workers`, and `provisioner`. 
-The `masters` and `workers` group collects information about the host such as
-its name, role, user management (i.e. iDRAC) user, user management (i.e. iDRAC)
-password, ipmi_address to access the server and the provision mac address (NIC1)
-that resides on the provisioning network. 
+The `masters` and `workers` group collects information about the host such as 
+its name, role, user management (i.e. iDRAC) user, user management (i.e. iDRAC) 
+password, ipmi_address, ipmi_port to access the server and the provision mac 
+address (NIC1) that resides on the provisioning network.
 
 Below is a sample of the inventory/hosts file
 
@@ -258,6 +265,10 @@ build=""
 # Provisioning IP address (default value)
 prov_ip=172.22.0.3
 
+# (Optional) Enable playbook to pre-download RHCOS images prior to cluster deployment and use them as a local
+# cache.  Default is false.
+#cache_enabled=True
+
 ######################################
 # Vars regarding install-config.yaml #
 ######################################
@@ -270,23 +281,41 @@ cluster=""
 extcidrnet=""
 # An IP reserved on the baremetal network. 
 dnsvip=""
+# An IP reserved on the baremetal network for the API endpoint. 
+# (Optional) If not set, a DNS lookup verifies that api.<clustername>.<domain> provides an IP
+#apivip=""
+# An IP reserved on the baremetal network for the Ingress endpoint.
+# (Optional) If not set, a DNS lookup verifies that *.apps.<clustername>.<domain> provides an IP
+#ingressvip=""
 # Network Type (OpenShiftSDN or OVNKubernetes). Playbook defaults to OVNKubernetes.
 # Uncomment below for OpenShiftSDN
 #network_type="OpenShiftSDN"
+# (Optional) A URL to override the default operating system image for the bootstrap node.
+# The URL must contain a sha256 hash of the image.
+# See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
+#   Example https://mirror.example.com/images/qemu.qcow2.gz?sha256=a07bd...
+#bootstraposimage=""
+# (Optional) A URL to override the default operating system image for the cluster nodes.
+# The URL must contain a sha256 hash of the image.
+# See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
+# Example https://mirror.example.com/images/metal.qcow2.gz?sha256=3b5a8...
+#clusterosimage=""
 # A copy of your pullsecret from https://cloud.redhat.com/openshift/install/metal/user-provisioned
 pullsecret=""
 
-
 # Master nodes
+# The hardware_profile is used by the baremetal operator to match the hardware discovered on the host
+# See https://github.com/metal3-io/baremetal-operator/blob/master/docs/api.md#baremetalhost-status
+# ipmi_port is optional for each host. 623 is the common default used if omitted
 [masters]
-master-0 name=master-0 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.1 provision_mac=ec:f4:bb:da:0c:58
-master-1 name=master-1 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.2 provision_mac=ec:f4:bb:da:32:88
-master-2 name=master-2 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.3 provision_mac=ec:f4:bb:da:0d:98
+master-0 name=master-0 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.1 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:58 hardware_profile=default
+master-1 name=master-1 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.2 ipmi_port=623 provision_mac=ec:f4:bb:da:32:88 hardware_profile=default
+master-2 name=master-2 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.3 ipmi_port=623 provision_mac=ec:f4:bb:da:0d:98 hardware_profile=default
 
 # Worker nodes
 [workers]
-worker-0 name=worker-0 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.4 provision_mac=ec:f4:bb:da:0c:18
-worker-1 name=worker-1 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.5 provision_mac=ec:f4:bb:da:32:28
+worker-0 name=worker-0 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.4 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:18 hardware_profile=unknown
+worker-1 name=worker-1 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.5 ipmi_port=623 provision_mac=ec:f4:bb:da:32:28 hardware_profile=unknown
 
 # Provision Host
 [provisioner]
@@ -296,10 +325,11 @@ provisioner.example.com
 NOTE: The `ipmi_address` can take a fully qualified name assuming it is 
 resolvable.
 
+NOTE: The `ipmi_port` examples above show how a user can specify a different `ipmi_port` for each host within their inventory file. If the `ipmi_port` variable is omitted from the inventory file, the default of 623 will be used.
+
 NOTE: A detailed description of the vars under the section 
 `Vars regarding install-config.yaml` 
-may be reviewed within  
-[Configure the install-config and metal3-config](https://github.com/openshift-kni/baremetal-deploy/blob/master/install-steps.md#configure-the-install-config-and-metal3-config)
+may be reviewed within  [Configure the install-config and metal3-config](https://github.com/openshift-kni/baremetal-deploy/blob/master/install-steps.md#configure-the-install-config-and-metal3-config)
 if unsure how to populate. 
 
 WARNING: If no `workers` are included, do not remove the workers group 
@@ -322,16 +352,63 @@ Sample playbook.yml
   - installer
 ~~~
 
+## Customizing the Node Filesystems
+If you need to modify files on the node filesystems, you can augment the "fake"
+roots for the masters and workers under the 
+`roles/installer/files/customize_filesystem/{master,worker}` directories. 
+Any files added here will be included in the ignition config files for each
+of the machine types, leading to permanent changes to the node filesystem.
+
+NOTE: Do not place any files directly in the "fake" root -- only in subdirectories.
+Files in the root will cause the ignition process to fail. (There is a task in the 
+playbook to cleanup the `.gitkeep` file in the root, if it is left in place.)
+
+This will utilize the Ignition 
+[filetranspiler tool](https://github.com/ashcrow/filetranspiler/blob/master/filetranspile), 
+which you can read about for more information on how to use the "fake" root directories.
+
+An example of using this customization is to disable a network interface that
+you need to not receive a DHCP assignment that is outside of the cluster
+configuration. To do this for the `eno1` interface on the master nodes, create
+the appropriate `etc/sysconfig/network-scripts/ifcfg-eno1` file in the "fake" root:
+
+~~~sh
+IFCFG_DIR="roles/installer/files/customize_filesystem/master/etc/sysconfig/network-scripts"
+IFNAME="eno1"
+mkdir -p $IFCFG_DIR
+cat << EOF > $IFCFG_DIR/ifcfg-${IFNAME}
+DEVICE=${IFNAME}
+BOOTPROTO=none
+ONBOOT=no
+EOF
+~~~
+
+NOTE: By default these directories are empty, and the `worker` subdirectory is a
+symbolic link to the `master` subdirectory so that changes are universal.
+
 ## Adding Extra Configurations to the OpenShift Installer
 Prior to the installation of Red Hat OpenShift, you may want to include
 additional configuration files to be included during the installation. The
 `installer` role handles this. 
 
 In order to include the extraconfigs, ensure to place your `yaml` files within
-the `roles/installer/files` directory. All the files provided here will be
+the `roles/installer/files/manifests` directory. All the files provided here will be
 included when the OpenShift manifests are created. 
 
 NOTE: By default this directory is empty. 
+
+## Pre-caching RHCOS Images
+If you wish to set up a local cache of RHCOS images on your provisioning host,
+set the `cache_enabled` variable to `True` in your hosts file.  When requested, 
+the playbook will pre-download RHCOS images prior to actual cluster deployment.  
+It places these images in an Apache web server container on the provisioning host 
+and modifies `install-config.yaml` to instruct the bootstrap VM to download the 
+images from that web server during deployment.  
+
+WARNING: If you set the `clusterosimage` and `bootstraposimage` variables, then
+`cache_enabled` will automatically be set to `False`.  Setting these variables 
+leaves the responsibility to the end user in ensuring the RHCOS images are readily 
+available and accessible to the provision host.
 
 ## Running the `playbook.yml`
 
@@ -503,7 +580,7 @@ system (assuming your using an OS such as Fedora, Red Hat)
 
 On a local host running Red Hat 7.x, run: 
 ~~~sh
-# sudo yum install python3-dns
+# sudo yum install python2-dns
 ~~~
 
 On a local host running Red Hat 8.x, run: 
@@ -521,9 +598,9 @@ Re-run the Ansible playbook
 $ ansible-playbook -i inventory/hosts playbook.yml 
 ~~~
 
-## Gotchas
+# Gotchas
 
-### Using become: yes within ansible.cfg or inside playbook.yml 
+## Using become: yes within ansible.cfg or inside playbook.yml 
 
 This Ansible playbook takes advantage of the `ansible_user_dir` variable. As 
 such, it is important to note that if within your `ansible.cfg` or within
@@ -531,6 +608,142 @@ the `playbook.yml` file the privilege escalation of `become: yes` is used, this
 will modify the home directory to that of the root user (i.e. `/root`) instead
 of using the home directory of your privileged user, `kni` with a home dir of
 `/home/kni`
+
+# Appendix A. Using Ansible Tags with the playbook.yml
+
+As this playbook continues to grow, there may be times when it is useful
+to run specific portions of the playbook rather than running everything the
+Ansible playbook offers. 
+
+For example, a user may only want to run the networking piece of the playbook
+or create just the pull-secret.txt file, or just clean up the environment -- 
+just to name a few. 
+
+As such the existing playbook has many tags that can be used for such purposes.
+By running the following command you can see what options are available.
+
+~~~sh
+$ ansible-playbook -i inventory/hosts playbook.yml --list-tasks --list-tags
+
+playbook: playbook.yml
+
+  play #1 (provisioner): IPI on Baremetal Installation Playbook	TAGS: []
+    tasks:
+      include_tasks	TAGS: [validation]
+      include_tasks	TAGS: [subscription]
+      include_tasks	TAGS: [packages]
+      include_tasks	TAGS: [network]
+      include_tasks	TAGS: [user]
+      include_tasks	TAGS: [services]
+      include_tasks	TAGS: [firewall]
+      include_tasks	TAGS: [storagepool]
+      include_tasks	TAGS: [clusterconfigs]
+      include_tasks	TAGS: [powerservers]
+      include_tasks	TAGS: [cleanup, getoc]
+      include_tasks	TAGS: [extract, pullsecret]
+      include_tasks	TAGS: [rhcospath]
+      include_tasks	TAGS: [cache]
+      include_tasks	TAGS: [installconfig]
+      include_tasks	TAGS: [metal3config]
+      include_tasks	TAGS: [customfs]
+      include_tasks	TAGS: [manifests]
+      include_tasks	TAGS: [extramanifests]
+      include_tasks	TAGS: [cleanup]
+      include_tasks	TAGS: [install]
+      TASK TAGS: [cache, cleanup, clusterconfigs, customfs, extract, extramanifests, firewall, getoc, install, installconfig, manifests, metal3config, network, packages, powerservers, pullsecret, rhcospath, services, storagepool, subscription, user, validation]
+~~~
+
+To break this down further, the following is a description of each tag.
+
+* validation - this verifies that everything in your environment is set and ready
+for OpenShift deployment and sets some required internal variables. It is *not*
+recommended to ever not include this task. It is always required. 
+
+* subscription - subscribe via Red Hat subscription manager
+
+* packages - install required package for OpenShift
+
+* network - setup the provisioning and baremetal network bridges and bridge slaves
+
+* user - add remote user to libvirt group and generate ssh keys
+
+* services - enable appropriate services for OpenShift
+
+* firewall - set firewall rules for OpenShift
+
+* storagepool - define, create, auto start the default storage pool
+
+* clusterconfigs - directory that stores all configuration files for OpenShift
+
+* powerservers - power off all servers that will be part of the OpenShift cluster
+
+* getoc - get the appropriate oc binary, extract it and place within /usr/local/bin
+
+* extract - extract the OpenShift installer
+
+* pullsecret - copy the pullsecret to the pull-secret.txt file under the remote
+user home dir
+
+* rhcospath - set the RHCOS path
+
+* cache - tasks related to enabling RHCOS image caching
+
+* installconfig - generates the install-config.yaml
+
+* metal3config - generates the metal3-config.yaml
+
+* customfs - deals with customizing the filesystem via ignition files
+
+* manifests - create the manifests dir
+
+* extramanifests - include any extra manifests files
+
+* install - Deploy OpenShift
+
+* cleanup - clean up the environment within the provisioning node. Does not remove
+networking
+
+
+## How to use the Ansible tags
+
+The following is an example on how to use the `--tags` option. In this example, 
+we will just install the packages to the provision node. 
+
+Example 1
+~~~sh
+ansible-playbook -i inventory/hosts playbook.yml --tags "packages"
+~~~
+
+In the next example, we will show how to call multiple tags at the same time.
+
+Example 2
+~~~sh
+ansible-playbook -i inventory/hosts playbook.yml --tags "network,packages"
+~~~
+
+The example above calls for the setup of the networking and installation of
+the packages from the Ansible playbook. Only the tasks with these specific
+tags will run.
+
+
+## Skipping particular tasks using Ansible tags
+
+In the event that you want to always skip certain tasks of the playbook this
+can be done via the `--skip-tag` option. 
+
+We will use similar example as above where we want to skip the network setup
+and the package installation.
+
+Example 1
+~~~sh
+ansible-playbook -i inventory/hosts playbook.yml --skip-tags "network,packages"
+~~~
+
+
+
+
+
+
 
 
 

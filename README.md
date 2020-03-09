@@ -9,7 +9,8 @@ It also contains optional features focused on low-latency workloads, NFV workloa
 ## Installation artifacts
 
 * [Installation Steps](install-steps.md)
-* [Using Baremetal-prep.sh](baremetal-prep/)
+* [Installing IPI on BM using the Ansible Playbook](ansible-ipi-install/)
+  * Versions: 4.3, 4.4
 
 ## Optional features
 
@@ -22,6 +23,7 @@ by nmstate.
 * [SCTP](features/sctp). These assets enables Stream Control Transmission Protocol (SCTP) in the RHCOS
 worker nodes.
 * [SRIOV](features/sriov). The SR-IOV Network Operator creates and manages the components of the SR-IOV stack.
+* [CNV](features/cnv). Container-native virtualization is an add-on to OpenShift Container Platform that allows you to run and manage virtual machine workloads alongside container workloads.
 
 ## Performance tuning
 
@@ -43,4 +45,3 @@ See [CONTRIBUTING](CONTRIBUTING.md) for some guidelines.
 
 * [ ] Additional step for disconnected install
 * [ ] Installation Troubleshooting
-* [ ] Installation scripts

@@ -58,11 +58,11 @@ document.
 | Ingress LB (apps) |  *.apps.\<cluster-name\>.\<domain\>  | \<ip\> |
 | Nameserver | ns1.\<cluster-name\>.\<domain\> | \<ip\> |
 | Provisioning node | provisioner.\<cluster-name\>.<domain\> | \<ip\> |
-| Master-0 | master-0.\<cluster-name\>.\<domain\> | \<ip\> |
-| Master-1 | master-1.\<cluster-name\>-.\<domain\> | \<ip\> |
-| Master-2 | master-2.\<cluster-name\>.\<domain\> | \<ip\> |
-| Worker-0 | worker-0.\<cluster-name\>.\<domain\> | \<ip\> |
-| Worker-1 | worker-1.\<cluster-name\>.\<domain\> | \<ip\> |
+| Master-0 | openshift-master-0.\<cluster-name\>.\<domain\> | \<ip\> |
+| Master-1 | openshift-master-1.\<cluster-name\>-.\<domain\> | \<ip\> |
+| Master-2 | openshift-master-2.\<cluster-name\>.\<domain\> | \<ip\> |
+| Worker-0 | openshift-worker-0.\<cluster-name\>.\<domain\> | \<ip\> |
+| Worker-1 | openshift-worker-1.\<cluster-name\>.\<domain\> | \<ip\> |
 
 ### DNS Server
 
@@ -190,11 +190,11 @@ environment specifics.
     *                       A       <wildcard-ingress-lb-ip>
     $ORIGIN openshift.example.com.
     provisioner             A       <NIC2-ip-of-provision>
-    openshift-master-0      A       <NIC2-ip-of-master-0>
-    openshift-master-1      A       <NIC2-ip-of-master-1>
-    openshift-master-2      A       <NIC2-ip-of-master-2>
-    openshift-worker-0      A       <NIC2-ip-of-worker-0>
-    openshift-worker-1      A       <NIC2-ip-of-worker-1>
+    openshift-master-0      A       <NIC2-ip-of-openshift-master-0>
+    openshift-master-1      A       <NIC2-ip-of-openshift-master-1>
+    openshift-master-2      A       <NIC2-ip-of-openshift-master-2>
+    openshift-worker-0      A       <NIC2-ip-of-openshift-worker-0>
+    openshift-worker-1      A       <NIC2-ip-of-openshift-worker-1>
     ~~~
 4. Increase the SERIAL value by 1
 5. Edit /var/named/dynamic/1.0.10.in-addr.arpa
@@ -247,6 +247,13 @@ cat /etc/hosts
 <DNS-VIP-IP> ns1.openshift.example.com ns1
 ~~~
 
+Open the appropriate `firewalld` DNS service and reload the rules
+~~~sh
+systemctl restart firewalld
+firewall-cmd --add-service=dns --permanent
+firewall-cmd --reload
+~~~
+
 # Create DHCP reservations (Option 1)
 
 Option 1 should be used if access to the appropriate DHCP server for the `baremetal`
@@ -266,33 +273,33 @@ DHCP reserverations using `dnsmasq` (Option 2).
          fixed-address <ip-address-of-NIC2>;
       }
     host openshift-master-0 {
-         option host-name "master-0";
+         option host-name "openshift-master-0";
          hardware ethernet <mac-address-of-NIC2>;
          option domain-search "openshift.example.com";
          fixed-address <ip-address-of-NIC2>;
       }
     
     host openshift-master-1 {
-         option host-name "master-1";
+         option host-name "openshift-master-1";
          hardware ethernet <mac-address-of-NIC2>;
          option domain-search "openshift.example.com";
          fixed-address <ip-address-of-NIC2>;
       }
     
     host openshift-master-2 {
-         option host-name "master-2";
+         option host-name "openshift-master-2";
          hardware ethernet <mac-address-of-NIC2>;
          option domain-search "openshift.example.com";
          fixed-address <ip-address-of-NIC2>;
       }
     host openshift-worker-0 {
-         option host-name "worker-0";
+         option host-name "openshift-worker-0";
          hardware ethernet <mac-address-of-NIC2>;
          option domain-search "openshift.example.com";
          fixed-address <ip-address-of-NIC2>;
       }
     host openshift-worker-1 {
-         option host-name "worker-1";
+         option host-name "openshift-worker-1";
          hardware ethernet <mac-address-of-NIC2>;
          option domain-search "openshift.example.com";
          fixed-address <ip-address-of-NIC2>;
@@ -322,7 +329,14 @@ the `baremetal` network.
    ~~~sh 
    touch example.dns
    ~~~
-4. Example of the `example.dns` file
+4. Open the appropriate `firewalld` DHCP service
+   ~~~sh
+   systemctl restart firewalld
+   firewall-cmd --add-service=dhcp --permanent
+   firewall-cmd --reload
+   ~~~
+   
+5. Example of the `example.dns` file
    ~~~sh
    domain-needed
    bind-dynamic
@@ -343,22 +357,22 @@ the `baremetal` network.
 
    #Static IPs for Masters
    dhcp-host=<NIC2-mac-address>,provisioner.openshift.example.com,<ip-of-provisioner>
-   dhcp-host=<NIC2-mac-address>,openshift-master-0.openshift.example.com,<ip-of-master-0>
-   dhcp-host=<NIC2-mac-address>,openshift-master-1.openshift.example.com,<ip-of-master-1>
-   dhcp-host=<NIC2-mac-address>,openshift-master-2.openshift.example.com,<ip-of-master-2>
-   dhcp-host=<NIC2-mac-address>,openshift-worker-0.openshift.example.com,<ip-of-worker-0>
-   dhcp-host=<NIC2-mac-address>,openshift-worker-1.openshift.example.com,<ip-of-worker-1>
+   dhcp-host=<NIC2-mac-address>,openshift-master-0.openshift.example.com,<ip-of-openshift-master-0>
+   dhcp-host=<NIC2-mac-address>,openshift-master-1.openshift.example.com,<ip-of-openshift-master-1>
+   dhcp-host=<NIC2-mac-address>,openshift-master-2.openshift.example.com,<ip-of-openshift-master-2>
+   dhcp-host=<NIC2-mac-address>,openshift-worker-0.openshift.example.com,<ip-of-openshift-worker-0>
+   dhcp-host=<NIC2-mac-address>,openshift-worker-1.openshift.example.com,<ip-of-openshift-worker-1>
    ~~~
-5. Create the `resolv.conf.upstream` file in order to provide DNS fowarding to an existing DNS server for resolution to the outside world.
+6. Create the `resolv.conf.upstream` file in order to provide DNS fowarding to an existing DNS server for resolution to the outside world.
    ~~~sh
    search <domain.com>
    nameserver <ip-of-my-existing-dns-nameserver>
    ~~~
-6. Restart the `dnsmasq` service 
+7. Restart the `dnsmasq` service 
    ~~~sh
    systemctl restart dnsmasq
    ~~~
-7. Verify the `dnsmasq` service is running.
+8. Verify the `dnsmasq` service is running.
    ~~~sh
    systemctl status dnsmasq
    ~~~
@@ -401,9 +415,9 @@ The following steps need to be performed in order to prepare the environment.
    ~~~sh
    usermod --append --groups libvirt <user> 
    ~~~
-8. Start `firewalld`, enable the `http` service, enable port 5000.
+8. Restart `firewalld`, enable the `http` service, enable port 5000.
    ~~~sh
-   systemctl start firewalld
+   systemctl restart firewalld
    firewall-cmd --zone=public --add-service=http --permanent
    firewall-cmd --add-port=5000/tcp --zone=libvirt  --permanent
    firewall-cmd --add-port=5000/tcp --zone=public   --permanent
@@ -493,8 +507,8 @@ Two approaches:
 
 1. Configure VARS
     ~~~sh
-    export VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/release.txt | grep 'Name:' | awk -F: '{print $2}' | xargs)
-    export RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}' | xargs)
+    export VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/release.txt | grep 'Name:' | awk -F: '{print $2}')
+    export RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}')
     ~~~
 
 ### Extract the Installer (Development)
@@ -520,7 +534,7 @@ Generally Available version of Red Hat OpenShift Platform.
 Configure VARS
 ~~~sh
 export VERSION=latest-4.3
-export RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}' | xargs)
+export RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}')
 ~~~
 
 ### Extract the Installer (GA Release)
@@ -532,7 +546,8 @@ export cmd=openshift-baremetal-install
 export pullsecret_file=~/pull-secret.txt
 export extract_dir=$(pwd)
 # Get the oc binary
-curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/openshift-client-linux-$VERSION.tar.gz | tar zxvf - oc
+STABLE_VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/release.txt | grep 'Name:' | awk -F ' ' '{print $2}')
+curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/openshift-client-linux-$STABLE_VERSION.tar.gz | tar zxvf - oc
 sudo cp ./oc /usr/local/bin/oc
 # Extract the baremetal installer
 oc adm release extract --registry-config "${pullsecret_file}" --command=$cmd --to "${extract_dir}" ${RELEASE_IMAGE}
@@ -1038,10 +1053,10 @@ Once the prerequisites above have been set, the deploy process is as follows:
     ~~~sh
     oc get node
     NAME                                            STATUS   ROLES           AGE     VERSION
-    master-0                                        Ready    master          30h     v1.16.2
-    master-1                                        Ready    master          30h     v1.16.2
-    master-2                                        Ready    master          30h     v1.16.2
-    worker-0                                        Ready    worker          3m27s   v1.16.2
-    worker-1                                        Ready    worker          3m27s   v1.16.2
-    worker-2                                        Ready    worker          3m27s   v1.16.2
+    openshift-master-0.openshift.example.com        Ready    master          30h     v1.16.2
+    openshift-master-1.openshift.example.com        Ready    master          30h     v1.16.2
+    openshift-master-2.openshift.example.com        Ready    master          30h     v1.16.2
+    openshift-worker-0.openshift.example.com        Ready    worker          3m27s   v1.16.2
+    openshift-worker-1.openshift.example.com        Ready    worker          3m27s   v1.16.2
+    openshift-worker-2.openshift.example.com        Ready    worker          3m27s   v1.16.2
     ~~~

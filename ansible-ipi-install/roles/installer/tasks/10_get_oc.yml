@@ -5,18 +5,27 @@
     patterns: 'ansible.*'
     file_type: directory
   register: tmp_results
+  tags:
+  - cleanup
+  - getoc
 
 - name: Delete any old tmp dirs with OpenShift related binaries
   file:
     path: "{{ item['path'] }}"
     state: absent
   loop: "{{ tmp_results['files'] }}"
+  tags:
+  - cleanup
+  - getoc
 
 - name: Find any existing /usr/local/bin OpenShift binaries
   find:
     paths: /usr/local/bin
     patterns: 'oc,openshift-baremetal-install,kubectl'
   register: binary_results
+  tags:
+  - cleanup
+  - getoc
 
 - name: Remove any existing /usr/local/bin OpenShift binaries
   file:
@@ -24,16 +33,21 @@
     state: absent
   loop: "{{ binary_results['files'] }}"
   become: yes
+  tags:
+  - cleanup
+  - getoc
 
 - name: Create tmp directory to store OpenShift binaries
   tempfile:
     state: directory
     suffix: "{{ release_version }}"
   register: tempdiroutput
+  tags: getoc
 
 - name: Set fact for tmp directory
   set_fact:
     tempdir: "{{ tempdiroutput.path }}"
+  tags: getoc
   
 
 - name: Get the ocp client tar gunzip file
@@ -43,6 +57,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
+  tags: getoc
 
 - name: "Untar the openshift-client-linux-{{ release_version }}.tar.gz"
   unarchive:
@@ -52,6 +67,7 @@
     group: "{{ ansible_user }}"
     mode: '0755'
     remote_src: yes
+  tags: getoc
  
 - name: Copy oc binary to /usr/local/bin
   copy:
@@ -65,4 +81,4 @@
   loop:
     - kubectl
     - oc
-
+  tags: getoc

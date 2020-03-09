@@ -18,29 +18,51 @@ platform:
     apiVIP: {{ apivip }}
     ingressVIP: {{ ingressvip }}
     dnsVIP: {{ dnsvip }}
-{% if (release_version[0]|int >= 4) and (release_version[2]|int > 3) %}
+{% if (release_version[0]|int > 4) or ((release_version[0]|int == 4) and (release_version[2]|int > 3)) %}
     provisioningNetworkInterface: {{ prov_nic }}
+{% endif %}
+{% if bootstraposimage is defined and bootstraposimage|length %}
+    bootstrapOSImage: {{ bootstraposimage }}
+{% endif %}
+{% if clusterosimage is defined and clusterosimage|length %}
+    clusterOSImage: {{ clusterosimage }}
 {% endif %}
     hosts:
 {% for host in groups['masters'] %}
       - name: {{ hostvars[host]['name'] }}
         role: {{ hostvars[host]['role'] }}
         bmc:
+{% if 'ipmi_port' in hostvars[host] %}
+          address: ipmi://{{ hostvars[host]['ipmi_address'] }}:{{ hostvars[host]['ipmi_port'] }}
+{% else %}
           address: ipmi://{{ hostvars[host]['ipmi_address'] }}
+{% endif %}
           username: {{ hostvars[host]['ipmi_user'] }}
           password: {{ hostvars[host]['ipmi_password'] }}
         bootMACAddress: {{ hostvars[host]['provision_mac'] }}
+{% if 'hardware_profile' in hostvars[host] %}
+        hardwareProfile: {{ hostvars[host]['hardware_profile'] }}
+{% else %}
         hardwareProfile: default
+{% endif %}
 {% endfor %}
 {% for host in groups['workers'] %}
       - name: {{ hostvars[host]['name'] }}
         role: {{ hostvars[host]['role'] }}
         bmc:
+{% if 'ipmi_port' in hostvars[host] %}
+          address: ipmi://{{ hostvars[host]['ipmi_address'] }}:{{ hostvars[host]['ipmi_port'] }}
+{% else %}
           address: ipmi://{{ hostvars[host]['ipmi_address'] }}
+{% endif %}
           username: {{ hostvars[host]['ipmi_user'] }}
           password: {{ hostvars[host]['ipmi_password'] }}
         bootMACAddress: {{ hostvars[host]['provision_mac'] }}
+{% if 'hardware_profile' in hostvars[host] %}
+        hardwareProfile: {{ hostvars[host]['hardware_profile'] }}
+{% else %}
         hardwareProfile: unknown
+{% endif %}
 {% endfor %}
 pullSecret: '{{ pullsecret }}'
 sshKey: '{{ key }}'
