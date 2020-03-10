@@ -72,3 +72,10 @@
         - "{{ pub_nic }}"
   become: yes
   tags: network
+
+- name: Regather Network Facts
+  setup:
+    gather_subset:
+      - network
+  tags: network
+
