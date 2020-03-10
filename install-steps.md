@@ -86,6 +86,28 @@ TODO
 4. Provisioning node to provision a 3 master, 2 worker Red Hat OpenShift cluster
 5. Once the cluster is up and running, re-provision the provisioning node as a worker node (worker-2) using `ironic`
 
+## Diagrams of the OpenShift Install Process
+
+The installation process of OpenShift via Installer Provisioned Infrastructure
+can be broken down into two images. 
+
+![Image 1](images/71_OpenShift_Baremetal_IPI_Depoyment_0320_1.png)
+
+Image #1 - The bare metal node labeled as provisioner contains two network 
+bridges: provisioning and baremetal, each one connected to a different network. 
+During installation of IPI on baremetal, a bootstrap VM is created and connected
+ to both the provisioning and baremetal network via those bridges. The role of 
+the VM is to assist in the process of deploying an OpenShift cluster.
+
+![Image 2](images/71_OpenShift_Baremetal_IPI_Depoyment_0320_2.png)
+
+Image #2 - When the installation of OpenShift control plane nodes (master nodes)
+ is complete and fully operational, the bootstrap VM is destroyed automatically 
+and the appropriate VIPs are moved accordingly. The API and DNS VIPs move into 
+the control plane nodes and the Ingress VIP services applications that reside 
+within the worker nodes.
+
+
 # Configuring Servers
 
 Each server requires the following configuration for proper installation. 
