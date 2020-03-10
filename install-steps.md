@@ -562,9 +562,15 @@ When running the installer on a network with limited bandwidth if the RHCOS imag
 The following steps will install `httpd` and download the required images:
 
 ~~~sh
-# Install and run httpd server
-sudo yum -y install httpd
-sudo systemctl enable --now httpd
+# Install podman
+sudo dnf install -y podman
+# Open firewall port 8080 to be used for RHCOS Image caching
+sudo firewall-cmd --add-port=8080/tcp --zone=public --permanent
+# Create a directory to store the bootstraposimage and clusterosimage
+mkdir /home/kni/rhcos_image_cache
+# Set the appropriate SELinux context for the newly created directory
+sudo semanage fcontext -a -t httpd_sys_content_t "/home/kni/rhcos_image_cache(/.*)?"
+sudo restorecon -Rv rhcos_image_cache/
 # Get the commit id from the installer it will be used to determine which images do we need to download
 export COMMIT_ID=$(/home/kni/openshift-baremetal-install version | grep '^built from commit' | awk '{print $4}')
 # Get the uri for the RHCOS image that will be deployed on the nodes
@@ -577,9 +583,16 @@ export RHCOS_PATH=$(curl -s -S https://raw.githubusercontent.com/openshift/insta
 export RHCOS_QEMU_SHA_UNCOMPRESSED=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json  | jq -r '.images.qemu["uncompressed-sha256"]')
 # Get the SHA hash for the RHCOS image that will be deployed on the nodes
 export RHCOS_OPENSTACK_SHA_COMPRESSED=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json  | jq -r '.images.openstack.sha256')
-# Download the images and place them on the default apache directory
-sudo curl -L ${RHCOS_PATH}${RHCOS_QEMU_URI} -o /var/www/html/$RHCOS_QEMU_URI
-sudo curl -L ${RHCOS_PATH}${RHCOS_OPENSTACK_URI} -o /var/www/html/$RHCOS_OPENSTACK_URI
+# Download the images and place them in the  /home/kni/rhcos_image_cache directory
+sudo curl -L ${RHCOS_PATH}${RHCOS_QEMU_URI} -o /home/kni/rhcos_image_cache
+sudo curl -L ${RHCOS_PATH}${RHCOS_OPENSTACK_URI} -o /home/kni/rhcos_image_cache
+# Confirm SELinux type is of httpd_sys_content_t for the newly created files.
+ls -Z /home/kni/rhcos_image_cache
+# Create pod
+sudo podman run -d --name rhcos_image_cache \
+-v /home/kni/rhcos_image_cache:/var/www/html \
+-p 8080:8080/tcp \
+registry.centos.org/centos/httpd-24-centos7:latest
 ~~~
 
 ## Configure the install-config and metal3-config
@@ -604,8 +617,8 @@ sudo curl -L ${RHCOS_PATH}${RHCOS_OPENSTACK_URI} -o /var/www/html/$RHCOS_OPENSTA
     platform:
       baremetal:
         # If you are using cached images you need to configure the following properties (bootstrapOSImage and clusterOSImage) so the installer gets the images from the cache https://github.com/openshift-kni/baremetal-deploy/blob/master/install-steps.md#create-rhcos-images-cache-optional
-        # bootstrapOSImage: http://172.22.0.1/$RHCOS_QEMU_URI?sha256=$RHCOS_QEMU_SHA_UNCOMPRESSED
-        # clusterOSImage: http://172.22.0.1/$RHCOS_OPENSTACK_URI?sha256=$RHCOS_OPENSTACK_SHA_COMPRESSED
+        # bootstrapOSImage: http://172.22.0.1:8080/$RHCOS_QEMU_URI?sha256=$RHCOS_QEMU_SHA_UNCOMPRESSED
+        # clusterOSImage: http://172.22.0.1:8080/$RHCOS_OPENSTACK_URI?sha256=$RHCOS_OPENSTACK_SHA_COMPRESSED
         apiVIP: <api-ip>
         ingressVIP: <wildcard-ip>
         dnsVIP: <dns-ip>
