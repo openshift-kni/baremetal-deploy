@@ -584,12 +584,12 @@ export RHCOS_QEMU_SHA_UNCOMPRESSED=$(curl -s -S https://raw.githubusercontent.co
 # Get the SHA hash for the RHCOS image that will be deployed on the nodes
 export RHCOS_OPENSTACK_SHA_COMPRESSED=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json  | jq -r '.images.openstack.sha256')
 # Download the images and place them in the  /home/kni/rhcos_image_cache directory
-sudo curl -L ${RHCOS_PATH}${RHCOS_QEMU_URI} -o /home/kni/rhcos_image_cache
-sudo curl -L ${RHCOS_PATH}${RHCOS_OPENSTACK_URI} -o /home/kni/rhcos_image_cache
+curl -L ${RHCOS_PATH}${RHCOS_QEMU_URI} -o /home/kni/rhcos_image_cache
+curl -L ${RHCOS_PATH}${RHCOS_OPENSTACK_URI} -o /home/kni/rhcos_image_cache
 # Confirm SELinux type is of httpd_sys_content_t for the newly created files.
 ls -Z /home/kni/rhcos_image_cache
 # Create pod
-sudo podman run -d --name rhcos_image_cache \
+podman run -d --name rhcos_image_cache \
 -v /home/kni/rhcos_image_cache:/var/www/html \
 -p 8080:8080/tcp \
 registry.centos.org/centos/httpd-24-centos7:latest
