@@ -105,9 +105,18 @@ options:
         description:
             - DHCP Client Identifier sent to the DHCP server.
         version_added: "2.5"
+    ip6_dhcp_duid:
+        description:
+            - 'A string containing the DHCPv6 Unique Identifier (DUID) used by the dhcp client to identify itself to DHCPv6 servers (RFC 3315).'
+            - 'The special values "llt" and "ll" generate a DUID of type LLT or LL (see RFC 3315) based on the current MAC address of the device.'
+        version_added: 2.9
     primary:
         description:
             - This is only used with bond and is the primary interface name (for "active-backup" mode), this is the usually the 'ifname'
+    id:
+        descrption:
+            - This will allow to change the bridge slave device name (connection.id) to our preferred name. 
+        version: 2.9
     miimon:
         description:
             - This is only used with bond - miimon
@@ -586,6 +595,7 @@ class Nmcli(object):
         self.dns4_search = ' '.join(module.params['dns4_search']) if module.params.get('dns4_search') else None
         self.ip6 = module.params['ip6']
         self.ip6_method = module.params['ip6_method']
+        self.ip6_dhcp_duid = module.params['ip6_dhcp_duid']
         self.gw6 = module.params['gw6']
         self.dns6 = module.params['dns6']
         self.dns6_search = ' '.join(module.params['dns6_search']) if module.params.get('dns6_search') else None
@@ -595,6 +605,7 @@ class Nmcli(object):
         self.mode = module.params['mode']
         self.miimon = module.params['miimon']
         self.primary = module.params['primary']
+        self.id = module.params['id']
         self.downdelay = module.params['downdelay']
         self.updelay = module.params['updelay']
         self.arp_interval = module.params['arp_interval']
@@ -744,12 +755,13 @@ class Nmcli(object):
             cmd.append(self.conn_name)
 
         options = {
-            'ipv4.address': self.ip4,
+            'ip4': self.ip4,
             'ipv4.method': self.ip4_method,
-            'ipv4.gateway': self.gw4,
-            'ipv6.address': self.ip6,
+            'gw4': self.gw4,
+            'ip6': self.ip6,
             'ipv6.method': self.ip6_method,
-            'ipv6.gateway': self.gw6,
+            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
+            'gw6': self.gw6,
             'autoconnect': self.bool_to_string(self.autoconnect),
             'ipv4.dns-search': self.dns4_search,
             'ipv6.dns-search': self.dns6_search,
@@ -771,6 +783,7 @@ class Nmcli(object):
             'ipv4.dns': self.dns4,
             'ipv6.address': self.ip6,
             'ipv6.method': self.ip6_method,
+            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
             'ipv6.gateway': self.gw6,
             'ipv6.dns': self.dns6,
             'autoconnect': self.bool_to_string(self.autoconnect),
@@ -824,12 +837,13 @@ class Nmcli(object):
             cmd.append(self.conn_name)
         options = {
             'mode': self.mode,
-            'ipv4.address': self.ip4,
+            'ip4': self.ip4,
             'ipv4.method': self.ip4_method,
-            'ipv4.gateway': self.gw4,
-            'ipv6.address': self.ip6,
+            'gw4': self.gw4,
+            'ip6': self.ip6,
             'ipv6.method': self.ip6_method,
-            'ipv6.gateway': self.gw6,
+            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
+            'gw6': self.gw6,
             'autoconnect': self.bool_to_string(self.autoconnect),
             'ipv4.dns-search': self.dns4_search,
             'ipv6.dns-search': self.dns6_search,
@@ -858,6 +872,7 @@ class Nmcli(object):
             'ipv4.dns': self.dns4,
             'ipv6.address': self.ip6,
             'ipv6.method': self.ip6_method,
+            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
             'ipv6.gateway': self.gw6,
             'ipv6.dns': self.dns6,
             'autoconnect': self.bool_to_string(self.autoconnect),
@@ -921,12 +936,13 @@ class Nmcli(object):
             cmd.append(self.conn_name)
 
         options = {
-            'ipv4.address': self.ip4,
+            'ip4': self.ip4,
             'ipv4.method': self.ip4_method,
-            'ipv4.gateway': self.gw4,
-            'ipv6.address': self.ip6,
+            'gw4': self.gw4,
+            'ip6': self.ip6,
             'ipv6.method': self.ip6_method,
-            'ipv6.gateway': self.gw6,
+            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
+            'gw6': self.gw6,
             'autoconnect': self.bool_to_string(self.autoconnect),
             'ipv4.dns-search': self.dns4_search,
             'ipv6.dns-search': self.dns6_search,
@@ -952,6 +968,8 @@ class Nmcli(object):
             'ipv4.dns': self.dns4,
             'ipv6.address': self.ip6,
             'ipv6.method': self.ip6_method,
+            'connection.id': self.id,
+            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
             'ipv6.gateway': self.gw6,
             'ipv6.dns': self.dns6,
             'autoconnect': self.bool_to_string(self.autoconnect),
@@ -986,12 +1004,13 @@ class Nmcli(object):
             cmd.append(self.conn_name)
 
         options = {
-            'ip4': self.ip4,
-            'ip4.method': self.ip4_method,
-            'gw4': self.gw4,
-            'ip6': self.ip6,
-            'ip6.method': self.ip6_method,
-            'gw6': self.gw6,
+            'ipv4.addresses': self.ip4,
+            'ipv4.method': self.ip4_method,
+            'ipv4.gateway': self.gw4,
+            'ipv6.addresses': self.ip6,
+            'ipv6.method': self.ip6_method,
+            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
+            'ipv4.gateway': self.gw6,
             'autoconnect': self.bool_to_string(self.autoconnect),
             'bridge.ageing-time': self.ageingtime,
             'bridge.forward-delay': self.forwarddelay,
@@ -1016,12 +1035,13 @@ class Nmcli(object):
         cmd = [self.nmcli_bin, 'con', 'mod', self.conn_name]
 
         options = {
-            'ip4': self.ip4,
-            'ip4.method': self.ip4_method,
-            'gw4': self.gw4,
-            'ip6': self.ip6,
-            'ip6.method': self.ip6_method,
-            'gw6': self.gw6,
+            'ipv4.addresses': self.ip4,
+            'ipv4.method': self.ip4_method,
+            'ipv4.gateway': self.gw4,
+            'ipv6.addresses': self.ip6,
+            'ipv6.method': self.ip6_method,
+            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
+            'ipv6.gateway': self.gw6,
             'autoconnect': self.bool_to_string(self.autoconnect),
             'bridge.ageing-time': self.ageingtime,
             'bridge.forward-delay': self.forwarddelay,
@@ -1053,6 +1073,7 @@ class Nmcli(object):
 
         options = {
             'master': self.master,
+            'connection.id': self.id,
             'bridge-port.path-cost': self.path_cost,
             'bridge-port.hairpin': self.bool_to_string(self.hairpin),
             'bridge-port.priority': self.slavepriority,
@@ -1069,6 +1090,7 @@ class Nmcli(object):
         cmd = [self.nmcli_bin, 'con', 'mod', self.conn_name]
         options = {
             'master': self.master,
+            'connection.id': self.id,
             'bridge-port.path-cost': self.path_cost,
             'bridge-port.hairpin': self.bool_to_string(self.hairpin),
             'bridge-port.priority': self.slavepriority,
@@ -1110,6 +1132,7 @@ class Nmcli(object):
                   'gw4': self.gw4 or '',
                   'ip6': self.ip6 or '',
                   'ip6.method': self.ip6_method or '',
+                  'ip6.dhcp-duid': self.ip6_dhcp_duid or '',
                   'gw6': self.gw6 or '',
                   'autoconnect': self.bool_to_string(self.autoconnect)
                   }
@@ -1138,6 +1161,7 @@ class Nmcli(object):
                   'ipv4.dns': self.dns4 or '',
                   'ipv6.address': self.ip6 or '',
                   'ipv6.method': self.ip6_method or '',
+                  'ipv6.dhcp-duid': self.ip6_dhcp_duid or '',
                   'ipv6.gateway': self.gw6 or '',
                   'ipv6.dns': self.dns6 or '',
                   'autoconnect': self.bool_to_string(self.autoconnect)
@@ -1346,6 +1370,7 @@ def main():
             state=dict(required=True, choices=['present', 'absent'], type='str'),
             conn_name=dict(required=True, type='str'),
             master=dict(required=False, default=None, type='str'),
+            id=dict(required=False, default=None, type='str'),
             ifname=dict(required=False, default=None, type='str'),
             type=dict(required=False, default=None,
                       choices=['ethernet', 'team', 'team-slave', 'bond',
@@ -1360,6 +1385,7 @@ def main():
             dhcp_client_id=dict(required=False, default=None, type='str'),
             ip6=dict(required=False, default=None, type='str'),
             ip6_method=dict(required=False, default=None, type='str'),
+            ip6_dhcp_duid=dict(required=False, default=None, type='str'),
             gw6=dict(required=False, default=None, type='str'),
             dns6=dict(required=False, default=None, type='str'),
             dns6_search=dict(type='list'),

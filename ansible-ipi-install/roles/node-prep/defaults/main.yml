@@ -5,3 +5,4 @@ org_id: ""
 release_url: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview"
 network_type: "OVNKubernetes"
 firewall: "firewalld"
+ipv6_enabled: false

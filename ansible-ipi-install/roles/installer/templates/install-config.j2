@@ -5,6 +5,13 @@ metadata:
 networking:
   machineCIDR: {{ extcidrnet }}
   networkType: {{ network_type }}
+{% if ipv6_enabled|bool %}
+  clusterNetwork:
+  - cidr: fd01::/48
+    hostPrefix: 64
+  serviceNetwork:
+  - fd02::/112
+{% endif %}
 compute:
 - name: worker
   replicas: {{ numworkers }}
