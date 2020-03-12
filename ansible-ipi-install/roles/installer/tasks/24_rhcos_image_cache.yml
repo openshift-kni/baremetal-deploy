@@ -17,6 +17,7 @@
 - name: Set facts for RHCOS_QEMU_SHA256 and RHCOS_SHA256
   set_fact:
     rhcos_qemu_sha256: "{{ rhcos_json.json | json_query('images.qemu.sha256') }}"
+    rhcos_qemu_sha256_unzipped: '{{ rhcos_json.json | json_query(''images.qemu."uncompressed-sha256"'') }}'
     rhcos_sha256: "{{ rhcos_json.json | json_query('images.openstack.sha256') }}"
   tags: cache
 
@@ -48,7 +49,7 @@
 
 - name: Set bootstrap image URL override if not provided by the user
   set_fact:
-    bootstraposimage: "http://{{ ansible_provisioning.ipv4.address }}:8080/{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256 }}"
+    bootstraposimage: "http://{{ ansible_provisioning.ipv4.address }}:8080/{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256_unzipped }}"
   when: bootstraposimage is not defined or bootstraposimage|length < 1
   tags: cache
 
