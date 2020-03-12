@@ -16,17 +16,8 @@
 # rhcos_json fact already set in 23_rhcos_image_paths.yaml
 - name: Set facts for RHCOS_QEMU_SHA256 and RHCOS_SHA256
   set_fact:
-    rhcos_qemu_sha256: '{{ rhcos_json.json | json_query(''images.qemu."uncompressed-sha256"'') }}'
+    rhcos_qemu_sha256: "{{ rhcos_json.json | json_query('images.qemu.sha256') }}"
     rhcos_sha256: "{{ rhcos_json.json | json_query('images.openstack.sha256') }}"
-  tags: cache
-
-- name: Check if {{ rhcos_qemu_uri }} is already in cache
-  stat: 
-    path: "{{ provision_cache_store }}{{ rhcos_qemu_uri }}"
-    checksum_algorithm: sha256
-    get_checksum: yes
-  register: rhcos_qemu_stat
-  when: bootstraposimage is not defined or bootstraposimage|length < 1
   tags: cache
 
 - name: Download {{ rhcos_qemu_uri }} for cache
@@ -37,17 +28,9 @@
     group: "{{ ansible_user }}"
     mode: '0644'
     setype: httpd_sys_content_t
+    checksum: "sha256:{{ rhcos_qemu_sha256 }}"
     timeout: 3600
-  when: (bootstraposimage is not defined or bootstraposimage|length < 1) and (rhcos_qemu_stat.stat.exists == false or rhcos_qemu_stat.stat.checksum != rhcos_qemu_sha256)
-  tags: cache
-
-- name: Check if {{ rhcos_uri }} is already in cache
-  stat: 
-    path: "{{ provision_cache_store }}{{ rhcos_uri }}"
-    checksum_algorithm: sha256
-    get_checksum: yes
-  register: rhcos_stat
-  when: clusterosimage is not defined or clusterosimage|length < 1
+  when: (bootstraposimage is not defined or bootstraposimage|length < 1)
   tags: cache
 
 - name: Download {{ rhcos_uri }} for cache
@@ -58,8 +41,9 @@
     group: "{{ ansible_user }}"
     mode: '0644'
     setype: httpd_sys_content_t
+    checksum: "sha256:{{ rhcos_sha256 }}"
     timeout: 3600
-  when: (clusterosimage is not defined or clusterosimage|length < 1) and (rhcos_stat.stat.exists == false or rhcos_stat.stat.checksum != rhcos_sha256)
+  when: (clusterosimage is not defined or clusterosimage|length < 1)
   tags: cache
 
 - name: Set bootstrap image URL override if not provided by the user
