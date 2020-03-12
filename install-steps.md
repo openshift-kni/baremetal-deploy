@@ -5,7 +5,7 @@ This write-up will guide you through the process of deploying a Baremetal IPI in
 
 * 6 Physical servers (1 provision node, 3 master and 2 worker nodes)
 * Each server needs 2 NICs pre-configured. NIC1 for the private network and NIC2 for the external network. NIC interface names need to be identical. See [issue](https://github.com/openshift/installer/issues/2762)
-* Each server should have a RAID-1 configured and initialized
+* It is recommended each server have a RAID-1 configured and initialized (though not enforced)
 * Each server must have IPMI configured
 * Each server must have DHCP setup for external NICs
 * Each server must have DNS setup for the API, wildcard applications
