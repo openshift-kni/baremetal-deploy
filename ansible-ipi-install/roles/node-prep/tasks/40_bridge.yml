@@ -55,7 +55,7 @@
 
     - name: Register the UUID of {{ pub_nic }}
       shell: |
-        nmcli -f uuid,name,dev c show | awk '/{{ pub_nic }}/ { print $1 }'
+        nmcli -f uuid,name,device c show | awk '/{{ pub_nic }}/ { print $1 }'
       register: uuidoutput
 
     - name: Set Fact for UUID
