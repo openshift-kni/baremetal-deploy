@@ -11,11 +11,14 @@ data:
   http_port: "6180"
   ironic_endpoint: http://{{ prov_ip }}:6385/v1/
   ironic_inspector_endpoint: http://{{ prov_ip }}:5050/v1/
+{% if cluster_pro_if is defined and cluster_pro_if|length %}
+  provisioning_interface: {{ cluster_pro_if }}
+{% else %}
   provisioning_interface: {{ prov_nic }}
+{% endif %}
   provisioning_ip: {{ prov_ip }}/24
 {% if clusterosimage is defined and clusterosimage|length %}
   rhcos_image_url: {{ clusterosimage }}
 {% else %}
   rhcos_image_url: {{ rhcos_path }}{{ rhcos_uri }}
 {% endif %}
-

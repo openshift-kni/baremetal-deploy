@@ -245,6 +245,9 @@ prov_nic=eno1
 # The public NIC (NIC2) used on all baremetal nodes
 pub_nic=eno2
 
+# (Optional) Pass a NIC to use in the metal3-config, empty value uses prov_nic
+#cluster_pro_if=""
+
 # (Optional) Activation-key for proper setup of subscription-manager, empty value skips registration
 #activation_key=""
 
