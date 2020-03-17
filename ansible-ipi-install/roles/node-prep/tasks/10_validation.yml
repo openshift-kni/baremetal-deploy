@@ -1,3 +1,44 @@
+---
+- name: Gather facts for python version on localhost
+  setup:
+    gather_subset:
+      - facter
+  delegate_to: localhost
+  tags: validation
+
+- name:  Gather the package facts on localhost
+  package_facts:
+    manager: auto
+  delegate_to: localhost
+  tags: validation
+
+- debug:
+    msg: "{{ ansible_python_version }}"
+    verbosity: 2
+  tags: validation
+
+- fail: msg="The playbook requires {{ item }}, install {{ item }} on your localhost"
+  when: 
+    - ansible_python_version is version('3.0.0', '<')
+    - item not in ansible_facts.packages
+  loop:
+    - python2-dns
+    - python2-netaddr
+  tags: validation
+
+- fail: msg="The playbook requires {{ item }}, install {{ item }} on your localhost"
+  when:
+    - ansible_python_version is version('3.0.0', '>=')
+    - item not in ansible_facts.packages
+  loop:
+    - python3-dns
+    - python3-netaddr
+  tags: validation
+
+- name: Gather facts from provisioner host
+  setup:
+  tags: validation
+
 - fail: msg="The version is undefined or empty. Use a value such as 'latest-4.3' or 'latest-4.4' or an explicit version."
   when: (version is undefined) or (version|length == 0)
   tags: validation
@@ -35,6 +76,7 @@
 
 - debug:
     msg: "cache enable {{ cache_enabled }}"
+    verbosity: 2
   tags: validation
 
 - name: Verify DNS records for API VIP, Wildcard (Ingress) VIP
@@ -44,9 +86,14 @@
   when: ((apivip is undefined) or (ingressvip is undefined) or (apivip|length == 0) or (ingressvip|length == 0))
   tags: validation
 
-- debug: msg="The API VIP is {{ apivip }}"
+- debug: 
+    msg: "The API VIP is {{ apivip }}"
+    verbosity: 2
   tags: validation
-- debug: msg="The Wildcard (Ingress) VIP is {{ ingressvip }}"
+ 
+- debug: 
+    msg: "The Wildcard (Ingress) VIP is {{ ingressvip }}"
+    verbosity: 2
   tags: validation
 
 - fail: msg="The API VIP IP seems to be incorrect. Value was NXDOMAIN."
@@ -77,9 +124,14 @@
     release_image: "{{ result.content | regex_search('Pull From:.*') | regex_replace('Pull From:\\s*(.*)', '\\1') }}"
   tags: validation
 
-- debug: msg="release version {{ release_version }}"
+- debug: 
+    msg: "release version {{ release_version }}"
+    verbosity: 2
   tags: validation
-- debug: msg="release image {{ release_image }}"
+
+- debug: 
+    msg: "release image {{ release_image }}"
+    verbosity: 2
   tags: validation
 
 - fail: msg="The {{ item }} group is not defined. Please add [{{ item }}] to the inventory/hosts file"
