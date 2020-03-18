@@ -23,7 +23,7 @@
     - item not in ansible_facts.packages
   loop:
     - python2-dns
-    - python2-netaddr
+    - python-netaddr
   tags: validation
 
 - fail: msg="The playbook requires {{ item }}, install {{ item }} on your localhost"
