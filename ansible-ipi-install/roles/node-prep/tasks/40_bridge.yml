@@ -64,7 +64,7 @@
 
     - name: Modify the Bridge slave file
       template:
-        src: roles/node-prep/templates/pub_nic.j2
+        src: pub_nic.j2
         dest: "/etc/sysconfig/network-scripts/ifcfg-{{ pub_nic }}"
         owner: root
         group: root
