@@ -544,6 +544,7 @@ export extract_dir=$(pwd)
 # Get the oc binary
 curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/$VERSION/openshift-client-linux-$VERSION.tar.gz | tar zxvf - oc
 sudo cp ./oc /usr/local/bin/oc
+sudo cp ./openshift-baremetal-install /usr/local/bin/openshift-baremetal-install
 # Extract the baremetal installer
 oc adm release extract --registry-config "${pullsecret_file}" --command=$cmd --to "${extract_dir}" ${RELEASE_IMAGE}
 ~~~
@@ -572,6 +573,7 @@ export extract_dir=$(pwd)
 STABLE_VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/release.txt | grep 'Name:' | awk -F ' ' '{print $2}')
 curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/openshift-client-linux-$STABLE_VERSION.tar.gz | tar zxvf - oc
 sudo cp ./oc /usr/local/bin/oc
+sudo cp ./openshift-baremetal-install /usr/local/bin/openshift-baremetal-install
 # Extract the baremetal installer
 oc adm release extract --registry-config "${pullsecret_file}" --command=$cmd --to "${extract_dir}" ${RELEASE_IMAGE}
 ~~~
@@ -595,7 +597,7 @@ mkdir /home/kni/rhcos_image_cache
 sudo semanage fcontext -a -t httpd_sys_content_t "/home/kni/rhcos_image_cache(/.*)?"
 sudo restorecon -Rv rhcos_image_cache/
 # Get the commit id from the installer it will be used to determine which images do we need to download
-export COMMIT_ID=$(/home/kni/openshift-baremetal-install version | grep '^built from commit' | awk '{print $4}')
+export COMMIT_ID=$(/usr/local/bin/openshift-baremetal-install version | grep '^built from commit' | awk '{print $4}')
 # Get the uri for the RHCOS image that will be deployed on the nodes
 export RHCOS_OPENSTACK_URI=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json  | jq .images.openstack.path | sed 's/"//g')
 # Get the uri for the RHCOS image that will be deployed on the bootstrap vm
@@ -607,8 +609,8 @@ export RHCOS_QEMU_SHA_UNCOMPRESSED=$(curl -s -S https://raw.githubusercontent.co
 # Get the SHA hash for the RHCOS image that will be deployed on the nodes
 export RHCOS_OPENSTACK_SHA_COMPRESSED=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json  | jq -r '.images.openstack.sha256')
 # Download the images and place them in the  /home/kni/rhcos_image_cache directory
-curl -L ${RHCOS_PATH}${RHCOS_QEMU_URI} -o /home/kni/rhcos_image_cache
-curl -L ${RHCOS_PATH}${RHCOS_OPENSTACK_URI} -o /home/kni/rhcos_image_cache
+curl -L ${RHCOS_PATH}${RHCOS_QEMU_URI} -o /home/kni/rhcos_image_cache/${RHCOS_QEMU_URI}
+curl -L ${RHCOS_PATH}${RHCOS_OPENSTACK_URI} -o /home/kni/rhcos_image_cache/${RHCOS_OPENSTACK_URI}
 # Confirm SELinux type is of httpd_sys_content_t for the newly created files.
 ls -Z /home/kni/rhcos_image_cache
 # Create pod
