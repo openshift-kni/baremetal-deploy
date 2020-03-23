@@ -5,7 +5,7 @@
       virt_pool:
         command: define
         name: default
-        xml: '{{ lookup("template", "roles/node-prep/templates/dir.xml.j2") }}'
+        xml: '{{ lookup("template", "dir.xml.j2") }}'
     
     - name: Start Storage Pool for default
       virt_pool:
