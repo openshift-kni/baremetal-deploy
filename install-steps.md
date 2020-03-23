@@ -437,12 +437,10 @@ The following steps need to be performed in order to prepare the environment.
    ~~~sh
    usermod --append --groups libvirt <user> 
    ~~~
-8. Restart `firewalld`, enable the `http` service, enable port 5000.
+8. Restart `firewalld` and enable the `http` service
    ~~~sh
    systemctl restart firewalld
    firewall-cmd --zone=public --add-service=http --permanent
-   firewall-cmd --add-port=5000/tcp --zone=libvirt  --permanent
-   firewall-cmd --add-port=5000/tcp --zone=public   --permanent
    firewall-cmd --reload
    ~~~
 9. Start and enable the `libvirtd` service
