@@ -1,40 +1,82 @@
 ---
 - name: Setup Bridge Creation
   block:
+    - name: Get the provision connection name
+      shell: |
+        nmcli device show {{ prov_nic }} | grep GENERAL.CONNECTION | awk '{sub(/[^ ]+[ ]+/,"")}1'
+      register: prov_con_name
+
+    - name: Get the public connection name
+      shell: |
+        nmcli device show {{ pub_nic }} | grep GENERAL.CONNECTION | awk '{sub(/[^ ]+[ ]+/,"")}1'
+      register: pub_con_name
+
+    - name: Delete {{ prov_con_name.stdout }} due to modify nmcli bug
+      nmcli:
+        conn_name: "{{ prov_con_name.stdout }}"
+        type: ethernet
+        state: absent
+      when: prov_con_name.stdout != '--'
+    
     - name: Delete {{ prov_nic }} due to modify nmcli bug
       nmcli:
-        conn_name: "{{ prov_nic }}"
+        conn_name: "{{ item }}"
         type: ethernet
         state: absent
-
-    - name: Delete System {{ prov_nic }} due to modify nmcli bug
+      with_items:
+        - "{{ prov_nic }}"
+        - "System {{ prov_nic }}"
+      when: prov_con_name.stdout == '--' 
+    
+    - name: Create Bridge labeled provisioning ipv4
       nmcli:
-        conn_name: "System {{ prov_nic }}"
-        type: ethernet
-        state: absent
+        conn_name: provisioning
+        type: bridge
+        ifname: provisioning
+        autoconnect: yes
+        ip4_method: manual
+        stp: off
+        ip4: 172.22.0.1/24
+        state: present
+      when: not ipv6_enabled|bool or ((release_version[0]|int == 4) and (release_version[2]|int == 3))
 
-    - name: Create Bridge labeled provisioning
+    - name: Create Bridge slave on {{ prov_nic }} ipv4
+      nmcli:
+        conn_name: "{{ prov_nic }}"
+        type: bridge-slave
+        hairpin: no
+        ifname: "{{ prov_nic }}"
+        master: provisioning
+        autoconnect: yes
+        state: present
+      when: not ipv6_enabled|bool or ((release_version[0]|int == 4) and (release_version[2]|int == 3))
+
+    - name: Create Bridge labeled provisioning ipv6
       nmcli:
         conn_name: provisioning
         type: bridge
         ifname: provisioning
         autoconnect: yes
         stp: off
-        ip4: 172.22.0.1/24
+        ip6: fd00:1101::1/64
         state: present
+        ip6_method: manual
+      when: (ipv6_enabled|bool and ((release_version[0]|int == 4) and (release_version[2]|int > 3))) or
+            (ipv6_enabled|bool and (release_version[0]|int > 4))
 
-    - name: Create Bridge slave on {{ prov_nic }}
+    - name: Create Bridge slave on {{ prov_nic }} ipv6
       nmcli:
         conn_name: "{{ prov_nic }}"
         type: bridge-slave
         hairpin: no
-        ip4_method: manual
         ifname: "{{ prov_nic }}"
         master: provisioning
         autoconnect: yes
         state: present
+      when: (ipv6_enabled|bool and ((release_version[0]|int == 4) and (release_version[2]|int > 3))) or
+            (ipv6_enabled|bool and (release_version[0]|int > 4))
 
-    - name: Create Bridge labeled baremetal
+    - name: Create Bridge labeled baremetal for ipv4
       nmcli:
         conn_name: baremetal
         type: bridge
@@ -42,33 +84,29 @@
         autoconnect: yes
         stp: off
         state: present
+      when: not ipv6_enabled|bool
+    
+    - name: Create Bridge labeled baremetal for ipv6
+      nmcli:
+        conn_name: baremetal
+        type: bridge
+        ifname: baremetal
+        autoconnect: yes
+        stp: off
+        state: present
+        ip6_dhcp_duid: ll
+      when: ipv6_enabled|bool
 
     - name: Create Bridge slave on {{ pub_nic }}
       nmcli:
-        conn_name: "{{ pub_nic }}"
+        conn_name: "{{ pub_con_name.stdout }}"
         type: bridge-slave
         hairpin: no
+        id: "{{ pub_nic }}"
         ifname: "{{ pub_nic }}"
         master: baremetal
         autoconnect: yes
         state: present
-
-    - name: Register the UUID of {{ pub_nic }}
-      shell: |
-        nmcli -f uuid,name,device c show | awk '/{{ pub_nic }}/ { print $1 }'
-      register: uuidoutput
-
-    - name: Set Fact for UUID
-      set_fact:
-        uuid: "{{ uuidoutput.stdout }}"
-
-    - name: Modify the Bridge slave file
-      template:
-        src: roles/node-prep/templates/pub_nic.j2
-        dest: "/etc/sysconfig/network-scripts/ifcfg-{{ pub_nic }}"
-        owner: root
-        group: root
-        mode: u=rw,g=r,o=r
 
     - name: Reload baremetal bridge and slave interfaces
       shell: |
@@ -83,4 +121,25 @@
   setup:
     gather_subset:
       - network
+  tags: network
+
+- name: Set External Subnet with IPv4
+  set_fact:
+    extcidrnet: "{{ ip | ipaddr('network') }}/{{ ip | ipaddr('prefix') }}"
+  vars:
+    ip: "{{ ansible_default_ipv4.address }}/{{ansible_default_ipv4.netmask }}"
+  when: not ipv6_enabled|bool
+  tags: network
+
+- name: Set External Subnet with IPv6
+  set_fact:
+    extcidrnet: "{{ ip | ipaddr('network') }}/{{ ip | ipaddr('prefix') }}"
+  vars:
+    ip: "{{ ansible_default_ipv6.address }}/64"
+  when: ipv6_enabled|bool
+  tags: network
+
+- debug:
+    msg: "external subnet {{ extcidrnet }}"
+    verbosity: 2
   tags: network
