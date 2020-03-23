@@ -8,17 +8,6 @@
         state: enabled
       become: yes
 
-    - name: Open port 5000/tcp, zone libvirt and public, for firewalld
-      firewalld:
-        port: 5000/tcp
-        permanent: yes
-        state: enabled
-        zone: "{{ item }}"
-      become: yes
-      with_items:
-      - libvirt
-      - public
-
     - name: Open port 8080/tcp, zone public, for cache for firewalld
       firewalld:
         port: 8080/tcp
@@ -37,14 +26,6 @@
         chain: INPUT
         protocol: tcp
         destination_port: "80"
-        jump: ACCEPT
-      become: yes
-
-    - name: Open port 5000/tcp for iptables
-      iptables:
-        chain: INPUT
-        protocol: tcp
-        destination_port: "5000"
         jump: ACCEPT
       become: yes
 
