@@ -205,6 +205,38 @@ ansible 2.9.1
 
 NOTE: The config file section should point to the path of your `ansible.cfg`
 
+## Python modules on the localhost
+The Ansible playbook takes advantage of a few python modules that are required
+to be installed on the host running the playbook. 
+
+The python modules required are:
+- dnspython (http://www.dnspython.org/) 
+- netaddr (https://github.com/netaddr/netaddr)
+
+Depending on the operating system you are running on your host and what 
+version of python your environment is using will dictate which package
+needs to be installed.
+
+On Fedora/RHEL8.x using python2 or python3
+~~~sh
+dnf install -y pythonX-dns
+dnf install -y pythonX-netaddr
+~~~
+
+NOTE: `X` is version `2` or version `3` of python. User can verify which version
+of python they are running by attempting
+~~~sh
+python --version
+python3 --version
+~~~
+
+On CentOS 7.x systems
+~~~sh
+yum install -y python-dns
+yum install -y python-netaddr
+~~~
+
+
 ## Copy local ssh key to provision node
 
 With the `ansible.cfg` file in place, the next step is to ensure to copy your
