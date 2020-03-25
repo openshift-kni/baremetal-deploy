@@ -155,7 +155,6 @@ The tree structure is shown below:
         │   └── main.yml
         ├── templates
         │   ├── dir.xml.j2
-        │   └── pub_nic.j2
         ├── tests
         │   ├── inventory
         │   └── test.yml
