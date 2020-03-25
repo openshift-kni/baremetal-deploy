@@ -301,6 +301,12 @@ prov_ip=172.22.0.3
 # cache.  Default is false.
 #cache_enabled=True
 
+# (Optional) Enable IPv6 addressing instead of IPv4 addressing
+#ipv6_enabled=True
+
+# (Optional) A list of clock servers to be used in chrony by the masters and workers
+#clock_servers=["pool.ntp.org","clock.redhat.com"]
+
 ######################################
 # Vars regarding install-config.yaml #
 ######################################

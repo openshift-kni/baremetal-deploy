@@ -7,5 +7,22 @@
     group: "{{ ansible_user }}"
   with_fileglob:
     - roles/installer/files/manifests/*
-  tags: extramanifest
+  tags: extramanifests
 
+- name: Manage chrony configuration
+  block:
+  - name: Create chrony.conf
+    set_fact: 
+      chronyconfig: "{{ lookup('template', 'chrony.conf.j2') | b64encode }}"
+
+  - name: Inject chrony.conf in a machine-config object
+    template:
+      src: 99-etc-chrony.conf.j2
+      dest: "{{ dir }}/openshift/99-{{ item }}-etc-chrony.conf.yaml"
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+    with_items:
+      - master
+      - worker
+  when: (clock_servers is defined) and (clock_servers | length > 0)
+  tags: extramanifests
