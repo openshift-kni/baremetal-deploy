@@ -6,7 +6,7 @@
     msg: >
         Use Ansible version 2.9 or greater to run this playbook
   delegate_to: localhost
-  tags: 
+  tags:
   - always
   - validation
 
@@ -17,7 +17,7 @@
     - netaddr
   register: _py_facts
   delegate_to: localhost
-  tags: 
+  tags:
   - always
   - validation
 
@@ -31,48 +31,48 @@
   - validation
 
 - name: Fail if version is undefined or empty.
-  fail: 
+  fail:
     msg: "The version is undefined or empty. Use a value such as 'latest-4.3' or 'latest-4.4' or an explicit version."
   when: (version is undefined) or (version|length == 0)
-  tags: 
+  tags:
   - always
   - validation
 
 - name: Fail if build is undefined or empty
-  fail: 
+  fail:
     msg: "The build is undefined or empty. Use a value such as 'dev' or 'ga'."
   when: (build is undefined) or (build|length == 0)
-  tags: 
+  tags:
   - always
   - validation
 
-- name: Fail if a required install-config variable is undefined or empty. 
-  fail: 
+- name: Fail if a required install-config variable is undefined or empty.
+  fail:
     msg: "A variable regarding install-config.yml is undefined or empty."
   when: (domain is undefined) or (domain|length == 0) or (cluster is undefined) or (cluster|length == 0) or (extcidrnet is undefined) or (extcidrnet|length == 0) or (dnsvip is undefined) or (dnsvip|length == 0) or (pullsecret is undefined) or (pullsecret|length == 0)
-  tags: 
+  tags:
   - always
   - validation
 
 - name: Fail if both bootstraposimage and clusterosimage variables are empty.
-  fail: 
+  fail:
     msg: "Both bootraposimage and clusterosimage are empty. Please provide a URL or comment out."
-  when: 
+  when:
     - bootstraposimage is defined and bootstraposimage|length == 0
     - clusterosimage is defined and clusterosimage|length == 0
-  tags: 
+  tags:
   - always
   - validation
 
 - name: Conditions to set cache_enabled to true
   set_fact:
     cache_enabled: true
-  when: (cache_enabled == 'true') or 
-        (bootstraposimage is undefined and clusterosimage is defined) or 
+  when: (cache_enabled == 'true') or
+        (bootstraposimage is undefined and clusterosimage is defined) or
         (bootstraposimage is defined and clusterosimage is undefined) or
         (clusterosimage is defined and bootstraposimage|length == 0) or
         (bootstraposimage is defined and clusterosimage|length == 0)
-  tags: 
+  tags:
   - always
   - validation
 
@@ -81,7 +81,7 @@
     cache_enabled: false
   when: (cache_enabled == 'false') or
         (bootstraposimage is defined and clusterosimage is defined)
-  tags: 
+  tags:
   - always
   - validation
 
@@ -92,36 +92,36 @@
 
 - name: Verify DNS records for API VIP, Wildcard (Ingress) VIP
   set_fact:
-    apivip: "{{ lookup('dig', 'api.{{ cluster |quote }}.{{ domain | quote }}.')}}"
-    ingressvip: "{{ lookup('dig', 'foo.apps.{{ cluster |quote }}.{{ domain | quote }}.')}}"
+    apivip: "{{ lookup('dig', 'api.{{ cluster |quote }}.{{ domain | quote }}.', '{{ qtype }}' )}}"
+    ingressvip: "{{ lookup('dig', 'foo.apps.{{ cluster |quote }}.{{ domain | quote }}.', '{{ qtype }}' )}}"
   when: ((apivip is undefined) or (ingressvip is undefined) or (apivip|length == 0) or (ingressvip|length == 0))
-  tags: 
+  tags:
   - always
   - validation
 
-- debug: 
+- debug:
     msg: "The API VIP is {{ apivip }}"
     verbosity: 2
   tags: validation
- 
-- debug: 
+
+- debug:
     msg: "The Wildcard (Ingress) VIP is {{ ingressvip }}"
     verbosity: 2
   tags: validation
 
 - name: Fail if incorrect API VIP
-  fail: 
+  fail:
     msg: "The API VIP IP seems to be incorrect. Value was NXDOMAIN."
   when: (apivip == 'NXDOMAIN')
-  tags: 
+  tags:
   - always
   - validation
 
 - name: Fail if incorrect Ingress VIP
-  fail: 
+  fail:
     msg: "The Ingress VIP IP seems to be incorrect. Value was NXDOMAIN."
   when: (ingressvip == 'NXDOMAIN')
-  tags: 
+  tags:
   - always
   - validation
 
@@ -129,7 +129,7 @@
   set_fact:
     release_url: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp"
   when: build == 'ga'
-  tags: 
+  tags:
   - always
   - validation
 
@@ -139,7 +139,7 @@
     return_content: yes
   register: result
   failed_when: result.status >= 400
-  tags: 
+  tags:
   - always
   - validation
 
@@ -147,28 +147,28 @@
   set_fact:
     release_version: "{{ result.content | regex_search('Version:.*') | regex_replace('Version:\\s*(.*)', '\\1') }}"
     release_image: "{{ result.content | regex_search('Pull From:.*') | regex_replace('Pull From:\\s*(.*)', '\\1') }}"
-  tags: 
+  tags:
   - always
   - validation
 
-- debug: 
+- debug:
     msg: "release version {{ release_version }}"
     verbosity: 2
   tags: validation
 
-- debug: 
+- debug:
     msg: "release image {{ release_image }}"
     verbosity: 2
   tags: validation
 
 - name: Fail if hostgroups not defined in inventory/hosts file
-  fail: 
+  fail:
     msg: "The {{ item }} group is not defined. Please add [{{ item }}] to the inventory/hosts file"
   when: "'{{ item }}' not in groups"
   loop:
     - masters
     - workers
-  tags: 
+  tags:
   - always
   - validation
 
@@ -176,14 +176,14 @@
   set_fact:
     numworkers: "{{ groups['workers'] | length }}"
     nummasters: "{{ groups['masters'] | length }}"
-  tags: 
+  tags:
   - always
   - validation
 
 - name:  Gather the rpm package facts
   package_facts:
     manager: auto
-  tags: 
+  tags:
   - always
   - validation
 
@@ -191,6 +191,6 @@
   set_fact:
     firewall: "iptables"
   when: "'iptables-services' in ansible_facts.packages"
-  tags: 
+  tags:
   - always
   - validation
