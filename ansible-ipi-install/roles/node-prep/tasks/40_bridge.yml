@@ -128,7 +128,7 @@
     extcidrnet: "{{ ip | ipaddr('network') }}/{{ ip | ipaddr('prefix') }}"
   vars:
     ip: "{{ ansible_default_ipv4.address }}/{{ansible_default_ipv4.netmask }}"
-  when: not ipv6_enabled|bool
+  when: (extcidrnet is not defined or extcidrnet|length < 1) and not ipv6_enabled|bool
   tags: network
 
 - name: Set External Subnet with IPv6
@@ -136,7 +136,7 @@
     extcidrnet: "{{ ip | ipaddr('network') }}/{{ ip | ipaddr('prefix') }}"
   vars:
     ip: "{{ ansible_default_ipv6.address }}/64"
-  when: ipv6_enabled|bool
+  when: (extcidrnet is not defined or extcidrnet|length < 1) and ipv6_enabled|bool
   tags: network
 
 - debug:
