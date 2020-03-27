@@ -73,3 +73,6 @@ platform:
 {% endfor %}
 pullSecret: '{{ pullsecret }}'
 sshKey: '{{ key }}'
+{% if install_config_appends is defined and install_config_appends|length %}
+{{ install_config_appends }}
+{% endif %}

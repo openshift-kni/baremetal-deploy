@@ -7,13 +7,14 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
+    force: yes
   tags: 
   - pullsecret
   - extract
 
 - name: Extracting the installer
   shell: |
-    /usr/local/bin/oc adm release extract --registry-config {{ pullsecret_file | quote }} --command={{ cmd |quote }} --to {{ tempdir | quote }} {{ release_image | quote }}
+          /usr/local/bin/oc adm release extract --registry-config {{ pullsecret_file | quote }} --command={{ cmd |quote }} --to {{ tempdir | quote }} {{ disconnected_installer | ternary(disconnected_installer, release_image) }}
   args:
     chdir: "{{ tempdir }}"
     executable: /bin/bash

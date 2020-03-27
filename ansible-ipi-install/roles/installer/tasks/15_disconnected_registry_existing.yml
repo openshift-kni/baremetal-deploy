@@ -1,0 +1,52 @@
+---
+
+- name: Configure to use existing disconnected registry
+  block:
+  
+    - name: Get stats of {{ disconnected_registry_mirrors_file }}
+      stat:
+        path: "{{ disconnected_registry_mirrors_file }}"
+      register: drm_file
+    
+    - name: Check if the {{ disconnected_registry_mirrors_file }} exists
+      fail:
+        msg:
+        - "The disconnected_registry_mirrors_file is defined, but does not exist"
+      when: drm_file.stat.exists != true
+    
+    - name: Read the contents of {{ disconnected_registry_mirrors_file }}
+      slurp:
+        src: "{{ disconnected_registry_mirrors_file }}"
+      register: disconnected_registry_trustbundle
+    
+    - name: Set the install_config_appends fact
+      set_fact:
+        install_config_appends: "{{ disconnected_registry_trustbundle.content | string | b64decode }}"
+    
+    - name: Get stats of {{ disconnected_registry_auths_file }}
+      stat:
+        path: "{{ disconnected_registry_auths_file }}"
+      register: dra_file
+    
+    - name: Check if the {{ disconnected_registry_auths_file }} exists
+      fail:
+        msg:
+        - "The disconnected_registry_auths_file is defined, but does not exist"
+      when: dra_file.stat.exists != true
+    
+    - name: Read disconnected auths
+      slurp:
+        src: "{{ disconnected_registry_auths_file }}"
+      register: disconnected_auths_b64
+
+    - name: append auth to pullsecret
+      shell: |
+        echo '{{ pullsecret }}' | jq -c \
+          '.auths += {{ disconnected_auths_b64.content | string | b64decode }}'
+      register: new_pullsecret
+    
+    - name: set pullsecret with new auth
+      set_fact:
+        pullsecret: "  {{ new_pullsecret.stdout }}"
+  delegate_to: localhost
+

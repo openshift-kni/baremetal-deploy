@@ -91,3 +91,37 @@ worker-1 name=worker-1 role=worker ipmi_user=admin ipmi_password=password ipmi_a
 # Provision Host
 [provisioner]
 provisioner.example.com
+
+# Registry Host
+#   Define a host here to create or use a local copy of the installation registry
+#   Used for disconnected installation
+# [registry_host]
+# disconnected.example.com
+
+# [registry_host:vars]
+# The following cert_* variables are needed to create the certificates
+#   when creating a disconnected registry. They are not needed to use
+#   an existing disconnected registry.
+# cert_country=MyCountry
+# cert_state=MyState
+# cert_locality=MyCity
+# cert_organization=MyCompany
+# cert_organizational_unit=MyDepartment
+
+# The port exposed on the disconnected registry host can be changed from
+# the default 5000 to something else by changing the following variable.
+# registry_port=5000
+
+# The directory the mirrored registry files are written to can be modified from teh default /opt/registry by changing the following variable.
+# registry_dir="/opt/registry"
+
+# The following two variables must be set to use an existing disconnected registry.
+#
+# Specify a file that contains extra auth tokens to include in the
+#   pull-secret if they are not already there.
+# disconnected_registry_auths_file=/home/kni/mirror_auth.json
+
+# Specify a file that contains the addition trust bundle and image
+#   content sources for the local registry. The contents of this file
+#   will be appended to the install-config.yml file.
+# disconnected_registry_mirrors_file=/home/kni/ic-appends.yml

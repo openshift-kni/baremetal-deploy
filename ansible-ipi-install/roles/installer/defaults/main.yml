@@ -2,3 +2,10 @@
 # defaults file for installer
 cache_enabled: false
 provision_cache_store: "{{ ansible_env.HOME }}/rhcos_image_cache/"
+registry_port_container: 5000
+registry_port: "{{ registry_port_container }}"
+registry_dir: /opt/registry
+install_config_appends_file: install-config-appends.yml
+registry_auth_file: registry-auths.json
+disconnected_registry_user: dummy
+disconnected_registry_password: dummy

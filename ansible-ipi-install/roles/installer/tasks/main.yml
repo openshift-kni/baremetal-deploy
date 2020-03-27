@@ -4,6 +4,19 @@
   tags:
   - cleanup
   - getoc
+
+- include_tasks: 15_disconnected_registry_existing.yml
+  when:
+    - disconnected_registry is defined
+    - disconnected_registry == "existing"
+  tags: disconnected
+
+- include_tasks: 15_disconnected_registry_create.yml
+  when:
+    - disconnected_registry is defined
+    - disconnected_registry == "create"
+  tags: disconnected
+
 - include_tasks: 20_extract_installer.yml
   tags:
   - pullsecret
@@ -14,6 +27,8 @@
 - include_tasks: 24_rhcos_image_cache.yml
   when: cache_enabled == True
   tags: cache
+  
+  
 - include_tasks: 25_create-install-config.yml
   tags: installconfig
 - include_tasks: 30_create_metal3.yml
@@ -31,4 +46,3 @@
   tags: install
 #- include_tasks: 70_cleanup_sub_man_registeration.yml
 #  tags: unregister
-
