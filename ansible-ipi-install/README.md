@@ -114,6 +114,8 @@ The tree structure is shown below:
     │   │   └── main.yml
     │   ├── tasks
     │   │   ├── 10_get_oc.yml
+    │   │   ├── 15_disconnected_registry_create.yml
+    │   │   ├── 15_disconnected_registry_existing.yml
     │   │   ├── 20_extract_installer.yml
     │   │   ├── 23_rhcos_image_paths.yml
     │   │   ├── 24_rhcos_image_cache.yml
@@ -127,8 +129,11 @@ The tree structure is shown below:
     │   │   ├── 70_cleanup_sub_man_registeration.yml
     │   │   └── main.yml
     │   ├── templates
-    |   │   ├── install-config.j2
-    │   │   └── metal3-config.j2
+    │   │   ├── 99-etc-chrony.conf.j2
+    │   │   ├── chrony.conf.j2
+    │   │   ├── install-config-appends.j2
+    │   │   ├── install-config.j2
+    │   │   └── metal3-config.j2
     │   ├── tests
     │   │   ├── inventory
     │   │   └── test.yml
@@ -144,8 +149,9 @@ The tree structure is shown below:
         ├── meta
         │   └── main.yml
         ├── tasks
+        |   ├── 100_power_off_cluster_servers.yml
         |   ├── 10_validation.yml
-        │   ├── 110_power_off_cluster_servers.yml
+        │   ├── 15_validation_disconnected_registry.yml
         │   ├── 20_sub_man_register.yml
         │   ├── 30_req_packages.yml
         │   ├── 40_bridge.yml
@@ -157,7 +163,6 @@ The tree structure is shown below:
         │   └── main.yml
         ├── templates
         │   ├── dir.xml.j2
-        │   └── pub_nic.j2
         ├── tests
         │   ├── inventory
         │   └── test.yml
