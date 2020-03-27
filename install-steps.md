@@ -18,28 +18,28 @@ This write-up will guide you through the process of deploying a Baremetal IPI in
 
 ### NIC Configuration
 
-Each server requires two NICs for `provisioning` and `baremetal` network access 
+Each server requires two NICs for `provisioning` and `baremetal` network access
 respectively. The `provisioning` network is a non-routable network used
 for provisioning the underlying operating system on each server that are part
 of the Red Hat OpenShift cluster. The `baremetal` network is a routable network
-used for external network access to the outside world. 
+used for external network access to the outside world.
 
-NOTE: It is recommended that each NIC be on a separate VLAN. 
+NOTE: It is recommended that each NIC be on a separate VLAN.
 
 ### Network Ranges
 
 The `provisioning` network is automatically assigned and configured using the
 `172.22.0.0/24` range. The `baremetal` (external) network assignment is to be provided
-by your network administrator. It is required that each server be assigned a 
-external IP address via a DHCP server. 
+by your network administrator. It is required that each server be assigned a
+external IP address via a DHCP server.
 
-NOTE: Since the Red Hat OpenShift installation uses `ironic-dnsmasq` it is 
+NOTE: Since the Red Hat OpenShift installation uses `ironic-dnsmasq` it is
 important that no other DHCP server is running on the same broadcast domain.
 
 ### Reserved IPs on DHCP Server
 
 Each server must have an IP reserved on the `baremetal` network. Additionally,
-3 additional IPs on the `baremetal` network are required for reservation. 
+3 additional IPs on the `baremetal` network are required for reservation.
 
 * 1 IP for the API endpoint
 * 1 IP for the wildcard ingress endpoint
@@ -49,7 +49,7 @@ The following table shows a list of all items that require a reserved IP address
 on the `baremetal` network. Ensure a DHCP entry for each item listed on the
 table below is reserved and allocated at all times. Examples on using `dnsmasq`
 or a proper DHCP server to allocate these entries is shown later in this
-document. 
+document.
 
 
 | Usage   |      Hostname      |  IP |
@@ -69,12 +69,12 @@ document.
 A subzone is required on the \<domain\> that is to be used. The subzone name
 is recommended to be the \<cluster-name\> as shown in the table above. Examples
 on using `dnsmasq` or a proper DNS server to allocate these DNS resolution entries
-is shown later in this document. 
+is shown later in this document.
 
 <!--
 
 TODO
-### Diagram 
+### Diagram
 
 ![Network Diagram](diagrams/bos-server-net.png)
 -->
@@ -89,33 +89,33 @@ TODO
 ## Diagrams of the OpenShift Install Process
 
 The installation process of OpenShift via Installer Provisioned Infrastructure
-can be broken down into two images. 
+can be broken down into two images.
 
 ![Image 1](images/71_OpenShift_Baremetal_IPI_Depoyment_0320_1.png)
 
-Image #1 - The bare metal node labeled as provisioner contains two network 
-bridges: provisioning and baremetal, each one connected to a different network. 
+Image #1 - The bare metal node labeled as provisioner contains two network
+bridges: provisioning and baremetal, each one connected to a different network.
 During installation of IPI on baremetal, a bootstrap VM is created and connected
- to both the provisioning and baremetal network via those bridges. The role of 
+ to both the provisioning and baremetal network via those bridges. The role of
 the VM is to assist in the process of deploying an OpenShift cluster.
 
 ![Image 2](images/71_OpenShift_Baremetal_IPI_Depoyment_0320_2.png)
 
 Image #2 - When the installation of OpenShift control plane nodes (master nodes)
- is complete and fully operational, the bootstrap VM is destroyed automatically 
-and the appropriate VIPs are moved accordingly. The API and DNS VIPs move into 
-the control plane nodes and the Ingress VIP services applications that reside 
+ is complete and fully operational, the bootstrap VM is destroyed automatically
+and the appropriate VIPs are moved accordingly. The API and DNS VIPs move into
+the control plane nodes and the Ingress VIP services applications that reside
 within the worker nodes.
 
 
 # Configuring Servers
 
-Each server requires the following configuration for proper installation. 
+Each server requires the following configuration for proper installation.
 
 WARNING: A mismatch between servers will cause an installation failure.
 
 While the servers that are used in your environment may contain additional
-NICs. For the purposes of installation, we are only focused on the following: 
+NICs. For the purposes of installation, we are only focused on the following:
 
 | NIC   | NETWORK | VLAN |
 |----------|-------------|------|
@@ -148,10 +148,10 @@ NOTE: PXE has been disabled on all other NICs.
 Each server is required to have access to out of band management. The
 provisioning node will require access to the out of band management network for
 a successful OpenShift 4 installation. The out of band management setup is
-out of scope for this document, however, it is recommended that a separate 
+out of scope for this document, however, it is recommended that a separate
 management network be created for best practices. This is not applicable, using
 either the `provisioning` network or `baremetal` network are other options as
-well. 
+well.
 
 ## Required Data for Installation
 
@@ -173,12 +173,12 @@ on the `baremetal` network. The list included:
 * IP for the api endpoint
 * IP for the wildcard ingress endpoint
 * IP for the nameserver
-* IP for each node 
+* IP for each node
 
 The total amount of IPs required for reservation is 9 - 6 IPs for the nodes
 and 3 IPs for the API, wildcard ingress endpoint and the nameserver. It is
-important to contact your network administrator to reserve these nine IPs to 
-ensure no conflict on the network. 
+important to contact your network administrator to reserve these nine IPs to
+ensure no conflict on the network.
 
 # Create DNS records on a DNS server (Option 1)
 
@@ -189,8 +189,8 @@ DNS records using `dnsmasq` (Option 2).
 
 First, create a subzone with the name of the cluster that is going to be used on
 your domain. For clarity in the example, the domain used is `example.com` and the
-cluster name used is `openshift`. Ensure to change these according to your 
-environment specifics. 
+cluster name used is `openshift`. Ensure to change these according to your
+environment specifics.
 
 1. Login to the DNS server via `ssh`
 2. Suspend updates to all dynamic zones: `rndc freeze`
@@ -240,18 +240,18 @@ environment specifics.
     132 IN      PTR     api.openshift.example.com.
     133 IN      PTR     ns1.openshift.example.com.
     ~~~
-    
+
     NOTE: In this example IP address `10.0.1.126-133` are pointed to the
-    correspoding fully qualified domain name. 
-    
+    correspoding fully qualified domain name.
+
     NOTE: The filename `1.0.10.in-addr.arpa` is the reverse of the public CIDR example `10.0.1.0/24`
-    
+
 6. Increase the SERIAL value by 1
 7. Enable updates to all dynamic zones and reload them: `rndc thaw`
 
 # Create DNS records using `dnsmasq` (Option 2)
 
-For creating DNS records simply open the `/etc/hosts` file and add the NIC2 
+For creating DNS records simply open the `/etc/hosts` file and add the NIC2
 (baremetal net) IP followed by the hostname. For example purposes, the cluster
 name is `openshift` and the domain is `example.com`
 
@@ -279,7 +279,7 @@ firewall-cmd --reload
 # Create DHCP reservations (Option 1)
 
 Option 1 should be used if access to the appropriate DHCP server for the `baremetal`
-network is accessible or a request to your network admin to create the DHCP 
+network is accessible or a request to your network admin to create the DHCP
 reserverations
 is an option. If not an option, skip this section and move to section Create
 DHCP reserverations using `dnsmasq` (Option 2).
@@ -300,14 +300,14 @@ DHCP reserverations using `dnsmasq` (Option 2).
          option domain-search "openshift.example.com";
          fixed-address <ip-address-of-NIC2>;
       }
-    
+
     host openshift-master-1 {
          option host-name "openshift-master-1";
          hardware ethernet <mac-address-of-NIC2>;
          option domain-search "openshift.example.com";
          fixed-address <ip-address-of-NIC2>;
       }
-    
+
     host openshift-master-2 {
          option host-name "openshift-master-2";
          hardware ethernet <mac-address-of-NIC2>;
@@ -327,17 +327,17 @@ DHCP reserverations using `dnsmasq` (Option 2).
          fixed-address <ip-address-of-NIC2>;
       }
     ~~~
-3. Restart dhcpd service: 
+3. Restart dhcpd service:
    ~~~
    systemctl restart dhcpd
    ~~~
- 
+
 
 # Create DHCP reservations using `dnsmasq` (Option 2)
 
 
 The following is an example setup of `dnsmasq` on a server that can access
-the `baremetal` network. 
+the `baremetal` network.
 
 1. Install `dnsmasq`
    ~~~sh
@@ -348,7 +348,7 @@ the `baremetal` network.
    cd /etc/dnsmasq.d
    ~~~
 3. Create a file that reflects your OpenShift cluster appended by `.dns` (e.g. example.dns)
-   ~~~sh 
+   ~~~sh
    touch example.dns
    ~~~
 4. Open the appropriate `firewalld` DHCP service
@@ -357,7 +357,7 @@ the `baremetal` network.
    firewall-cmd --add-service=dhcp --permanent
    firewall-cmd --reload
    ~~~
-   
+
 5. Example of the `example.dns` file
    ~~~sh
    domain-needed
@@ -372,7 +372,7 @@ the `baremetal` network.
    interface=<nic-with-access-to-baremetal-net>
    #interface=em2
    server=<ip-of-existing-server-on-baremetal-net>
-  
+
 
    #Wildcard for apps -- make changes to cluster-name (openshift) and domain (example.com)
    address=/.apps.openshift.example.com/<wildcard-ingress-lb-ip>
@@ -390,7 +390,7 @@ the `baremetal` network.
    search <domain.com>
    nameserver <ip-of-my-existing-dns-nameserver>
    ~~~
-7. Restart the `dnsmasq` service 
+7. Restart the `dnsmasq` service
    ~~~sh
    systemctl restart dnsmasq
    ~~~
@@ -401,17 +401,17 @@ the `baremetal` network.
 
 # Install RHEL on the Provision Node
 
-With the networking portions complete, the next step in installing the 
+With the networking portions complete, the next step in installing the
 Red Hat OpenShift (OCP) cluster is to install RHEL 8
 on the provision node. This node will be used as the orchestrator in installing
 the OCP cluster on the 3 master and 2 worker nodes. For the purposes of this
 document, installing RHEL on the provision node is out of scope. However, options
 include, but not limited to, using a RHEL Satellite server, PXE, or installation
-media. 
+media.
 
 # Preparing the Provision node for OpenShift Install
 
-The following steps need to be performed in order to prepare the environment. 
+The following steps need to be performed in order to prepare the environment.
 
 1. Login into the provision node via `ssh`
 2. Create a user (i.e `kni`) to deploy as non-root and provide that user `sudo` privileges
@@ -428,14 +428,14 @@ The following steps need to be performed in order to prepare the environment.
    subscription-manager register --username=<user> --password=<pass> --auto-attach
    subscription-manager repos --enable=rhel-8-for-x86_64-appstream-rpms --enable=rhel-8-for-x86_64-baseos-rpms
    ~~~
-   NOTE: For more options on how to use `subscription-manager` visit: https://access.redhat.com/documentation/en-us/red_hat_subscription_management/1/html-single/rhsm/index 
-6. Install the following packages 
+   NOTE: For more options on how to use `subscription-manager` visit: https://access.redhat.com/documentation/en-us/red_hat_subscription_management/1/html-single/rhsm/index
+6. Install the following packages
    ~~~sh
    dnf install -y libvirt qemu-kvm mkisofs python3-devel jq ipmitool
    ~~~
 7. Modify the user to add the `libvirt` group to the newly created user (i.e. `kni`)
    ~~~sh
-   usermod --append --groups libvirt <user> 
+   usermod --append --groups libvirt <user>
    ~~~
 8. Restart `firewalld` and enable the `http` service
    ~~~sh
@@ -493,17 +493,17 @@ The following steps need to be performed in order to prepare the environment.
     nmcli con show
     NAME               UUID                                  TYPE      DEVICE       
     baremetal          4d5133a5-8351-4bb9-bfd4-3af264801530  bridge    baremetal    
-    provisioning       43942805-017f-4d7d-a2c2-7cb3324482ed  bridge    provisioning 
+    provisioning       43942805-017f-4d7d-a2c2-7cb3324482ed  bridge    provisioning
     virbr0             d9bca40f-eee1-410b-8879-a2d4bb0465e7  bridge    virbr0       
     bridge-slave-eno1  76a8ed50-c7e5-4999-b4f6-6d9014dd0812  ethernet  eno1         
-    bridge-slave-eno2  f31c3353-54b7-48de-893a-02d2b34c4736  ethernet  eno2 
+    bridge-slave-eno2  f31c3353-54b7-48de-893a-02d2b34c4736  ethernet  eno2
     ~~~
 14. Login in as the new user on the provision node
     ~~~sh
     su - kni
     ~~~
 15. Copy the pull secret (`pull-secret.txt`) generated earlier and place it in the provision node new user home directory
-    
+
 
 ## Retrieving the OpenShift Installer (Development)
 
@@ -533,7 +533,7 @@ Two approaches:
 
 ### Extract the Installer (Development)
 
-Once the installer has been chosen, the next step is to extract it. 
+Once the installer has been chosen, the next step is to extract it.
 
 ~~~sh
 export cmd=openshift-baremetal-install
@@ -549,7 +549,7 @@ oc adm release extract --registry-config "${pullsecret_file}" --command=$cmd --t
 
 ## Retrieving the OpenShift Installer (GA Release)
 
-The `latest-4.x` (i.e. `latest-4.3`) may be used to deploy the latest 
+The `latest-4.x` (i.e. `latest-4.3`) may be used to deploy the latest
 Generally Available version of Red Hat OpenShift Platform.
 
 Configure VARS
@@ -557,11 +557,11 @@ Configure VARS
 export VERSION=latest-4.3
 export RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}')
 ~~~
- 
+
 
 ### Extract the Installer (GA Release)
 
-Once the installer has been chosen, the next step is to extract it. 
+Once the installer has been chosen, the next step is to extract it.
 
 ~~~sh
 export cmd=openshift-baremetal-install
@@ -617,6 +617,8 @@ podman run -d --name rhcos_image_cache \
 -p 8080:8080/tcp \
 registry.centos.org/centos/httpd-24-centos7:latest
 ~~~
+
+
 
 ## Configure the install-config and metal3-config
 
@@ -694,6 +696,8 @@ registry.centos.org/centos/httpd-24-centos7:latest
 
 NOTE: Ensure to change the appropriate variables to match your environment.
 
+NOTE: If you wish to use a mirrored or disconnected registry, follow the steps in the `Create a Disconnected Registry` section below. The section has instructions on modifying the `install-config.yaml` file that must be performed before continuing onto the following steps.
+
 2. Create a directory to store cluster configs
     ~~~sh
     mkdir ~/clusterconfigs
@@ -718,11 +722,11 @@ NOTE: Ensure to change the appropriate variables to match your environment.
    ~~~
 
 5. IMPORTANT: This portion is critical as the OpenShift installation won't complete without
-the metal3-operator being fully operational. This is due to this 
-[issue](https://github.com/openshift/installer/pull/2449) we need 
-to fix the ConfigMap for the Metal3 operator. This ConfigMap is used to notify 
+the metal3-operator being fully operational. This is due to this
+[issue](https://github.com/openshift/installer/pull/2449) we need
+to fix the ConfigMap for the Metal3 operator. This ConfigMap is used to notify
 `ironic` how to PXE boot new nodes.
-   
+
    Create the sample ConfigMap `metal3-config.yaml.sample`
    ~~~yaml
     apiVersion: v1
@@ -754,9 +758,9 @@ to fix the ConfigMap for the Metal3 operator. This ConfigMap is used to notify
 7. Create the OpenShift manifests
    ~~~sh
    ./openshift-baremetal-install --dir ~/clusterconfigs create manifests
-   INFO Consuming Install Config from target directory 
-   WARNING Making control-plane schedulable by setting MastersSchedulable to true for Scheduler cluster settings 
-   WARNING Discarding the Openshift Manifests that was provided in the target directory because its dependencies are dirty and it needs to be regenerated 
+   INFO Consuming Install Config from target directory
+   WARNING Making control-plane schedulable by setting MastersSchedulable to true for Scheduler cluster settings
+   WARNING Discarding the Openshift Manifests that was provided in the target directory because its dependencies are dirty and it needs to be regenerated
    ~~~
 8. Copy the `metal3-config.yaml` to the `clusterconfigs/openshift` directory
    ~~~sh
@@ -766,13 +770,13 @@ to fix the ConfigMap for the Metal3 operator. This ConfigMap is used to notify
 ## Deploying Routers on Worker Nodes
 
 During the installation of an OpenShift cluster, router pods are deployed on
-worker nodes (default 2 router pods). In the event that an installation *only* 
-has one worker node or additional routers are required in order to 
-handle external traffic destined for services within your OpenShift cluster, 
-the following `yaml` file can be 
-created to set the appropriate amount of router replicas. 
+worker nodes (default 2 router pods). In the event that an installation *only*
+has one worker node or additional routers are required in order to
+handle external traffic destined for services within your OpenShift cluster,
+the following `yaml` file can be
+created to set the appropriate amount of router replicas.
 
-NOTE: By default two routers are deployed. If you have two worker nodes 
+NOTE: By default two routers are deployed. If you have two worker nodes
 already, this section may be skipped. For more info on ingress operator visit:
 https://docs.openshift.com/container-platform/4.2/networking/ingress-operator.html
 
@@ -799,7 +803,7 @@ spec:
 ~~~
 
 NOTE: If working with just one worker node, set this value
-to one. If working with more than 3+ workers, additional router pods (default 2) 
+to one. If working with more than 3+ workers, additional router pods (default 2)
 may be recommended.
 
 Once the `router-replicas.yaml` file has been saved, copy the file to the
@@ -824,17 +828,17 @@ output that looks like the following:
 
 ~~~sh
 INFO API v1.16.2 up                               
-INFO Waiting up to 30m0s for bootstrapping to complete... 
+INFO Waiting up to 30m0s for bootstrapping to complete...
 ~~~
 
 This
 portion is critical as the OpenShift installation won't complete without the
-metal3-operator being fully operational. This is due to this 
-[issue](https://github.com/openshift/installer/pull/2449) we need 
-to fix the ConfigMap for the Metal3 operator. This ConfigMap is used to notify 
+metal3-operator being fully operational. This is due to this
+[issue](https://github.com/openshift/installer/pull/2449) we need
+to fix the ConfigMap for the Metal3 operator. This ConfigMap is used to notify
 `ironic` how to PXE boot new nodes.
 
-1. Open a new terminal, and log into the provisioner node as the `kni` user. 
+1. Open a new terminal, and log into the provisioner node as the `kni` user.
 2. Create the sample ConfigMap `metal3-config.yaml.sample`
    ~~~yaml
     apiVersion: v1
@@ -886,7 +890,7 @@ to fix the ConfigMap for the Metal3 operator. This ConfigMap is used to notify
 
 At this point you will have a working OpenShift 4 cluster on baremetal. In order
 to take advantage of the baremetal hardware that was the provision node, we will
-re-purpose the provisioning node as a worker. Prior to re-provisioning 
+re-purpose the provisioning node as a worker. Prior to re-provisioning
 the node, it is recommended to backup some existing files.
 
 ~~~sh
@@ -894,7 +898,7 @@ the node, it is recommended to backup some existing files.
 tar cvfz clusterconfig.tar.gz ~/clusterconfig
 # Copy the Private part for the SSH Key configured on the install-config.yaml to your laptop
 tar cvfz clusterconfigsh.tar.gz ~/.ssh/id_rsa*
-# Copy the install-config.yaml and metal3-config.yaml 
+# Copy the install-config.yaml and metal3-config.yaml
 tar cvfz yamlconfigs.tar.gz install-config.yaml metal3-config.yaml
 ~~~
 
@@ -924,7 +928,7 @@ Considerations prior to converting the provisioning node to a worker node.
     openshift-worker-2      A       <ip-of-worker-2>
     ~~~
     NOTE: Ensure to remove the provisioner as it is replaced by openshift-worker-2
-    
+
 4. Increase the SERIAL value by 1
 5. Edit /var/named/dynamic/1.0.10.in-addr.arpa
 
@@ -934,7 +938,7 @@ Considerations prior to converting the provisioning node to a worker node.
     126	IN 	PTR	openshift-worker-2.openshift.example.com.
     ~~~
     NOTE: The filename `1.0.10.in-addr.arpa` is the reverse of the public CIDR example `10.0.1.0/24`
-    
+
 6. Increase the SERIAL value by 1
 7.  Enable updates to all dynamic zones and reload them: `rndc thaw`
 
@@ -965,12 +969,12 @@ NOTE: Remove the provisioner.openshift.example.com entry as it is replaced by wo
       }
     ~~~
     NOTE: Remove the provisioner host entry as it is replaced by the openshift-worker-2
-3. Restart `dhcpd` service: 
+3. Restart `dhcpd` service:
    ~~~sh
    systemctl restart dhcpd
    ~~~
 
-## Create DHCP Reservations for worker-2 (old provisioner) using `dnsmasq` (Option 2) 
+## Create DHCP Reservations for worker-2 (old provisioner) using `dnsmasq` (Option 2)
 
 Within the server hosting the `dnsmasq` service append the following DHCP
 reservation to the `/etc/dnsmasq.d/example.dns` file
@@ -991,7 +995,7 @@ systemctl restart dnsmasq
 ## Deploy the Provisioner node as a Worker Node using Metal3
 
 Once the prerequisites above have been set, the deploy process is as follows:
- 
+
 1. Poweroff the node using the `ipmitool` and confirm the provisioning node is powered off
 
     ~~~sh
@@ -1032,10 +1036,10 @@ Once the prerequisites above have been set, the deploy process is as follows:
       online: true
       bootMACAddress: <NIC1-mac-address>
       bmc:
-        address: ipmi://<out-of-band-ip> 
+        address: ipmi://<out-of-band-ip>
         credentialsName: openshift-worker-2-bmc-secret
     ~~~
-    
+
 5. Create the BaremetalHost
 
     ~~~sh
@@ -1059,7 +1063,7 @@ Once the prerequisites above have been set, the deploy process is as follows:
     NAME                 STATUS   PROVISIONING STATUS   CONSUMER   BMC                 HARDWARE PROFILE   ONLINE   ERROR
     openshift-worker-2   OK       ready                            ipmi://<out-of-band-ip>   unknown            true     
     ~~~
-8. Scale the workers machineset. Previously, we had 2 replicas during original installation. 
+8. Scale the workers machineset. Previously, we had 2 replicas during original installation.
 
     ~~~sh
     ./oc get machineset -n openshift-machine-api
@@ -1080,7 +1084,7 @@ Once the prerequisites above have been set, the deploy process is as follows:
 
     ~~~sh
     oc -n openshift-machine-api get bmh openshift-worker-2
-    
+
     NAME                 STATUS   PROVISIONING STATUS   CONSUMER                  BMC                 HARDWARE PROFILE   ONLINE   ERROR
     openshift-worker-2   OK       provisioned           openshift-worker-2-65tjz   ipmi://<out-of-band-ip>   unknown            true     
     ~~~
@@ -1096,3 +1100,142 @@ Once the prerequisites above have been set, the deploy process is as follows:
     openshift-worker-1.openshift.example.com        Ready    worker          3m27s   v1.16.2
     openshift-worker-2.openshift.example.com        Ready    worker          3m27s   v1.16.2
     ~~~
+
+    # Create a Disconnected Registry (optional)
+    At times, it may be desirable to install an Openshift KNI cluster using a local copy of the installation registry.
+    This could be for network efficiency or the cluster to be deployed is on a network that does not have access to the internet.
+
+    A local, or mirrored, copy of the registry requires the following:
+    * A certificate for the registry host, this can be self-signed.
+    * A webserver, this will be served by a container on a system.
+    * An updated pull secret that contains the certificate and local repository information.
+
+    ## Prepare the System to Host the Mirrored Registry
+    The following steps should be applied to the registry host.
+
+    Open the firewall for the registry.
+    ```bash
+    $ sudo firewall-cmd --add-port=5000/tcp --zone=libvirt  --permanent
+    $ sudo firewall-cmd --add-port=5000/tcp --zone=public   --permanent
+    $ sudo firewall-cmd --reload
+    ```
+
+    Install podman httpd and httpd-tools
+    ```bash
+    $ sudo yum -y install podman httpd httpd-tools
+    ```
+
+    Make a the directory structure where the repository information will be held.
+    ```bash
+    $ sudo mkdir -p /opt/registry/{auth,certs,data}
+    ```
+
+    ## Certificate
+    Generate a self signed certificate for the host.
+    The certificate will be placed in the /opt/registry/certs directory.
+
+    Adjust the following certificate information as appropriate.
+    ```bash
+    $ host_fqdn=$( hostname --long )
+    $ cert_c="US"               # Certificate CCommon Name (CN)
+    $ cert_s="Massachussets"    # Certificate State (S)
+    $ cert_l="Boston"           # Certificate Locality (L)
+    $ cert_o="Red Hat, Inc"     # Certificate Organization (O)
+    $ cert_ou="Engineering"     # Certificate Organizational Unit (OU)
+    $ cert_cn="${host_fqdn}"    # Certificate Common Name (CN)
+
+    $ sudo openssl req \
+        -newkey rsa:4096 \
+        -nodes \
+        -sha256 \
+        -keyout /opt/registry/certs/domain.key \
+        -x509 \
+        -days 365 \
+        -out /opt/registry/certs/domain.crt \
+        -subj "/C=${cert_c}/ST=${cert_s}/L=${cert_l}/O=${cert_o}/OU=${cert_ou}/CN=${cert_cn}"
+    ```
+
+    Update the systems ca-trust with the new certificate
+    ```bash
+    $ sudo cp /opt/registry/certs/domain.crt /etc/pki/ca-trust/source/anchors/
+    $ sudo update-ca-trust extract
+    ```
+
+    ## Registry Pod
+    The registry container will use /opt/registry directory for certificates, authentication files and to store its data files.
+
+    The registry container uses `httpd` and needs an `htpasswd` file for authentication.
+
+    Create an `htpasswd` file in /opt/registry/auth for the container to use.
+    ```bash
+    $ sudo htpasswd -bBc /opt/registry/auth/htpasswd dummy dummy
+    ```
+
+    Create and start the registry container.
+    ```bash
+    $ sudo podman create \
+      --name ocpdiscon-registry \
+      -p 5000:5000 \
+      -e "REGISTRY_AUTH=htpasswd" \
+      -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry" \
+      -e "REGISTRY_HTTP_SECRET=ALongRandomSecretForRegistry" \
+      -e "REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd" \
+      -e "REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt" \
+      -e "REGISTRY_HTTP_TLS_KEY=/certs/domain.key" \
+      -v /opt/registry/data:/var/lib/registry:z \
+      -v /opt/registry/auth:/auth:z \
+      -v /opt/registry/certs:/certs:z \
+      docker.io/library/registry:2
+
+    $ sudo podman start ocpdiscon-registry
+    ```
+
+    ## Pull-Secret
+
+    The pull-secret must be modified to include the authentication information for the new registry.
+
+    The following will update the pull-secret and place the new registry authentication credentials in the correct place in the json file.
+    The $USER variable is an environmental variable containing the name of the currently logged in user.
+
+    The authentication string is the base 64 encoding of the `http` credentials used to create the `htpasswd` file.
+
+    ```bash
+    $ host_fqdn=$( hostname --long )
+    $ b64auth=$( echo -n 'dummy:dummy' openssl base64 )
+    $ AUTHSTRING="{\"$host_fqdn:5000\": {\"auth\": \"$b64auth\",\"email\": \"$USER@redhat.com\"}}"
+
+    $ jq ".auths += $AUTHSTRING" < pull-secret.json > pull-secret.json.new
+    ```
+
+    ## Mirror the Repository
+    Mirror the remote install images to the local repository
+    ```bash
+    $ /usr/local/bin/oc adm release mirror \
+      -a pull-secret.json.new
+      --from=$UPSTREAM_REPO \
+      --to-release-image=$LOCAL_REG/$LOCAL_REPO:${VERSION} \
+      --to=$LOCAL_REG/$LOCAL_REPO
+    ```
+
+    ## The install-config file
+    The install-config file should use the newly created pull-secret.
+    The install-config file must also contain the disconnected registry hosts certificate and registry information.
+
+    ### Add the Certificate for the Disconnected Registry
+    Add the disconnected registry servers certificate to the install-config file.
+    The certificate should follow the "additionalTrustBundle: |" line and be properly indented, usually by two spaces.
+    ```bash
+      echo "additionalTrustBundle: |" >> install-config.yaml
+      sed -e 's/^/  /' /opt/registry/certs/domain.crt >> install-config.yaml
+    ```
+    ### Add the Mirror Information for the Registry
+    The mirror configuration must be added to the install-config file.
+    ```bash
+      echo "imageContentSources:" >> install-config.yaml
+      echo "- mirrors:" >> install-config.yaml
+      echo "  - $host_fqdn:5000/ocp4/openshift4" >> install-config.yaml
+      echo "  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev" >> install-config.yaml
+      echo "- mirrors:" >> install-config.yaml
+      echo "  - $host_fqdn:5000/ocp4/openshift4" >> install-config.yaml
+      echo "  source: registry.svc.ci.openshift.org/ocp/release" >> install-config.yaml
+    ```
