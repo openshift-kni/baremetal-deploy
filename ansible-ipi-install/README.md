@@ -13,6 +13,7 @@ Table of contents
       * [Adding Extra Configurations to the OpenShift Installer](#adding-extra-configurations-to-the-openshift-installer)
       * [Pre-caching RHCOS Images](#pre-caching-rhcos-images)
       * [Disconnected Registry](#disconnected-registry)
+      * [Running the `playbook.yml`](#running-the-playbookyml)
    * [Verifying Installation](#verifying-installation)
    * [Troubleshooting](#troubleshooting)
       * [Unreachable Host](#unreachable-host)
@@ -445,14 +446,6 @@ WARNING: If you set the `clusterosimage` and `bootstraposimage` variables, then
 leaves the responsibility to the end user in ensuring the RHCOS images are readily
 available and accessible to the provision host.
 
-## Running the `playbook.yml`
-
-With the `playbook.yml` set and in-place, run the `playbook.yml`
-
-~~~sh
-$ ansible-playbook -i inventory/hosts playbook.yml
-~~~
-
 ## Disconnected Registry
 A disconnected registry can be used to deploy the cluster.
 This registry can exist or can be created.
@@ -499,7 +492,13 @@ imageContentSources:
   source: registry.svc.ci.openshift.org/ocp/release
 ~~~
 
+## Running the `playbook.yml`
 
+With the `playbook.yml` set and in-place, run the `playbook.yml`
+
+~~~sh
+$ ansible-playbook -i inventory/hosts playbook.yml
+~~~
 
 # Verifying Installation
 Once the playbook has successfully completed, verify that your environment is
