@@ -115,7 +115,7 @@ options:
             - This is only used with bond and is the primary interface name (for "active-backup" mode), this is the usually the 'ifname'
     id:
         descrption:
-            - This will allow to change the bridge slave device name (connection.id) to our preferred name. 
+            - This will allow to change the bridge slave device name (connection.id) to our preferred name.
         version: 2.9
     miimon:
         description:
@@ -1010,7 +1010,7 @@ class Nmcli(object):
             'ipv6.addresses': self.ip6,
             'ipv6.method': self.ip6_method,
             'ipv6.dhcp-duid': self.ip6_dhcp_duid,
-            'ipv4.gateway': self.gw6,
+            'ipv6.gateway': self.gw6,
             'autoconnect': self.bool_to_string(self.autoconnect),
             'bridge.ageing-time': self.ageingtime,
             'bridge.forward-delay': self.forwarddelay,
