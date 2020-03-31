@@ -276,6 +276,12 @@ prov_ip=172.22.0.3
 # cache.  Default is false.
 #cache_enabled=True
 
+# (Optional) Enable IPv6 addressing instead of IPv4 addressing
+#ipv6_enabled=True
+
+# (Optional) A list of clock servers to be used in chrony by the masters and workers
+#clock_servers=["pool.ntp.org","clock.redhat.com"]
+
 ######################################
 # Vars regarding install-config.yaml #
 ######################################
@@ -286,9 +292,9 @@ domain=""
 cluster=""
 # The public CIDR address, i.e. 10.1.1.0/21
 extcidrnet=""
-# An IP reserved on the baremetal network.
+# An IP reserved on the baremetal network. 
 dnsvip=""
-# An IP reserved on the baremetal network for the API endpoint.
+# An IP reserved on the baremetal network for the API endpoint. 
 # (Optional) If not set, a DNS lookup verifies that api.<clustername>.<domain> provides an IP
 #apivip=""
 # An IP reserved on the baremetal network for the Ingress endpoint.
