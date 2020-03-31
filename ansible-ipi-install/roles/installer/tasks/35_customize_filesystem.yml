@@ -20,7 +20,7 @@
 
   - name: Get Filetranspiler
     get_url:
-      url: https://raw.githubusercontent.com/ashcrow/filetranspiler/master/filetranspile
+      url: https://raw.githubusercontent.com/ashcrow/filetranspiler/1.1.1/filetranspile
       dest: "{{ tempdir }}/filetranspile.py"
       mode: '0755'
 
