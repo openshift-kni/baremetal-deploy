@@ -17,5 +17,6 @@
     rhcos_qemu_uri: "{{ rhcos_json.json | json_query('images.qemu.path') }}"
     rhcos_uri: "{{ rhcos_json.json | json_query('images.openstack.path') }}"
     rhcos_path: "{{ rhcos_json.json | json_query('baseURI') }}"
+    rhcos_sha256: "{{ rhcos_json.json | json_query('images.openstack.sha256') }}"
   tags: rhcospath
   

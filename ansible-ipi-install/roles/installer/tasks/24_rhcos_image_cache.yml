@@ -18,7 +18,6 @@
   set_fact:
     rhcos_qemu_sha256: "{{ rhcos_json.json | json_query('images.qemu.sha256') }}"
     rhcos_qemu_sha256_unzipped: '{{ rhcos_json.json | json_query(''images.qemu."uncompressed-sha256"'') }}'
-    rhcos_sha256: "{{ rhcos_json.json | json_query('images.openstack.sha256') }}"
   tags: cache
 
 - name: Download {{ rhcos_qemu_uri }} for cache

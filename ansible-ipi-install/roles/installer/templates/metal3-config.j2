@@ -16,6 +16,6 @@ data:
 {% if clusterosimage is defined and clusterosimage|length %}
   rhcos_image_url: {{ clusterosimage }}
 {% else %}
-  rhcos_image_url: {{ rhcos_path }}{{ rhcos_uri }}
+  rhcos_image_url: {{ rhcos_path }}{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}
 {% endif %}
 
