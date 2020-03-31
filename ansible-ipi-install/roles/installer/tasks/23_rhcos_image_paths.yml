@@ -5,11 +5,17 @@
   register: commit_id
   tags: rhcospath
 
+- name: Get the URLs
+  set_fact:
+    offline_url: "{{ webserver_url }}/{{ version }}/rhcos.json"
+    online_url: "https://raw.githubusercontent.com/openshift/installer/{{ commit_id.stdout }}/data/data/rhcos.json"
+
 - name: Get RHCOS JSON File
   uri:
-    url: https://raw.githubusercontent.com/openshift/installer/{{ commit_id.stdout }}/data/data/rhcos.json
+    url: "{{ (disconnected_installer|length == 0 and the_url.status == -1) | ternary(offline_url, online_url) }}"
     return_content: yes
   register: rhcos_json
+  delegate_to: "{{ disconnected_installer | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
   tags: rhcospath
 
 - name: Set Facts for RHCOS_URI and RHCOS_PATH

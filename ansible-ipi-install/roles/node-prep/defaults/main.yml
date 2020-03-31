@@ -2,7 +2,6 @@
 # defaults file for node-prep
 activation_key: ""
 org_id: ""
-release_url: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview"
 network_type: "OVNKubernetes"
 firewall: "firewalld"
 ipv6_enabled: false
@@ -12,3 +11,4 @@ https_proxy: ""
 ipv4_baremetal: false
 ipv4_provisioning: false
 provisioning_bridge: "provisioning"
+webserver_url: ""

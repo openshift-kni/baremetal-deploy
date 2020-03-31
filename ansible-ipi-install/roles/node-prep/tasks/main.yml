@@ -1,12 +1,16 @@
 ---
 - include_tasks: 10_validation.yml
-  tags: validation
-
+  tags: 
+  - validation
+  - create_registry
+  
 - include_tasks: 15_validation_disconnected_registry.yml
   when:
     - "'registry_host' in groups"
     - "groups['registry_host']"
-  tags: disconnected
+  tags: 
+  - disconnected
+  - create_registry
 
 - include_tasks: 20_sub_man_register.yml
   tags: subscription

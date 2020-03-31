@@ -26,3 +26,4 @@ qtype: "{{ 'qtype=AAAA' if ipv6_enabled is defined and ipv6_enabled|bool else 'q
 # Temporary state variables for disconnected registry
 drm_set: false
 dra_set: false
+registry_host_exists: false

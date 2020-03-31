@@ -11,3 +11,5 @@ disconnected_registry_user: dummy
 disconnected_registry_password: dummy
 webserver_caching_port: "{{ webserver_caching_port_container }}"
 webserver_caching_port_container: 8080
+registry_creation: false
+url_passed: false
