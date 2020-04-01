@@ -16,6 +16,13 @@
         zone: "public"
       become: yes
       when: cache_enabled == True
+
+    - name: Restart Firewalld
+      service:
+        name: firewalld
+        state: restarted
+        enabled: yes
+      become: yes
   when: firewall != "iptables"
   tags: firewall
 
