@@ -7,9 +7,9 @@
     when: cache_enabled == True
 
   - name: Install required packages
-    package:
-      name: "{{ item }}"
+    yum:
+      name: "{{ package_list }}"
       state: present
-    with_items: "{{ package_list }}"
+      update_cache: true
     become: yes
   tags: packages
