@@ -1,0 +1,53 @@
+fail_fast: true
+repos:
+- repo: meta
+  hooks:
+  - id: check-useless-excludes
+- repo: https://github.com/prettier/prettier
+  rev: 2.0.2
+  hooks:
+  - id: prettier
+    files: \.(css|js|md|markdown|json)
+- repo: https://github.com/python/black
+  rev: 19.10b0
+  hooks:
+  - id: black
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.5.0
+  hooks:
+  - id: check-added-large-files
+  - id: check-ast
+  - id: check-case-conflict
+  - id: check-executables-have-shebangs
+  - id: check-json
+  - id: check-merge-conflict
+  - id: check-symlinks
+  - id: check-xml
+  - id: check-yaml
+    args: [--unsafe]
+  - id: end-of-file-fixer
+  - id: fix-encoding-pragma
+  - id: forbid-new-submodules
+  - id: requirements-txt-fixer
+  - id: sort-simple-yaml
+  - id: trailing-whitespace
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.5.0
+  hooks:
+  - id: flake8
+- repo: https://github.com/pecigonzalo/pre-commit-shfmt.git
+  rev: 9ee28e3f14556aa88dd5255f2e091d1d2f607bb7
+  hooks:
+  - id: shell-fmt
+    args:
+    - --indent=4
+- repo: https://github.com/asottile/blacken-docs
+  rev:  v1.6.0
+  hooks:
+  - id: blacken-docs
+- repo: https://github.com/hcodes/yaspeller.git
+  rev: v6.1.0
+  hooks:
+  - id: yaspeller
+    files: ".md"
+    types: [markdown]
