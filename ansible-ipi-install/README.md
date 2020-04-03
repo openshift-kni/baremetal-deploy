@@ -141,8 +141,8 @@ The tree structure is shown below:
         ├── meta
         │   └── main.yml
         ├── tasks
-|   ├── 100_power_off_cluster_servers.yml
-|   ├── 10_validation.yml
+        ├── 100_power_off_cluster_servers.yml
+        ├── 10_validation.yml
         │   ├── 15_validation_disconnected_registry.yml
         │   ├── 20_sub_man_register.yml
         │   ├── 30_req_packages.yml
