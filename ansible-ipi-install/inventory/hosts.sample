@@ -50,9 +50,9 @@ domain=""
 cluster=""
 # The public CIDR address, i.e. 10.1.1.0/21
 extcidrnet=""
-# An IP reserved on the baremetal network. 
+# An IP reserved on the baremetal network.
 dnsvip=""
-# An IP reserved on the baremetal network for the API endpoint. 
+# An IP reserved on the baremetal network for the API endpoint.
 # (Optional) If not set, a DNS lookup verifies that api.<clustername>.<domain> provides an IP
 #apivip=""
 # An IP reserved on the baremetal network for the Ingress endpoint.
@@ -102,7 +102,7 @@ provisioner.example.com
 # The following cert_* variables are needed to create the certificates
 #   when creating a disconnected registry. They are not needed to use
 #   an existing disconnected registry.
-# cert_country=MyCountry
+# cert_country=US  # two letters country
 # cert_state=MyState
 # cert_locality=MyCity
 # cert_organization=MyCompany
