@@ -800,7 +800,7 @@ NOTE: If you wish to use a mirrored or disconnected registry, follow the steps i
       ironic_inspector_endpoint: http://172.22.0.3:5050/v1/
       provisioning_interface: <NIC1>
       provisioning_ip: <provisioning_ip>/24
-      rhcos_image_url: ${RHCOS_PATH}${RHCOS_URI}
+      rhcos_image_url: ${RHCOS_URI}${RHCOS_PATH}
     ~~~
     NOTE: The `provisioning_ip` should be modified to an available IP on the `provision` network. The default is `172.22.0.3`
 
@@ -809,8 +809,8 @@ NOTE: If you wish to use a mirrored or disconnected registry, follow the steps i
 6. Create the final ConfigMap
    ```sh
    export COMMIT_ID=$(./openshift-baremetal-install version | grep '^built from commit' | awk '{print $4}')
-   export RHCOS_URI=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json | jq .images.openstack.path | sed 's/"//g')
-   export RHCOS_PATH=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json | jq .baseURI | sed 's/"//g')
+   export RHCOS_PATH=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json | jq .images.openstack.path | sed 's/"//g')
+   export RHCOS_URI=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json | jq .baseURI | sed 's/"//g')
    envsubst < metal3-config.yaml.sample > metal3-config.yaml
    ```
 7. Create the OpenShift manifests
