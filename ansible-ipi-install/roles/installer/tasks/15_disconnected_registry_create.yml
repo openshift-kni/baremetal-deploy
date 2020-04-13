@@ -209,7 +209,7 @@
         image: docker.io/library/registry:2
         state: started
         publish:
-          - "{{ registry_port_container }}:{{ registry_port }}"
+          - "{{ registry_port }}:{{ registry_port_container }}"
         volumes:
           - "{{ registry_dir_data }}:/var/lib/registry:z"
           - "{{ registry_dir_auth }}:/auth:z"
