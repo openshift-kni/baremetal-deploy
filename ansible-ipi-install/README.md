@@ -322,7 +322,7 @@ provisioner.example.com
 # The following cert_* variables are needed to create the certificates
 #   when creating a disconnected registry. They are not needed to use
 #   an existing disconnected registry.
-# cert_country=MyCountry
+# cert_country=US #it must be two letters country
 # cert_state=MyState
 # cert_locality=MyCity
 # cert_organization=MyCompany
@@ -423,7 +423,7 @@ The certificate information used to generate the host certificate must be define
 
 ```ini
 [registry_host:vars]
-cert_country=MyCountry
+cert_country=US # two letters country
 cert_state=MyState
 cert_locality=MyCity
 cert_organization=MyCompany
