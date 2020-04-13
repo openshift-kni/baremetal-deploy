@@ -31,8 +31,11 @@ build=""
 prov_ip=172.22.0.3
 
 # (Optional) Enable playbook to pre-download RHCOS images prior to cluster deployment and use them as a local
-# cache.  Default is false.
+# cache. Default is false.
 #cache_enabled=True
+
+# (Optional) The port exposed on the caching webserver. Default is port 8080.
+#webserver_caching_port=8080
 
 # (Optional) Enable IPv6 addressing instead of IPv4 addressing
 #ipv6_enabled=True

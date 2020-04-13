@@ -4,7 +4,7 @@
   - name: Create list of packages to be installed
     set_fact:
       package_list: "{{ package_list + cache_package_list }}"
-    when: cache_enabled == True
+    when: cache_enabled|bool
 
   - name: Install required packages
     yum:

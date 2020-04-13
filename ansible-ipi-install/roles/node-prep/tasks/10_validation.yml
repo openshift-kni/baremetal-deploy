@@ -67,7 +67,7 @@
 - name: Conditions to set cache_enabled to true
   set_fact:
     cache_enabled: true
-  when: (cache_enabled == 'true') or
+  when: (cache_enabled|bool) or
         (bootstraposimage is undefined and clusterosimage is defined) or
         (bootstraposimage is defined and clusterosimage is undefined) or
         (clusterosimage is defined and bootstraposimage|length == 0) or
@@ -79,7 +79,7 @@
 - name: Conditions to set cache_enabled to false
   set_fact:
     cache_enabled: false
-  when: (cache_enabled == 'false') or
+  when: (not cache_enabled|bool) or
         (bootstraposimage is defined and clusterosimage is defined)
   tags:
   - always
