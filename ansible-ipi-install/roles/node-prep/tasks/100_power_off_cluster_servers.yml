@@ -1,12 +1,23 @@
 ---
-- name: Power OFF All Nodes
-  ipmi_power:
-    name: "{{ hostvars[item]['ipmi_address'] }}"
-    user: "{{ hostvars[item]['ipmi_user'] }}"
-    password: "{{ hostvars[item]['ipmi_password'] }}"
-    port: "{{ hostvars[item]['ipmi_port'] | default(623) }}"
-    state: off
-  with_items:
-    - "{{ groups['masters'] }}"
-    - "{{ groups['workers'] }}"
+- name: Power OFF nodes
+  block:
+    - name: Create list of hosts that are going to be powered off
+      add_host:
+        groups: poweroff_hosts
+        hostname: "{{ item }}"
+        inventory_dir: "{{ hostvars[item].inventory_dir }}"
+      when: ( hostvars[item]['poweroff'] is not defined )
+        or  ( hostvars[item]['poweroff']|bool | default(True) )
+      with_items:
+        - "{{ groups.masters }}"
+        - "{{ groups.workers }}"
+    
+    - name: Power off hosts
+      ipmi_power:
+        name: "{{ hostvars[item]['ipmi_address'] }}"
+        user: "{{ hostvars[item]['ipmi_user'] }}"
+        password: "{{ hostvars[item]['ipmi_password'] }}"
+        port: "{{ hostvars[item]['ipmi_port'] | default(623) }}"
+        state: off
+      with_items: "{{ groups['poweroff_hosts'] }}"
   tags: powerservers
