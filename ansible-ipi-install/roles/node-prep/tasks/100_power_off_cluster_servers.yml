@@ -13,11 +13,11 @@
         - "{{ groups.workers }}"
     
     - name: Power off hosts
-      ipmi_power:
-        name: "{{ hostvars[item]['ipmi_address'] }}"
-        user: "{{ hostvars[item]['ipmi_user'] }}"
+      redfish_command:
+        category: Systems
+        command: PowerForceOff
+        baseuri: "{{ hostvars[item]['ipmi_address'] }}"
+        username: "{{ hostvars[item]['ipmi_user'] }}"
         password: "{{ hostvars[item]['ipmi_password'] }}"
-        port: "{{ hostvars[item]['ipmi_port'] | default(623) }}"
-        state: off
       with_items: "{{ groups['poweroff_hosts'] }}"
   tags: powerservers
