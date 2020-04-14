@@ -1,0 +1,25 @@
+/ Module included in the following assemblies:
+//
+// * list of assemblies where this module is included
+// ipi-install-installation-workflow.adoc
+// Upstream module
+
+[id="extracting-the-installer-development_{context}"]
+
+= Extracting the installer (Development)
+
+.Procedure
+
+After choosing the installer, the next step is to extract it.
+
+----
+export cmd=openshift-baremetal-install
+export pullsecret_file=~/pull-secret.txt
+export extract_dir=$(pwd)
+# Get the oc binary
+curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/$VERSION/openshift-client-linux-$VERSION.tar.gz | tar zxvf - oc
+sudo cp ./oc /usr/local/bin/oc
+sudo cp ./openshift-baremetal-install /usr/local/bin/openshift-baremetal-install
+# Extract the baremetal installer
+oc adm release extract --registry-config "${pullsecret_file}" --command=$cmd --to "${extract_dir}" ${RELEASE_IMAGE}
+----

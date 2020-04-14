@@ -1,0 +1,88 @@
+// Module included in the following assemblies:
+//
+// * list of assemblies where this module is included
+// ipi-install-prerequisites.adoc
+// Upstream module
+
+[id="creating-dhcp-reservations-using-dnsmasq-option2_{context}"]
+
+= Creating DHCP reservations using dnsmasq (Option 2)
+
+Set up `dnsmasq` on a server that can access the baremetal network.
+
+.Procedure
+
+. Install `dnsmasq`.
++
+----
+dnf install -y dnsmasq
+----
+
+. Change to the `/etc/dnsmasq.d` directory.
++
+----
+cd /etc/dnsmasq.d
+----
+
+. Create a file that reflects your OpenShift cluster appended by `.dns`.
++
+----
+touch <filename>.dns
+----
+
+. Open the appropriate `firewalld` DHCP service.
++
+----
+systemctl restart firewalld
+firewall-cmd --add-service=dhcp --permanent
+firewall-cmd --reload
+----
+
+. Here is an example of the `.dns` file.
++
+----
+domain-needed
+bind-dynamic
+bogus-priv
+domain=rna1.cloud.lab.eng.bos.redhat.com
+dhcp-range=<baremetal-net-starting-ip,baremetal-net-ending-ip>
+#dhcp-range=10.0.1.4,10.0.14
+dhcp-option=3,<baremetal-net-gateway-ip>
+#dhcp-option=3,10.0.1.254
+resolv-file=/etc/resolv.conf.upstream
+interface=<nic-with-access-to-baremetal-net>
+#interface=em2
+server=<ip-of-existing-server-on-baremetal-net>
+
+
+#Wildcard for apps -- make changes to cluster-name (openshift) and domain (example.com)
+address=/.apps.openshift.example.com/<wildcard-ingress-lb-ip>
+
+#Static IPs for Masters
+dhcp-host=<NIC2-mac-address>,provisioner.openshift.example.com,<ip-of-provisioner>
+dhcp-host=<NIC2-mac-address>,openshift-master-0.openshift.example.com,<ip-of-openshift-master-0>
+dhcp-host=<NIC2-mac-address>,openshift-master-1.openshift.example.com,<ip-of-openshift-master-1>
+dhcp-host=<NIC2-mac-address>,openshift-master-2.openshift.example.com,<ip-of-openshift-master-2>
+dhcp-host=<NIC2-mac-address>,openshift-worker-0.openshift.example.com,<ip-of-openshift-worker-0>
+dhcp-host=<NIC2-mac-address>,openshift-worker-1.openshift.example.com,<ip-of-openshift-worker-1>
+----
+
+. Create the `resolv.conf.upstream` file to provide DNS fowarding to an existing DNS server for resolution
+to the outside world.
++
+----
+search <domain.com>
+nameserver <ip-of-my-existing-dns-nameserver>
+----
+
+. Restart the `dnsmasq` service.
++
+----
+systemctl restart dnsmasq
+----
+
+. Verify the `dnsmasq` service is running.
++
+----
+systemctl status dnsmasq
+----

@@ -1,0 +1,34 @@
+/ Module included in the following assemblies:
+//
+// * list of assemblies where this module is included
+// ipi-install-installation-workflow.adoc
+// Upstream module
+
+[id="backing-up-the-cluster-configuration_{context}"]
+
+= Backing up the cluster configuration
+
+At this point you have a working OpenShift 4 cluster on baremetal.
+In order to take advantage of the baremetal hardware that was the provision node,
+you can repurpose the provisioning node as a worker.
+Prior to reprovisioning the node, it is recommended to backup some existing files.
+
+.Procedure
+
+. Tar the `clusterconfig` folder and download it to your local machine.
++
+----
+tar cvfz clusterconfig.tar.gz ~/clusterconfig
+----
+
+. Copy the Private part for the SSH Key configured on the `install-config.yaml` file to your local machine.
++
+----
+tar cvfz clusterconfigsh.tar.gz ~/.ssh/id_rsa*
+----
+
+. Copy the `install-config.yaml` and `metal3-config.yaml` files.
++
+----
+tar cvfz yamlconfigs.tar.gz install-config.yaml metal3-config.yaml
+----
