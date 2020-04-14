@@ -13,7 +13,9 @@
 - include_tasks: 30_req_packages.yml 
   tags: packages
 - include_tasks: 40_bridge.yml
-  tags: network
+  tags: 
+  - network
+  - network_facts
 - include_tasks: 50_modify_sudo_user.yml
   tags: user
 - include_tasks: 60_enabled_services.yml 

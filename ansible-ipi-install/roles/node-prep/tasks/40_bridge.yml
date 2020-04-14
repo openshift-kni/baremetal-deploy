@@ -121,7 +121,8 @@
   setup:
     gather_subset:
       - network
-  tags: network
+  tags: 
+  - network_facts
 
 - name: Set External Subnet with IPv4
   set_fact:
@@ -129,7 +130,8 @@
   vars:
     ip: "{{ ansible_default_ipv4.address }}/{{ansible_default_ipv4.netmask }}"
   when: (extcidrnet is not defined or extcidrnet|length < 1) and not ipv6_enabled|bool
-  tags: network
+  tags: 
+  - network_facts
 
 - name: Set External Subnet with IPv6
   set_fact:
@@ -137,7 +139,8 @@
   vars:
     ip: "{{ ansible_default_ipv6.address }}/64"
   when: (extcidrnet is not defined or extcidrnet|length < 1) and ipv6_enabled|bool
-  tags: network
+  tags: 
+  - network_facts
 
 - name: set provisioning subnet with IPV4
   set_fact:
@@ -145,7 +148,8 @@
   vars:
     ip: "{{ ansible_facts.provisioning.ipv4.address }}/{{ansible_facts.provisioning.ipv4.netmask }}"
   when: not ipv6_enabled|bool or ((release_version[0]|int == 4) and (release_version[2]|int == 3))
-  tags: network
+  tags: 
+  - network_facts
 
 - name: set provisioning subnet with IPV6
   set_fact:
@@ -154,14 +158,17 @@
     ip: "{{ ansible_facts.provisioning.ipv6[0].address }}/{{ansible_facts.provisioning.ipv6[0].prefix }}"
   when: (ipv6_enabled|bool and ((release_version[0]|int == 4) and (release_version[2]|int > 3))) or
         (ipv6_enabled|bool and (release_version[0]|int > 4))
-  tags: network
+  tags: 
+  - network_facts
 
 - debug:
     msg: "external subnet {{ extcidrnet }}"
     verbosity: 2
-  tags: network
+  tags: 
+  - network_facts
 
 - debug:
     msg: "provisioning subnet {{ provisioning_subnet }}"
     verbosity: 2
-  tags: network
+  tags: 
+  - network_facts
