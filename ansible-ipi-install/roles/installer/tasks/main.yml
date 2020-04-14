@@ -22,10 +22,10 @@
   - pullsecret
   - extract
 - include_tasks: 23_rhcos_image_paths.yml
-  when: ((release_version[0]|int == 4) and (release_version[2]|int <= 3)) or cache_enabled == True
+  when: ((release_version[0]|int == 4) and (release_version[2]|int <= 3)) or cache_enabled|bool
   tags: rhcospath
 - include_tasks: 24_rhcos_image_cache.yml
-  when: cache_enabled == True
+  when: cache_enabled|bool
   tags: cache
   
   

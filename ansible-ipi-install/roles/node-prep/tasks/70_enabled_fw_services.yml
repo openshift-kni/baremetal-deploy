@@ -8,14 +8,14 @@
         state: enabled
       become: yes
 
-    - name: Open port 8080/tcp, zone public, for cache for firewalld
+    - name: Open port {{ webserver_caching_port }}/tcp, zone public, for cache for firewalld
       firewalld:
-        port: 8080/tcp
+        port: "{{ webserver_caching_port}}/tcp"
         permanent: yes
         state: enabled
         zone: "public"
       become: yes
-      when: cache_enabled == True
+      when: cache_enabled|bool
 
     - name: Restart Firewalld
       service:
@@ -36,14 +36,14 @@
         jump: ACCEPT
       become: yes
 
-    - name: Open port 8080/tcp for cache for iptables
+    - name: Open port {{ webserver_caching_port }}/tcp for cache for iptables
       iptables:
         chain: INPUT
         protocol: tcp
-        destination_port: "8080"
+        destination_port: "{{ webserver_caching_port }}"
         jump: ACCEPT
       become: yes
-      when: cache_enabled == True
+      when: cache_enabled|bool
 
     - name: Allow related and established connections for iptables
       iptables:

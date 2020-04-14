@@ -49,13 +49,13 @@
 
 - name: Set bootstrap image URL override if not provided by the user
   set_fact:
-    bootstraposimage: "http://{{ ansible_provisioning.ipv4.address }}:8080/{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256_unzipped }}"
+    bootstraposimage: "http://{{ ansible_provisioning.ipv4.address }}:{{ webserver_caching_port }}/{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256_unzipped }}"
   when: bootstraposimage is not defined or bootstraposimage|length < 1
   tags: cache
 
 - name: Set cluster image URL override if not provided by the user
   set_fact:
-    clusterosimage: "http://{{ ansible_provisioning.ipv4.address }}:8080/{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
+    clusterosimage: "http://{{ ansible_provisioning.ipv4.address }}:{{ webserver_caching_port }}/{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
   when: clusterosimage is not defined or clusterosimage|length < 1
   tags: cache
 
@@ -65,7 +65,7 @@
     image: registry.centos.org/centos/httpd-24-centos7:latest
     state: started
     publish:
-      - "8080:8080"
+      - "{{ webserver_caching_port }}:{{ webserver_caching_port_container  }}"
     volumes:
       - "{{ provision_cache_store }}:/var/www/html"
   tags: cache
