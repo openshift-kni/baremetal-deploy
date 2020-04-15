@@ -231,38 +231,6 @@
       set_fact:
         trustbundle: "{{ domain_cert_b64.content | string | b64decode }}"
   
-    - name: Create mirrorred registry information
-      set_fact:
-        install_config_appends: "{{ lookup('template', 'install-config-appends.j2') }}"
-  
-    - name: Create {{ install_config_appends_file }}
-      copy:
-        content: "{{ install_config_appends }}"
-        dest: "{{ ansible_env.HOME }}/{{ install_config_appends_file }}"
-        backup: yes
-        force: yes
-  
-    - name: Create {{ install_config_appends_file }} on localhost
-      copy:
-        content: "{{ install_config_appends }}"
-        dest: "{{ lookup ('env', 'PWD') }}/{{ install_config_appends_file }}"
-        backup: yes
-        force: yes
-      delegate_to: localhost
-  
-    - name: Information
-      debug:
-        msg:
-        - "To reuse this disconnected registry for other deployments, you must do the following:"
-        - "Add the authentication from either "
-        - "    {{ ansible_env.HOME }}/{{ registry_auth_file }} on {{ inventory_hostname }}"
-        - "    or {{ ansible_env.HOME }}/{{ registry_auth_file }} on this server to your pull secret."
-        - ""
-        - "Append the contents of either of the "
-        - "    {{ ansible_env.HOME }}/{{ install_config_appends_file }} on {{ inventory_hostname }} "
-        - "    or {{ ansible_env.HOME }}/{{ install_config_appends_file }} on this server to your"
-        - "    install-config.yaml file."
-
     - name: Create temporary pullsecret file
       copy:
         content: "{{ pullsecret }}"
@@ -278,11 +246,44 @@
           --to-release-image="{{ local_registry | quote }}/{{ local_repo | quote }}:{{ release_version | quote }}"
           --to="{{ local_registry | quote }}/{{ local_repo | quote }}"
           '
+      register: mirror_out
 
     - name: Remove temporary pullsecret file
       file:
         path: "{{ ansible_env.HOME }}/pullsecret.txt"
         state: absent
+  
+    - name: Create mirrorred registry information
+      set_fact:
+        install_config_appends: "{{ mirror_out.stdout | regex_search('(imageContentSources:[\\s\\S]*)\\n\\n\\n') }}"
+  
+    - name: Create {{ install_config_appends_file }}
+      copy:
+        content: "{{ install_config_appends }}"
+        dest: "{{ ansible_env.HOME }}/{{ install_config_appends_file }}"
+        backup: yes
+        force: yes
+  
+    - name: Create {{ install_config_appends_file }} on localhost
+      copy:
+        content: "{{ install_config_appends }}"
+        dest: "{{ lookup ('env', 'PWD') }}/{{ install_config_appends_file }}"
+        backup: yes
+        force: yes
+      delegate_to: localhost
+
+    - name: Information
+      debug:
+        msg:
+        - "To reuse this disconnected registry for other deployments, you must do the following:"
+        - "Add the authentication from either "
+        - "    {{ ansible_env.HOME }}/{{ registry_auth_file }} on {{ inventory_hostname }}"
+        - "    or {{ ansible_env.HOME }}/{{ registry_auth_file }} on this server to your pull secret."
+        - ""
+        - "Append the contents of either of the "
+        - "    {{ ansible_env.HOME }}/{{ install_config_appends_file }} on {{ inventory_hostname }} "
+        - "    or {{ ansible_env.HOME }}/{{ install_config_appends_file }} on this server to your"
+        - "    install-config.yaml file."
 
   delegate_to: "{{ groups['registry_host'][0] }}"
   tags: disconnected
