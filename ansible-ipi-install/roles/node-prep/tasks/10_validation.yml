@@ -194,3 +194,11 @@
   tags:
   - always
   - validation
+
+- name: Set Fact for provisioning nic
+  set_fact:
+    masters_prov_nic: "{{ prov_nic }}"
+  when: (masters_prov_nic is undefined) or (masters_prov_nic|length == 0)
+  tags:
+  - always
+  - validation
