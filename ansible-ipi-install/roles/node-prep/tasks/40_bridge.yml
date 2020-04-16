@@ -10,6 +10,11 @@
       shell: |
         nmcli device show {{ pub_nic }} | grep GENERAL.CONNECTION | awk '{sub(/[^ ]+[ ]+/,"")}1'
       register: pub_con_name
+    
+    - name: Disconnect provisioning connection
+      command: |
+        nmcli dev dis provisioning
+      ignore_errors: yes
 
     - name: Delete {{ prov_con_name.stdout }} due to modify nmcli bug
       nmcli:
@@ -27,6 +32,11 @@
         - "{{ prov_nic }}"
         - "System {{ prov_nic }}"
       when: prov_con_name.stdout == '--' 
+
+    - name: Delete provisioning bridge if it exists
+      nmcli:
+        conn_name: provisioning
+        state: absent
     
     - name: Create Bridge labeled provisioning ipv4
       nmcli:
@@ -35,10 +45,13 @@
         ifname: provisioning
         autoconnect: yes
         ip4_method: manual
+        ip6_method: disabled
         stp: off
         ip4: 172.22.0.1/24
         state: present
-      when: not ipv6_enabled|bool or ((release_version[0]|int == 4) and (release_version[2]|int == 3))
+      when: (not ipv6_enabled|bool) or 
+            ((release_version[0]|int == 4) and (release_version[2]|int == 3)) or
+            (ipv4_provisioning|bool)
 
     - name: Create Bridge slave on {{ prov_nic }} ipv4
       nmcli:
@@ -49,7 +62,9 @@
         master: provisioning
         autoconnect: yes
         state: present
-      when: not ipv6_enabled|bool or ((release_version[0]|int == 4) and (release_version[2]|int == 3))
+      when: (not ipv6_enabled|bool) or 
+            ((release_version[0]|int == 4) and (release_version[2]|int == 3)) or
+            (ipv4_provisioning|bool)
 
     - name: Create Bridge labeled provisioning ipv6
       nmcli:
@@ -60,9 +75,13 @@
         stp: off
         ip6: fd00:1101::1/64
         state: present
+        ip4_method: disabled
         ip6_method: manual
-      when: (ipv6_enabled|bool and ((release_version[0]|int == 4) and (release_version[2]|int > 3))) or
-            (ipv6_enabled|bool and (release_version[0]|int > 4))
+      when:
+        - ipv6_enabled|bool
+        - release_version[0]|int == 4 and release_version[2]|int > 3 or
+          release_version[0]|int > 4
+        - not ipv4_provisioning|bool
 
     - name: Create Bridge slave on {{ prov_nic }} ipv6
       nmcli:
@@ -73,8 +92,11 @@
         master: provisioning
         autoconnect: yes
         state: present
-      when: (ipv6_enabled|bool and ((release_version[0]|int == 4) and (release_version[2]|int > 3))) or
-            (ipv6_enabled|bool and (release_version[0]|int > 4))
+      when:
+        - ipv6_enabled|bool
+        - release_version[0]|int == 4 and release_version[2]|int > 3 or
+          release_version[0]|int > 4
+        - not ipv4_provisioning|bool
 
     - name: Create Bridge labeled baremetal for ipv4
       nmcli:
@@ -84,7 +106,8 @@
         autoconnect: yes
         stp: off
         state: present
-      when: not ipv6_enabled|bool
+      when: (not ipv6_enabled|bool) or 
+            (ipv4_baremetal|bool)
     
     - name: Create Bridge labeled baremetal for ipv6
       nmcli:
@@ -95,7 +118,7 @@
         stp: off
         state: present
         ip6_dhcp_duid: ll
-      when: ipv6_enabled|bool
+      when: ipv6_enabled|bool and not ipv4_baremetal|bool
 
     - name: Create Bridge slave on {{ pub_nic }}
       nmcli:
@@ -114,6 +137,8 @@
       with_items:
         - baremetal
         - "{{ pub_nic }}"
+        - provisioning
+        - "{{ prov_nic }}"
   become: yes
   tags: network
 
@@ -172,3 +197,4 @@
     verbosity: 2
   tags: 
   - network_facts
+

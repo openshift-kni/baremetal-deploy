@@ -257,6 +257,13 @@ prov_ip=172.22.0.3
 # (Optional) Enable IPv6 addressing instead of IPv4 addressing
 #ipv6_enabled=True
 
+# (Optional) When ipv6_enabled is set to True, but want IPv4 addressing on provisioning network
+# Default is false.
+#ipv4_provisioning=True
+
+# (Optional) When ipv6_enabled is set to True, but want IPv4 addressing on baremetal network
+#ipv4_baremetal=True
+
 # (Optional) A list of clock servers to be used in chrony by the masters and workers
 #clock_servers=["pool.ntp.org","clock.redhat.com"]
 
