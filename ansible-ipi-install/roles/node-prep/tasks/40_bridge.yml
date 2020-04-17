@@ -154,7 +154,10 @@
     extcidrnet: "{{ ip | ipaddr('network') }}/{{ ip | ipaddr('prefix') }}"
   vars:
     ip: "{{ ansible_default_ipv4.address }}/{{ansible_default_ipv4.netmask }}"
-  when: (extcidrnet is not defined or extcidrnet|length < 1) and not ipv6_enabled|bool
+  when: 
+    - (extcidrnet is not defined or extcidrnet|length < 1) 
+    - not ipv6_enabled|bool or 
+      ipv4_baremetal|bool
   tags: 
   - network_facts
 
@@ -163,7 +166,10 @@
     extcidrnet: "{{ ip | ipaddr('network') }}/{{ ip | ipaddr('prefix') }}"
   vars:
     ip: "{{ ansible_default_ipv6.address }}/64"
-  when: (extcidrnet is not defined or extcidrnet|length < 1) and ipv6_enabled|bool
+  when: 
+    - (extcidrnet is not defined or extcidrnet|length < 1) 
+    - ipv6_enabled|bool
+    - not ipv4_baremetal|bool
   tags: 
   - network_facts
 
@@ -172,7 +178,10 @@
     provisioning_subnet: "{{ ip | ipaddr('network') }}/{{ ip | ipaddr('prefix') }}"
   vars:
     ip: "{{ ansible_facts.provisioning.ipv4.address }}/{{ansible_facts.provisioning.ipv4.netmask }}"
-  when: not ipv6_enabled|bool or ((release_version[0]|int == 4) and (release_version[2]|int == 3))
+  when: (not ipv6_enabled|bool) or
+        ((release_version[0]|int == 4) and (release_version[2]|int == 3)) or
+        (ipv4_provisioning|bool)
+
   tags: 
   - network_facts
 
@@ -181,8 +190,11 @@
     provisioning_subnet: "{{ ip | ipaddr('network') }}/{{ ip | ipaddr('prefix') }}"
   vars:
     ip: "{{ ansible_facts.provisioning.ipv6[0].address }}/{{ansible_facts.provisioning.ipv6[0].prefix }}"
-  when: (ipv6_enabled|bool and ((release_version[0]|int == 4) and (release_version[2]|int > 3))) or
-        (ipv6_enabled|bool and (release_version[0]|int > 4))
+  when:
+    - ipv6_enabled|bool
+    - release_version[0]|int == 4 and release_version[2]|int > 3 or
+      release_version[0]|int > 4
+    - not ipv4_provisioning|bool
   tags: 
   - network_facts
 
