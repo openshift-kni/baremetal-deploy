@@ -14,6 +14,7 @@ after_success:
 - cp README.md output/
 
 deploy:
+  skip_cleanup: true
   provider: pages
   token: "$GITHUB_TOKEN"
   keep_history: false
@@ -21,6 +22,7 @@ deploy:
   local_dir: output/
   on:
     branch: master
+
 notifications:
   slack:
     on_success: never
