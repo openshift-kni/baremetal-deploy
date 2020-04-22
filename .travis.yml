@@ -20,7 +20,7 @@ deploy:
   target_branch: gh-pages
   local_dir: output/
   on:
-    branch: source
+    branch: master
 notifications:
   slack:
     on_success: never
