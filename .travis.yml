@@ -18,7 +18,7 @@ deploy:
   token: "$GITHUB_TOKEN"
   keep_history: false
   target_branch: gh-pages
-  local_dir: _site
+  local_dir: output/
   on:
     branch: source
 notifications:
