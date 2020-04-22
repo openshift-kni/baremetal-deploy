@@ -3,7 +3,14 @@
 // * installing/installing_bare_metal_ipi/ipi-install-installation-workflow.adoc
 
 [id="extracting-the-openshift-installer_{context}"]
+ifdef::upstream[]
+= Extracting the {product-title} installer (GA Release)
+endif::[]
+
+ifndef::upstream[]
 = Extracting the {product-title} installer
+endif::[]
+
 
 After retrieving the installer, the next step is to extract it:
 

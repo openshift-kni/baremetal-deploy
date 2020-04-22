@@ -1,24 +1,30 @@
 [id="ipi-install-installation-workflow"]
 = Setting up the environment for an OpenShift installation
-include::modules/common-attributes.adoc[]
+Deployment Integration Team
+:data-uri:
+:experimental:
+:toc-title:
+:imagesdir: images
+:prewrap!:
 :context: ipi-install-installation-workflow
 //Upstream attribute
 :upstream:
+:toc:
+:icons: font
+:product-title: OpenShift Container Platform
 
-toc::[]
+include::deploying-ipi-bare-metal.adoc[leveloffset=+1]
+include::ipi-install-prerequisites.adoc[leveloffset=+1]
 
 After an environment has been prepared according to the documented prerequisites, the installation process is the same as other IPI-based platforms.
 
 //upstream modules
 ifdef::upstream[]
+include::ipi-install-upstream-installation-workflow.adoc[leveloffset=+1]
 include::modules/ipi-install-upstream-creating-dns-records-on-a-dns-server-option1.adoc[leveloffset=+1]
-
 include::modules/ipi-install-upstream-creating-dns-records-using-dnsmasq-option2.adoc[leveloffset=+1]
-
 include::modules/ipi-install-upstream-creating-dhcp-reservations-option1.adoc[leveloffset=+1]
-
 include::modules/ipi-install-upstream-creating-dhcp-reservations-using-dnsmasq-option2.adoc[leveloffset=+1]
-
 include::modules/ipi-install-upstream-installing-rhel-on-the-provision-node.adoc[leveloffset=+1]
 endif::[]
 
@@ -42,13 +48,13 @@ include::modules/ipi-install-extracting-the-openshift-installer.adoc[leveloffset
 
 include::modules/ipi-install-creating-an-rhcos-images-cache.adoc[leveloffset=+2]
 
-include::modules/ipi-install-creating-a-disconnected-registry.adoc[leveloffset=+1]
-
 include::modules/ipi-install-configuring-the-install-config-file.adoc[leveloffset=+1]
 
 include::modules/ipi-install-configuring-the-metal3-config-file.adoc[leveloffset=+1]
 
 include::modules/ipi-install-creating-the-openshift-manifests.adoc[leveloffset=+1]
+
+include::modules/ipi-install-creating-a-disconnected-registry.adoc[leveloffset=+1]
 
 include::modules/ipi-install-additional-install-config-parameters.adoc[leveloffset=+1]
 

@@ -10,7 +10,7 @@
 
 .Procedure
 
-Configure VARS.
+Export the following variables `VERSION` and `RELEASE_IMAGE`
 
 ----
 export VERSION=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest/release.txt

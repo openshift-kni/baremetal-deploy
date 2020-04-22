@@ -1,6 +1,6 @@
 [id="ipi-install-prerequisites"]
 = Prerequisites
-include::modules/common-attributes.adoc[]
+//include::modules/common-attributes.adoc[]
 :context: ipi-install-prerequisites
 
 toc::[]

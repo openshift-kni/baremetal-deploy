@@ -1,13 +1,15 @@
 [id="deploying-ipi-bare-metal"]
 = Deploying IPI Bare Metal
-include::modules/common-attributes.adoc[]
+//include::modules/common-attributes.adoc[]
 :context: ipi-install
 
+ifndef::upstream[]
 [IMPORTANT]
 ====
 The Bare Metal IPI images and code described in this document are for *Developer Preview*
 purposes and are *not supported* by Red Hat at this time.
 ====
+endif::[]
 
 Installer Provisioned Infrastructure (IPI) installation provides support for installing {product-title} on bare metal nodes.
 This guide provides a methodology to achieving a successful installation.

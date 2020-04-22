@@ -44,7 +44,7 @@ firewall-cmd --reload
 domain-needed
 bind-dynamic
 bogus-priv
-domain=rna1.cloud.lab.eng.bos.redhat.com
+domain=openshift.example.com
 dhcp-range=<baremetal-net-starting-ip,baremetal-net-ending-ip>
 #dhcp-range=10.0.1.4,10.0.14
 dhcp-option=3,<baremetal-net-gateway-ip>
