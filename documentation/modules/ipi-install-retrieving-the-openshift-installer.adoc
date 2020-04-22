@@ -4,9 +4,16 @@
 
 
 [id="retrieving-the-openshift-installer_{context}"]
-= Retrieving the {product-title} installer
 
-The latest-4.x (currently, 4.3) can be used to deploy the latest Generally
+ifdef::upstream[]
+= Retrieving the {product-title} installer (GA Release)
+endif::[]
+
+ifndef::upstream[]
+= Retrieving the {product-title} installer
+endif::[]
+
+The latest-4.x can be used to deploy the latest Generally
 Available version of {product-title}:
 
 ----

@@ -4,7 +4,7 @@
 
 [id="configuring-the-metal3-config-file_{context}"]
 
-= Configuring the `metal3-config` file ({product-title} 4.3 only)
+= Configuring the `metal3-config` file
 
 If you are you working in {product-title} 4.3, you must create the `ConfigMap metal3-config.yaml.sample` file.
 
