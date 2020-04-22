@@ -418,25 +418,24 @@ the `baremetal` network.
    interface=<nic-with-access-to-baremetal-net>
    #interface=em2
    server=<ip-of-existing-server-on-baremetal-net>
+
+   #Wildcard for apps -- make changes to cluster-name (openshift) and domain (example.com)
+   address=/.apps.openshift.example.com/<wildcard-ingress-lb-ip>
+
+   #Static IPs for Masters
+   dhcp-host=<NIC2-mac-address>,provisioner.openshift.example.com,<ip-of-provisioner>
+   dhcp-host=<NIC2-mac-address>,openshift-master-0.openshift.example.com,<ip-of-openshift-master-0>
+   dhcp-host=<NIC2-mac-address>,openshift-master-1.openshift.example.com,<ip-of-openshift-master-1>
+   dhcp-host=<NIC2-mac-address>,openshift-master-2.openshift.example.com,<ip-of-openshift-master-2>
+   dhcp-host=<NIC2-mac-address>,openshift-worker-0.openshift.example.com,<ip-of-openshift-worker-0>
+   dhcp-host=<NIC2-mac-address>,openshift-worker-1.openshift.example.com,<ip-of-openshift-worker-1>
    ```
 
-#Wildcard for apps -- make changes to cluster-name (openshift) and domain (example.com)
-address=/.apps.openshift.example.com/<wildcard-ingress-lb-ip>
-
-#Static IPs for Masters
-dhcp-host=<NIC2-mac-address>,provisioner.openshift.example.com,<ip-of-provisioner>
-dhcp-host=<NIC2-mac-address>,openshift-master-0.openshift.example.com,<ip-of-openshift-master-0>
-dhcp-host=<NIC2-mac-address>,openshift-master-1.openshift.example.com,<ip-of-openshift-master-1>
-dhcp-host=<NIC2-mac-address>,openshift-master-2.openshift.example.com,<ip-of-openshift-master-2>
-dhcp-host=<NIC2-mac-address>,openshift-worker-0.openshift.example.com,<ip-of-openshift-worker-0>
-dhcp-host=<NIC2-mac-address>,openshift-worker-1.openshift.example.com,<ip-of-openshift-worker-1>
-
-```
 6. Create the `resolv.conf.upstream` file in order to provide DNS fowarding to an existing DNS server for resolution to the outside world.
-~~~sh
-search <domain.com>
-nameserver <ip-of-my-existing-dns-nameserver>
-```
+   ```sh
+   search <domain.com>
+   nameserver <ip-of-my-existing-dns-nameserver>
+   ```
 
 7. Restart the `dnsmasq` service
    ```sh
