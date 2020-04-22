@@ -1,5 +1,15 @@
 ---
-- name: Enable Services
+- name: Enable and restart Services
+  service:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  become: yes
+  with_items:
+  - libvirtd
+  tags: services
+
+- name: Enable Services (iptables)
   service:
     name: "{{ item }}"
     state: restarted
@@ -7,5 +17,16 @@
   become: yes
   with_items:
   - "{{ firewall }}"
-  - libvirtd
   tags: services
+  when: firewall == "iptables"
+
+- name: Enable Services (firewalld)
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  become: yes
+  with_items:
+  - "{{ firewall }}"
+  tags: services
+  when: firewall != "iptables"
