@@ -1,0 +1,86 @@
+// Module included in the following assemblies:
+//
+// * list of assemblies where this module is included
+// ipi-install-installation-workflow.adoc
+// Upstream module
+
+[id="creating-dns-records-on-a-dns-server-option1_{context}"]
+
+= Creating DNS records on a DNS server (Option 1)
+
+Use Option 1 if access to the appropriate DNS server for the baremetal network is accessible or a request
+to your network admin to create the DNS records is an option.
+If this is not an option, skip this section and go to section Create DNS records using dnsmasq (Option 2).
+
+Create a subzone with the name of the cluster that is going to be used on your domain.
+In our example, the domain used is `example.com` and the cluster name used is `openshift`.
+Make sure to change these according to your environment specifics.
+
+.Procedure
+
+. Login to the DNS server using `ssh`.
+
+. Suspend updates to all dynamic zones: `rndc freeze`.
+
+. Edit `/var/named/dynamic/example.com`.
++
+----
+$ORIGIN openshift.example.com.
+$TTL 300        ; 5 minutes
+@  IN  SOA  dns1.example.com.  hostmaster.example.com. (
+       2001062501  ; serial
+       21600       ; refresh after 6 hours
+       3600        ; retry after 1 hour
+       604800      ; expire after 1 week
+       86400 )     ; minimum TTL of 1 day
+;
+api                     A       <api-ip>
+ns1                     A       <dns-vip-ip>
+$ORIGIN apps.openshift.example.com.
+*                       A       <wildcard-ingress-lb-ip>
+$ORIGIN openshift.example.com.
+provisioner             A       <NIC2-ip-of-provision>
+openshift-master-0      A       <NIC2-ip-of-openshift-master-0>
+openshift-master-1      A       <NIC2-ip-of-openshift-master-1>
+openshift-master-2      A       <NIC2-ip-of-openshift-master-2>
+openshift-worker-0      A       <NIC2-ip-of-openshift-worker-0>
+openshift-worker-1      A       <NIC2-ip-of-openshift-worker-1>
+----
+
+. Increase the `serial` value by 1.
+
+. Edit `/var/named/dynamic/1.0.10.in-addr.arpa`.
++
+----
+$ORIGIN 1.0.10.in-addr.arpa.
+$TTL 300
+@  IN  SOA  dns1.example.com.  hostmaster.example.com. (
+       2001062501  ; serial
+       21600       ; refresh after 6 hours
+       3600        ; retry after 1 hour
+       604800      ; expire after 1 week
+       86400 )     ; minimum TTL of 1 day
+;
+126 IN      PTR      provisioner.openshift.example.com.
+127	IN        	PTR    	openshift-master-0.openshift.example.com.
+128	IN        	PTR    	openshift-master-1.openshift.example.com.
+129	IN 	        PTR   	openshift-master-2.openshift.example.com.
+130	IN 	        PTR   	openshift-worker-0.openshift.example.com.
+131	IN        	PTR    	openshift-worker-1.openshift.example.com.
+132 IN      PTR     api.openshift.example.com.
+133 IN      PTR     ns1.openshift.example.com.
+----
++
+[NOTE]
+====
+In this example, the IP addresses 10.0.1.126-133 are pointed to the corresponding fully qualified domain name.
+====
++
+[NOTE]
+====
+The filename `1.0.10.in-addr.arpa` is the reverse of the public CIDR example `10.0.1.0/24`.
+====
+
+. Increase the `serial` value by 1.
+
+. Enable updates to all dynamic zones and reload them: `rndc thaw`.

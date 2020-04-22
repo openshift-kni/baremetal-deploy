@@ -1,0 +1,30 @@
+// Module included in the following assemblies:
+//
+// * list of assemblies where this module is included
+// ipi-install-installation-workflow.adoc
+// Upstream module
+
+[id="creating-dhcp-reservations-for-the worker-2-(old provisioner)-using-dnsmasq-option2_{context}"]
+
+= Creating DHCP reservations for the worker-2 (old provisioner) using dnsmasq (Option 2)
+
+.Procedure
+
+. Append the following DHCP reservation to the `/etc/dnsmasq.d/example.dns` file on the server hosting the `dnsmasq` service.
++
+----
+<OUTPUT_OMITTED>
+dhcp-host=<NIC2-mac-address>,openshift-worker-1.openshift.example.com,<ip-of-worker-1>
+dhcp-host=<NIC2-mac-address>,openshift-worker-2.openshift.example.com,<ip-of-worker-2>
+----
++
+[NOTE]
+====
+Remove the `provisioner.openshift.example.com` entry as it is replaced by worker-2
+====
+
+. Restart the `dnsmasq` service.
++
+----
+systemctl restart dnsmasq
+----

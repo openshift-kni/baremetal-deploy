@@ -1,0 +1,24 @@
+// Module included in the following assemblies:
+//
+// * list of assemblies where this module is included
+// ipi-install-installation-workflow.adoc
+// Upstream module
+
+[id="appending-dns-records-for-the worker-2-(old provisioner)-using-dnsmasq-option2_{context}"]
+
+= Appending DNS records for the worker-2 (old provisioner) using dnsmasq (Option 2)
+
+.Procedure
+
+Append the following DNS record to the `/etc/hosts` file on the server hosting the `dnsmasq` service.
+
+----
+<OUTPUT_OMITTED>
+<NIC2-IP> openshift-worker-1.openshift.example.com openshift-worker-1
+<NIC2-IP> openshift-worker-2.openshift.example.com openshift-worker-2
+----
+
+[NOTE]
+====
+Remove the `provisioner.openshift.example.com` entry as it is replaced by worker-2
+====

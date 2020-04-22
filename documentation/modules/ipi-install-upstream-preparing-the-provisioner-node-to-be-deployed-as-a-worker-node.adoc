@@ -1,0 +1,28 @@
+// Module included in the following assemblies:
+//
+// * list of assemblies where this module is included
+// ipi-install-installation-workflow.adoc
+// Upstream module
+
+[id="preparing-the-provisioner-node-to-be-deployed-as-a-worker-node_{context}"]
+
+= Preparing the provisioner node to be deployed as a worker node
+
+.Procedure
+
+Perform the following steps prior to converting the provisioner node to a worker node.
+
+. `ssh` to a system (for example, a laptop) that can access the out of band management network of the current provisioner node.
+
+. Copy the backups `clusterconfig.tar.gz`, `clusterconfigsh.tar.gz`, and `amlconfigs.tar.gz` to the new system.
+
+. Copy the `oc` binary from the existing provisioning node to the new system.
+
+. Make a note of the mac addresses, the baremetal network IP used for the provisioner node, and the IP address of
+the Out of band Management Network.
+
+. Reboot the system and ensure that PXE is enabled on the provisioning network and PXE is disabled for all other NICs.
+
+. If installation was performed using a Satellite server, remove the Host entry for the existing provisioning node.
+
+. Install the `ipmitool` on the new system in order to power off the provisioner node.
