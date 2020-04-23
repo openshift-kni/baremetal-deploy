@@ -50,6 +50,19 @@
     "VIPs",
     "VLAN",
     "VM",
-    "YAML"
+    "YAML",
+    "DPDK",
+    "PTP",
+    "Kubernetes",
+    "virtualization",
+    "NMstate",
+    "Hugepages",
+    "NFV",
+    "BM",
+    "SR-IOV",
+    "CNV",
+    "Netlify",
+    "SCTP",
+    "sexualized"
   ]
 }
