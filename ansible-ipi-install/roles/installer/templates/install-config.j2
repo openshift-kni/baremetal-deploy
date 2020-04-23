@@ -42,7 +42,7 @@ platform:
 {% endif %}
     hosts:
 {% for host in groups['masters'] %}
-      - name: {{ hostvars[host]['name'] }}
+      - name: {{ hostvars[host]['inventory_hostname'] }}
         role: {{ hostvars[host]['role'] }}
         bmc:
 {% if 'ipmi_port' in hostvars[host] %}
@@ -60,7 +60,7 @@ platform:
 {% endif %}
 {% endfor %}
 {% for host in groups['workers'] %}
-      - name: {{ hostvars[host]['name'] }}
+      - name: {{ hostvars[host]['inventory_hostname'] }}
         role: {{ hostvars[host]['role'] }}
         bmc:
 {% if 'ipmi_port' in hostvars[host] %}
