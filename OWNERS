@@ -1,5 +1,5 @@
 # See the OWNERS docs at https://go.k8s.io/owners
-  
+
 filters:
   ".*":
     reviewers:
@@ -8,3 +8,12 @@ filters:
     approvers:
       - approvers
 
+
+  "^ansible-ipi-install/.*":
+    labels:
+      - kind/installer
+    reviewers:
+      - directedsoul1
+      - iranzo
+    approvers:
+      - rlopez133
