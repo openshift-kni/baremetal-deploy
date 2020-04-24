@@ -1,7 +1,7 @@
 ---
 - name: Get COMMIT_ID
   shell: |
-    /usr/local/bin/openshift-baremetal-install version | grep '^built from commit' | awk '{print $4}' 
+    /usr/local/bin/openshift-baremetal-install version | grep '^built from commit' | awk '{print $4}'
   register: commit_id
   tags: rhcospath
 
@@ -18,4 +18,3 @@
     rhcos_uri: "{{ rhcos_json.json | json_query('images.openstack.path') }}"
     rhcos_path: "{{ rhcos_json.json | json_query('baseURI') }}"
   tags: rhcospath
-  

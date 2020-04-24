@@ -1,7 +1,7 @@
 ---
 - include_tasks: 10_validation.yml
   tags: validation
-  
+
 - include_tasks: 15_validation_disconnected_registry.yml
   when:
     - "'registry_host' in groups"
@@ -10,15 +10,15 @@
 
 - include_tasks: 20_sub_man_register.yml
   tags: subscription
-- include_tasks: 30_req_packages.yml 
+- include_tasks: 30_req_packages.yml
   tags: packages
 - include_tasks: 40_bridge.yml
-  tags: 
+  tags:
   - network
   - network_facts
 - include_tasks: 50_modify_sudo_user.yml
   tags: user
-- include_tasks: 60_enabled_services.yml 
+- include_tasks: 60_enabled_services.yml
   tags: services
 - include_tasks: 70_enabled_fw_services.yml
   tags: firewall

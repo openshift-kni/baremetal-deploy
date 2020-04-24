@@ -9,5 +9,3 @@
   - "{{ firewall }}"
   - libvirtd
   tags: services
-
-

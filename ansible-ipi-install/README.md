@@ -28,7 +28,7 @@ _**Table of contents**_
 - [Appendix A. Using Ansible Tags with the `playbook.yml`](#appendix-a-using-ansible-tags-with-the-playbookyml)
   - [How to use the Ansible tags](#how-to-use-the-ansible-tags)
   - [Skipping particular tasks using Ansible tags](#skipping-particular-tasks-using-ansible-tags)
-- [Appendix B - Using a proxy with your Ansible playbook](#appendix-b-using-a-proxy-with-your-ansible-playbook)
+- [Appendix B. Using a proxy with your Ansible playbook](#appendix-b-using-a-proxy-with-your-ansible-playbook)
 
 <!-- /TOC -->
 
@@ -769,7 +769,7 @@ When running behind a proxy, it is important to properly set the environment
 to handle such scenario such that you can run the Ansible playbook. In order
 to use a proxy for the ansible playbook set the appropriate variables within
 your `inventory/hosts` file. These values will also be included within your
-generated `install-config.yaml` file. 
+generated `install-config.yaml` file.
 
 ```sh
 # (Optional) Provide HTTP proxy settings
@@ -782,7 +782,7 @@ generated `install-config.yaml` file.
 # excluded from proxying
 # NOTE: OpenShift does not accept '*' as a wildcard attached to a domain suffix
 # i.e. *.example.com
-# Use '.' as the wildcard for a domain suffix as shown in the example below. 
+# Use '.' as the wildcard for a domain suffix as shown in the example below.
 # i.e. .example.com
 #no_proxy_list="172.22.0.0/24,.example.com"
 ```

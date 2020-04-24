@@ -48,7 +48,7 @@
   set_fact:
     tempdir: "{{ tempdiroutput.path }}"
   tags: getoc
-  
+
 
 - name: Get the ocp client tar gunzip file
   get_url:
@@ -68,7 +68,7 @@
     mode: '0755'
     remote_src: yes
   tags: getoc
- 
+
 - name: Copy oc binary to /usr/local/bin
   copy:
     src: "{{ tempdir }}/{{ item }}"

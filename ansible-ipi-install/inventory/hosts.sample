@@ -60,7 +60,7 @@ prov_ip=172.22.0.3
 # excluded from proxying
 # NOTE: OpenShift does not accept '*' as a wildcard attached to a domain suffix
 # i.e. *.example.com
-# Use '.' as the wildcard for a domain suffix as shown in the example below. 
+# Use '.' as the wildcard for a domain suffix as shown in the example below.
 # i.e. .example.com
 #no_proxy_list="172.22.0.0/24,.example.com"
 

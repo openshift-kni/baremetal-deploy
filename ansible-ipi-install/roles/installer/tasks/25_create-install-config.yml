@@ -18,13 +18,13 @@
   tags: installconfig
 
 - name: Generate install-config.yaml
-  template: 
+  template:
     src: install-config.j2
     dest: "{{ dir }}/install-config.yaml"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
-  when: 
+  when:
   - pullsecret is defined
   - pullsecret != ""
   tags: installconfig
