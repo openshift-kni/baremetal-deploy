@@ -10,7 +10,7 @@
       shell: |
         nmcli device show {{ pub_nic }} | grep GENERAL.CONNECTION | awk '{sub(/[^ ]+[ ]+/,"")}1'
       register: pub_con_name
-    
+
     - name: Disconnect provisioning connection
       command: |
         nmcli dev dis provisioning
@@ -22,7 +22,7 @@
         type: ethernet
         state: absent
       when: prov_con_name.stdout != '--'
-    
+
     - name: Delete {{ prov_nic }} due to modify nmcli bug
       nmcli:
         conn_name: "{{ item }}"
@@ -31,13 +31,13 @@
       with_items:
         - "{{ prov_nic }}"
         - "System {{ prov_nic }}"
-      when: prov_con_name.stdout == '--' 
+      when: prov_con_name.stdout == '--'
 
     - name: Delete provisioning bridge if it exists
       nmcli:
         conn_name: provisioning
         state: absent
-    
+
     - name: Create Bridge labeled provisioning ipv4
       nmcli:
         conn_name: provisioning
@@ -49,7 +49,7 @@
         stp: off
         ip4: 172.22.0.1/24
         state: present
-      when: (not ipv6_enabled|bool) or 
+      when: (not ipv6_enabled|bool) or
             ((release_version[0]|int == 4) and (release_version[2]|int == 3)) or
             (ipv4_provisioning|bool)
 
@@ -62,7 +62,7 @@
         master: provisioning
         autoconnect: yes
         state: present
-      when: (not ipv6_enabled|bool) or 
+      when: (not ipv6_enabled|bool) or
             ((release_version[0]|int == 4) and (release_version[2]|int == 3)) or
             (ipv4_provisioning|bool)
 
@@ -106,9 +106,9 @@
         autoconnect: yes
         stp: off
         state: present
-      when: (not ipv6_enabled|bool) or 
+      when: (not ipv6_enabled|bool) or
             (ipv4_baremetal|bool)
-    
+
     - name: Create Bridge labeled baremetal for ipv6
       nmcli:
         conn_name: baremetal
@@ -146,7 +146,7 @@
   setup:
     gather_subset:
       - network
-  tags: 
+  tags:
   - network_facts
 
 - name: Set External Subnet with IPv4
@@ -154,11 +154,11 @@
     extcidrnet: "{{ ip | ipaddr('network') }}/{{ ip | ipaddr('prefix') }}"
   vars:
     ip: "{{ ansible_default_ipv4.address }}/{{ansible_default_ipv4.netmask }}"
-  when: 
-    - (extcidrnet is not defined or extcidrnet|length < 1) 
-    - not ipv6_enabled|bool or 
+  when:
+    - (extcidrnet is not defined or extcidrnet|length < 1)
+    - not ipv6_enabled|bool or
       ipv4_baremetal|bool
-  tags: 
+  tags:
   - network_facts
 
 - name: Set External Subnet with IPv6
@@ -166,11 +166,11 @@
     extcidrnet: "{{ ip | ipaddr('network') }}/{{ ip | ipaddr('prefix') }}"
   vars:
     ip: "{{ ansible_default_ipv6.address }}/64"
-  when: 
-    - (extcidrnet is not defined or extcidrnet|length < 1) 
+  when:
+    - (extcidrnet is not defined or extcidrnet|length < 1)
     - ipv6_enabled|bool
     - not ipv4_baremetal|bool
-  tags: 
+  tags:
   - network_facts
 
 - name: set provisioning subnet with IPV4
@@ -182,7 +182,7 @@
         ((release_version[0]|int == 4) and (release_version[2]|int == 3)) or
         (ipv4_provisioning|bool)
 
-  tags: 
+  tags:
   - network_facts
 
 - name: set provisioning subnet with IPV6
@@ -195,18 +195,17 @@
     - release_version[0]|int == 4 and release_version[2]|int > 3 or
       release_version[0]|int > 4
     - not ipv4_provisioning|bool
-  tags: 
+  tags:
   - network_facts
 
 - debug:
     msg: "external subnet {{ extcidrnet }}"
     verbosity: 2
-  tags: 
+  tags:
   - network_facts
 
 - debug:
     msg: "provisioning subnet {{ provisioning_subnet }}"
     verbosity: 2
-  tags: 
+  tags:
   - network_facts
-

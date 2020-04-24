@@ -11,7 +11,7 @@
       with_items:
         - "{{ groups.masters }}"
         - "{{ groups.workers }}"
-    
+
     - name: Power off hosts
       ipmi_power:
         name: "{{ hostvars[item]['ipmi_address'] }}"

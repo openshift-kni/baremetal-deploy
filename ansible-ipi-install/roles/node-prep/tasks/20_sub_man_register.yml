@@ -8,7 +8,7 @@
     force_register: yes
   ignore_errors: yes
   become: yes
-  when: 
+  when:
     - activation_key != ""
     - org_id != ""
   tags: subscription

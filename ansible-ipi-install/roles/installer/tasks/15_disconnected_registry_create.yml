@@ -64,7 +64,7 @@
       loop:
         - "{{ packages_registry | default([]) }}"
       become: true
-  
+
     - name: Open registry port, zone libvirt and public, for firewalld
       firewalld:
         port: "{{ registry_port }}/tcp"
@@ -77,7 +77,7 @@
       - libvirt
       - public
       when: firewall != "iptables"
-  
+
     - name: Open registry port for iptables
       iptables:
         chain: INPUT
@@ -92,7 +92,7 @@
         /usr/sbin/iptables-save > /etc/sysconfig/iptables
       become: yes
       when: firewall == "iptables"
-  
+
     - name: Create directory to hold the registry files
       file:
         path: "{{ item }}"
@@ -106,11 +106,11 @@
         - "{{ registry_dir_cert }}"
         - "{{ registry_dir_data }}"
       become: true
-  
+
     - name: Generate htpasswd entry
       command: htpasswd -bBn {{ disconnected_registry_user }} {{ disconnected_registry_password }}
       register: htpass_entry
-  
+
     - name: Write htpasswd file
       copy:
         content: '{{ htpass_entry.stdout }}'
@@ -119,22 +119,22 @@
         group: "{{ ansible_user }}"
         backup: yes
         force: yes
-  
+
     - name: Set disconnected_auth
       set_fact:
         disconnected_registry_up: "{{ disconnected_registry_user }}:{{ disconnected_registry_password }}"
-  
+
     - name: Create registry auth for pullsecret
       set_fact:
         disconnected_auth: '  {"{{ local_registry }}": {"auth": "{{ disconnected_registry_up | b64encode }}", "email": "{{ ansible_user }}@redhat.com" } }'
-  
+
     - name: Write auth for disconnected to registry host
       copy:
         content: "{{ disconnected_auth }}"
         dest: "{{ ansible_env.HOME }}/{{ registry_auth_file }}"
         backup: yes
         force: yes
-  
+
     - name: Write auth for disconnected to localhost
       copy:
         content: "{{ disconnected_auth }}"
@@ -142,13 +142,13 @@
         backup: yes
         force: yes
       delegate_to: localhost
-  
+
     - name: append auth to pullsecret
       shell: |
         echo '{{ pullsecret }}' | jq -c \
           '.auths += {{ disconnected_auth }}'
       register: new_pullsecret
-  
+
     - name: set pullsecret with new auth
       set_fact:
         pullsecret: "  {{ new_pullsecret.stdout }}"
@@ -198,11 +198,11 @@
         force: yes
         backup: yes
       become: true
-  
+
     - name: Update the CA trust files
       command: update-ca-trust extract
       become: true
-  
+
     - name: Create container to serve the registry
       podman_container:
         name: "{{ pod_name_registry }}"
@@ -221,27 +221,27 @@
           REGISTRY_AUTH_HTPASSWD_PATH: auth/htpasswd
           REGISTRY_HTTP_TLS_CERTIFICATE: certs/domain.crt
           REGISTRY_HTTP_TLS_KEY: certs/domain.key
-  
+
     - name: Read in the contents of domain.crt
       slurp:
         src: "{{ registry_dir_cert }}/domain.crt"
       register: domain_cert_b64
-  
+
     - name: Set trustbundle fact to contents of domain.crt
       set_fact:
         trustbundle: "{{ domain_cert_b64.content | string | b64decode }}"
-  
+
     - name: Create mirrorred registry information
       set_fact:
         install_config_appends: "{{ lookup('template', 'install-config-appends.j2') }}"
-  
+
     - name: Create {{ install_config_appends_file }}
       copy:
         content: "{{ install_config_appends }}"
         dest: "{{ ansible_env.HOME }}/{{ install_config_appends_file }}"
         backup: yes
         force: yes
-  
+
     - name: Create {{ install_config_appends_file }} on localhost
       copy:
         content: "{{ install_config_appends }}"
@@ -249,7 +249,7 @@
         backup: yes
         force: yes
       delegate_to: localhost
-  
+
     - name: Information
       debug:
         msg:

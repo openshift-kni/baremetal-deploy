@@ -7,7 +7,7 @@
         state: absent
       with_items:
       - "{{ dir }}"
-    
+
     - name: Create config dir
       file:
         path: "{{ item }}"

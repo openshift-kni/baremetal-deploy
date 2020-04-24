@@ -16,7 +16,7 @@
   - "{{ dir }}/openshift"
   - "{{ dir }}/manifests"
   tags: manifests
-  
+
 - name: Copy the metal3-config.yaml to {{ dir }}/openshift directory
   copy:
     src: "{{ dir }}/metal3-config.yaml"

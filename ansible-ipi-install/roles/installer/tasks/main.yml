@@ -1,6 +1,6 @@
 ---
 # tasks file for installer
-- include_tasks: 10_get_oc.yml 
+- include_tasks: 10_get_oc.yml
   tags:
   - cleanup
   - getoc
@@ -27,8 +27,8 @@
 - include_tasks: 24_rhcos_image_cache.yml
   when: cache_enabled|bool
   tags: cache
-  
-  
+
+
 - include_tasks: 25_create-install-config.yml
   tags: installconfig
 - include_tasks: 30_create_metal3.yml

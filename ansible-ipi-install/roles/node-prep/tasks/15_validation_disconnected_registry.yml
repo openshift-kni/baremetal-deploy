@@ -64,4 +64,3 @@
   when:
     - not dra_set
     - not drm_set
-
