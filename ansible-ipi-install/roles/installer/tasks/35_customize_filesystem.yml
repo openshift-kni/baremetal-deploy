@@ -18,12 +18,6 @@
     shell: |
       /usr/local/bin/openshift-baremetal-install --dir {{ dir }} create ignition-configs
 
-  - name: Get Filetranspiler
-    get_url:
-      url: https://raw.githubusercontent.com/ashcrow/filetranspiler/1.1.1/filetranspile
-      dest: "{{ tempdir }}/filetranspile.py"
-      mode: '0755'
-
   - name: Copy Ignition Config Files
     copy:
       src: "{{ dir }}/{{ item }}.ign"
@@ -32,9 +26,15 @@
       - "master"
       - "worker"
 
+  - name: Copy customize_filesystem to tempdir
+    copy:
+      src: "{{ role_path }}/files/customize_filesystem"
+      dest: "{{ tempdir }}"
+      force: yes
+
   - name: Cleanup Any .gitkeep Files in the Fake Root
     file:
-      path: "{{ role_path }}/files/customize_filesystem/{{ item }}/.gitkeep"
+      path: "{{ tempdir }}/customize_filesystem/{{ item }}/.gitkeep"
       state: absent
       follow: yes
     with_items:
@@ -43,8 +43,10 @@
     become: true
 
   - name: Augment Ignition Config Files
-    shell: |
-      {{ tempdir }}/filetranspile.py -i {{ dir }}/{{ item }}.ign.orig -f {{ role_path }}/files/customize_filesystem/{{ item }} -o {{ dir }}/{{ item }}.ign
+    script: |
+      filetranspile-1.1.1.py -i {{ dir }}/{{ item }}.ign.orig -f {{ tempdir }}/customize_filesystem/{{ item }} -o {{ dir }}/{{ item }}.ign
+    args:
+      executable: python3
     with_items:
       - "master"
       - "worker"
