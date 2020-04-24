@@ -20,7 +20,7 @@ After an environment has been prepared according to the documented prerequisites
 
 //upstream modules
 ifdef::upstream[]
-include::ipi-install-upstream-installation-workflow.adoc[leveloffset=+1]
+// include::ipi-install-upstream-installation-workflow.adoc[leveloffset=+1]
 include::modules/ipi-install-upstream-creating-dns-records-on-a-dns-server-option1.adoc[leveloffset=+1]
 include::modules/ipi-install-upstream-creating-dns-records-using-dnsmasq-option2.adoc[leveloffset=+1]
 include::modules/ipi-install-upstream-creating-dhcp-reservations-option1.adoc[leveloffset=+1]
