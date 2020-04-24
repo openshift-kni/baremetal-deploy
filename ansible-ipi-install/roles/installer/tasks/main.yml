@@ -34,12 +34,12 @@
 - include_tasks: 30_create_metal3.yml
   when: (release_version[0]|int == 4) and (release_version[2]|int <= 3)
   tags: metal3config
-- include_tasks: 35_customize_filesystem.yml
-  tags: customfs
 - include_tasks: 40_create_manifest.yml
   tags: manifests
 - include_tasks: 50_extramanifests.yml
   tags: extramanifests
+- include_tasks: 55_customize_filesystem.yml
+  tags: customfs
 - include_tasks: 59_cleanup_bootstrap.yml
   tags: cleanup
 - include_tasks: 60_deploy_ocp.yml
