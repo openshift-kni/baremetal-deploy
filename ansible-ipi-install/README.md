@@ -231,6 +231,9 @@ prov_nic=eno1
 # The public NIC (NIC2) used on all baremetal nodes
 pub_nic=eno2
 
+# (Optional) Set the provisioning bridge name. Default value is 'provisioning'. 
+#provisioning_bridge=provisioning
+
 # (Optional) Activation-key for proper setup of subscription-manager, empty value skips registration
 #activation_key=""
 

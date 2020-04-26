@@ -11,9 +11,9 @@
         nmcli device show {{ pub_nic }} | grep GENERAL.CONNECTION | awk '{sub(/[^ ]+[ ]+/,"")}1'
       register: pub_con_name
 
-    - name: Disconnect provisioning connection
+    - name: Disconnect "{{ provisioning_bridge }}" connection
       command: |
-        nmcli dev dis provisioning
+        nmcli dev dis "{{ provisioning_bridge }}"
       ignore_errors: yes
 
     - name: Delete {{ prov_con_name.stdout }} due to modify nmcli bug
@@ -33,16 +33,16 @@
         - "System {{ prov_nic }}"
       when: prov_con_name.stdout == '--'
 
-    - name: Delete provisioning bridge if it exists
+    - name: Delete "{{ provisioning_bridge }}" bridge if it exists
       nmcli:
-        conn_name: provisioning
+        conn_name: "{{ provisioning_bridge }}"
         state: absent
 
-    - name: Create Bridge labeled provisioning ipv4
+    - name: Create Bridge labeled "{{ provisioning_bridge }}" ipv4
       nmcli:
-        conn_name: provisioning
+        conn_name: "{{ provisioning_bridge }}"
         type: bridge
-        ifname: provisioning
+        ifname: "{{ provisioning_bridge }}"
         autoconnect: yes
         ip4_method: manual
         ip6_method: disabled
@@ -59,18 +59,18 @@
         type: bridge-slave
         hairpin: no
         ifname: "{{ prov_nic }}"
-        master: provisioning
+        master: "{{ provisioning_bridge }}"
         autoconnect: yes
         state: present
       when: (not ipv6_enabled|bool) or
             ((release_version[0]|int == 4) and (release_version[2]|int == 3)) or
             (ipv4_provisioning|bool)
 
-    - name: Create Bridge labeled provisioning ipv6
+    - name: Create Bridge labeled "{{ provisioning_bridge }}" ipv6
       nmcli:
-        conn_name: provisioning
+        conn_name: "{{ provisioning_bridge }}"
         type: bridge
-        ifname: provisioning
+        ifname: "{{ provisioning_bridge }}"
         autoconnect: yes
         stp: off
         ip6: fd00:1101::1/64
@@ -89,7 +89,7 @@
         type: bridge-slave
         hairpin: no
         ifname: "{{ prov_nic }}"
-        master: provisioning
+        master: "{{ provisioning_bridge }}"
         autoconnect: yes
         state: present
       when:
@@ -137,7 +137,7 @@
       with_items:
         - baremetal
         - "{{ pub_nic }}"
-        - provisioning
+        - "{{ provisioning_bridge }}"
         - "{{ prov_nic }}"
   become: yes
   tags: network
