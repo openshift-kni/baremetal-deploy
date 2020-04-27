@@ -189,6 +189,10 @@ prov_ip=172.22.0.3
 domain="myocp4.com"
 # Name of the cluster, i.e. openshift
 cluster="test"
+# Note: Under some conditions, it may be useful to randomize the cluster name. For instance,
+# when redeploying an existing environment this can help avoid VRID conflicts. You can
+# set the cluster_random boolean below to true to append a random number to you cluster name.
+cluster_random=true
 # The public CIDR address, i.e. 10.1.1.0/21
 extcidrnet="192.168.222.0/24"
 

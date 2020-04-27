@@ -10,13 +10,12 @@ interface=baremetal
 dhcp-range={{ extcidrnet | next_nth_usable(10) }},{{ extcidrnet | ipaddr('last_usable') }}
 dhcp-no-override
 dhcp-authoritative
-dhcp-lease-max=41
 {% for mac in master_bm_macs %}
 dhcp-host={{ mac }},{{ extcidrnet | next_nth_usable(loop.index0 + 10) }},master-{{ loop.index0 }}
 {% endfor %}
 {% for mac in worker_bm_macs %}
 dhcp-host={{ mac }},{{ extcidrnet | next_nth_usable(loop.index0 + 10 + (master_bm_macs | length)) }},worker{{ '%03d' % loop.index0 }}
 {% endfor %}
-address=/ns1.test.myocp4.com/{{ dnsvip }}
-address=/api.test.myocp4.com/{{ apivip }}
-address=/.apps.test.myocp4.com/{{ ingressvip }}
+address=/ns1.{{ cluster }}.{{ domain }}/{{ dnsvip }}
+address=/api.{{ cluster }}.{{ domain }}/{{ apivip }}
+address=/.apps.{{ cluster }}.{{ domain }}/{{ ingressvip }}
