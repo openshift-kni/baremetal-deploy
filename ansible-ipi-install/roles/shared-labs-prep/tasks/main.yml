@@ -1,14 +1,24 @@
 ---
+- name: Randomize cluster name
+  set_fact:
+    cluster: "{{ cluster }}{{ 1000 | random }}"
+  when: cluster_random | default(false)
+
 - name: Install packages
   yum:
     name: "{{ yum_packages }}"
     state: latest
   become: yes
 
-- name: Get Badfish pod image
-  podman_image:
-    name: "{{ badfish_pod_image }}"
-    pull: yes
+- name: Create temp directory for badfish
+  tempfile:
+    state: directory
+  register: badfish_tempdir
+
+- name: Get Badfish master branch
+  git:
+    repo: https://github.com/redhat-performance/badfish.git
+    dest: "{{ badfish_tempdir }}"
     force: yes
 
 - name: Clean network interfaces created by lab automation
@@ -22,6 +32,28 @@
     conn_name: "{{ pub_nic }}"
     type: ethernet
     state: absent
+  become: yes
+
+- name: Get baremetal bridge slave devices
+  shell: |
+    bridge link | grep baremetal | awk '{print $2}' | awk -F: '{print $1}' | uniq
+  become: yes
+  register: baremetal_slave_devices
+
+- name: Get baremetal bridge slave connections
+  shell: |
+    nmcli con show | grep {{ item }} | awk '{print $1}' | uniq
+  become: yes
+  with_items: "{{ baremetal_slave_devices.stdout_lines }}"
+  when: "{{ baremetal_slave_devices.stdout_lines }}"
+  register: baremetal_slave_connections
+
+- name: Delete baremetal bridge slaves
+  nmcli:
+    conn_name: "{{ item.stdout_lines.0 }}"
+    state: absent
+  with_items: "{{ baremetal_slave_connections.results }}"
+  when: "{{ baremetal_slave_connections }}"
   become: yes
 
 - name: Create Bridge labeled baremetal
@@ -64,15 +96,12 @@
     - "{{ pub_nic }}"
   become: yes
 
-#TODO: This only works with Dell nodes
-
 - name: Power on master nodes
-  redfish_command:
-    category: Systems
-    command: PowerOn
-    baseuri: "mgmt-{{ item }}"
-    username: "{{ lab_ipmi_user }}"
+  ipmi_power:
+    name: "mgmt-{{ item }}"
+    user: "{{ lab_ipmi_user }}"
     password: "{{ lab_ipmi_password }}"
+    state: on
   with_items: "{{ master_fqdns }}"
   register: power_on_masters
   until: power_on_masters is succeeded
@@ -80,39 +109,22 @@
   delay: 30
 
 - name: Power on worker nodes
-  redfish_command:
-    category: Systems
-    command: PowerOn
-    baseuri: "mgmt-{{ item }}"
-    username: "{{ lab_ipmi_user }}"
+  ipmi_power:
+    name: "mgmt-{{ item }}"
+    user: "{{ lab_ipmi_user }}"
     password: "{{ lab_ipmi_password }}"
+    state: on
   with_items: "{{ worker_fqdns }}"
   register: power_on_workers
   until: power_on_workers is succeeded
   retries: 3
   delay: 30
 
-- name: Wait for master nodes to start
-  shell: |
-    /usr/bin/ipmitool -I lanplus -H mgmt-{{ item }} -U {{ lab_ipmi_user }} -P {{ lab_ipmi_password }} power status
-  with_items: "{{ master_fqdns }}"
-  register: ipmi_power_status
-  until: ipmi_power_status.stdout.find("on") != -1
-  retries: 10
-  delay: 30
-
-- name: Wait for worker nodes to start
-  shell: |
-    /usr/bin/ipmitool -I lanplus -H mgmt-{{ item }} -U {{ lab_ipmi_user }} -P {{ lab_ipmi_password }} power status
-  with_items: "{{ worker_fqdns }}"
-  register: ipmi_power_status
-  until: ipmi_power_status.stdout.find("on") != -1
-  retries: 10
-  delay: 30
-
 - name: Clear master nodes redfish job queue
-  shell: |
-    {{ badfish_cmd }}{{ item }} --clear-jobs
+  shell:
+    chdir: "{{ badfish_tempdir }}"
+    cmd: |
+      {{ badfish_cmd }}{{ item }} --clear-jobs --force
   with_items: "{{ master_fqdns }}"
   register: master_redfish
   until: master_redfish is succeeded
@@ -122,8 +134,10 @@
     - clearjobs
 
 - name: Clear worker nodes redfish job queue
-  shell: |
-    {{ badfish_cmd }}{{ item }} --clear-jobs
+  shell:
+    chdir: "{{ badfish_tempdir }}"
+    cmd: |
+      {{ badfish_cmd }}{{ item }} --clear-jobs --force
   with_items: "{{ worker_fqdns }}"
   register: worker_redfish
   until: worker_redfish is succeeded
@@ -133,8 +147,10 @@
     - clearjobs
 
 - name: Set master nodes to director boot order
-  shell: |
-    {{ badfish_cmd }}{{ item }} -t director
+  shell:
+    chdir: "{{ badfish_tempdir }}"
+    cmd: |
+      {{ badfish_cmd }}{{ item }} -t director
   with_items: "{{ master_fqdns }}"
   register: master_boot_order
   until: master_boot_order is succeeded
@@ -144,8 +160,10 @@
     - bootorder
 
 - name: Set worker nodes to director boot order
-  shell: |
-    {{ badfish_cmd }}{{ item }} -t director
+  shell:
+    chdir: "{{ badfish_tempdir }}"
+    cmd: |
+      {{ badfish_cmd }}{{ item }} -t director
   with_items: "{{ worker_fqdns }}"
   register: worker_boot_order
   until: worker_boot_order is succeeded
@@ -197,21 +215,34 @@
     enabled: yes
   become: yes
 
-- name: Set fake root directory path
-  set_fact:
-    fake_root: "{{ playbook_dir }}/roles/installer/files/customize_filesystem/master/etc/sysconfig/network-scripts"
+- name: Create fake root
+  block:
+    - name: Set fake root directory path
+      set_fact:
+        fake_root: "{{ playbook_dir }}/roles/installer/files/customize_filesystem/master"
+      
+    - name: Clean up any existing fake root content
+      file:
+        path: "{{ fake_root }}"
+        state: absent
+      become: yes
 
-- name: Create fake root directory
-  file:
-    path: "{{ fake_root }}"
-    state: directory
-    mode: 0777
-  become: yes
+    - name: Set ifcfg path
+      set_fact:
+        ifcfg_path: "{{ fake_root }}/etc/sysconfig/network-scripts"
 
-- name: Create ifcfg files to disable NICs
-  template:
-    src: ocp4-lab.ifcfg-template.j2
-    dest: "{{ fake_root }}/ifcfg-{{ item }}"
-    mode: 0644
-  become: yes
-  with_items: "{{ disable_nics }}"
+    - name: Create fake root directory
+      file:
+        path: "{{ ifcfg_path }}"
+        state: directory
+        mode: 0777
+      become: yes
+
+    - name: Create ifcfg files to disable NICs
+      template:
+        src: ocp4-lab.ifcfg-template.j2
+        dest: "{{ ifcfg_path }}/ifcfg-{{ item }}"
+        mode: 0644
+      become: yes
+      with_items: "{{ disable_nics }}"
+  delegate_to: localhost
