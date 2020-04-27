@@ -2,43 +2,61 @@ _**Table of contents**_
 
 <!-- TOC -->
 
-- [Introduction](#introduction)
-- [Prerequisites](#prerequisites)
-  - [Networking Requirements](#networking-requirements)
-    - [NIC Configuration](#nic-configuration)
-    - [Network Ranges](#network-ranges)
-    - [Reserved IPs on DHCP Server](#reserved-ips-on-dhcp-server)
-    - [DNS Server](#dns-server)
-- [Installation Flow](#installation-flow)
-  - [Diagrams of the OpenShift Install Process](#diagrams-of-the-openshift-install-process)
-- [Configuring Servers](#configuring-servers)
-  - [Out of Band Management](#out-of-band-management)
-  - [Required Data for Installation](#required-data-for-installation)
-- [Reserve IPs for the VIPs and Nodes](#reserve-ips-for-the-vips-and-nodes)
-- [Create DNS records on a DNS server (Option 1)](#create-dns-records-on-a-dns-server-option-1)
-- [Create DNS records using `dnsmasq` (Option 2)](#create-dns-records-using-dnsmasq-option-2)
-- [Create DHCP reservations (Option 1)](#create-dhcp-reservations-option-1)
-- [Create DHCP reservations using `dnsmasq` (Option 2)](#create-dhcp-reservations-using-dnsmasq-option-2)
-- [Install RHEL on the Provision Node](#install-rhel-on-the-provision-node)
-- [Preparing the Provision node for OpenShift Install](#preparing-the-provision-node-for-openshift-install)
-  - [Retrieving the OpenShift Installer (Development)](#retrieving-the-openshift-installer-development)
-    - [Choosing a OpenShift Installer Release from CI (Development)](#choosing-a-openshift-installer-release-from-ci-development)
-    - [Choosing the latest OpenShift Installer (Development)](#choosing-the-latest-openshift-installer-development)
-    - [Extract the Installer (Development)](#extract-the-installer-development)
-  - [Retrieving the OpenShift Installer (GA Release)](#retrieving-the-openshift-installer-ga-release)
-    - [Extract the Installer (GA Release)](#extract-the-installer-ga-release)
-    - [Create RHCOS images cache (Optional)](#create-rhcos-images-cache-optional)
-  - [Configure the install-config and metal3-config](#configure-the-install-config-and-metal3-config)
-  - [Deploying Routers on Worker Nodes](#deploying-routers-on-worker-nodes)
-  - [Deploying the Cluster via the OpenShift Installer](#deploying-the-cluster-via-the-openshift-installer)
-  - [Fix Metal3 ConfigMap](#fix-metal3-configmap)
-  - [Backup Cluster Config](#backup-cluster-config)
-- [Preparing Provisioner Node to be Deployed as a Worker Node](#preparing-provisioner-node-to-be-deployed-as-a-worker-node)
-  - [Append DNS Records for the worker-2 (old provisioner) on DNS Server (Option 1)](#append-dns-records-for-the-worker-2-old-provisioner-on-dns-server-option-1)
-  - [Append DNS Record for the worker-2 (old provisioner) using `dnsmasq` (Option 2)](#append-dns-record-for-the-worker-2-old-provisioner-using-dnsmasq-option-2)
-  - [Create DHCP Reservations for worker-2 (old provisioner) on DHCP Server (Option 1)](#create-dhcp-reservations-for-worker-2-old-provisioner-on-dhcp-server-option-1)
-  - [Create DHCP Reservations for worker-2 (old provisioner) using `dnsmasq` (Option 2)](#create-dhcp-reservations-for-worker-2-old-provisioner-using-dnsmasq-option-2)
-  - [Deploy the Provisioner node as a Worker Node using Metal3](#deploy-the-provisioner-node-as-a-worker-node-using-metal3)
+- [Introduction](#Introduction)
+- [Prerequisites](#Prerequisites)
+  - [Networking Requirements](#Networking-Requirements)
+    - [NIC Configuration](#NIC-Configuration)
+    - [Network Ranges](#Network-Ranges)
+    - [Reserved IPs on DHCP Server](#Reserved-IPs-on-DHCP-Server)
+    - [DNS Server](#DNS-Server)
+    - [Diagram](#Diagram)
+- [Installation Flow](#Installation-Flow)
+  - [Diagrams of the OpenShift Install Process](#Diagrams-of-the-OpenShift-Install-Process)
+- [Configuring Servers](#Configuring-Servers)
+  - [Out of Band Management](#Out-of-Band-Management)
+  - [Required Data for Installation](#Required-Data-for-Installation)
+- [IPv6 pre-checks](#IPv6-pre-checks)
+  - [SLAAC Addressing](#SLAAC-Addressing)
+- [Turn down/up baremetal iface on a master Node](#Turn-downup-baremetal-iface-on-a-master-Node)
+- [ndptool monitor on Helper node](#ndptool-monitor-on-Helper-node)
+  - [Router Advertisements](#Router-Advertisements)
+  - [Required Kernel parameters](#Required-Kernel-parameters)
+  - [Other considerations](#Other-considerations)
+- [Reserve IPs for the VIPs and Nodes](#Reserve-IPs-for-the-VIPs-and-Nodes)
+- [Create DNS records on a DNS server (Option 1)](#Create-DNS-records-on-a-DNS-server-Option-1)
+- [Create DNS records using `dnsmasq` (Option 2)](#Create-DNS-records-using-dnsmasq-Option-2)
+- [Create DHCP reservations (Option 1)](#Create-DHCP-reservations-Option-1)
+- [Create DHCP reservations using `dnsmasq` (Option 2)](#Create-DHCP-reservations-using-dnsmasq-Option-2)
+- [Install RHEL on the Provision Node](#Install-RHEL-on-the-Provision-Node)
+- [Preparing the Provision node for OpenShift Install](#Preparing-the-Provision-node-for-OpenShift-Install)
+  - [Retrieving the OpenShift Installer (Development)](#Retrieving-the-OpenShift-Installer-Development)
+    - [Choosing a OpenShift Installer Release from CI (Development)](#Choosing-a-OpenShift-Installer-Release-from-CI-Development)
+    - [Choosing the latest OpenShift Installer (Development)](#Choosing-the-latest-OpenShift-Installer-Development)
+    - [Extract the Installer (Development)](#Extract-the-Installer-Development)
+  - [Retrieving the OpenShift Installer (GA Release)](#Retrieving-the-OpenShift-Installer-GA-Release)
+    - [Extract the Installer (GA Release)](#Extract-the-Installer-GA-Release)
+    - [Create RHCOS images cache (Optional)](#Create-RHCOS-images-cache-Optional)
+  - [Configure the install-config and metal3-config](#Configure-the-install-config-and-metal3-config)
+  - [Deploying Routers on Worker Nodes](#Deploying-Routers-on-Worker-Nodes)
+  - [Deploying the Cluster via the OpenShift Installer](#Deploying-the-Cluster-via-the-OpenShift-Installer)
+  - [Fix Metal3 ConfigMap](#Fix-Metal3-ConfigMap)
+  - [Backup Cluster Config](#Backup-Cluster-Config)
+- [Preparing Provisioner Node to be Deployed as a Worker Node](#Preparing-Provisioner-Node-to-be-Deployed-as-a-Worker-Node)
+  - [Append DNS Records for the worker-2 (old provisioner) on DNS Server (Option 1)](#Append-DNS-Records-for-the-worker-2-old-provisioner-on-DNS-Server-Option-1)
+  - [Append DNS Record for the worker-2 (old provisioner) using `dnsmasq` (Option 2)](#Append-DNS-Record-for-the-worker-2-old-provisioner-using-dnsmasq-Option-2)
+  - [Create DHCP Reservations for worker-2 (old provisioner) on DHCP Server (Option 1)](#Create-DHCP-Reservations-for-worker-2-old-provisioner-on-DHCP-Server-Option-1)
+  - [Create DHCP Reservations for worker-2 (old provisioner) using `dnsmasq` (Option 2)](#Create-DHCP-Reservations-for-worker-2-old-provisioner-using-dnsmasq-Option-2)
+  - [Deploy the Provisioner node as a Worker Node using Metal3](#Deploy-the-Provisioner-node-as-a-Worker-Node-using-Metal3)
+  - [```yaml](#yaml)
+- [Create a Disconnected Registry (optional)](#Create-a-Disconnected-Registry-optional)
+  - [Prepare the System to Host the Mirrored Registry](#Prepare-the-System-to-Host-the-Mirrored-Registry)
+  - [Certificate](#Certificate)
+  - [Registry Pod](#Registry-Pod)
+  - [Pull-Secret](#Pull-Secret)
+  - [Mirror the Repository](#Mirror-the-Repository)
+  - [The install-config file](#The-install-config-file)
+    - [Add the Certificate for the Disconnected Registry](#Add-the-Certificate-for-the-Disconnected-Registry)
+    - [Add the Mirror Information for the Registry](#Add-the-Mirror-Information-for-the-Registry)
 
 <!-- /TOC -->
 
@@ -74,7 +92,9 @@ NOTE: It is recommended that each NIC be on a separate VLAN.
 ### Network Ranges
 
 The `provisioning` network is automatically assigned and configured using the
-`172.22.0.0/24` range. The `baremetal` (external) network assignment is to be provided
+`172.22.0.0/24` range, starting in OpenShift 4.4 the `provisioning` network
+range can be customized using the property `provisioningNetworkCIDR`. 
+The `baremetal` (external) network assignment is to be provided
 by your network administrator. It is required that each server be assigned a
 external IP address via a DHCP server.
 
@@ -209,6 +229,102 @@ gather the following information from **all** servers. The list includes:
 - NIC1 (`provisioning`) MAC address
 - NIC2 (`baremetal`) MAC address
 
+# IPv6 pre-checks
+
+If you are planning on deploying an IPv6 cluster, at this point, only fully disconnected installations
+are supported. On top of that, a few other things must be taken into consideration.
+
+## SLAAC Addressing
+
+If you're planning to configure IPv6 using DHCPv6, then you need to disable SLAAC Addressing for the `Baremetal` network.
+
+That means that if your network equipment is configured to send SLAAC addresses when replying to Route Advertisements that behavior should be changed, so it only sends the route and not 
+the SLAAC address. 
+
+You can install `ndptool` on your system in order to see what your RAs look like:
+
+~~~sh
+# Turn down/up baremetal iface on a master Node
+$ sudo nmcli con down "Wired connection 5" && sudo nmcli con up "Wired connection 5"
+Connection 'Wired connection 5' successfully deactivated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/1983)
+Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/2044)
+
+# ndptool monitor on Helper node
+$ sudo ndptool monitor -t ra
+NDP payload len 80, from addr: fe80::c0a4:6464:bcb3:d657, iface: baremetal.153
+  Type: RA
+  Hop limit: 64
+  Managed address configuration: yes
+  Other configuration: no
+  Default router preference: medium
+  Router lifetime: 0s
+  Reachable time: unspecified
+  Retransmit time: unspecified
+  Source linkaddr: 1c:40:24:1b:0c:34
+  Prefix: 2620:52:0:1303::/64, valid_time: 86400s, preferred_time: 14400s, on_link: yes, autonomous_addr_conf: no, router_addr: no
+  Route: ::/0, lifetime: 0s, preference: low
+~~~
+
+The `ndptool monitor` should report `Managed address configuration: yes`.
+
+## Router Advertisements
+
+Depending on your network configuration, you might need to configure `radvd` to implement link-local advertisements of IPv6 router addresses 
+and IPv6 routing prefixes using the Neighbor Discovery Protocol (NDP).
+
+Below a sample configuration:
+
+**radvd.conf**
+~~~
+interface baremetal 
+{
+	AdvManagedFlag on;
+	AdvSendAdvert on;
+	MinRtrAdvInterval 30;
+	MaxRtrAdvInterval 100;
+	AdvDefaultLifetime 0;
+
+	prefix 2620:52:0:1302::/64
+	{
+		AdvOnLink on;
+		AdvAutonomous off;
+		AdvRouterAddr off;
+	};
+	route ::/0 {
+		AdvRouteLifetime 0;
+		AdvRoutePreference low;
+		RemoveRoute on;
+	};
+};
+~~~
+
+## Required Kernel parameters
+
+The following Kernel parameters are required:
+
+~~~sh
+sudo cat <<EOF > /etc/sysctl.d/ipv6.conf
+net.ipv4.conf.all.rp_filter=0
+net.ipv6.conf.all.forwarding=1
+net.ipv6.conf.all.accept_ra=2
+net.ipv6.conf.lo.disable_ipv6=0
+EOF
+sudo sysctl --system
+~~~
+
+## Other considerations
+
+1. A container registry with a mirror of the OpenShift release images is required. You can follow the steps on the `Create a Disconnected Registry` section of this document
+2. RHCOS images should be pre-downloaded and exported using a webserver. You can follow the steps on the `Create RHCOS images cache` section of this document
+3. If you plan to use operators from the Operator Hub, you need to configure disconnected OLM. You can follow the steps from [this doc](https://docs.openshift.com/container-platform/4.3/operators/olm-restricted-networks.html)
+4. OVNKubernetes SDN is required
+5. If using an IPv6 `provisioning` network you might need to:
+   1. Change the boot mode from BIOS to UEFI
+   2. Enable IPv6 for PXE boot
+6. Baseboard management controllers (BMC) should be accesible over IPv6
+7. DHCP reservations for the `baremetal` network should be done using DUID instead of MAC addresses
+8. DNS records should be AAAA instead of A. The PTR records are important as well, you can use [this site](http://rdns6.com/hostRecord) for generating them
+
 # Reserve IPs for the VIPs and Nodes
 
 Previously, it was mentioned we would need the following IP address reserved
@@ -235,6 +351,9 @@ First, create a subzone with the name of the cluster that is going to be used on
 your domain. For clarity in the example, the domain used is `example.com` and the
 cluster name used is `openshift`. Ensure to change these according to your
 environment specifics.
+
+If deploying an IPv6 environment, you should create the same records, but instead 
+of A records, you have to create the respective AAAA records.
 
 1. Login to the DNS server via `ssh`
 2. Suspend updates to all dynamic zones: `rndc freeze`
@@ -330,6 +449,9 @@ reservations
 is an option. If not an option, skip this section and move to section Create
 DHCP reservations using `dnsmasq` (Option 2).
 
+If deploying an IPv6 environment, the reservations must be created using `DUID` instead
+of MAC addresses.
+
 1. Login to the DHCP server via `ssh`
 2. Edit `/etc/dhcp/dhcpd.hosts`
 
@@ -407,6 +529,7 @@ the `baremetal` network.
 5. Example of the `example.dns` file
    ```sh
    domain-needed
+   dhcp-authoritative
    bind-dynamic
    bogus-priv
    domain=rna1.cloud.lab.eng.bos.redhat.com
@@ -498,36 +621,35 @@ The following steps need to be performed in order to prepare the environment.
    ```
 9. Create the `default` storage pool and start it.
 
-```sh
-virsh pool-define-as --name default --type dir --target /var/lib/libvirt/images
-virsh pool-start default
-virsh pool-autostart default
-```
+   ```sh
+   virsh pool-define-as --name default --type dir --target /var/lib/libvirt/images
+   virsh pool-start default
+   virsh pool-autostart default
+   ```
 
 11. Configure networking (this step can also be run from the console)
 
-```sh
-
-# You will be disconnected, but reconnect via your ssh session after running
-export PUB_CONN=<baremetal_nic_name>
-export PROV_CONN=<prov_nic_name>
-nohup bash -c '
-nmcli con down "$PROV_CONN"
-        nmcli con down "$PUB_CONN"
-nmcli con delete "$PROV_CONN"
-        nmcli con delete "$PUB_CONN" # RHEL 8.1 appends the word "System" in front of the connection, delete in case it exists
-nmcli con down "System $PUB_CONN"
-        nmcli con delete "System $PUB_CONN"
-nmcli connection add ifname provisioning type bridge con-name provisioning
-nmcli con add type bridge-slave ifname "$PROV_CONN" master provisioning
-        nmcli connection add ifname baremetal type bridge con-name baremetal
-        nmcli con add type bridge-slave ifname "$PUB_CONN" master baremetal
-nmcli con down "\$PUB_CONN";pkill dhclient;dhclient baremetal
-nmcli connection modify provisioning ipv4.addresses 172.22.0.1/24 ipv4.method manual
-nmcli con down provisioning
-nmcli con up provisioning
-'
-```
+    ```sh
+    # You will be disconnected, but reconnect via your ssh session after running
+    export PUB_CONN=<baremetal_nic_name>
+    export PROV_CONN=<prov_nic_name>
+    nohup bash -c '
+    nmcli con down "$PROV_CONN"
+    nmcli con down "$PUB_CONN"
+    nmcli con delete "$PROV_CONN"
+    nmcli con delete "$PUB_CONN" # RHEL 8.1 appends the word "System" in front of the connection, delete in case it exists
+    nmcli con down "System $PUB_CONN"
+    nmcli con delete "System $PUB_CONN"
+    nmcli connection add ifname provisioning type bridge con-name provisioning
+    nmcli con add type bridge-slave ifname "$PROV_CONN" master provisioning
+    nmcli connection add ifname baremetal type bridge con-name baremetal
+    nmcli con add type bridge-slave ifname "$PUB_CONN" master baremetal
+    nmcli con down "\$PUB_CONN";pkill dhclient;dhclient baremetal
+    nmcli connection modify provisioning ipv4.addresses 172.22.0.1/24 ipv4.method manual
+    nmcli con down provisioning
+    nmcli con up provisioning
+    '
+    ```
 
 <!--
     nmcli con add type bridge ifname provisioning autoconnect yes con-name provisioning stp off
@@ -672,6 +794,9 @@ registry.centos.org/centos/httpd-24-centos7:latest
 
 ## Configure the install-config and metal3-config
 
+<details>
+  <summary><b>install-config IPv4</b></summary>
+
 1. Configure the `install-config.yaml` (Make sure you change the `pullSecret` and `sshKey`)
    ```yaml
    apiVersion: v1
@@ -694,9 +819,15 @@ registry.centos.org/centos/httpd-24-centos7:latest
        # If you are using cached images you need to configure the following properties (bootstrapOSImage and clusterOSImage) so the installer gets the images from the cache https://github.com/openshift-kni/baremetal-deploy/blob/master/install-steps.md#create-rhcos-images-cache-optional
        # bootstrapOSImage: http://172.22.0.1:8080/$RHCOS_QEMU_URI?sha256=$RHCOS_QEMU_SHA_UNCOMPRESSED
        # clusterOSImage: http://172.22.0.1:8080/$RHCOS_OPENSTACK_URI?sha256=$RHCOS_OPENSTACK_SHA_COMPRESSED
+       # If you want to configure your own provisioning network CIDR range (Only OCP 4.4+
+       # provisioningNetworkCIDR: 172.22.0.0/24
+       # If you want to configure a static IP for the bootstrap VM on the provisioning network
+       # bootstrapProvisioningIP: 172.22.0.2
        apiVIP: <api-ip>
        ingressVIP: <wildcard-ip>
        dnsVIP: <dns-ip>
+       # If installing OCP4.4+ you need to specify the provisioning interface for the OpenShift nodes
+       # provisioningNetworkInterface: <NIC1> e.g: eno1
        provisioningBridge: provisioning
        externalBridge: baremetal
        hosts:
@@ -743,25 +874,113 @@ registry.centos.org/centos/httpd-24-centos7:latest
    pullSecret: "<pull_secret>"
    sshKey: "<ssh_pub_key>"
    ```
+</details>
+
+<details>
+  <summary><b>install-config IPv6</b></summary>
+
+1. Configure the `install-config.yaml` (Make sure you change the `pullSecret` and `sshKey`)
+   ```yaml
+   apiVersion: v1
+   baseDomain: <domain>
+   metadata:
+     name: <cluster-name>
+   networking:
+     machineCIDR: <public-cidr>
+     networkType: OVNKubernetes
+     clusterNetwork:
+     - cidr: <clusternetwork-cidr> # e.g: fd01::/48
+       hostPrefix: <host-prefix> # e.g: 64
+     serviceNetwork:
+     - <servicenetwork-cidr> # e.g: fd02::/112
+   compute:
+     - name: worker
+       replicas: 2
+   controlPlane:
+     name: master
+     replicas: 3
+     platform:
+       baremetal: {}
+   platform:
+     baremetal:
+       # If you are using cached images you need to configure the following properties (bootstrapOSImage and clusterOSImage) so the installer gets the images from the cache https://github.com/openshift-kni/baremetal-deploy/blob/master/install-steps.md#create-rhcos-images-cache-optional
+       # bootstrapOSImage: http://172.22.0.1:8080/$RHCOS_QEMU_URI?sha256=$RHCOS_QEMU_SHA_UNCOMPRESSED
+       # clusterOSImage: http://172.22.0.1:8080/$RHCOS_OPENSTACK_URI?sha256=$RHCOS_OPENSTACK_SHA_COMPRESSED
+       # If you want to configure your own provisioning network CIDR range (Only OCP 4.4+)
+       # provisioningNetworkCIDR: fd34:fe56:7891:2f3a::/64
+       # If you want to configure a static IP for the bootstrap VM on the provisioning network
+       # bootstrapProvisioningIP: fd34:fe56:7891:2f3a::2
+       apiVIP: <api-ip>
+       ingressVIP: <wildcard-ip>
+       dnsVIP: <dns-ip>
+       # If installing OCP4.4+ you need to specify the provisioning interface for the OpenShift nodes
+       # provisioningNetworkInterface: <NIC1> e.g: eno1
+       provisioningBridge: provisioning
+       externalBridge: baremetal
+       hosts:
+         - name: openshift-master-0
+           role: master
+           bmc:
+             address: ipmi://<out-of-band-ip>
+             username: <user>
+             password: <password>
+           bootMACAddress: <NIC1-mac-address>
+           hardwareProfile: default
+         - name: openshift-master-1
+           role: master
+           bmc:
+             address: ipmi://<out-of-band-ip>
+             username: <user>
+             password: <password>
+           bootMACAddress: <NIC1-mac-address>
+           hardwareProfile: default
+         - name: openshift-master-2
+           role: master
+           bmc:
+             address: ipmi://<out-of-band-ip>
+             username: <user>
+             password: <password>
+           bootMACAddress: <NIC1-mac-address
+           hardwareProfile: default
+         - name: openshift-worker-0
+           role: worker
+           bmc:
+             address: ipmi://<out-of-band-ip>
+             username: <user>
+             password: <password>
+           bootMACAddress: <NIC1-mac-address
+           hardwareProfile: unknown
+         - name: openshift-worker-1
+           role: worker
+           bmc:
+             address: ipmi://<out-of-band-ip>
+             username: <user>
+             password: <password>
+           bootMACAddress: <NIC1-mac-address
+           hardwareProfile: unknown
+   pullSecret: "<pull_secret>"
+   sshKey: "<ssh_pub_key>"
+   ```
+</details>
 
 NOTE: Ensure to change the appropriate variables to match your environment.
 
 NOTE: If you wish to use a mirrored or disconnected registry, follow the steps in the `Create a Disconnected Registry` section below. The section has instructions on modifying the `install-config.yaml` file that must be performed before continuing onto the following steps.
 
-2. Create a directory to store cluster configurations
+1. Create a directory to store cluster configurations
 
    ```sh
    mkdir ~/clusterconfigs
    cp install-config.yaml ~/clusterconfigs
    ```
 
-3. Ensure all baremetal nodes are powered off prior to installing the OpenShift cluster
+2. Ensure all baremetal nodes are powered off prior to installing the OpenShift cluster
 
    ```sh
    ipmitool -I lanplus -U <user> -P <password> -H <management-server-ip> power off
    ```
 
-4. Ensure that old bootstrap resources are removed (if left-over from a previous deployment
+3. Ensure that old bootstrap resources are removed (if left-over from a previous deployment
    attempt)
 
    ```sh
@@ -773,8 +992,8 @@ NOTE: If you wish to use a mirrored or disconnected registry, follow the steps i
      sudo virsh vol-delete $i.ign --pool default;
    done
    ```
-
-5. IMPORTANT: This portion is critical as the OpenShift installation won't complete without
+> **NOTE**: Steps below are not longer required for OCP 4.4+
+4. IMPORTANT: This portion is critical as the OpenShift installation won't complete without
    the metal3-operator being fully operational. This is due to this
    [issue](https://github.com/openshift/installer/pull/2449) we need
    to fix the ConfigMap for the Metal3 operator. This ConfigMap is used to notify
@@ -804,21 +1023,21 @@ NOTE: If you wish to use a mirrored or disconnected registry, follow the steps i
 
    ```
 
-6. Create the final ConfigMap
+5. Create the final ConfigMap
    ```sh
    export COMMIT_ID=$(./openshift-baremetal-install version | grep '^built from commit' | awk '{print $4}')
    export RHCOS_PATH=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json | jq .images.openstack.path | sed 's/"//g')
    export RHCOS_URI=$(curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json | jq .baseURI | sed 's/"//g')
    envsubst < metal3-config.yaml.sample > metal3-config.yaml
    ```
-7. Create the OpenShift manifests
+6. Create the OpenShift manifests
    ```sh
    ./openshift-baremetal-install --dir ~/clusterconfigs create manifests
    INFO Consuming Install Config from target directory
    WARNING Making control-plane schedulable by setting MastersSchedulable to true for Scheduler cluster settings
    WARNING Discarding the Openshift Manifests that was provided in the target directory because its dependencies are dirty and it needs to be regenerated
    ```
-8. Copy the `metal3-config.yaml` to the `clusterconfigs/openshift` directory
+7. Copy the `metal3-config.yaml` to the `clusterconfigs/openshift` directory
    ```sh
    cp ~/metal3-config.yaml clusterconfigs/openshift/99_metal3-config.yaml
    ```
@@ -1170,161 +1389,161 @@ Once the prerequisites above have been set, the deploy process is as follows:
     openshift-worker-2.openshift.example.com        Ready    worker          3m27s   v1.16.2
     ```
 
-    # Create a Disconnected Registry (optional)
+# Create a Disconnected Registry (optional)
 
-    At times, it may be desirable to install an Openshift KNI cluster using a local copy of the installation registry.
-    This could be for network efficiency or the cluster to be deployed is on a network that does not have access to the internet.
+At times, it may be desirable to install an Openshift KNI cluster using a local copy of the installation registry.
+This could be for network efficiency or the cluster to be deployed is on a network that does not have access to the internet.
 
-    A local, or mirrored, copy of the registry requires the following:
+A local, or mirrored, copy of the registry requires the following:
 
-    - A certificate for the registry host, this can be self-signed.
-    - A web server, this will be served by a container on a system.
-    - An updated pull secret that contains the certificate and local repository information.
+  - A certificate for the registry host, this can be self-signed.
+  - A web server, this will be served by a container on a system.
+  - An updated pull secret that contains the certificate and local repository information.
 
-    ## Prepare the System to Host the Mirrored Registry
+## Prepare the System to Host the Mirrored Registry
 
-    The following steps should be applied to the registry host.
+The following steps should be applied to the registry host.
 
-    Open the firewall for the registry.
+Open the firewall for the registry.
 
-    ```bash
-    $ sudo firewall-cmd --add-port=5000/tcp --zone=libvirt  --permanent
-    $ sudo firewall-cmd --add-port=5000/tcp --zone=public   --permanent
-    $ sudo firewall-cmd --reload
-    ```
+```bash
+$ sudo firewall-cmd --add-port=5000/tcp --zone=libvirt  --permanent
+$ sudo firewall-cmd --add-port=5000/tcp --zone=public   --permanent
+$ sudo firewall-cmd --reload
+```
 
-    Install podman httpd and httpd-tools
+Install podman httpd and httpd-tools
 
-    ```bash
-    $ sudo yum -y install podman httpd httpd-tools
-    ```
+```bash
+$ sudo yum -y install podman httpd httpd-tools
+```
 
-    Make a the directory structure where the repository information will be held.
+Make a the directory structure where the repository information will be held.
 
-    ```bash
-    $ sudo mkdir -p /opt/registry/{auth,certs,data}
-    ```
+```bash
+$ sudo mkdir -p /opt/registry/{auth,certs,data}
+```
 
-    ## Certificate
+## Certificate
 
-    Generate a self signed certificate for the host.
-    The certificate will be placed in the /opt/registry/certs directory.
+Generate a self signed certificate for the host.
+The certificate will be placed in the /opt/registry/certs directory.
 
-    Adjust the following certificate information as appropriate.
+Adjust the following certificate information as appropriate.
 
-    ```bash
-    $ host_fqdn=$( hostname --long )
-    $ cert_c="US"               # Certificate CCommon Name (CN)
-    $ cert_s="Massachussets"    # Certificate State (S)
-    $ cert_l="Boston"           # Certificate Locality (L)
-    $ cert_o="Red Hat, Inc"     # Certificate Organization (O)
-    $ cert_ou="Engineering"     # Certificate Organizational Unit (OU)
-    $ cert_cn="${host_fqdn}"    # Certificate Common Name (CN)
+```bash
+$ host_fqdn=$( hostname --long )
+$ cert_c="US"               # Certificate CCommon Name (CN)
+$ cert_s="Massachussets"    # Certificate State (S)
+$ cert_l="Boston"           # Certificate Locality (L)
+$ cert_o="Red Hat, Inc"     # Certificate Organization (O)
+$ cert_ou="Engineering"     # Certificate Organizational Unit (OU)
+$ cert_cn="${host_fqdn}"    # Certificate Common Name (CN)
 
-    $ sudo openssl req \
-        -newkey rsa:4096 \
-        -nodes \
-        -sha256 \
-        -keyout /opt/registry/certs/domain.key \
-        -x509 \
-        -days 365 \
-        -out /opt/registry/certs/domain.crt \
-        -subj "/C=${cert_c}/ST=${cert_s}/L=${cert_l}/O=${cert_o}/OU=${cert_ou}/CN=${cert_cn}"
-    ```
+$ sudo openssl req \
+  -newkey rsa:4096 \
+  -nodes \
+  -sha256 \
+  -keyout /opt/registry/certs/domain.key \
+  -x509 \
+  -days 365 \
+  -out /opt/registry/certs/domain.crt \
+  -subj "/C=${cert_c}/ST=${cert_s}/L=${cert_l}/O=${cert_o}/OU=${cert_ou}/CN=${cert_cn}"
+```
 
-    Update the systems `ca-trust` with the new certificate
+Update the systems `ca-trust` with the new certificate
 
-    ```bash
-    $ sudo cp /opt/registry/certs/domain.crt /etc/pki/ca-trust/source/anchors/
-    $ sudo update-ca-trust extract
-    ```
+```bash
+$ sudo cp /opt/registry/certs/domain.crt /etc/pki/ca-trust/source/anchors/
+$ sudo update-ca-trust extract
+```
 
-    ## Registry Pod
+## Registry Pod
 
-    The registry container will use `/opt/registry` directory for certificates, authentication files and to store its data files.
+The registry container will use `/opt/registry` directory for certificates, authentication files and to store its data files.
 
-    The registry container uses `httpd` and needs an `htpasswd` file for authentication.
+The registry container uses `httpd` and needs an `htpasswd` file for authentication.
 
-    Create an `htpasswd` file in `/opt/registry/auth` for the container to use.
+Create an `htpasswd` file in `/opt/registry/auth` for the container to use.
 
-    ```bash
-    $ sudo htpasswd -bBc /opt/registry/auth/htpasswd dummy dummy
-    ```
+```bash
+$ sudo htpasswd -bBc /opt/registry/auth/htpasswd dummy dummy
+```
 
-    Create and start the registry container.
+Create and start the registry container.
 
-    ```bash
-    $ sudo podman create \
-      --name ocpdiscon-registry \
-      -p 5000:5000 \
-      -e "REGISTRY_AUTH=htpasswd" \
-      -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry" \
-      -e "REGISTRY_HTTP_SECRET=ALongRandomSecretForRegistry" \
-      -e "REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd" \
-      -e "REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt" \
-      -e "REGISTRY_HTTP_TLS_KEY=/certs/domain.key" \
-      -v /opt/registry/data:/var/lib/registry:z \
-      -v /opt/registry/auth:/auth:z \
-      -v /opt/registry/certs:/certs:z \
-      docker.io/library/registry:2
+```bash
+$ sudo podman create \
+  --name ocpdiscon-registry \
+  -p 5000:5000 \
+  -e "REGISTRY_AUTH=htpasswd" \
+  -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry" \
+  -e "REGISTRY_HTTP_SECRET=ALongRandomSecretForRegistry" \
+  -e "REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd" \
+  -e "REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt" \
+  -e "REGISTRY_HTTP_TLS_KEY=/certs/domain.key" \
+  -v /opt/registry/data:/var/lib/registry:z \
+  -v /opt/registry/auth:/auth:z \
+  -v /opt/registry/certs:/certs:z \
+  docker.io/library/registry:2
 
-    $ sudo podman start ocpdiscon-registry
-    ```
+$ sudo podman start ocpdiscon-registry
+```
 
-    ## Pull-Secret
+## Pull-Secret
 
-    The pull-secret must be modified to include the authentication information for the new registry.
+The pull-secret must be modified to include the authentication information for the new registry.
 
-    The following will update the pull-secret and place the new registry authentication credentials in the correct place in the json file.
-    The \$USER variable is an environmental variable containing the name of the currently logged in user.
+The following will update the pull-secret and place the new registry authentication credentials in the correct place in the json file.
+The \$USER variable is an environmental variable containing the name of the currently logged in user.
 
-    The authentication string is the base 64 encoding of the `http` credentials used to create the `htpasswd` file.
+The authentication string is the base 64 encoding of the `http` credentials used to create the `htpasswd` file.
 
-    ```bash
-    $ host_fqdn=$( hostname --long )
-    $ b64auth=$( echo -n 'dummy:dummy' openssl base64 )
-    $ AUTHSTRING="{\"$host_fqdn:5000\": {\"auth\": \"$b64auth\",\"email\": \"$USER@redhat.com\"}}"
+```bash
+$ host_fqdn=$( hostname --long )
+$ b64auth=$( echo -n 'dummy:dummy' openssl base64 )
+$ AUTHSTRING="{\"$host_fqdn:5000\": {\"auth\": \"$b64auth\",\"email\": \"$USER@redhat.com\"}}"
 
-    $ jq ".auths += $AUTHSTRING" < pull-secret.json > pull-secret.json.new
-    ```
+$ jq ".auths += $AUTHSTRING" < pull-secret.json > pull-secret.json.new
+```
 
-    ## Mirror the Repository
+## Mirror the Repository
 
-    Mirror the remote install images to the local repository
+Mirror the remote install images to the local repository
 
-    ```bash
-    $ /usr/local/bin/oc adm release mirror \
-      -a pull-secret.json.new
-      --from=$UPSTREAM_REPO \
-      --to-release-image=$LOCAL_REG/$LOCAL_REPO:${VERSION} \
-      --to=$LOCAL_REG/$LOCAL_REPO
-    ```
+```bash
+$ /usr/local/bin/oc adm release mirror \
+  -a pull-secret.json.new
+  --from=$UPSTREAM_REPO \
+  --to-release-image=$LOCAL_REG/$LOCAL_REPO:${VERSION} \
+  --to=$LOCAL_REG/$LOCAL_REPO
+```
 
-    ## The install-config file
+## The install-config file
 
-    The install-config file should use the newly created pull-secret.
-    The install-config file must also contain the disconnected registry hosts certificate and registry information.
+The install-config file should use the newly created pull-secret.
+The install-config file must also contain the disconnected registry hosts certificate and registry information.
 
-    ### Add the Certificate for the Disconnected Registry
+### Add the Certificate for the Disconnected Registry
 
-    Add the disconnected registry servers certificate to the install-config file.
-    The certificate should follow the `additionalTrustBundle: |` line and be properly indented, usually by two spaces.
+Add the disconnected registry servers certificate to the install-config file.
+The certificate should follow the `additionalTrustBundle: |` line and be properly indented, usually by two spaces.
 
-    ```bash
-      echo "additionalTrustBundle: |" >> install-config.yaml
-      sed -e 's/^/  /' /opt/registry/certs/domain.crt >> install-config.yaml
-    ```
+```bash
+echo "additionalTrustBundle: |" >> install-config.yaml
+sed -e 's/^/  /' /opt/registry/certs/domain.crt >> install-config.yaml
+```
 
-    ### Add the Mirror Information for the Registry
+### Add the Mirror Information for the Registry
 
-    The mirror configuration must be added to the install-config file.
+The mirror configuration must be added to the install-config file.
 
-    ```bash
-      echo "imageContentSources:" >> install-config.yaml
-      echo "- mirrors:" >> install-config.yaml
-      echo "  - $host_fqdn:5000/ocp4/openshift4" >> install-config.yaml
-      echo "  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev" >> install-config.yaml
-      echo "- mirrors:" >> install-config.yaml
-      echo "  - $host_fqdn:5000/ocp4/openshift4" >> install-config.yaml
-      echo "  source: registry.svc.ci.openshift.org/ocp/release" >> install-config.yaml
-    ```
+```bash
+echo "imageContentSources:" >> install-config.yaml
+echo "- mirrors:" >> install-config.yaml
+echo "  - $host_fqdn:5000/ocp4/openshift4" >> install-config.yaml
+echo "  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev" >> install-config.yaml
+echo "- mirrors:" >> install-config.yaml
+echo "  - $host_fqdn:5000/ocp4/openshift4" >> install-config.yaml
+echo "  source: registry.svc.ci.openshift.org/ocp/release" >> install-config.yaml
+```

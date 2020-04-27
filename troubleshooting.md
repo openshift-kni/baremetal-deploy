@@ -503,6 +503,77 @@ After the registry is mirrored, confirm that you can access this in your disconn
 {"repositories":["<Repo-Name>"]}
 ```
 
+## Servers not getting the correct IPv6 over DHCP
+
+1. The reserved IPv6 addresses should be outisde your DHCP Range
+2. In the reservation make sure you're using the correct MAC Address and Client ID (if supported), example below:
+    
+    ~~~sh
+    # This is a dnsmasq dhcp reservation, 'id:00:03:00:01' is the client id and '18:db:f2:8c:d5:9f' is the MAC Address for the NIC
+    id:00:03:00:01:18:db:f2:8c:d5:9f,openshift-master-1,[2620:52:0:1302::6]
+    ~~~
+3. Make sure Route Announcements are working and that DHCP server is listenting on the required interfaces serving the required ranges
+
+## Servers not getting the correct hostname over DHCP
+
+During the IPv6 deployment you need your servers to get their hostname over DHCP, we faced serveral issues when for some reason (we couldn't figure out why yet) the hostname is not assigned by NetworkManager right away.
+
+If you login in the master nodes and you find something like this:
+
+~~~
+Failed Units: 2
+  NetworkManager-wait-online.service
+  nodeip-configuration.service
+~~~
+
+Your node likely booted up without hostname, which cause Kubelet to boot with `localhost.localdomain` hostname. This will cause several issues, we're going to going throught the different fixes below.
+
+1. Force the hostname renewal
+
+    ~~~sh
+    # Check hostname, if it's localhost run below steps.
+    hostname
+    # Wired Connection 5 corresponds to the connection which is assigned to the NIC connected to the baremetal network, it may be different in your env
+    # This will force the host to renew the dhcp lease
+    sudo nmcli con up "Wired connection 5"
+    # Check hostname again
+    hostname
+    # If the hostname is still localhost.localdomain restart NetworkManager
+    sudo systemctl restart NetworkManager
+    # If the hostname is still localhost.localdomain wait a few seconds/minutes and check again, if same, repeat previous steps
+    ~~~
+2. Restart `nodeip-configuration` service
+
+    ~~~sh
+    # This service will reconfigure Kubelet service with the correct hostname references
+    sudo systemctl restart nodeip-configuration.service
+    ~~~
+3. Restart `kubelet` service
+
+    ~~~sh
+    # We need to reload the unit files definition since kubelet one was changed by previous step
+    sudo systemctl daemon-reload
+    # Restart kubelet
+    sudo systemctl restart kubelet.service
+    ~~~
+4. Ensure `kubelet` booted with correct hostname
+
+    ~~~sh
+    # Tail the journal and find the hostname
+    sudo journalctl -fu kubelet.service
+    ~~~
+
+If you already had this cluster running when the node booted up with the wrong hostname you will have pending `csrs` on the cluster, you **MUST NOT** approve them, otherwise you will face even more issues.
+
+~~~sh
+# Get CSR on the cluster
+oc get csr
+# If you see Pending csr ensure they are good ones
+oc get csr <pending_csr> -o jsonpath='{.spec.request}' | base64 -d | openssl req -noout -text
+# If you see Subject Name: localhost.localdomain remove the csr
+oc delete csr <wrong_csr>
+~~~
+
 ## Misc Issues 
 
 * After cluster deployment if you see `runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:Network plugin returns error: Missing CNI default network` we need to inspect the pods in `openshift-network-operator` namespace. 
