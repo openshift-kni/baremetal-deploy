@@ -6,6 +6,7 @@
         service: http
         permanent: yes
         state: enabled
+        immediate: yes
       become: yes
 
     - name: Open port {{ webserver_caching_port }}/tcp, zone public, for cache for firewalld
@@ -14,17 +15,9 @@
         permanent: yes
         state: enabled
         zone: "public"
+        immediate: yes
       become: yes
       when: cache_enabled|bool
-
-    - name: Restart Firewalld
-      service:
-        name: firewalld
-        state: restarted
-        enabled: yes
-      become: yes
-  when: firewall != "iptables"
-  tags: firewall
 
 - name: Configure iptables
   block:
