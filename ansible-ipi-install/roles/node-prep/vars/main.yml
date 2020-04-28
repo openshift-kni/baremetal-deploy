@@ -10,6 +10,7 @@ package_list:
   - ipmitool
   - python3-libvirt
   - python3-lxml
+  - python3-yaml
   - NetworkManager-libnm
   - nm-connection-editor
   - libsemanage-python3
