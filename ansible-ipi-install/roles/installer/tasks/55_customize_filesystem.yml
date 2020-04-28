@@ -22,6 +22,7 @@
     copy:
       src: "{{ dir }}/{{ item }}.ign"
       dest: "{{ dir }}/{{ item }}.ign.orig"
+      remote_src: yes
     with_items:
       - "master"
       - "worker"
