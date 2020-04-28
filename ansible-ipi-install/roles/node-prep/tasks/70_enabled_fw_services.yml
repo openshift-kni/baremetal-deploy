@@ -18,6 +18,8 @@
         immediate: yes
       become: yes
       when: cache_enabled|bool
+  when: firewall != "iptables"
+  tags: firewall
 
 - name: Configure iptables
   block:
