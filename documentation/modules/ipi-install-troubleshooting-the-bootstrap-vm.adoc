@@ -14,6 +14,7 @@ and the installer will report a timeout waiting for the Ironic API.
 The bootstrap VM obtains an IP address from the DHCP server on the externally
 routable `baremetal` network. To retrieve the IP address, execute the following:
 
+[source,bash]
 ----
 # virsh net-dhcp-leases baremetal
 ----
@@ -25,6 +26,7 @@ VM's console with `virt-manager` can also be helpful.
 To troubleshoot the Ironic services on the bootstrap VM, log in to the VM using
 the core user and the SSH key defined in the installation configuration.
 
+[source,bash]
 ----
 # ssh core@<bootstrap-vm> -i /path/to/ssh-key/key.txt
 ----
@@ -33,12 +35,14 @@ the core user and the SSH key defined in the installation configuration.
 
 To view the Ironic logs, execute the following:
 
+[source,bash]
 ----
 # journalctl -u ironic
 ----
 
 To view the logs of the individual containers, execute the following:
 
+[source,bash]
 ----
 # podman logs ipa-downloader
 # podman logs coreos-downloader

@@ -4,9 +4,9 @@
 // ipi-install-installation-workflow.adoc
 // Upstream module
 
-[id="creating-dhcp-reservations-for-the worker-2-(old provisioner)-on-a-DHCP-server-option1_{context}"]
+[id="creating-dhcp-reservations-for-the worker-2-old-provisioner-on-a-DHCP-server-option1_{context}"]
 
-= Creating DHCP reservations for the worker-2 (old provisioner) on a DHCP server (Option 1)
+= Configuring dhcpd (Option 1)
 
 .Procedure
 
@@ -30,6 +30,7 @@ Remove the provisioner as it is replaced by openshift-worker-2.
 
 . Restart the `dhcpd` service.
 +
+[source,bash]
 ----
 systemctl restart dhcpd
 ----

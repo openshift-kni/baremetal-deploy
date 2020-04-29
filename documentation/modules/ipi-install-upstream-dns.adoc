@@ -1,0 +1,12 @@
+[id="DNS"]
+= Creating DNS Records
+
+Two options are documented for configuring DNS records:
+
+- xref:creating-dns-records-on-a-dns-server-option1_{context}[On a DNS Server (Bind)]
+- xref:creating-dns-records-using-dnsmasq-option2_{context}[Using dnsmasq]
+
+ifdef::upstream[]
+include::ipi-install-upstream-creating-dns-records-on-a-dns-server-option1.adoc[leveloffset=+1]
+include::ipi-install-upstream-creating-dns-records-using-dnsmasq-option2.adoc[leveloffset=+1]
+endif::[]

@@ -6,7 +6,7 @@
 
 [id="creating-dns-records-using-dnsmasq-option2_{context}"]
 
-= Creating DNS records using dnsmasq (Option 2)
+= Configuring dnsmasq (Option 2)
 
 To create DNS records, open the `/etc/hosts` file and add the NIC2 (baremetal net) IP followed by the hostname.
 In our example, the domain used is `example.com` and the cluster name used is `openshift`.
@@ -32,6 +32,7 @@ cat /etc/hosts
 
 . Open the appropriate `firewalld` DNS service and reload the rules.
 +
+[source,bash]
 ----
 systemctl restart firewalld
 firewall-cmd --add-service=dns --permanent

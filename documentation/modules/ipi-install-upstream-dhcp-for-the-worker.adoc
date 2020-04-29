@@ -1,0 +1,6 @@
+[id="ipi-install-upstream-dhco-for-the-worker"]
+
+= Appending DHCP reservations
+
+include::ipi-install-upstream-creating-dhcp-reservations-for-the-worker-2-old-provisioner-on-a-DHCP-server-option1.adoc[leveloffset=+1]
+include::ipi-install-upstream-creating-dhcp-reservations-for-the-worker-2-old-provisioner-using-dnsmasq-option2.adoc[leveloffset=+1]

@@ -6,12 +6,13 @@
 
 [id="extracting-the-installer-development_{context}"]
 
-= Extracting the installer (Development)
+= Extracting the {product-title} installer (Development)
 
 .Procedure
 
 After choosing the installer, the next step is to extract it.
 
+[source,bash]
 ----
 export cmd=openshift-baremetal-install
 export pullsecret_file=~/pull-secret.txt

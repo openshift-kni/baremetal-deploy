@@ -4,9 +4,9 @@
 // ipi-install-installation-workflow.adoc
 // Upstream module
 
-[id="appending-dns-records-for-the worker-2-(old provisioner)-on-a-DNS-server-option1_{context}"]
+[id="appending-dns-records-for-the worker-2-old-provisioner-on-a-DNS-server-option1_{context}"]
 
-= Appending DNS records for the worker-2 (old provisioner) on a DNS server (Option 1)
+= Configuring Bind (Option 1)
 
 .Procedure
 

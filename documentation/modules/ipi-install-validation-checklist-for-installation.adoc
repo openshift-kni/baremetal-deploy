@@ -12,3 +12,5 @@
 * [ ] The `hosts` parameter for the `install-config.yaml` has been configured.
 * [ ] The `bmc` parameter for the `install-config.yaml` has been configured.
 * [ ] Conventions for the values configured in the `bmc` `address` field have been applied.
+* [ ] (optional) Validate disconnected registry settings if in use
+* [ ] (optional) Deployed routers on worker nodes

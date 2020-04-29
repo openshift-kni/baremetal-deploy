@@ -6,7 +6,7 @@
 
 [id="creating-dhcp-reservations-option1_{context}"]
 
-= Creating DHCP reservations (Option 1)
+= Configuring dhcpd (Option 1)
 
 Use Option 1 if access to the appropriate DHCP server for the baremetal network is accessible or a request
 to your network admin to create the DHCP reservations is an option.
@@ -59,6 +59,7 @@ host openshift-worker-1 {
 
 . Restart the `dhcpd` service.
 +
+[source,bash]
 ----
 systemctl restart dhcpd
 ----

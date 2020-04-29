@@ -4,9 +4,9 @@
 // ipi-install-installation-workflow.adoc
 // Upstream module
 
-[id="appending-dns-records-for-the worker-2-(old provisioner)-using-dnsmasq-option2_{context}"]
+[id="appending-dns-records-for-the worker-2-old-provisioner-using-dnsmasq-option2_{context}"]
 
-= Appending DNS records for the worker-2 (old provisioner) using dnsmasq (Option 2)
+= Configuring dnsmasq (Option 2)
 
 .Procedure
 

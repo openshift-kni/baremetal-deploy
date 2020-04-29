@@ -4,9 +4,9 @@
 // ipi-install-installation-workflow.adoc
 // Upstream module
 
-[id="creating-dhcp-reservations-for-the worker-2-(old provisioner)-using-dnsmasq-option2_{context}"]
+[id="creating-dhcp-reservations-for-the worker-2-old-provisioner-using-dnsmasq-option2_{context}"]
 
-= Creating DHCP reservations for the worker-2 (old provisioner) using dnsmasq (Option 2)
+= Configuring dnsmasq (Option 2)
 
 .Procedure
 
@@ -25,6 +25,7 @@ Remove the `provisioner.openshift.example.com` entry as it is replaced by worker
 
 . Restart the `dnsmasq` service.
 +
+[source,bash]
 ----
 systemctl restart dnsmasq
 ----

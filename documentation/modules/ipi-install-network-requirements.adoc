@@ -49,6 +49,14 @@ For example:
 test-cluster.example.com
 ----
 
+ifdef::upstream[]
+For assistance in configuring the DNS server, check xref:ipi-install-upstream-appendix[Appendix] section for:
+
+- xref:creating-dns-records-on-a-dns-server-option1_{context}[Creating DNS Records with Bind (Option 1)]
+- xref:creating-dns-records-using-dnsmasq-option2_{context}[Creating DNS Records with dnsmasq (Option 2)]
+
+endif::[]
+
 .Reserving IP Addresses for Nodes with the DHCP Server
 
 For the `baremetal` network, a network administrator must reserve a number of IP addresses, including:
@@ -80,3 +88,11 @@ The following table provides an exemplary embodiment of hostnames for each node 
 | Worker-1 | openshift-worker-1.<cluster-name>.<domain> | <ip>
 | Worker-n | openshift-worker-n.<cluster-name>.<domain> | <ip>
 |=====
+
+
+ifdef::upstream[]
+For assistance in configuring the DHCP server, check xref:ipi-install-upstream-appendix[Appendix] section for:
+
+- xref:creating-dhcp-reservations-option1_{context}[Creating DHCP reservations with dhcpd (Option 1)]
+- xref:creating-dhcp-reservations-using-dnsmasq-option2_{context}[Creating DHCP reservations with dnsmasq (Option 2)]
+endif::[]
