@@ -2,10 +2,15 @@
 # vars file for shared-labs-ocp4-prep
 yum_packages:
   - dnsmasq
-  - python3-dns
   - podman
   - ipmitool
   - iptables-services
+  - git
+  - python3
+  - python3-dns
+  - python3-yaml
   - python3-urllib3
   - python3-requests
+  - https://trunk.rdoproject.org/rhel8-master/deps/latest/Packages/python3-crypto-2.6.1-18.el8ost.x86_64.rpm
+  - https://trunk.rdoproject.org/rhel8-master/deps/latest/Packages/python3-pyghmi-1.0.22-2.el8ost.noarch.rpm
 badfish_cmd: "./badfish.py -u {{ lab_ipmi_user }} -p {{ lab_ipmi_password }} -i config/idrac_interfaces.yml -H mgmt-"

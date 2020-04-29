@@ -36,7 +36,7 @@
 
 - name: Get baremetal bridge slave devices
   shell: |
-    bridge link | grep baremetal | awk '{print $2}' | awk -F: '{print $1}' | uniq
+    bridge link | grep baremetal | grep -v vnet | awk '{print $2}' | awk -F: '{print $1}' | uniq
   become: yes
   register: baremetal_slave_devices
 
@@ -120,53 +120,31 @@
   retries: 3
   delay: 30
 
-- name: Clear master nodes redfish job queue
+- name: Clear redfish job queues
   shell:
     chdir: "{{ badfish_tempdir }}"
     cmd: |
       {{ badfish_cmd }}{{ item }} --clear-jobs --force
-  with_items: "{{ master_fqdns }}"
-  register: master_redfish
-  until: master_redfish is succeeded
+  with_items:
+    - "{{ master_fqdns }}"
+    - "{{ worker_fqdns }}"
+  register: clear_jobs
+  until: clear_jobs is succeeded
   retries: 3
   delay: 30
   tags:
     - clearjobs
 
-- name: Clear worker nodes redfish job queue
-  shell:
-    chdir: "{{ badfish_tempdir }}"
-    cmd: |
-      {{ badfish_cmd }}{{ item }} --clear-jobs --force
-  with_items: "{{ worker_fqdns }}"
-  register: worker_redfish
-  until: worker_redfish is succeeded
-  retries: 3
-  delay: 30
-  tags:
-    - clearjobs
-
-- name: Set master nodes to director boot order
+- name: Set nodes to director boot order
   shell:
     chdir: "{{ badfish_tempdir }}"
     cmd: |
       {{ badfish_cmd }}{{ item }} -t director
-  with_items: "{{ master_fqdns }}"
-  register: master_boot_order
-  until: master_boot_order is succeeded
-  retries: 3
-  delay: 60
-  tags:
-    - bootorder
-
-- name: Set worker nodes to director boot order
-  shell:
-    chdir: "{{ badfish_tempdir }}"
-    cmd: |
-      {{ badfish_cmd }}{{ item }} -t director
-  with_items: "{{ worker_fqdns }}"
-  register: worker_boot_order
-  until: worker_boot_order is succeeded
+  with_items:
+    - "{{ master_fqdns }}"
+    - "{{ worker_fqdns }}"
+  register: boot_order
+  until: boot_order is succeeded
   retries: 3
   delay: 60
   tags:
@@ -178,6 +156,18 @@
   selinux:
     policy: targeted
     state: permissive
+  become: yes
+
+- name: Stop dnsmasq service
+  systemd:
+    name: dnsmasq
+    state: stopped
+  become: yes
+
+- name: Clear dnsmasq leases
+  file:
+    path: /var/lib/dnsmasq/dnsmasq.leases
+    state: absent
   become: yes
 
 - name: Configure dnsmasq for baremetal
@@ -208,10 +198,10 @@
     /usr/sbin/iptables-save > /etc/sysconfig/iptables
   become: yes
 
-- name: Enable and restart dnsmasq service
+- name: Enable and start dnsmasq service
   systemd:
     name: dnsmasq
-    state: restarted
+    state: started
     enabled: yes
   become: yes
 
