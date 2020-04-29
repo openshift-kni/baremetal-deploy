@@ -114,9 +114,9 @@ The tree structure is shown below:
     │   │   ├── 24_rhcos_image_cache.yml
     │   │   ├── 25_create-install-config.yml
     │   │   ├── 30_create_metal3.yml
-    │   │   ├── 35_customize_filesystem.yml
     │   │   ├── 40_create_manifest.yml
     │   │   ├── 50_extramanifests.yml
+    │   │   ├── 55_customize_filesystem.yml
     │   │   ├── 59_cleanup_bootstrap.yml
     │   │   ├── 60_deploy_ocp.yml
     │   │   ├── 70_cleanup_sub_man_registeration.yml

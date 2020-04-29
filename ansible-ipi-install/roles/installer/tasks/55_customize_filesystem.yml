@@ -56,6 +56,18 @@
   when: (filesFound | json_query('results[*].matched') | sum) > 0
   tags: customfs
 
+- name: Create backup of ignition config files
+  copy:
+    src: "{{ dir }}/{{ item }}.ign"
+    dest: "{{ dir }}/{{ item }}.ign.bkup"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+    remote_src: yes
+  with_items:
+    - "master"
+    - "worker"
+
 - name: Delete tmp dir as no longer needed
   file:
     path: "{{ tempdir }}"
