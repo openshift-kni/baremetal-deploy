@@ -64,6 +64,14 @@ prov_ip=172.22.0.3
 # i.e. .example.com
 #no_proxy_list="172.22.0.0/24,.example.com"
 
+# The default installer timeouts for the bootstrap and install processes may be too short for some baremetal
+# deployments. The variables below can be used to extend those timeouts.
+
+# (Optional) Increase bootstrap process timeout by N iterations.
+#increase_bootstrap_timeout=2
+
+# (Optional) Increase install process timeout by N iterations.
+#increase_install_timeout=2
 
 ######################################
 # Vars regarding install-config.yaml #
