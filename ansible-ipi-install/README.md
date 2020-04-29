@@ -148,6 +148,7 @@ The tree structure is shown below:
         │   ├── 20_sub_man_register.yml
         │   ├── 30_req_packages.yml
         │   ├── 40_bridge.yml
+        │   ├── 45_networking_facts.yml
         │   ├── 50_modify_sudo_user.yml
         │   ├── 60_enabled_services.yml
         │   ├── 70_enabled_fw_services.yml
@@ -707,6 +708,7 @@ playbook: playbook.yml
       include_tasks	TAGS: [subscription]
       include_tasks	TAGS: [packages]
       include_tasks	TAGS: [network]
+      include_tasks	TAGS: [network_facts]
       include_tasks	TAGS: [user]
       include_tasks	TAGS: [services]
       include_tasks	TAGS: [firewall]
@@ -724,7 +726,7 @@ playbook: playbook.yml
       include_tasks	TAGS: [extramanifests]
       include_tasks	TAGS: [cleanup]
       include_tasks	TAGS: [install]
-      TASK TAGS: [cache, cleanup, clusterconfigs, customfs, extract, extramanifests, firewall, getoc, install, installconfig, manifests, metal3config, network, packages, powerservers, pullsecret, rhcospath, services, storagepool, subscription, user, validation]
+      TASK TAGS: [cache, cleanup, clusterconfigs, customfs, extract, extramanifests, firewall, getoc, install, installconfig, manifests, metal3config, network, network_facts, packages, powerservers, pullsecret, rhcospath, services, storagepool, subscription, user, validation]
 ```
 
 To break this down further, the following is a description of each tag.
@@ -735,6 +737,7 @@ To break this down further, the following is a description of each tag.
 | `subscription`   | subscribe via Red Hat subscription manager                                                                                                                       |
 | `packages`       | install required package for OpenShift                                                                                                                           |
 | `network`        | setup the provisioning and baremetal network bridges and bridge slaves                                                                                           |
+| `network_facts`  | regather networking facts of environment                                                                                                                         |
 | `user`           | add remote user to `libvirt` group and generate SSH keys                                                                                                         |
 | `services`       | enable appropriate services for OpenShift                                                                                                                        |
 | `firewall`       | set firewall rules for OpenShift                                                                                                                                 |

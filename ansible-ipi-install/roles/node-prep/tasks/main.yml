@@ -15,6 +15,8 @@
 - include_tasks: 40_bridge.yml
   tags:
   - network
+- include_tasks: 45_networking_facts.yml
+  tags:
   - network_facts
 - include_tasks: 50_modify_sudo_user.yml
   tags: user
