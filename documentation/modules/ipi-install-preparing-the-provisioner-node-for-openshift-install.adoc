@@ -88,43 +88,15 @@ For more information about Red Hat Subscription Manager, see link:https://access
 [kni@provisioner ~]$ sudo virsh pool-start default
 [kni@provisioner ~]$ sudo virsh pool-autostart default
 ----
-
-. Configure networking.
 +
-[NOTE]
-====
-This step can also be run from the web console.
-====
+ifeval::[{release} > 4.3]
+include::ipi-install-nmcli-setup.adoc[]
+endif::[]
 +
-[source,bash]
-----
-
-[kni@provisioner ~]$ export PUB_CONN=<baremetal_nic_name>
-[kni@provisioner ~]$ export PROV_CONN=<prov_nic_name>
-[kni@provisioner ~]$ sudo nohup bash -c '
-    nmcli con down "$PROV_CONN"
-    nmcli con down "$PUB_CONN"
-    nmcli con delete "$PROV_CONN"
-    nmcli con delete "$PUB_CONN"
-    # RHEL 8.1 appends the word "System" in front of the connection, delete in case it exists
-    nmcli con down "System $PUB_CONN"
-    nmcli con delete "System $PUB_CONN"
-    nmcli connection add ifname provisioning type bridge con-name provisioning
-    nmcli con add type bridge-slave ifname "$PROV_CONN" master provisioning
-    nmcli connection add ifname baremetal type bridge con-name baremetal
-    nmcli con add type bridge-slave ifname "$PUB_CONN" master baremetal
-    nmcli con down "$PUB_CONN";pkill dhclient;dhclient baremetal
-    nmcli connection modify provisioning ipv4.addresses 172.22.0.1/24 ipv4.method manual
-    nmcli con down provisioning
-    nmcli con up provisioning
-'
-----
+ifeval::[{release} <= 4.3]
+include::ipi-install-nmcli-setup-4.3.adoc[]
+endif::[]
 +
-[NOTE]
-====
-The `ssh` connection may disconnect after executing this step.
-====
-
 . `ssh` back into the `provisioner` node (if required).
 +
 [source,bash]
