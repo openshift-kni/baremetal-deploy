@@ -163,18 +163,15 @@
 
 - name: Fail if hostgroups not defined in inventory/hosts file
   fail:
-    msg: "The {{ item }} group is not defined. Please add [{{ item }}] to the inventory/hosts file"
-  when: "'{{ item }}' not in groups"
-  loop:
-    - masters
-    - workers
+    msg: "The masters group is not defined. Please add masters to the inventory/hosts file"
+  when: "'masters' not in groups"
   tags:
   - always
   - validation
 
 - name: Set Fact of num of workers and masters based on inventory
   set_fact:
-    numworkers: "{{ groups['workers'] | length }}"
+    numworkers: "{{ groups['workers'] | default([]) | length }}"
     nummasters: "{{ groups['masters'] | length }}"
   tags:
   - always

@@ -59,6 +59,7 @@ platform:
         hardwareProfile: default
 {% endif %}
 {% endfor %}
+{% if groups['workers'] is defined %}
 {% for host in groups['workers'] %}
       - name: {{ hostvars[host]['inventory_hostname'] }}
         role: {{ hostvars[host]['role'] }}
@@ -77,6 +78,7 @@ platform:
         hardwareProfile: unknown
 {% endif %}
 {% endfor %}
+{% endif %}
 pullSecret: '{{ pullsecret }}'
 sshKey: '{{ key }}'
 {% if install_config_appends is defined and install_config_appends|length %}
