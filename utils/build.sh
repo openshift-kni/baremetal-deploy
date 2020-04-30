@@ -26,22 +26,19 @@ for release in ${RELEASES}; do
     build_for_release ${release}
 done
 
+# Build JSON of generated documentation pages
+TARGET="output/_data"
+mkdir -p ${TARGET}
+
 # Build HTML page for all generated docs
 
-echo "<HTML>" >output/index.html
-echo "<HEAD>" >>output/index.html
-echo "<TITLE>" >>output/index.html
-echo "Baremetal deployment" >>output/index.html
-echo "</TITLE>" >>output/index.html
-echo "</HEAD>" >>output/index.html
-echo "<BODY>" >>output/index.html
-echo "<ul>" >>output/index.html
 for release in ${RELEASES}; do
-    echo "<li>Check documentation on <a href=\"${release}/index.html\">${release}</a></li>" >>output/index.html
+    echo """
+${release}:
+    name: ${release}
+    folder: ${release}/
+    """ >>${TARGET}/releases.yml
 done
-echo "</ul>" >>output/index.html
-echo "</BODY>" >>output/index.html
-echo "</HTML>" >>output/index.html
 
 # TODO: CHECK why RC != 0 with no errors output (despite of gem)
 RC=0

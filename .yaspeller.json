@@ -71,6 +71,7 @@
     "NTP",
     "QEMU",
     "kubelet",
-    "ansible"
+    "ansible",
+    "endfor"
   ]
 }

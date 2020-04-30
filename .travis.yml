@@ -9,8 +9,7 @@ script:
 - utils/build.sh
 
 after_success:
-- touch output/.nojekyll
-- cp README.md output/
+- utils/build-jekyll.sh
 
 deploy:
   skip_cleanup: true
