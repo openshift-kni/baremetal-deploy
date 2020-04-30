@@ -1,0 +1,26 @@
+// Retrieving the OpenShift Installer from CI, include GA as one level under and include title
+ifdef::upstream[]
+
+// Title to include both UPS and GA
+= Retrieving OpenShift Installer
+The following sections describe how to properly retrieve and extract the {product-title} for either upstream or downstream. Choose the appropriate Installer for your use case.
+
+- xref:retrieving-openshift-installer-devel[Development version]
+- xref:retrieving-openshift-installer-ga[GA version]
+
+
+include::ipi-install-retrieving-openshift-installer-UPSTREAM.adoc[leveloffset=+1]
+include::ipi-install-retrieving-openshift-installer-GA.adoc[leveloffset=+1]
+
+
+
+
+
+endif::[]
+
+// Retrieving the openShift Installer from GA, when not having upstream import at same level
+ifndef::upstream[]
+include::ipi-install-retrieving-the-openshift-installer.adoc[leveloffset=+0]
+include::ipi-install-extracting-the-openshift-installer.adoc[leveloffset=+0]
+
+endif::[]

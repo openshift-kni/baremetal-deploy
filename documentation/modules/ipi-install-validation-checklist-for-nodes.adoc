@@ -9,7 +9,7 @@
 * [ ] NIC1 VLAN is configured for provisioning.
 * [ ] NIC2 VLAN is configured for bare metal.
 * [ ] NIC1 is PXE-enabled on the provisioning, control plane (master), and worker nodes.
-* [ ] NIC2 is PXE-enabled on the provisioning node.
+* [ ] NIC2 is PXE-enabled on *only* the provisioning node for easy deployment of RHEL operating system via a local Satellite server or PXE server (optional)
 * [ ] PXE has been disabled on all other NICs.
 * [ ] Control plane (master) and worker nodes are configured.
 * [ ] All nodes accessible via out-of-band management.

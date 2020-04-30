@@ -8,7 +8,7 @@ It also contains optional features focused on low-latency workloads, NFV workloa
 
 ## Installation artifacts
 
-- [Installation Steps](install-steps.md)
+- [Installation Steps](https://openshift-kni.github.io/baremetal-deploy/)
 - [Installing IPI on BM using the Ansible Playbook](ansible-ipi-install/)
   - Versions: 4.3, 4.4
 

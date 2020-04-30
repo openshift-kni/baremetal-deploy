@@ -17,18 +17,21 @@ Prior to reprovisioning the node, it is recommended to backup some existing file
 
 . Tar the `clusterconfig` folder and download it to your local machine.
 +
+[source,bash]
 ----
 tar cvfz clusterconfig.tar.gz ~/clusterconfig
 ----
 
 . Copy the Private part for the SSH Key configured on the `install-config.yaml` file to your local machine.
 +
+[source,bash]
 ----
 tar cvfz clusterconfigsh.tar.gz ~/.ssh/id_rsa*
 ----
 
 . Copy the `install-config.yaml` and `metal3-config.yaml` files.
 +
+[source,bash]
 ----
 tar cvfz yamlconfigs.tar.gz install-config.yaml metal3-config.yaml
 ----

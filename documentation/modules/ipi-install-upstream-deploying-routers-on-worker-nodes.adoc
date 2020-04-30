@@ -31,6 +31,7 @@ If this is the case, you can skip this section.
 
 . Create the `router-replicas.yaml` file.
 +
+[source,yaml]
 ----
 apiVersion: operator.openshift.io/v1
 kind: IngressController
@@ -44,18 +45,20 @@ spec:
   nodePlacement:
     nodeSelector:
       matchLabels:
-        node-role.kubernetes.io/worker: ""
+        node-role.kubernetes.io/worker: "<value>" <1>
 ----
-
 
 [NOTE]
 ====
- If working with just one worker node, set this value to `1`.
- If working with more than 3+ workers, additional router pods (default 2) may be recommended.
+<1> Setting for workers:
+- When working with just one worker node, set this value to `1`.
+- When working with more than 3+ workers, additional router pods (default 2) may be recommended.
 ====
+
 
 . Save and copy the `router-replicas.yaml` file to the `clusterconfigs/openshift` directory.
 +
+[source,bash]
 ----
 cp ~/router-replicas.yaml clusterconfigs/openshift/99_router-replicas.yaml
 ----

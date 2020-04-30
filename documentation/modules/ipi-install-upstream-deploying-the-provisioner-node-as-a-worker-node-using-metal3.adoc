@@ -14,6 +14,7 @@ After you have completed the prerequisites, perform the deployment process.
 
 . Power off the node using `ipmitool` and confirm the provisioning node is powered off.
 +
+[source,bash]
 ----
 ssh <server-with-access-to-management-net>
 # Use the user, password and Management net IP adddress to shutdown the system
@@ -25,6 +26,7 @@ Chassis Power is off
 
 . Get `base64` strings for the Out of band Management credentials. In this example, the user is `root` and the password is `calvin`.
 +
+[source,bash]
 ----
 # Use echo -ne, otherwise you will get your secrets with \n which will cause issues
 # Get root username in base64
@@ -35,6 +37,7 @@ echo -ne "calvin" | base64
 
 . Configure the BaremetalHost `bmh.yaml` file.
 +
+[source,yaml]
 ----
 ---
 apiVersion: v1
@@ -60,6 +63,7 @@ spec:
 
 . Create the BaremetalHost.
 +
+[source,bash]
 ----
 ./oc -n openshift-machine-api create -f bmh.yaml
 secret/openshift-worker-2-bmc-secret created
@@ -68,6 +72,7 @@ baremetalhost.metal3.io/openshift-worker-2 created
 
 . Power up and inspect the node.
 +
+[source,bash]
 ----
 ./oc -n openshift-machine-api get bmh openshift-worker-2
 
@@ -77,6 +82,7 @@ openshift-worker-2   OK       inspecting                       ipmi://<out-of-ba
 
 . After finishing the inspection, the node is ready to be provisioned.
 +
+[source,bash]
 ----
 ./oc -n openshift-machine-api get bmh openshift-worker-2
 
@@ -86,6 +92,7 @@ openshift-worker-2   OK       ready                            ipmi://<out-of-ba
 
 . Scale the workers machineset. Previously, there were two replicas during original installation.
 +
+[source,bash]
 ----
 ./oc get machineset -n openshift-machine-api
 NAME            DESIRED   CURRENT   READY   AVAILABLE   AGE
@@ -97,6 +104,7 @@ openshift-worker-2   0         0                             21h
 . The baremetal host moves to provisioning status. This can take as long as 30 minutes. You can follow the status
 from the node console.
 +
+[source,bash]
 ----
 oc -n openshift-machine-api get bmh openshift-worker-2
 
@@ -106,6 +114,7 @@ openshift-worker-2   OK       provisioning          openshift-worker-0-65tjz   i
 
 . When the node is provisioned it moves to provisioned status.
 +
+[source,bash]
 ----
 oc -n openshift-machine-api get bmh openshift-worker-2
 
@@ -116,6 +125,7 @@ openshift-worker-2   OK       provisioned           openshift-worker-2-65tjz   i
 . When the `kubelet` finishes initialization the node is ready for use.
 You can connect to the node and run `journalctl -fu kubelet` to check the process.
 +
+[source,bash]
 ----
 oc get node
 NAME                                            STATUS   ROLES           AGE     VERSION

@@ -1,0 +1,13 @@
+[id="ipi-install-configuration-files"]
+= Configuration Files
+In this section of the document, we'll be covering the set-up of the different configuration files
+
+
+include::ipi-install-configuring-the-install-config-file.adoc[leveloffset=+1]
+
+ifeval::[{release} <= 4.3]
+include::ipi-install-configuring-the-metal3-config-file.adoc[leveloffset=+1]
+endif::[]
+
+include::ipi-install-additional-install-config-parameters.adoc[leveloffset=+1]
+include::ipi-install-creating-the-openshift-manifests.adoc[leveloffset=+1]

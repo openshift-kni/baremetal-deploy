@@ -64,6 +64,13 @@
     "Netlify",
     "SCTP",
     "sexualized",
-    "asciidoc"
+    "asciidoc",
+    "FQDN",
+    "MachineConfig",
+    "VMs",
+    "NTP",
+    "QEMU",
+    "kubelet",
+    "ansible"
   ]
 }

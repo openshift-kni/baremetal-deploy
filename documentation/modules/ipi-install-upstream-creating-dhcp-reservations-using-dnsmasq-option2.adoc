@@ -6,7 +6,7 @@
 
 [id="creating-dhcp-reservations-using-dnsmasq-option2_{context}"]
 
-= Creating DHCP reservations using dnsmasq (Option 2)
+= Configuring dnsmasq (Option 2)
 
 Set up `dnsmasq` on a server that can access the baremetal network.
 
@@ -14,24 +14,28 @@ Set up `dnsmasq` on a server that can access the baremetal network.
 
 . Install `dnsmasq`.
 +
+[source,bash]
 ----
 dnf install -y dnsmasq
 ----
 
 . Change to the `/etc/dnsmasq.d` directory.
 +
+[source,bash]
 ----
 cd /etc/dnsmasq.d
 ----
 
 . Create a file that reflects your OpenShift cluster appended by `.dns`.
 +
+[source,bash]
 ----
 touch <filename>.dns
 ----
 
 . Open the appropriate `firewalld` DHCP service.
 +
+[source,bash]
 ----
 systemctl restart firewalld
 firewall-cmd --add-service=dhcp --permanent
@@ -77,12 +81,14 @@ nameserver <ip-of-my-existing-dns-nameserver>
 
 . Restart the `dnsmasq` service.
 +
+[source,bash]
 ----
 systemctl restart dnsmasq
 ----
 
 . Verify the `dnsmasq` service is running.
 +
+[source,bash]
 ----
 systemctl status dnsmasq
 ----

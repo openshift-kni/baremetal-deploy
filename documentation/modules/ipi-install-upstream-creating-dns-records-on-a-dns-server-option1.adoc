@@ -6,7 +6,7 @@
 
 [id="creating-dns-records-on-a-dns-server-option1_{context}"]
 
-= Creating DNS records on a DNS server (Option 1)
+= Configuring Bind (Option 1)
 
 Use Option 1 if access to the appropriate DNS server for the baremetal network is accessible or a request
 to your network admin to create the DNS records is an option.
