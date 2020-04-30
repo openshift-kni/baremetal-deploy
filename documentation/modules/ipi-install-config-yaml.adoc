@@ -23,7 +23,7 @@ platform:
     ingressVIP: <wildcard-ip>
     dnsVIP: <dns-ip>
     provisioningNetworkInterface: <NIC1>
-    provisioningNetworkCIDR: <CIDR> # i.e. 172.22.0.1/24
+    provisioningNetworkCIDR: <CIDR> # i.e. fd00:1101::1/64
     provisioningBridge: provisioning
     hosts:
       - name: openshift-master-0

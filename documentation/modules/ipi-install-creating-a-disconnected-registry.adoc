@@ -205,6 +205,7 @@ On the provisioner node, the `install-config.yaml` file should use the newly cre
 +
 [source,bash]
 ----
+[kni@provisioner ~]$ scp user@registry.example.com:/opt/registry/certs/domain.crt /home/kni
 [kni@provisioner ~]$ echo "additionalTrustBundle: |" >> install-config.yaml
 [kni@provisioner ~]$ sed -e 's/^/  /' /opt/registry/certs/domain.crt >> install-config.yaml
 ----
