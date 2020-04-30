@@ -11,7 +11,7 @@ metadata:
 networking:
   machineCIDR: {{ extcidrnet }}
   networkType: {{ network_type }}
-{% if ipv6_enabled|bool %}
+{% if ipv6_enabled|bool and not ipv4_baremetal|bool %}
   clusterNetwork:
   - cidr: fd01::/48
     hostPrefix: 64
