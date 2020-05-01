@@ -18,7 +18,7 @@
 - name: Get Badfish master branch
   git:
     repo: https://github.com/redhat-performance/badfish.git
-    dest: "{{ badfish_tempdir }}"
+    dest: "{{ badfish_tempdir.path }}"
     force: yes
 
 - name: Clean network interfaces created by lab automation
@@ -122,7 +122,7 @@
 
 - name: Clear redfish job queues
   shell:
-    chdir: "{{ badfish_tempdir }}"
+    chdir: "{{ badfish_tempdir.path }}"
     cmd: |
       {{ badfish_cmd }}{{ item }} --clear-jobs --force
   with_items:
@@ -137,7 +137,7 @@
 
 - name: Set nodes to director boot order
   shell:
-    chdir: "{{ badfish_tempdir }}"
+    chdir: "{{ badfish_tempdir.path }}"
     cmd: |
       {{ badfish_cmd }}{{ item }} -t director
   with_items:
