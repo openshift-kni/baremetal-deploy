@@ -2,7 +2,7 @@
 - name: Randomize cluster name
   set_fact:
     cluster: "{{ cluster }}{{ 1000 | random }}"
-  when: cluster_random | default(false)
+  when: cluster_random | default(false) | bool
 
 - name: Install packages
   yum:
