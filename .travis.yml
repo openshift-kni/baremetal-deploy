@@ -6,10 +6,10 @@ rvm:
 before_install:
 - bundle install
 script:
-- utils/build.sh
+- rake
 
 after_success:
-- utils/build-jekyll.sh
+- touch website/_site/.nojekyll
 
 deploy:
   skip_cleanup: true
@@ -17,7 +17,7 @@ deploy:
   token: "$GITHUB_TOKEN"
   keep_history: false
   target_branch: gh-pages
-  local_dir: output/
+  local_dir: website/_site/
   on:
     branch: master
 

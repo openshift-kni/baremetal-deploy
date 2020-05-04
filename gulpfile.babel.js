@@ -9,11 +9,11 @@ import terser from "gulp-terser";
 
 const browserSync = browserSyncCreate();
 
-const path404 = path.join(__dirname, "output/404.html");
+const path404 = path.join(__dirname, "website/_site/404.html");
 const content_404 = () =>
   fs.existsSync(path404) ? fs.readFileSync(path404) : null;
 
-const cleanOutput = () => exec("rm -rf outout/");
+const cleanOutput = () => exec("rm -rf website/_site/*");
 
 const buildContent = () => exec("utils/build.sh");
 
@@ -24,12 +24,12 @@ const reload = (cb) => {
         port: 9002,
       },
       server: {
-        baseDir: "output",
+        baseDir: "website/_site/",
         serveStaticOptions: {
           extensions: ["html"],
         },
       },
-      files: "output/*.html",
+      files: "website/_site/*.html",
       port: 9001,
     },
     (_, bs) => {
@@ -48,7 +48,7 @@ const watchFiles = () => {
 
 const buildAll = series(buildContent);
 
-const build = series(cleanOutput, buildContent);
+const build = series(buildContent);
 exports.build = build;
 
 const deploy = series(build, parallel(watchFiles, reload));

@@ -1,8 +1,37 @@
-theme: jekyll-theme-minimal
-
 # Site settings
 show_downloads: false
 title: 'Deployment Integration Team website'
 description: "Documents produced by DIT team"
 permalink: pretty
 repository: openshift-kni/baremetal-deploy
+
+
+plugins: [jekyll-paginate, jekyll-asciidoc, jekyll-redirect-from, jekyll-feed, jekyll-sitemap, premonition, jekyll/tagging,  jekyll-seo-tag]
+
+
+
+# Site settings
+url: "https://openshift-kni.github.io/baremetal-deploy" # the base hostname & protocol for your site
+future: false
+
+# Build settings
+markdown: kramdown
+
+exclude:
+  - GUIDELINES.md
+  - README.md
+  - TODO.md
+  - .history
+
+tag_page_layout: tag
+tag_page_dir: /tag/
+
+kramdown:
+  input: GFM
+  syntax_highlighter_opts:
+    css_class: 'highlight'
+    span:
+      line_numbers: false
+    block:
+      line_numbers: false
+      start_line: 1
