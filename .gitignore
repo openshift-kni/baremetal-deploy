@@ -16,3 +16,5 @@ node_modules
 
 # Documentation output folder
 output/
+website/_site/
+.vscode/

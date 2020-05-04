@@ -9,11 +9,11 @@ build_for_release() {
 
     echo "Building documentation for release ${release}"
     # Build the documentation
-    asciidoctor -a release=${release} -a toc=left -b xhtml5 -d book -B documentation/ documentation/index.adoc -D ../output/${release} 2>&1 | grep -v 'Try: gem'
+    asciidoctor -a release=${release} -a toc=left -b xhtml5 -d book -B documentation/ documentation/index.adoc -D ../website/${release} 2>&1 | grep -v 'Try: gem'
     myrc=${?}
 
     # Build the documentation PDF
-    asciidoctor-pdf -a release=${release} -a toc=left -d book -B documentation/ documentation/index.adoc -D ../output/${release} 2>&1 | grep -v 'Try: gem'
+    asciidoctor-pdf -a release=${release} -a toc=left -d book -B documentation/ documentation/index.adoc -D ../website/${release} 2>&1 | grep -v 'Try: gem'
 }
 
 # Define the index file
@@ -27,11 +27,13 @@ for release in ${RELEASES}; do
 done
 
 # Build JSON of generated documentation pages
-TARGET="output/_data"
+TARGET="website/_data"
 mkdir -p ${TARGET}
 
 # Build HTML page for all generated docs
 
+# Empty file before starting
+>${TARGET}/releases.yml
 for release in ${RELEASES}; do
     echo """
 ${release}:
@@ -40,6 +42,6 @@ ${release}:
     """ >>${TARGET}/releases.yml
 done
 
-# TODO: CHECK why RC != 0 with no errors output (despite of gem)
+# TODO: CHECK why RC != 0 with no errors website (despite of gem)
 RC=0
 exit ${RC}
