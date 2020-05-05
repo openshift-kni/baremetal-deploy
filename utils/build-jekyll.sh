@@ -7,4 +7,4 @@ export NOKOGIRI_USE_SYSTEM_LIBRARIES=true
 cd website
 
 # Use jekyll to build site to _site/
-jekyll build
+bundle exec jekyll build
