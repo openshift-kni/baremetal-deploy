@@ -6,6 +6,7 @@ rvm:
 before_install:
 - bundle install
 script:
+- sh utils/patch-travis-for-ghpages.sh
 - rake
 
 after_success:
