@@ -11,7 +11,6 @@ plugins: [jekyll-paginate, jekyll-asciidoc, jekyll-redirect-from, jekyll-feed, j
 
 
 # Site settings
-url: "https://openshift-kni.github.io/baremetal-deploy" # the base hostname & protocol for your site
 future: false
 
 # Build settings
