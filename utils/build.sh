@@ -2,7 +2,7 @@
 # Builds documentation for each release in both HTML and PDF versions
 
 # Space separated version list to build
-RELEASES="4.4 4.3"
+RELEASES="4.5 4.4 4.3"
 
 build_for_release() {
     release="${1}"
