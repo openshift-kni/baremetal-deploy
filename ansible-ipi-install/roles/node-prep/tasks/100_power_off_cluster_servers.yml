@@ -10,7 +10,7 @@
         or  ( hostvars[item]['poweroff']|bool | default(True) )
       with_items:
         - "{{ groups.masters }}"
-        - "{{ groups.workers }}"
+        - "{{ groups.workers | default([]) }}"
 
     - name: Power off hosts
       ipmi_power:

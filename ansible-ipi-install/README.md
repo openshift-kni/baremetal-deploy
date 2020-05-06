@@ -389,8 +389,6 @@ NOTE: The `ipmi_port` examples above show how a user can specify a different `ip
 
 NOTE: A detailed description of the `vars` under the section `Vars regarding install-config.yaml` may be reviewed within [Configure the install-config and metal3-config](https://github.com/openshift-kni/baremetal-deploy/blob/master/install-steps.md#configure-the-install-config-and-metal3-config) if unsure how to populate.
 
-WARNING: If no `workers` are included, do not remove the workers group (`[workers]`) as it is required to properly build the `install-config.yaml` file.
-
 ## The Ansible `playbook.yml`
 
 The Ansible playbook connects to your provision host and runs through the `node-prep` role and the `installer` role. No modification is necessary. All modifications of variables may be done within the `inventory/hosts` file. A sample file is located in this repository under `inventory/hosts.sample`.
