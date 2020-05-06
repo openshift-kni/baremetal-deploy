@@ -1,0 +1,77 @@
+- name: Set lab ipmi password fact
+  set_fact:
+    lab_ipmi_user:  "{{ ocpinv_content.nodes[0].pm_user }}"
+
+- name: Set lab ipmi password fact
+  set_fact:
+    lab_ipmi_password:  "{{ ocpinv_content.nodes[0].pm_password }}"
+
+- name: check if os installed as root user
+  shell: |
+    sshpass -p {{ ansible_ssh_pass }}  ssh -o 'PreferredAuthentications=password' -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -q root@{{ provisioner_hostname }} 'cat /etc/redhat-release'
+  register: rhel_release
+  ignore_errors: true
+
+- name: set rhel version
+  set_fact:
+    rhel_version: "{{ rhel_release.stdout.split()[-2] }}"
+  ignore_errors: true
+  when: rhel_release.stdout | length > 0
+
+- name: set os_install
+  set_fact:
+    os_install: "{{ (rhel_version is version('8.1', '<') or rebuild_provisioner) | ternary('RHEL 8.1', false) }}"
+
+- name: Reboot if OS install needed
+  block:
+    - name: Install Podman
+      yum:
+        name: podman
+        state: present
+      become: true
+
+    - name: Get Badfish pod image
+      podman_image:
+        name: "{{ badfish_pod_image }}"
+        pull: yes
+        force: yes
+
+    - include_tasks: 25_copykeys.yml
+      vars:
+        hostname: "{{ hammer_host }}"
+        ssh_user: "root"
+
+    - include_tasks: tasks/30_get_interpreter.yml
+      vars:
+        hostname: "{{ hammer_host }}"
+        user: "root"
+
+    - name: update host to install new os
+      shell: hammer -u {{ cloud_name }} -p {{ lab_ipmi_password }}  host update --name {{ provisioner_hostname }} --build 1 --operatingsystem '{{ os_install }}' --overwrite 1
+      delegate_to: "{{ hammer_host }}"
+      vars:
+        ansible_user: root
+        ansible_python_interpreter: "{{ python_interpreter }}"
+
+    - name: Set provisioner host to foreman boot order
+      shell: |
+        {{ badfish_cmd }}{{ provisioner_hostname }} -t foreman
+
+    - name: Set provisioner host to reboot
+      shell: |
+        {{ badfish_cmd }}{{ provisioner_hostname }} --power-cycle
+
+    - name: wait for 420 seconds before checking for provisioner
+      wait_for:
+        timeout: 420
+
+    - name: waiting for the provisioner to be available
+      wait_for:
+        port: 22
+        host: "{{ provisioner_hostname }}"
+        search_regex: OpenSSH
+        timeout: 30
+      register: node_reachable
+      retries: 100
+      until: node_reachable is succeeded
+  when: ((os_install is defined) and (os_install != false)) or rebuild_provisioner

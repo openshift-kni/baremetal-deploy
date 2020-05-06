@@ -1,0 +1,14 @@
+---
+# Below task is to make sure all the vars as avaialble as hostvars on provisioner and not only localhost (for good measure)
+- name: set facts needed for OCP deployment on the provisioning host
+  set_fact:
+     "{{ item }}": "{{ hostvars['localhost'][item] }}"
+  with_items:
+    - master_fqdns
+    - worker_fqdns
+    - master_bm_macs
+    - master_prov_macs
+    - worker_bm_macs
+    - worker_prov_macs
+    - lab_ipmi_user
+    - lab_ipmi_password

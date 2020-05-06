@@ -1,0 +1,120 @@
+- name: set fact for inv file
+  set_fact:
+    ocpinv_file: "{{ ocpinv_file|default('{{ playbook_dir }}/ocpinv.json', true) }}"
+
+- name: check ocpinv file available
+  stat:
+      path: "{{ ocpinv_file }}"
+  register: st
+
+- name: Download ocpninv.json
+  get_url:
+      url: "{{ alias.lab_url }}/cloud/{{ cloud_name }}_ocpinventory.json"
+      dest: "{{ ocpinv_file }}"
+      mode: '0644'
+      force: yes
+  when: not st.stat.exists | bool and lab_name == "alias"
+
+- name: Download ocpinv.json
+  get_url:
+      url: "{{ scale.lab_url }}/cloud/{{ cloud_name }}_ocpinventory.json"
+      dest: "{{ ocpinv_file }}"
+      mode: '0644'
+      force: yes
+  when: not st.stat.exists | bool and lab_name == "scale"
+
+- name: read inv env file
+  set_fact:
+    ocpinv_content: "{{ lookup('file', '{{ ocpinv_file }}') | from_json }}"
+    ocp_node_inv_path: "{{ playbook_dir }}/ocpnodeinv.json"
+
+- name: set provisioning host and ocp cluster info
+  block:
+    - name: set provisioner hostname
+      set_fact:
+        provisioner_hostname: "{{ ocpinv_content.nodes[0].pm_addr | replace('mgmt-','') | replace('-drac', '') }}"
+
+    - name: set ocp_node_content
+      set_fact:
+          ocp_node_content: |
+              {% set a=ocpinv_content.pop('nodes') %}
+              {{ ocpinv_content | combine({'nodes': a|difference([a[0]])}, recursive=True) }}
+
+- name: create ocpnodeinv.json file
+  copy:
+    dest: "{{ ocp_node_inv_path }}"
+    content: "{{ ocp_node_content | to_nice_json }}"
+
+- name: set fact for master mgmt
+  set_fact:
+    master_mgmts:  "{{ ocp_node_content| json_query('nodes[0:3].pm_addr')}}"
+
+- name: Set master FQDNs
+  set_fact:
+    master_fqdns: "{{ master_fqdns|default([]) + [ item |  replace('mgmt-','') | replace('-drac', '') ] }}"
+  with_items:
+    - "{{ master_mgmts }}"
+
+- name: Set worker count
+  set_fact:
+    worker_count: "{{ ocp_node_content.nodes | length - 3 }}"
+  when: worker_count is not defined 
+
+- name: Set worker index
+  set_fact:
+    worker_index: "{{ worker_count | int + 3 }}"
+
+- name: set fact for worker mgmt
+  set_fact:
+    worker_mgmts: "{{ ocp_node_content| json_query(query)}}"
+  vars:
+    query: nodes[3:{{worker_index}}].pm_addr
+
+# Make sure required number of workers are available (useful when user passes wrong worker_count value)
+- name: Fail when required number of worker nodes cannot be provisioned
+  fail:
+    msg: Required number of nodes are not available for workers
+  when: worker_mgmts | length < worker_count | int
+
+# Needed in case where worker_mgmts is empty list, in that case worker_fdns fact is not set and there is a failure in set-deployment-facts role
+- name: Set fact for empty worker_fqdns
+  set_fact:
+    worker_fqdns: []
+
+- name: Set worker FQDNs
+  set_fact:
+    worker_fqdns: "{{ worker_fqdns|default([]) + [ item |  replace('mgmt-','') | replace('-drac', '') ] }}"
+  with_items:
+    - "{{ worker_mgmts }}"
+
+- name: set fact for ocp nodes mgmt
+  set_fact:
+    ocp_mgmts: "{{ ocp_node_content| json_query('nodes[*].pm_addr')}}"
+
+- name: Set ocp node FQDNs
+  set_fact:
+    ocp_fqdns: "{{ ocp_fqdns|default([]) + [ item |  replace('mgmt-','') | replace('-drac', '') ] }}"
+  with_items:
+    - "{{ ocp_mgmts }}"
+
+- name: set fact for master bm macs
+  set_fact:
+    master_bm_macs:  "{{ ocp_node_content| json_query('nodes[0:3].mac[2]')}}"
+
+- name: set fact for master provisioning macs
+  set_fact:
+    master_prov_macs:  "{{ ocp_node_content| json_query('nodes[0:3].mac[1]')}}"
+
+# Works even in case of 0 workers as json_query returns empty list
+- name: set fact for worker bm macs
+  set_fact:
+    worker_bm_macs:  "{{ ocp_node_content| json_query(query)}}"
+  vars:
+    query: nodes[3:{{worker_index}}].mac[2]
+
+# Works even in case of 0 workers as json_query returns empty list
+- name: set fact for worker provisioning macs
+  set_fact:
+    worker_prov_macs:  "{{ ocp_node_content| json_query(query)}}"
+  vars:
+    query: nodes[3:{{worker_index}}].mac[1]

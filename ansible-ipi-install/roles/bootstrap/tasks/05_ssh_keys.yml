@@ -1,0 +1,9 @@
+- name: check if ssh key exists
+  stat:
+    path: "{{ ansible_ssh_key }}"
+  register: sshkey
+
+- name:  Generate ssh key
+  shell:
+    ssh-keygen -q -N "" -f {{ ansible_ssh_key }}
+  when: sshkey.stat.exists == False

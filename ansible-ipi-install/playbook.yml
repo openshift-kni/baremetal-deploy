@@ -1,11 +1,24 @@
 ---
 - name: IPI on Baremetal Installation Playbook -- Red Hat Shared Labs Edition
-  hosts: provisioner
+  hosts: localhost
   roles:
-  - shared-labs-prep
-  - node-prep
-  - installer
+    - { role: bootstrap }
 
+- hosts: provisioner
+  roles:
+    - { role: prepare-kni, ssh_path: /root/.ssh}
+
+- hosts: localhost
+  roles:
+    - { role: add-provisioner }
+
+- hosts: provisioner
+  roles:
+    - { role: network-discovery }
+    - { role: set-deployment-facts }
+    - { role: shared-labs-prep }
+    - { role: node-prep }
+    - { role: installer }
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ https_proxy }}"

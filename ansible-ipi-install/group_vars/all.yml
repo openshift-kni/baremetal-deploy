@@ -1,0 +1,40 @@
+# This is the location on the jumphost (ansible controller) where the list 
+# of hosts your lab allocation will be downloaded to in json format. 
+# Leave default, for most cases
+ocpinv_file: "{{ playbook_dir }}/ocpinv.json"
+# Your allocation name/number in the shared labs
+cloud_name: cloud00
+# Lab name, typically can be alias or scale
+lab_name: scale
+# Default lab password to your nodes so that keys can be added automatically for ansible to run
+ansible_ssh_pass: password
+# Location of the private key of the user running the ansible playbook, leave default
+ansible_ssh_key: "{{ ansible_user_dir }}/.ssh/id_rsa"
+# The version of the openshift-installer, undefined or empty results in the playbook failing with error message.
+# Values accepted: 'latest-4.3', 'latest-4.4', explicit version i.e. 4.3.0-0.nightly-2019-12-09-035405
+# For reference, https://openshift-release.svc.ci.openshift.org/
+version: "4.3.5"
+# Enter whether the build should use 'dev' (nightly builds) or 'ga' for Generally Available version of OpenShift
+# Empty value results in playbook failing with error message.
+build: "ga"
+# Your pull secret, https://cloud.redhat.com/openshift/install
+pullsecret: ''
+# This variable serves two purposes, one: If the host being used as provisioner (automatically, the first host in your lab assignment) is not pre-installed with RHEL 8.1
+# the playbook logs into this host to make hammer cli calls to mark the host for a build with RHEL 8.1. Two: If you are redeploying on an allocation with a previously installed
+# OpenShift cluster, it might be better to start with a clean provisioning host, in that case also, the hammer_host variable is used to reprovision the system based on 
+# rebuild_provisioner variable below. If you do not have access to this type of host for reprovisioning/making hammer cli calls, it is recommended that you start with a RHEL 8.1
+# clean provisioning host (manually install RHEL 8.1 on the first host in your lab allocation), so that `hammer_host` is never needed
+hammer_host: hwstore.example.com
+# The automation automatically rebuilds provisioner node to rhel 8.1 if not already rhel 8.1 (see nammer_host variable)
+# However you can also force a reprovsioning of the provisioner node for redeployment scenarios
+rebuild_provisioner: false
+# Number of workers desired, by default all hosts in your allocation except 1 provisioner and 3 masters are used workers
+# However that behaviour can be overrided by explicitly settign the desired number of workers here. For a masters only deploy,
+# set worker_count to 0
+worker_count: 1
+alias:
+#lab specific vars, leave default
+  lab_url: "http://quads.alias.bos.scalelab.redhat.com"
+scale:
+# lab specific vars, leave default
+  lab_url: "http://quads.rdu2.scalelab.redhat.com"
