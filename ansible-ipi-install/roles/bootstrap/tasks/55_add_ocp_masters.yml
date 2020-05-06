@@ -1,0 +1,15 @@
+- name: add masters to inventory file
+  add_host:
+    hostname: "master-{{ item }}"
+    name: master-{{ item }}
+    groups: masters
+    role: master
+    ipmi_user: "{{ lab_ipmi_user }}"
+    ipmi_password: "{{ lab_ipmi_password }}"
+    ipmi_address: "{{ master_mgmts[item | int] }}"
+    ipmi_port: 623
+    provision_mac: "{{ master_prov_macs[item | int] }}"
+    hardware_profile: "default"
+    poweroff: true
+  with_sequence: start=0 end=2
+

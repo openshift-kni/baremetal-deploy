@@ -1,0 +1,5 @@
+- name: install packages
+  yum:
+    name: [ python3-dns, python3-netaddr]
+  become: true
+

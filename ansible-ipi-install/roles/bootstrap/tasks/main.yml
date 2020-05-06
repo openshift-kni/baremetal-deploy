@@ -1,0 +1,18 @@
+---
+- name: Install packages
+  include_tasks: 01_install_packages.yml
+
+- name: SSH Key generation
+  include_tasks: 05_ssh_keys.yml
+
+- name: Load instackenv inventory
+  include_tasks: 10_load_inv.yml
+
+- name: Reprovision nodes
+  include_tasks: 20_reprovision_nodes.yml
+
+- name: Prepare Provisioning Host
+  include_tasks: 40_prepare_provisioning.yml 
+
+- name: Add OCP nodes to inventory
+  include_tasks: 50_add_ocp_inventory.yml

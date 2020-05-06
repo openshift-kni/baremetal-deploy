@@ -1,0 +1,10 @@
+---
+- name: detect python interpreter
+  shell: |
+    ssh -o 'PreferredAuthentications=publickey' -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile /dev/null' {{ user }}@{{ hostname }} /usr/bin/python --version
+  register: python_version
+  ignore_errors: true
+
+- name: python interpreter
+  set_fact:
+    python_interpreter: "{{ (python_version.stderr_lines|length > 0 and 'Python' in python_version.stderr) | ternary('/usr/bin/python', '/usr/libexec/platform-python') }}"
