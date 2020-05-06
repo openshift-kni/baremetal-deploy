@@ -1,0 +1,8 @@
+---
+- name: Add masters
+  include_tasks: 55_add_ocp_masters.yml
+
+- name: Add workers
+  include_tasks: 60_add_ocp_workers.yml
+  when: worker_mgmts | length > 0
+

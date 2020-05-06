@@ -1,0 +1,46 @@
+---
+- name: Clean network interfaces created by lab automation
+  shell: |
+    /root/clean-interfaces.sh --nuke
+  become: true
+  ignore_errors: true
+
+- name: Regather facts for updated interfaces
+  setup:
+
+- name: Get the bm mac address on provisioner node
+  set_fact:
+    bm_mac: "{{ hostvars['localhost']['ocpinv_content']['nodes'][0].mac[2] }}"
+
+- name: Get the bm provisioning address on provisioner node
+  set_fact:
+    prov_mac: "{{ hostvars['localhost']['ocpinv_content']['nodes'][0].mac[1] }}"
+
+- name: Set the lab public nic
+  set_fact: 
+    lab_pub_nic: "{{ ansible_default_ipv4['interface'] }}"
+
+# Need to do this as the ansible facts per interface use the naming convention with _ and not -
+- name: Set eligible interfaces list
+  set_fact:
+    ansible_eligible_interfaces: "{{ ansible_eligible_interfaces | default([]) + [item | replace('-','_')] }}"
+  with_items:
+    - "{{ ansible_interfaces }}"
+
+- name: Get the bm interface
+  set_fact:
+    pub_nic: "{{ item }}"
+  when: ansible_{{ item }}.macaddress is defined and ansible_{{ item}}.type == "ether" and ansible_{{ item }}.macaddress == bm_mac
+  with_items:
+    - "{{ ansible_eligible_interfaces }}"
+
+- name: Get the provisioning interface
+  set_fact:
+    prov_nic: "{{ item }}"
+  when: ansible_{{ item }}.macaddress is defined and ansible_{{ item }}.type == "ether" and ansible_{{ item }}.macaddress == prov_mac
+  with_items:
+    - "{{ ansible_eligible_interfaces }}"
+
+- name: set disabled nics to lab_pub_nic
+  set_fact:
+    disable_nics: "{{ [lab_pub_nic] }}"

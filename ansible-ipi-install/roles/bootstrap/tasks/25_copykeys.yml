@@ -1,0 +1,15 @@
+
+---
+- name: copy jump host key
+  shell: |
+    echo '{{ ansible_ssh_pass }}' | sshpass ssh-copy-id  -o 'StrictHostKeyChecking no' -f {{ ssh_user }}@{{ hostname }}
+  register: ssh_result
+  changed_when: false
+  ignore_errors: true
+
+- name: remove key and add again
+  shell: |
+    ssh-keygen -R {{ hostname }}
+    echo '{{ ansible_ssh_pass }}' | sshpass ssh-copy-id  -o 'StrictHostKeyChecking no' -f {{ ssh_user }}@{{ hostname }}
+  changed_when: false
+  when: ssh_result.stderr_lines|length > 0

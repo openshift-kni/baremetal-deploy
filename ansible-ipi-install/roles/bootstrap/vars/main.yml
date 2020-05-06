@@ -1,0 +1,3 @@
+badfish_pod_image: "quads/badfish"
+badfish_cmd: "podman run -it --rm {{ badfish_pod_image }} -u {{ lab_ipmi_user }} -p {{ lab_ipmi_password }} -i config/idrac_interfaces.yml -H mgmt-"
+

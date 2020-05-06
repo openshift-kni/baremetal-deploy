@@ -1,0 +1,14 @@
+- name: add workers to inventory file
+  add_host:
+    hostname: worker-{{ item }}
+    name: worker-{{ item }}
+    groups: workers
+    role: worker
+    ipmi_user: "{{ lab_ipmi_user }}"
+    ipmi_password: "{{ lab_ipmi_password }}"
+    ipmi_address: "{{ worker_mgmts[item | int] }}"
+    ipmi_port: 623
+    provision_mac: "{{ worker_prov_macs[item | int] }}"
+    hardware_profile: "unknown"
+    poweroff: true
+  with_sequence: start=0 end={{ worker_mgmts | length - 1  if worker_mgmts|length > 0  }}
