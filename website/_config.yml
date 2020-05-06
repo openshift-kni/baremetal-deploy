@@ -13,6 +13,7 @@ future: false
 
 # Build settings
 markdown: kramdown
+type: website
 
 exclude:
   - GUIDELINES.md

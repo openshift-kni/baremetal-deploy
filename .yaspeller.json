@@ -73,6 +73,7 @@
     "kubelet",
     "ansible",
     "endfor",
-    "Jekyll"
+    "Jekyll",
+    "ipi"
   ]
 }

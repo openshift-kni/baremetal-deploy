@@ -1,6 +1,7 @@
 ---
 title: Deploying Installer Provisioned Infrastructure (IPI) of OpenShift on Bare Metal
 layout: default
+tags: [baremetal, openshift, ipi, ansible, documentation, manual]
 ---
 
 ## Installer Provisioned Infrastructure (IPI) of OpenShift on Baremetal Install Guides
