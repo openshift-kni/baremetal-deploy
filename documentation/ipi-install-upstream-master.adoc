@@ -1,5 +1,5 @@
 [id="ipi-install-installation-workflow"]
-= Deploying Installer Provisioned Infrastructure (IPI) of OpenShift on Bare Metal
+= Deploying Installer Provisioned Infrastructure (IPI) of OpenShift on Bare Metal - {release}
 Deployment Integration Team
 :data-uri:
 :email: https://github.com/openshift-kni/baremetal-deploy
