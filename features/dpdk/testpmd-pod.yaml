@@ -6,7 +6,7 @@ metadata:
     k8s.v1.cni.cncf.io/networks: sriov-network
 spec:
   containers:
-    - name: testpmd 
+    - name: testpmd
       image: quay.io/eminguez/testpmd
       imagePullPolicy: Always
       securityContext:

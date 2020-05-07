@@ -85,4 +85,3 @@ option go_package = "resource";
 message Quantity {
   optional string string = 1;
 }
-

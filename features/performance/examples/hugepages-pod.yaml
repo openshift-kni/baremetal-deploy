@@ -1,25 +1,25 @@
 apiVersion: v1
 kind: Pod
-metadata: 
+metadata:
  generateName: hugepages-volume-
-spec: 
- containers: 
+spec:
+ containers:
  - image: rhel7:latest
-   command: 
+   command:
    - sleep
    - inf
    name: example-1
-   volumeMounts: 
+   volumeMounts:
    - mountPath: /dev/hugepages
      name: hugepage
-   resources: 
-     limits: 
+   resources:
+     limits:
        hugepages-1Gi: 2Gi
        memory: 1Gi
        cpu: 1
- volumes: 
+ volumes:
  - name: hugepage
-   emptyDir: 
+   emptyDir:
      medium: HugePages
  nodeSelector:
    node-role.kubernetes.io/worker-rt: ""

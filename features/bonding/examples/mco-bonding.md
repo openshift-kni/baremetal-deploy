@@ -30,7 +30,7 @@ DEVICE=bond1.20
 ONBOOT=yes
 ```
 
-### Sample slave interface file (TYPE=Ethernet, with master set to `bond1`) 
+### Sample slave interface file (TYPE=Ethernet, with master set to `bond1`)
 
 ```
 TYPE=Ethernet
@@ -65,7 +65,7 @@ worker   rendered-worker-6c00884cabc50f4d42433e4e3acd603c   True      False     
 ### Machine Config
 
 This configuration creates a MachineConfig to write the `bond1` and `bond1.20` interface configuration files at the path locations `/etc/sysconfig/network-scripts/ifcfg-bond1` and `/etc/sysconfig/network-scripts/ifcfg-bond1.20` on the worker nodes. Multiple files can be specified here to copy ethernet interface files as well.
- 
+
 ```
 apiVersion: machineconfiguration.openshift.io/v1
 kind: MachineConfig

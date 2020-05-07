@@ -15,8 +15,8 @@ numworkers=$(oc get nodes --selector='!node-role.kubernetes.io/master' --no-head
 export numworkers
 
 for object in testing-namespace testing-deployment; do
-  FILE=$(eval "echo ${BASEDIR}/*-sriov-${object}.yaml")
-  info "Applying ${FILE}"
-  # This will deploy a pod on each node
-  envsubst < "${FILE}" | oc apply -f - > /dev/null || die "Error creating ${object}"
+    FILE=$(eval "echo ${BASEDIR}/*-sriov-${object}.yaml")
+    info "Applying ${FILE}"
+    # This will deploy a pod on each node
+    envsubst <"${FILE}" | oc apply -f - >/dev/null || die "Error creating ${object}"
 done

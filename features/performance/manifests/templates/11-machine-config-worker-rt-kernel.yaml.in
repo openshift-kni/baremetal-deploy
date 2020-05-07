@@ -55,7 +55,7 @@ spec:
 
                       [Service]
                       Environment=NON_ISOLATED_CPUS=${NON_ISOLATED_CPUS}
-                      
+
                       Type=oneshot
                       RemainAfterExit=true
                       ExecStart=/usr/local/bin/pre-boot-tuning.sh

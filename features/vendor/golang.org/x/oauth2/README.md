@@ -7,17 +7,17 @@ oauth2 package contains a client implementation for OAuth 2.0 spec.
 
 ## Installation
 
-~~~~
+```
 go get golang.org/x/oauth2
-~~~~
+```
 
 Or you can manually git clone the repository to
 `$(go env GOPATH)/src/golang.org/x/oauth2`.
 
 See godoc for further documentation and examples.
 
-* [godoc.org/golang.org/x/oauth2](http://godoc.org/golang.org/x/oauth2)
-* [godoc.org/golang.org/x/oauth2/google](http://godoc.org/golang.org/x/oauth2/google)
+- [godoc.org/golang.org/x/oauth2](http://godoc.org/golang.org/x/oauth2)
+- [godoc.org/golang.org/x/oauth2/google](http://godoc.org/golang.org/x/oauth2/google)
 
 ## Policy for new packages
 

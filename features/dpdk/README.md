@@ -2,17 +2,17 @@
 
 ## Requisites
 
-* [testpmd](testpmd.dockerfile) and [pktgen](pktgen.dockerfile) container images available
+- [testpmd](testpmd.dockerfile) and [pktgen](pktgen.dockerfile) container images available
 
 > For the sake of simplicity, the images in the pod defintions included here
 > are publicly available.
 > Use them at your own risk (quay.io/eminguez/testpmd & quay.io/eminguez/pktgen)
 
-* The NIC to be used requires sriov support
-* The sriov operator needs to be deployed and working (see [sriov](../sriov/))
-* If using Intel NICs, the `SriovNetworkNodePolicy.spec.deviceType` needs to be `vfio-pci`,
-otherwise, use `netdevice`. See [the official documentation for more information](https://docs.openshift.com/container-platform/4.2/networking/multiple-networks/configuring-sr-iov.html#configuring-sr-iov-devices_configuring-sr-iov).
-* Huge pages and CPU Manager needs to be enabled
+- The NIC to be used requires sriov support
+- The sriov operator needs to be deployed and working (see [sriov](../sriov/))
+- If using Intel NICs, the `SriovNetworkNodePolicy.spec.deviceType` needs to be `vfio-pci`,
+  otherwise, use `netdevice`. See [the official documentation for more information](https://docs.openshift.com/container-platform/4.2/networking/multiple-networks/configuring-sr-iov.html#configuring-sr-iov-devices_configuring-sr-iov).
+- Huge pages and CPU Manager needs to be enabled
 
 The prefered method to enable huge pages and CPU manager is to deploy the
 [performance assets](../performance/), but just in case, this will show how to deploy
@@ -82,7 +82,7 @@ spec:
 EOF
 ```
 
-The worker will be rebooted to apply the required changes. 
+The worker will be rebooted to apply the required changes.
 
 > The `sriovnetwork` or the `net-attach-def` objects would be removed as well
 > (known [sriov operator bug](https://bugzilla.redhat.com/show_bug.cgi?id=1770668)).
@@ -106,7 +106,7 @@ The worker will be rebooted to apply the required changes.
 
 ## Procedure
 
-* Create a test project and deploy the example pods:
+- Create a test project and deploy the example pods:
 
 ```shell
 oc new-project sriov-testing
@@ -114,7 +114,7 @@ oc create -f testpmd-pod.yaml -n sriov-testing
 oc create -f pktgen-pod.yaml -n sriov-testing
 ```
 
-* Connect to both pods (`oc rsh <pod>`) and verify the following data on each pod:
+- Connect to both pods (`oc rsh <pod>`) and verify the following data on each pod:
 
 ```shell
 # PCI device plugged to the pod
@@ -213,5 +213,5 @@ Pktgen should start sending packets to testpmd.
 
 ## To do
 
-* [ ] Have better dockerfiles
-* [ ] Automate the procedure
+- [ ] Have better dockerfiles
+- [ ] Automate the procedure

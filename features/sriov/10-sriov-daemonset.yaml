@@ -20,7 +20,7 @@ data:
     else
       UDEVDEVICE=$(cat /sys/class/net/${nic}/device/sriov_vf_device)
       echo "ACTION==\"add|change\", ATTRS{device}==\"0x${UDEVDEVICE}\", ENV{NM_UNMANAGED}=\"1\"" > ${CUSTOMUDEVRULES}
-      udevadm control --reload-rules 
+      udevadm control --reload-rules
       udevadm trigger
     fi
 ---

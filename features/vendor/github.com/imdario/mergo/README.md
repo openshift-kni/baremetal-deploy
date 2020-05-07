@@ -34,7 +34,7 @@ It is ready for production use. [It is used in several projects by Docker, Googl
 
 Please keep in mind that in [0.3.2](//github.com/imdario/mergo/releases/tag/0.3.2) Mergo changed `Merge()`and `Map()` signatures to support [transformers](#transformers). An optional/variadic argument has been added, so it won't break existing code.
 
-If you were using Mergo **before** April 6th 2015, please check your project works as intended after updating your local copy with ```go get -u github.com/imdario/mergo```. I apologize for any issue caused by its previous behavior and any future bug that Mergo could cause (I hope it won't!) in existing projects after the change (release 0.2.0).
+If you were using Mergo **before** April 6th 2015, please check your project works as intended after updating your local copy with `go get -u github.com/imdario/mergo`. I apologize for any issue caused by its previous behavior and any future bug that Mergo could cause (I hope it won't!) in existing projects after the change (release 0.2.0).
 
 ### Donations
 
@@ -209,7 +209,6 @@ func main() {
 }
 ```
 
-
 ## Contact me
 
 If I can help you, you have an idea or you are using Mergo in your projects, don't hesitate to drop me a line (or a pull request): [@im_dario](https://twitter.com/im_dario)
@@ -229,10 +228,8 @@ Written by [Dario Castañé](http://dario.im).
 [![6](https://sourcerer.io/fame/imdario/imdario/mergo/images/6)](https://sourcerer.io/fame/imdario/imdario/mergo/links/6)
 [![7](https://sourcerer.io/fame/imdario/imdario/mergo/images/7)](https://sourcerer.io/fame/imdario/imdario/mergo/links/7)
 
-
 ## License
 
 [BSD 3-Clause](http://opensource.org/licenses/BSD-3-Clause) license, as [Go language](http://golang.org/LICENSE).
-
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fimdario%2Fmergo.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fimdario%2Fmergo?ref=badge_large)

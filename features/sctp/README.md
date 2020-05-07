@@ -44,7 +44,7 @@ In order for applications to be able to load the module, two different actions n
 
 This can be achieved applying a [machine configuration file](https://github.com/openshift/machine-config-operator) like the one below:
 
-``` yaml
+```yaml
 apiVersion: machineconfiguration.openshift.io/v1
 kind: MachineConfig
 metadata:

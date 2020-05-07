@@ -1021,4 +1021,3 @@ message WatchEvent {
   //    depending on context.
   optional k8s.io.apimachinery.pkg.runtime.RawExtension object = 2;
 }
-

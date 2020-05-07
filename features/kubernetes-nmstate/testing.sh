@@ -2,4 +2,4 @@
 
 source myenv.file
 
-envsubst <  bond1.yaml | oc create -f - 
+envsubst <bond1.yaml | oc create -f -

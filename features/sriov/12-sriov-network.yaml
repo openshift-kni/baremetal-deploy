@@ -2,7 +2,7 @@ apiVersion: sriovnetwork.openshift.io/v1
 kind: SriovNetwork
 metadata:
   name: ${sriovnetworkname}
-  namespace: ${operatornamespace} 
+  namespace: ${operatornamespace}
 spec:
   ipam: |
     {

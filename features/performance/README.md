@@ -15,9 +15,9 @@ This is a list of environment variables that you should export before running `m
 - `NON_ISOLATED_CPUS` - CPU's that you want to reserve for OS system tasks.
 - `RESERVED_CPUS` - CPU's that you want to reserve for the system and does not use for containers workloads.
 - `HUGEPAGES_NUMBER` - Number of 1Gb hugepages to enable.
-- `RT_REPO_URL` - the location of a yum repo which provides the RT kernel RPMs as long as they are not part of RHCOS yet.  
+- `RT_REPO_URL` - the location of a yum repo which provides the RT kernel RPMs as long as they are not part of RHCOS yet.
   Defaults to a RH internal URL. For deployments outside the RH network provide a yum repo on a reachable host
-  and update this URL.  
+  and update this URL.
   To configure your own yum repo check the [link](https://access.redhat.com/solutions/3176811).
 
 ## Huge Pages

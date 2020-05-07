@@ -6,7 +6,7 @@ metadata:
     k8s.v1.cni.cncf.io/networks: sriov-network
 spec:
   containers:
-    - name: pktgen 
+    - name: pktgen
       image: quay.io/eminguez/pktgen
       imagePullPolicy: Always
       securityContext:

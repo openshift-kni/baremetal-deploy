@@ -42,7 +42,7 @@ status:
 networking state per node or set of nodes. It uses API similar to
 `NodeNetworkState`.
 
-Example of a `NodeNetworkConfigurationPolicy` creating Linux bond `bond1` using 
+Example of a `NodeNetworkConfigurationPolicy` creating Linux bond `bond1` using
 `ens8` and `ens9` as slaves in all the nodes in the cluster:
 
 ```yaml
@@ -53,25 +53,25 @@ metadata:
 spec:
   desiredState:
     interfaces:
-    - name: bond1
-      type: bond
-      ipv4:
-        auto-dns: false
-        auto-gateway: false
-        auto-routes: false
-        dhcp: true
-        enabled: true
-      state: up
-      link-aggregation:
-        mode: balance-rr
-        options:
-          miimon: '140'
-        slaves:
-        - ens8
-        - ens9
+      - name: bond1
+        type: bond
+        ipv4:
+          auto-dns: false
+          auto-gateway: false
+          auto-routes: false
+          dhcp: true
+          enabled: true
+        state: up
+        link-aggregation:
+          mode: balance-rr
+          options:
+            miimon: "140"
+          slaves:
+            - ens8
+            - ens9
 ```
 
-## Deployment 
+## Deployment
 
 To deploy kubernetes-nmstate use the `./deploy.sh` script in this folder.
 
@@ -80,7 +80,7 @@ To deploy kubernetes-nmstate use the `./deploy.sh` script in this folder.
 For testing you can use the `./testing.sh` script in this folder.
 The test will create a bond interface with the name `bond1` and attach `ens8` and `ens9` as the slave interfaces.
 
-*Note:* You can change the bond name and the slave interface names by editing the `myenv.file` file.
+_Note:_ You can change the bond name and the slave interface names by editing the `myenv.file` file.
 
 ## Node configuration examples
 

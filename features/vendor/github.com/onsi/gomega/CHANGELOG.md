@@ -1,14 +1,17 @@
 ## 1.7.1
 
 ### Fixes
+
 - Bump go-yaml version to cover fixed ddos heuristic (#362) [95e431e]
 
 ## 1.7.0
 
 ### Features
+
 - export format property variables (#347) [642e5ba]
 
 ### Fixes
+
 - minor fix in the documentation of ExpectWithOffset (#358) [beea727]
 
 ## 1.6.0
@@ -33,7 +36,6 @@
 - Reenable gotip in travis [5c249dc]
 - Fix the typo of comment (#345) [f0e010e]
 - Optimize contain_element_matcher [abeb93d]
-
 
 ## 1.5.0
 
@@ -75,9 +77,11 @@
 ## 1.4.0
 
 ### Features
+
 - Make string pretty diff user configurable (#273) [eb112ce, 649b44d]
 
 ### Fixes
+
 - Use httputil.DumpRequest to pretty-print unhandled requests (#278) [a4ff0fc, b7d1a52]
 - fix typo floa32 > float32 (#272) [041ae3b, 6e33911]
 - Fix link to documentation on adding your own matchers (#270) [bb2c830, fcebc62]
@@ -103,22 +107,23 @@ Bug Fixes:
 
 Improvements:
 
-- Added `BeSent` which attempts to send a value down a channel and fails if the attempt blocks.  Can be paired with `Eventually` to safely send a value down a channel with a timeout.
-- `Ω`, `Expect`, `Eventually`, and `Consistently` now immediately `panic` if there is no registered fail handler.  This is always a mistake that can hide failing tests.
+- Added `BeSent` which attempts to send a value down a channel and fails if the attempt blocks. Can be paired with `Eventually` to safely send a value down a channel with a timeout.
+- `Ω`, `Expect`, `Eventually`, and `Consistently` now immediately `panic` if there is no registered fail handler. This is always a mistake that can hide failing tests.
 - `Receive()` no longer errors when passed a closed channel, it's perfectly fine to attempt to read from a closed channel so Ω(c).Should(Receive()) always fails and Ω(c).ShoudlNot(Receive()) always passes with a closed channel.
 - Added `HavePrefix` and `HaveSuffix` matchers.
 - `ghttp` can now handle concurrent requests.
 - Added `Succeed` which allows one to write `Ω(MyFunction()).Should(Succeed())`.
 - Improved `ghttp`'s behavior around failing assertions and panics:
-    - If a registered handler makes a failing assertion `ghttp` will return `500`.
-    - If a registered handler panics, `ghttp` will return `500` *and* fail the test.  This is new behavior that may cause existing code to break.  This code is almost certainly incorrect and creating a false positive.
-- `ghttp` servers can take an `io.Writer`.  `ghttp` will write a line to the writer when each request arrives.
+  - If a registered handler makes a failing assertion `ghttp` will return `500`.
+  - If a registered handler panics, `ghttp` will return `500` _and_ fail the test. This is new behavior that may cause existing code to break. This code is almost certainly incorrect and creating a false positive.
+- `ghttp` servers can take an `io.Writer`. `ghttp` will write a line to the writer when each request arrives.
 - Added `WithTransform` matcher to allow munging input data before feeding into the relevant matcher
 - Added boolean `And`, `Or`, and `Not` matchers to allow creating composite matchers
 - Added `gbytes.TimeoutCloser`, `gbytes.TimeoutReader`, and `gbytes.TimeoutWriter` - these are convenience wrappers that timeout if the underlying Closer/Reader/Writer does not return within the alloted time.
 - Added `gbytes.BufferReader` - this constructs a `gbytes.Buffer` that asynchronously reads the passed-in `io.Reader` into its buffer.
 
 Bug Fixes:
+
 - gexec: `session.Wait` now uses `EventuallyWithOffset` to get the right line number in the failure.
 - `ContainElement` no longer bails if a passed-in matcher errors.
 
@@ -127,25 +132,26 @@ Bug Fixes:
 No changes. Dropping "beta" from the version number.
 
 ## 1.0.0-beta (7/8/2014)
+
 Breaking Changes:
 
-- Changed OmegaMatcher interface.  Instead of having `Match` return failure messages, two new methods `FailureMessage` and `NegatedFailureMessage` are called instead.
-- Moved and renamed OmegaFailHandler to types.GomegaFailHandler and OmegaMatcher to types.GomegaMatcher.  Any references to OmegaMatcher in any custom matchers will need to be changed to point to types.GomegaMatcher
+- Changed OmegaMatcher interface. Instead of having `Match` return failure messages, two new methods `FailureMessage` and `NegatedFailureMessage` are called instead.
+- Moved and renamed OmegaFailHandler to types.GomegaFailHandler and OmegaMatcher to types.GomegaMatcher. Any references to OmegaMatcher in any custom matchers will need to be changed to point to types.GomegaMatcher
 
 New Test-Support Features:
 
 - `ghttp`: supports testing http clients
-    - Provides a flexible fake http server
-    - Provides a collection of chainable http handlers that perform assertions.
+  - Provides a flexible fake http server
+  - Provides a collection of chainable http handlers that perform assertions.
 - `gbytes`: supports making ordered assertions against streams of data
-    - Provides a `gbytes.Buffer`
-    - Provides a `Say` matcher to perform ordered assertions against output data
+  - Provides a `gbytes.Buffer`
+  - Provides a `Say` matcher to perform ordered assertions against output data
 - `gexec`: supports testing external processes
-    - Provides support for building Go binaries
-    - Wraps and starts `exec.Cmd` commands
-    - Makes it easy to assert against stdout and stderr
-    - Makes it easy to send signals and wait for processes to exit
-    - Provides an `Exit` matcher to assert against exit code.
+  - Provides support for building Go binaries
+  - Wraps and starts `exec.Cmd` commands
+  - Makes it easy to assert against stdout and stderr
+  - Makes it easy to send signals and wait for processes to exit
+  - Provides an `Exit` matcher to assert against exit code.
 
 DSL Changes:
 
@@ -161,7 +167,7 @@ New Matchers:
 Updated Matchers:
 
 - `Receive` matcher can take a matcher as an argument and passes only if the channel under test receives an objet that satisfies the passed-in matcher.
-- Matchers that implement `MatchMayChangeInTheFuture(actual interface{}) bool` can inform `Eventually` and/or `Consistently` when a match has no chance of changing status in the future.  For example, `Receive` returns `false` when a channel is closed.
+- Matchers that implement `MatchMayChangeInTheFuture(actual interface{}) bool` can inform `Eventually` and/or `Consistently` when a match has no chance of changing status in the future. For example, `Receive` returns `false` when a channel is closed.
 
 Misc:
 

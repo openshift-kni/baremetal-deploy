@@ -2,22 +2,22 @@
 
 ## References
 
-* [SRIOV operator](https://github.com/openshift/sriov-network-operator/blob/master/doc/quickstart.md)
-* [OCP4 SRIOV operator official documentation](https://docs.openshift.com/container-platform/4.2/networking/multiple-networks/configuring-sr-iov.html)
+- [SRIOV operator](https://github.com/openshift/sriov-network-operator/blob/master/doc/quickstart.md)
+- [OCP4 SRIOV operator official documentation](https://docs.openshift.com/container-platform/4.2/networking/multiple-networks/configuring-sr-iov.html)
 
 ## Instructions
 
-* Create a `myvars` file that fits your environment. You can use the [myvars.example](myvars.example) as inspiration.
-* Run the `deploy.sh` script
+- Create a `myvars` file that fits your environment. You can use the [myvars.example](myvars.example) as inspiration.
+- Run the `deploy.sh` script
 
 The script:
 
-* deploys the SRIOV operator from the operator hub ([operator namespace](01-sriov-namespace.yaml), [operator group](02-sriov-operatorgroup.yaml) and [subscription](03-sriov-subscription.yaml)).
-* patches the `networks.operator.openshift.io/cluster` object to create a dummy dhcp network in order to create a dhcp-daemon
-daemonset required for ipam/dhcp to work with multus (only if needed)
-* configures the VFs via the [network node policy](11-sriov-networknodepolicy.yaml).
-* labels the workers as SRIOV capable (`feature.node.kubernetes.io/network-sriov.capable: "true"`, customizable).
-* creates a [`sriovnetwork` object](12-sriov-network.yaml)
+- deploys the SRIOV operator from the operator hub ([operator namespace](01-sriov-namespace.yaml), [operator group](02-sriov-operatorgroup.yaml) and [subscription](03-sriov-subscription.yaml)).
+- patches the `networks.operator.openshift.io/cluster` object to create a dummy dhcp network in order to create a dhcp-daemon
+  daemonset required for ipam/dhcp to work with multus (only if needed)
+- configures the VFs via the [network node policy](11-sriov-networknodepolicy.yaml).
+- labels the workers as SRIOV capable (`feature.node.kubernetes.io/network-sriov.capable: "true"`, customizable).
+- creates a [`sriovnetwork` object](12-sriov-network.yaml)
 
 Ideally, the SRIOV capable NIC is attached to the 'provisioning' network, where the `metal3-dnsmasq` container is
 attached and will provide private IPs to the VFs so they can see each other.
@@ -39,7 +39,7 @@ The following script creates a [namespace](20-sriov-testing-namespace.yaml) and 
 
 Then, you can `oc rsh` into the pods and see the interfaces attached to it... and see if they reach each other:
 
-* Observe the pods:
+- Observe the pods:
 
 ```shell
 oc get po -n sriov-testing
@@ -49,7 +49,7 @@ sriov-test-5bb79d745f-bhwmp   1/1     Running   0          56s
 sriov-test-5bb79d745f-sqtk4   1/1     Running   0          49s
 ```
 
-* Observe the IPs for the sriov adapters:
+- Observe the IPs for the sriov adapters:
 
 ```shell
 oc get po -n sriov-testing sriov-test-5bb79d745f-bf98r -o jsonpath="{.metadata.annotations}"
@@ -101,7 +101,7 @@ map[k8s.v1.cni.cncf.io/networks:sriov-testing/sriov-network k8s.v1.cni.cncf.io/n
 ...
 ```
 
-* rsh into on of them and curl ip:8080:
+- rsh into on of them and curl ip:8080:
 
 ```shell
 oc rsh -n sriov-testing sriov-test-5bb79d745f-bhwmp

@@ -4,12 +4,12 @@ This is required in order to apply all machine configs to a set of nodes labelle
 
 ### How to run
 
-Tag the nodes as *worker-rt*
+Tag the nodes as _worker-rt_
 
-For instance, to tag all the nodes but the masters, 
+For instance, to tag all the nodes but the masters,
 
 ```
-for node in $(oc get nodes --selector='!node-role.kubernetes.io/master' -o name); do 
+for node in $(oc get nodes --selector='!node-role.kubernetes.io/master' -o name); do
   oc label $node node-role.kubernetes.io/worker-rt=""
 done
 ```

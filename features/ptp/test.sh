@@ -14,10 +14,10 @@ BASEDIR="$(dirname "$0")"
 # so, we label one of the masters as 'grandmaster' randomly
 oc label node "$(random_master)" ptp/grandmaster=''
 # Label the other nodes as 'slaves'
-for node in $(oc get nodes --selector='!ptp/grandmaster' -o name) ; do
-  oc label "$node" ptp/slave=''
+for node in $(oc get nodes --selector='!ptp/grandmaster' -o name); do
+    oc label "$node" ptp/slave=''
 done
 
 for filename in ${BASEDIR}/ptpconfig-*.yaml; do
-  envsubst < "${filename}" | oc apply -f - > /dev/null || die "Error creating ${1}"
+    envsubst <"${filename}" | oc apply -f - >/dev/null || die "Error creating ${1}"
 done

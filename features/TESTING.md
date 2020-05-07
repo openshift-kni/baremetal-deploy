@@ -15,7 +15,7 @@ All the code testing the same feature must belong to the same subpackage (see [s
 
 In order to allow ginkgo to find and execute the relevant tests, the package must be imported anonymously in the [test_suite_test.go file](./functests/test_suite_test.go) as per the following example:
 
-``` go
+```go
 _ "github.com/openshift-kni/baremetal-deploy/features/functests/sctp"
 ```
 
@@ -52,10 +52,10 @@ New CI jobs must be added to the [openshift/release configuration file](https://
 If the conventions described in this document are applied, an e2e job that will test a single feature will look like:
 
 ```yaml
-  - as: sctp-e2e
-    commands: cd features && export FEATURES=sctp && make deploy && make functests
-    openshift_installer_src:
-      cluster_profile: aws
+- as: sctp-e2e
+  commands: cd features && export FEATURES=sctp && make deploy && make functests
+  openshift_installer_src:
+    cluster_profile: aws
 ```
 
 Then the prow job must generated using the prowgen tool and committed in the repo.
@@ -65,7 +65,7 @@ Then the prow job must generated using the prowgen tool and committed in the rep
 If we want to have this jobs running only when the relevant code is changed, the `run_if_changed` directive must be added to the generated job (and it will be preserved across re-generations of the job):
 
 ```yaml
-    run_if_changed: features/sctp/.*
+run_if_changed: features/sctp/.*
 ```
 
 See [this](https://github.com/openshift/release/blob/master/ci-operator/jobs/openshift-kni/baremetal-deploy/openshift-kni-baremetal-deploy-master-presubmits.yaml#L17) as an example.

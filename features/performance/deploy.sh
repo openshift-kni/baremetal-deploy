@@ -6,7 +6,7 @@ source $(dirname "$0")/../hack/common.sh
 
 # Check if there is at least one worker-rt node
 RTNODES=$(oc get node --selector=node-role.kubernetes.io/worker-rt="")
-if [ "${RTNODES}" == "" ] ; then
+if [ "${RTNODES}" == "" ]; then
     echo "No node with worker-rt label found"
     exit 1
 fi
@@ -53,7 +53,6 @@ until oc wait machineconfigpools worker-rt --for condition=Updating --timeout=60
         break
     fi
 done
-
 
 count=0
 until oc wait machineconfigpools worker-rt --for condition=Updated --timeout=60s; do
