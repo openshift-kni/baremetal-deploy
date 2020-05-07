@@ -1,1 +1,1 @@
-ansible-playbook-fully-disconnected.adoc
+ansible-playbook/ansible-playbook-fully-disconnected.adoc

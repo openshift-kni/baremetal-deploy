@@ -1,1 +1,1 @@
-ipi-install-upstream-master.adoc
+ipi-install/ipi-install-upstream-master.adoc
