@@ -11,3 +11,4 @@ http_proxy: ""
 https_proxy: ""
 ipv4_baremetal: false
 ipv4_provisioning: false
+provisioning_bridge: "provisioning"
