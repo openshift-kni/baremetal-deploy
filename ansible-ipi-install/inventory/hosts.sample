@@ -134,7 +134,7 @@ provisioner.example.com
 #   Define a host here to create or use a local copy of the installation registry
 #   Used for disconnected installation
 # [registry_host]
-# disconnected.example.com
+# registry.example.com
 
 # [registry_host:vars]
 # The following cert_* variables are needed to create the certificates
@@ -157,9 +157,9 @@ provisioner.example.com
 #
 # Specify a file that contains extra auth tokens to include in the
 #   pull-secret if they are not already there.
-# disconnected_registry_auths_file=/home/kni/mirror_auth.json
+# disconnected_registry_auths_file=/path/to/registry-auths.json
 
 # Specify a file that contains the addition trust bundle and image
 #   content sources for the local registry. The contents of this file
 #   will be appended to the install-config.yml file.
-# disconnected_registry_mirrors_file=/home/kni/ic-appends.yml
+# disconnected_registry_mirrors_file=/path/to/install-config-appends.json

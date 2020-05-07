@@ -352,7 +352,7 @@ provisioner.example.com
 #   Define a host here to create or use a local copy of the installation registry
 #   Used for disconnected installation
 # [registry_host]
-# disconnected.example.com
+# registry.example.com
 
 # [registry_host:vars]
 # The following cert_* variables are needed to create the certificates
@@ -375,12 +375,12 @@ provisioner.example.com
 #
 # Specify a file that contains extra auth tokens to include in the
 #   pull-secret if they are not already there.
-# disconnected_registry_auths_file=/home/kni/mirror_auth.json
+# disconnected_registry_auths_file=/path/to/registry-auths.json
 
 # Specify a file that contains the addition trust bundle and image
 #   content sources for the local registry. The contents of this file
 #   will be appended to the install-config.yml file.
-# disconnected_registry_mirrors_file=/home/kni/ic-appends.yml
+# disconnected_registry_mirrors_file=/path/to/install-config-appends.json
 ```
 
 NOTE: The `ipmi_address` can take a fully qualified name assuming it is resolvable.
@@ -472,22 +472,32 @@ The `disconnected_registry_auths_file` variable should point to a file containin
 
 The `disconnected_registry_mirrors_file` variable should point to a file containing the `additionalTrustBundle` and `imageContentSources` for the disconnected registry.
 
-The file should be in the following format. Change the `disconnected.example.com` and port 5000 to reflect your environment.
+The file should be in the following format. Change the `registry.example.com` and port 5000 to reflect your environment.
 
 ```
 additionalTrustBundle: |
   -----BEGIN CERTIFICATE-----
-  The servers certificate should go here
+  MIIGPDCCBCSgAwIBAgIUWr1DxDq53hrsk6XVLRXUjfF9m+swDQYJKoZIhvcNAQEL
+  BQAwgZAxCzAJBgNVBAYTAlVTMRAwDgYDVQQIDAdNeVN0YXRlMQ8wDQYDVQQHDAZN
+  eUNpdHkxEjAQBgNVBAoMCU15Q29tcGFueTEVMBMGA1UECwwMTXlEZXBhcnRtZW50
+  MTMwMQYDVQQDDCpyZWdpc3RyeS5rbmk3LmNsb3VkLmxhYi5lbmcuYm9zLnJlZGhh
+  dC5jb20wHhcNMjAwNDA3MjM1MzI2WhcNMzAwNDA1MjM1MzI2WjCBkDELMAkGA1UE
   -----END CERTIFICATE-----
-
+  
 imageContentSources:
 - mirrors:
-  - disconnected.example.com:5000/ocp4/openshift4
+  - registry.example.com:5000/ocp4/openshift4
   source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
 - mirrors:
-  - disconnected.example.com:5000/ocp4/openshift4
+  - registry.example.com:5000/ocp4/openshift4
   source: registry.svc.ci.openshift.org/ocp/release
+- mirrors:
+  - registry.example.com:5000/ocp4/openshift4
+  source: quay.io/openshift-release-dev/ocp-release
 ```
+
+NOTE: Indentation is important in the json file. Ensure your copy of the `
+install-config-appends.json` is properly indented as in the example above.
 
 ## Running the `playbook.yml`
 
