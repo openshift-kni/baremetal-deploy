@@ -23,8 +23,11 @@ _**Table of contents**_
   - [Unreachable Host](#unreachable-host)
   - [Permission Denied Trying To Connect To Host](#permission-denied-trying-to-connect-to-host)
   - [Dig lookup requires the python '`dnspython`' library and it is not installed](#dig-lookup-requires-the-python-dnspython-library-and-it-is-not-installed)
+  - [Missing python `netaddr` library](#missing-python-netaddr-library)
+  - [Shared connection closed on provision host when installing packages](#shared-connection-closed-on-provision-host-when-installing-packages)
 - [Gotchas](#gotchas)
   - [Using `become: yes` within `ansible.cfg` or inside `playbook.yml`](#using-become-yes-within-ansiblecfg-or-inside-playbookyml)
+  - [Failed to install `python3-crypto` & `python3-pyghmi`](#failed-to-install-python3-crypto--python3-pyghmi)
 - [Appendix A. Using Ansible Tags with the `playbook.yml`](#appendix-a-using-ansible-tags-with-the-playbookyml)
   - [How to use the Ansible tags](#how-to-use-the-ansible-tags)
   - [Skipping particular tasks using Ansible tags](#skipping-particular-tasks-using-ansible-tags)
@@ -670,16 +673,16 @@ provisioner.example.com : ok=2    changed=0    unreachable=0    failed=1    skip
 
 The above issue can be fixed by simply installing `python3-dns` on your local system (assuming your using an OS such as Fedora, Red Hat)
 
-On a local host running Red Hat 7.x, run:
-
-```sh
-# sudo yum install python2-dns
-```
-
 On a local host running Red Hat 8.x, run:
 
 ```sh
 # sudo dnf install python3-dns
+```
+
+On a local host running Red Hat 7.x, run:
+
+```sh
+# sudo yum install python2-dns
 ```
 
 On a local host running Fedora, run:
@@ -693,12 +696,171 @@ Re-run the Ansible playbook
 ```sh
 $ ansible-playbook -i inventory/hosts playbook.yml
 ```
+## Missing python `netaddr` library 
+
+The Ansible playbook takes advantage of certain filters such as the [`ipaddr`](https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters_ipaddr.html) 
+filter. In order to use this filter, your localhost running the Ansible playbook
+requires the python `netaddr` library. 
+
+The error when running the playbook looks like the following:
+
+```
+TASK [node-prep : Fail if Python modules are missing] ******************************************************************************
+Tuesday 05 May 2020  19:30:19 +0000 (0:00:00.512)       0:00:13.829 ***********
+fatal: [bootstrap.kni8.cloud.lab.eng.bos.redhat.com]: FAILED! => {"changed": false, "msg": "Missing python module(s) ['netaddr'] on localhost\n"}
+```
+The above issue can be fixed by simply installing `python3-netaddr` on your local system (assuming your using an OS such as Fedora, Red Hat)
+
+On a local host running Red Hat 8.x, run:
+
+```sh
+# sudo dnf install python3-netaddr
+```
+
+On a local host running Red Hat 7.x, run:
+
+```sh
+# sudo yum install python2-netaddr
+```
+
+On a local host running Fedora, run:
+
+```sh
+# sudo dnf install python3-netaddr
+```
+
+Re-run the Ansible playbook
+
+```sh
+$ ansible-playbook -i inventory/hosts playbook.yml
+```
+
+## Shared connection closed on provision host when installing packages
+
+When deploying in an environment where subscription manager is not being used
+and a local repository is being setup on the provision host due to the nature
+that the provision host is offline, you may see the following error.
+
+```sh
+TASK [node-prep : Install required packages] ************************************************************************************************
+Thursday 07 May 2020  17:04:21 +0000 (0:00:00.152)       0:00:11.854 ********** 
+fatal: [provisioner.kni7.cloud.lab.eng.bos.redhat.com]: FAILED! => {"changed": false, "module_stderr": "Shared connection to provisioner.kni7.cloud.lab.eng.bos.redhat.com closed.\r\n", "module_stdout": "[Errno 101] Network is unreachable\r\n\r\n{\"msg\": \"Nothing to do\", \"changed\": false, \"results\": [], \"rc\": 0, \"invocation\": {\"module_args\": {\"name\": [\"firewalld\", \"tar\", \"libvirt\", \"qemu-kvm\", \"python3-devel\", \"jq\", \"ipmitool\", \"python3-libvirt\", \"python3-lxml\", \"python3-yaml\", \"NetworkManager-libnm\", \"nm-connection-editor\", \"libsemanage-python3\", \"policycoreutils-python3\", \"podman\"], \"state\": \"present\", \"update_cache\": true, \"allow_downgrade\": false, \"autoremove\": false, \"bugfix\": false, \"disable_gpg_check\": false, \"disable_plugin\": [], \"disablerepo\": [], \"download_only\": false, \"enable_plugin\": [], \"enablerepo\": [], \"exclude\": [], \"installroot\": \"/\", \"install_repoquery\": true, \"install_weak_deps\": true, \"security\": false, \"skip_broken\": false, \"update_only\": false, \"validate_certs\": true, \"lock_timeout\": 30, \"conf_file\": null, \"disable_excludes\": null, \"download_dir\": null, \"list\": null, \"releasever\": null}}}\r\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 0}
+```
+
+The error basically means that `dnf` was not able to load particular plugins,
+specifically the `product-id` and the `subscription-manager` plugins. However,
+since this is a local repository with offline access, we will want to disable
+these plugins when this error occurs.
+
+On the provision host, if you run the following command:
+
+```sh
+[kni@provisioner ~]$ sudo dnf info dnf
+Updating Subscription Management repositories.
+Unable to read consumer identity
+[Errno 101] Network is unreachable
+Last metadata expiration check: 0:08:49 ago on Thu 07 May 2020 08:11:19 PM UTC.
+Installed Packages
+Name         : dnf
+Version      : 4.2.7
+Release      : 7.el8_1
+Architecture : noarch
+Size         : 1.7 M
+Source       : dnf-4.2.7-7.el8_1.src.rpm
+Repository   : @System
+From repo    : rhel-8-for-x86_64-baseos-rpms
+Summary      : Package manager
+URL          : https://github.com/rpm-software-management/dnf
+License      : GPLv2+ and GPLv2 and GPL
+Description  : Utility that allows users to manage packages on their systems.
+             : It supports RPMs, modules and comps groups & environments.
+```
+
+To ensure the issue is plugin related, we can attempt to run the same command
+with plugins disabled as such:
+
+```sh
+[kni@provisioner ~]$ sudo dnf info dnf --disableplugin=product-id,subscription-manager
+Last metadata expiration check: 0:11:17 ago on Thu 07 May 2020 08:11:19 PM UTC.
+Installed Packages
+Name         : dnf
+Version      : 4.2.7
+Release      : 7.el8_1
+Architecture : noarch
+Size         : 1.7 M
+Source       : dnf-4.2.7-7.el8_1.src.rpm
+Repository   : @System
+From repo    : rhel-8-for-x86_64-baseos-rpms
+Summary      : Package manager
+URL          : https://github.com/rpm-software-management/dnf
+License      : GPLv2+ and GPLv2 and GPL
+Description  : Utility that allows users to manage packages on their systems.
+             : It supports RPMs, modules and comps groups & environments.
+```
+
+If you notice, the portion that says
+
+```sh
+Unable to read consumer identity
+[Errno 101] Network is unreachable
+```
+
+is no longer stated.
+
+For this fix to be permanent, modify the `/etc/yum.conf` file and include
+the `plugins=0` into the `[main]` section of the configuration file.
+
+```sh
+[kni@provisioner ~]$ cat /etc/yum.conf
+
+[main]
+gpgcheck=1
+installonly_limit=3
+clean_requirements_on_remove=True
+best=True
+plugins=0
+```
 
 # Gotchas
 
 ## Using `become: yes` within `ansible.cfg` or inside `playbook.yml`
 
 This Ansible playbook takes advantage of the `ansible_user_dir` variable. As such, it is important to note that if within your `ansible.cfg` or within the `playbook.yml` file the privilege escalation of `become: yes` is used, this will modify the home directory to that of the root user (i.e. `/root`) instead of using the home directory of your privileged user, `kni` with a home directory of `/home/kni`
+
+## Failed to install `python3-crypto` & `python3-pyghmi`
+
+The Ansible playbook uses the [`ipmi_power`](https://docs.ansible.com/ansible/latest/modules/ipmi_power_module.html)
+module to power off the OpenShift
+cluster nodes prior to deployment. This particular module has a dependency for two packages: 
+`python3-crypto` and `python3-pyghmi`. When using Red Hat Enterprise Linux 8, 
+these packages do not reside in BaseOS nor AppStream repositories. If using 
+`subscription-manager`, they reside in the OpenStack repositories such as
+`openstack-16-for-rhel-8-x86_64-rpms`, however, to simplify the installation
+of these packages, the playbook uses the available versions from 
+`trunk.rdoproject.org`.
+
+The playbook assumes that the provision host can access 
+`trunk.rdoproject.org` or that the rpm packages are manually installed on 
+provision host.  
+
+When the provision host cannot reach `trunk.rdopoject.org` and the packages are
+not already installed on the system, the following error can be expected
+
+```sh
+TASK [node-prep : Install required packages] ************************************************************************************************
+Thursday 07 May 2020  19:11:35 +0000 (0:00:00.161)       0:00:11.940 ********** 
+fatal: [provisioner.kni7.cloud.lab.eng.bos.redhat.com]: FAILED! => {"changed": false, "failures": ["No package python3-crypto available.", "No package python3-pyghmi available."], "msg": "Failed to install some of the specified packages", "rc": 1, "results": []}
+```
+
+---
+**NOTE** 
+
+The `python3-crypto` and `python3-pyghmi` can be downloaded from the following
+links if required for an offline provision host:
+
+- [python3-crypto](https://trunk.rdoproject.org/rhel8-master/deps/latest/Packages/python3-crypto-2.6.1-18.el8ost.x86_64.rpm)
+- [python3-pyghmi](https://trunk.rdoproject.org/rhel8-master/deps/latest/Packages/python3-pyghmi-1.0.22-2.el8ost.noarch.rpm)
+---
 
 # Appendix A. Using Ansible Tags with the `playbook.yml`
 
@@ -775,7 +937,7 @@ The following is an example on how to use the `--tags` option. In this example, 
 Example 1
 
 ```sh
-ansible-playbook -i inventory/hosts playbook.yml --tags "packages"
+ansible-playbook -i inventory/hosts playbook.yml --tags "validation,packages"
 ```
 
 In the next example, we will show how to call multiple tags at the same time.
@@ -783,10 +945,12 @@ In the next example, we will show how to call multiple tags at the same time.
 Example 2
 
 ```sh
-ansible-playbook -i inventory/hosts playbook.yml --tags "network,packages"
+ansible-playbook -i inventory/hosts playbook.yml --tags "validation,network,packages"
 ```
 
 The example above calls for the setup of the networking and installation of the packages from the Ansible playbook. Only the tasks with these specific tags will run.
+
+NOTE: Due to the dependencies in the playbook, the `validation` tag is always required. 
 
 ## Skipping particular tasks using Ansible tags
 
