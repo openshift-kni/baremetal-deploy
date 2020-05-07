@@ -1,0 +1,85 @@
+[id="ipi-install-troubleshooting-bootstrap-vm"]
+= Bootstrap VM issues
+
+The bootstrap node is a virtual machine that is triggered by the
+OpenShift installer that handles the provisioning of the nodes that will
+be part of the OpenShift cluster.
+
+Once the deployment is triggered (after waiting for 10 to 15 minutes) we
+can see if the Bootstrap VM is operational. We can verify the bootstrap
+VM is operational via the `+virsh+` command.
+
+[source,bash]
+----
+[kni@provisioner]$ sudo virsh list
+ Id    Name                           State
+----------------------------------------------------
+ 12    kni7-xf6fq-bootstrap           running
+----
+
+If no bootstrap VM is running after waiting 10-15 minutes, it is
+important to troubleshoot as to why it was not created. Possible issues
+to verify are:
+
+* Verify `+libvirtd+` is running on the system
+
+[source,bash]
+----
+$ systemctl status libvirtd
+● libvirtd.service - Virtualization daemon
+   Loaded: loaded (/usr/lib/systemd/system/libvirtd.service; enabled; vendor preset: enabled)
+   Active: active (running) since Tue 2020-03-03 21:21:07 UTC; 3 weeks 5 days ago
+     Docs: man:libvirtd(8)
+           https://libvirt.org
+ Main PID: 9850 (libvirtd)
+    Tasks: 20 (limit: 32768)
+   Memory: 74.8M
+   CGroup: /system.slice/libvirtd.service
+           ├─ 9850 /usr/sbin/libvirtd
+----
+
+If the bootstrap VM is indeed operational, we want to verify if we can
+log into it. The IP of this VM can be obtained by issuing
+`+sudo virsh net-dhcp-leases+` Typically, the private IP of the
+bootstrap VM is `+172.22.0.2+`. To access the VM, use the `+core+` user
+for logging in.
+
+We can find the IP address of the bootstrap VM using the
+`+virsh console+` command as shown.
+
+[source,bash]
+----
+[kni@provisioner ~]$ sudo virsh console kni7-4q49b-bootstrap
+Connected to domain kni7-4q49b-bootstrap
+Escape character is ^]
+
+Red Hat Enterprise Linux CoreOS 43.81.202001142154.0 (Ootpa) 4.3
+SSH host key: SHA256:BRWJktXZgQQRY5zjuAV0IKZ4WM7i4TiUyMVanqu9Pqg (ED25519)
+SSH host key: SHA256:7+iKGA7VtG5szmk2jB5gl/5EZ+SNcJ3a2g23o0lnIio (ECDSA)
+SSH host key: SHA256:DH5VWhvhvagOTaLsYiVNse9ca+ZSW/30OOMed8rIGOc (RSA)
+ens3:  fd35:919d:4042:2:c7ed:9a9f:a9ec:7
+ens4: 172.22.0.2 fe80::1d05:e52e:be5d:263f
+localhost login:
+----
+
+* Once the IP address has been obtained, we can attempt to login to the
+bootstrap VM using the `+ssh+` command
+
+[source,bash]
+----
+$ ssh core@172.22.0.2
+----
+
+If attempting to log into the bootstrap VM and you are not successful,
+you’ve likely reached one of the following scenarios:
+
+* Cannot reach the `+172.22.0.0/24+` network. This means you should
+verify your connectivity on the provisioning host specifically around
+the provisioning network bridge
+* Cannot reach the bootstrap VM via the public network. When attempting
+to SSH via baremetal network you should verify your connectivity on the
+provisioning host specifically around the baremetal network bridge.
+* `+Permission denied (publickey,password,keyboard-interactive)+`. When
+attempting to access the bootstrap VM an error of Permission denied
+might occur, verify that your SSH key for the user attempting to log
+into the VM is set within your `+install-config.yaml+` file.

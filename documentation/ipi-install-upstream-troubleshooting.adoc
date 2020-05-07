@@ -1,0 +1,51 @@
+[id="ipi-install-troubleshooting"]
+= Troubleshooting
+Deployment Integration Team
+:data-uri:
+:email: https://github.com/openshift-kni/baremetal-deploy
+:experimental:
+:toc-title:
+:imagesdir: images
+:prewrap!:
+:context: ipi-install-troubleshooting
+//Upstream attribute
+:upstream:
+:toc:
+:toclevels: 5
+:sectnums:
+:icons: font
+:product-title: OpenShift Container Platform
+:source-highlighter: pygments
+
+[TIP]
+====
+link:Troubleshooting.pdf[Download] the PDF version of this document or visit https://openshift-kni.github.io/baremetal-deploy/
+====
+
+
+While attempting to deploy Installer Provisioned Infrastructure (IPI) of
+OpenShift on Bare Metal (BM), you may run into a situation where you need
+to troubleshoot your environment. This document provides troubleshooting
+guidance and tips in solving common issues that may arise.
+
+include::modules/ipi-install-troubleshooting-flow.adoc[leveloffset=+1]
+
+include::modules/ipi-install-troubleshooting-install-config.adoc[leveloffset=+1]
+
+include::modules/ipi-install-troubleshooting-bootstrap-vm.adoc[leveloffset=+1]
+include::modules/ipi-install-troubleshooting-bootstrap-vm-cannot-boot.adoc[leveloffset=+2]
+include::modules/ipi-install-troubleshooting-bootstrap-vm-inspecting-logs.adoc[leveloffset=+2]
+
+include::modules/ipi-install-troubleshooting-cluster-nodes-wont-pxe.adoc[leveloffset=+1]
+include::modules/ipi-install-troubleshooting-api-not-accessible.adoc[leveloffset=+1]
+
+include::modules/ipi-install-troubleshooting-review-install.adoc[leveloffset=+1]
+include::modules/ipi-install-troubleshooting-following-the-installation.adoc[leveloffset=+1]
+include::modules/ipi-install-troubleshooting-post-install-pod-errors.adoc[leveloffset=+1]
+
+include::modules/ipi-install-troubleshooting-ntp-out-of-sync.adoc[leveloffset=+1]
+include::modules/ipi-install-troubleshooting-cleaning-up-previous-installations.adoc[leveloffset=+1]
+
+include::modules/ipi-install-troubleshooting-registry-issues.adoc[leveloffset=+1]
+
+include::modules/ipi-install-troubleshooting-misc-issues.adoc[leveloffset=+1]

@@ -1,0 +1,45 @@
+[id="ipi-install-troubleshooting-bootstrap-vm-cannot-boot"]
+= Bootstrap VM cannot boot up my cluster nodes
+
+During the deployment, it is possible for the bootstrap VM to not boot
+up the OpenShift cluster nodes in order to provision them with their
+respective RHCOS OS image. This issue can arise due to:
+
+* Problem with the `+install-config.yaml+` file
+* Issues with Out of band network access from the baremetal network
+
+To verify the issue, there are 3 basic containers related to `+ironic+`
+
+....
+* Ironic-api
+* Ironic-conductor
+* Ironic-inspector
+....
+
+The `+ironic-conductor+` pod includes the most details regarding the
+attempted boot up of your OpenShift cluster nodes as it attempts to
+perform the login and execute the action over IPMI, you can check the
+logs as per the below syntax
+
+[source,bash]
+----
+# podman logs -f ironic-conductor
+----
+
+If you encounter an issue where the master nodes are not booting up via
+PXE, check the `+ironic-conductor+` pod
+
+Potential reason: They might be in `+ON+` state when deployment started.
+
+Solution: Make sure to power off the master nodes before you begin the
+installation via iDRAC/iLO. Feel free to use this below script:
+
+[source,bash]
+----
+#!/bin/bash
+
+echo "***Power Off master-0,master1,master-2****"
+ipmitool -I lanplus -U root -P <Password> -H <Out-of-band-ip> power off
+ipmitool -I lanplus -U root -P <Password> -H <Out-of-band-ip> power off
+ipmitool -I lanplus -U root -P <Password> -H <Out-of-band-ip> power off
+----

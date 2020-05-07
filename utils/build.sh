@@ -8,10 +8,13 @@ RELEASES="4.4 4.3"
 DOCS="Deployment"
 
 # Documents using latest
-STATIC="Deployment"
+STATIC="Troubleshooting Deployment"
 
 # Devel releases for static documents and devel docs
 DEVRELEASE="4.5"
+
+# Get latest version for 'static' documents
+LATEST=$(echo ${RELEASES} | tr " " "\n" | sort -V -r | head -1)
 
 build_for_release() {
     doc="${1}"

@@ -1,0 +1,10 @@
+[id="ipi-install-troubleshooting-flow"]
+
+= Troubleshooting Flow
+
+Prior to troubleshooting your environment, it is critical to understand
+the overall flow of the IPI on BM installation. The diagram below is a
+troubleshooting flowchart providing a step-by-step breakdown of where to
+start debugging your environment.
+
+image:troubleshooting.png[Flow-Diagram]
