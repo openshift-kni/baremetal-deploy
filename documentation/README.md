@@ -7,6 +7,7 @@ _Table of contents_
   - [Test your changes in a local container](#test-your-changes-in-a-local-container)
     - [Run a Jekyll container](#run-a-jekyll-container)
     - [View the site](#view-the-site)
+- [Adding new documentation](#adding-new-documentation)
 
 <!-- /TOC -->
 
@@ -68,3 +69,32 @@ Regarding the documentation, the script `build.sh` generates a `yaml` containing
 ### View the site
 
 Visit `http://0.0.0.0:4000` in your local browser.
+
+# Adding new documentation
+
+We can add versioned or unversioned (latest) documents.
+
+To do so, edit the `utils/build.sh` and check the headers:
+
+```sh
+#Space separated version list to build
+RELEASES="4.4 4.3"
+
+#Versioned documents
+DOCS="Deployment"
+
+#Documents using latest
+STATIC="Deployment"
+
+#Devel releases for static documents and devel docs
+DEVRELEASE="4.5"
+```
+
+With above example, we'll build the documents for release argument 4.4 and 4.3 for each one of the documents indicated in `DOCS`, and at the same time, create another copy of that document using release 4.5 that will be displayed in another section in the frontpage.
+
+If now, for example we want to have an additional document (not versioned) for `Troubleshooting`, the steps to perform are:
+
+- Create a symbolic link from the filename to `Troubleshooting` in the `documentation/` folder
+- Add `Troubleshooting` with a space to `STATIC`, so that the script loop that generates it will take it from there.
+
+The new doc, `Troubleshooting` will appear in the `Additional` section and will get a `-a release=4.5` when generated, this allows for example the example above, where the `Deployment` guide can be live previewed before moving it into the `Documentation` section.
