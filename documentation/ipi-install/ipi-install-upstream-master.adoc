@@ -19,7 +19,7 @@ Deployment Integration Team
 
 [TIP]
 ====
-link:index.pdf[Download] the PDF version of this document or visit https://openshift-kni.github.io/baremetal-deploy/
+link:Deployment.pdf[Download] the PDF version of this document or visit https://openshift-kni.github.io/baremetal-deploy/
 ====
 
 

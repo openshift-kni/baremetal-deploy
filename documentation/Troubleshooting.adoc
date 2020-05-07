@@ -1,1 +1,1 @@
-ipi-install-upstream-troubleshooting.adoc
+troubleshooting/ipi-install-upstream-troubleshooting.adoc
