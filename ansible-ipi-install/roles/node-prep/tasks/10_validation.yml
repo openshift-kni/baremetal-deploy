@@ -86,7 +86,7 @@
   - always
   - validation
 
-- name: Check whether caching is enabled 
+- name: Check whether caching is enabled
   debug:
     msg: "cache enable {{ cache_enabled }}"
     verbosity: 2
@@ -215,7 +215,7 @@
     - dra_set
     - drm_set
     - webserver_url|length == 0
-    
+
 - name: Get Release.txt File
   uri:
     url: "{{ release_url }}/{{ version }}/release.txt"

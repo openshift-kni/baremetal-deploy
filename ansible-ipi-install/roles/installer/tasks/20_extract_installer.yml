@@ -16,7 +16,7 @@
     dest: /tmp/
     flat: yes
     src: "{{ dir }}/pull-secret.txt"
-  when: 
+  when:
     - registry_creation|bool
     - groups['registry_host'][0] != groups['provisioner'][0]
   tags:
@@ -29,7 +29,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
-  when: 
+  when:
     - registry_creation|bool
     - groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: "{{ groups['registry_host'][0] }}"
@@ -44,7 +44,7 @@
     group: "{{ ansible_user }}"
     mode: 0755
   become: yes
-  when: 
+  when:
     - registry_creation|bool
     - groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: "{{ groups['registry_host'][0] }}"
@@ -55,7 +55,7 @@
   file:
     path: /tmp/pull-secret.txt
     state: absent
-  when: 
+  when:
     - registry_creation|bool
     - groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: localhost
@@ -92,7 +92,7 @@
   file:
     path: "{{ dir }}"
     state: absent
-  when: 
+  when:
     - registry_creation|bool
     - groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: "{{ groups['registry_host'][0] }}"
@@ -147,7 +147,7 @@
     group: "{{ ansible_user }}"
     mode: 0755
   become: yes
-  when: 
+  when:
     - registry_creation|bool
     - groups['registry_host'][0] != groups['provisioner'][0]
   tags:
@@ -157,7 +157,7 @@
   file:
     path: "/tmp/openshift-baremetal-install"
     state: absent
-  when: 
+  when:
     - registry_creation|bool
     - groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: localhost

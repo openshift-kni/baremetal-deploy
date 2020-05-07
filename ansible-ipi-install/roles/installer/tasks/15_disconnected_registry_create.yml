@@ -40,7 +40,7 @@
   become: yes
   tags:
   - create_registry
- 
+
 - name: Get the oc command from provisioner into temp file on control machine
   fetch:
     dest: /tmp/
@@ -351,7 +351,7 @@
         state: absent
 
   delegate_to: "{{ groups['registry_host'][0] }}"
-  tags: 
+  tags:
   - disconnected
   - create_registry
 
@@ -386,4 +386,3 @@
   become: true
   tags:
   - create_registry
-

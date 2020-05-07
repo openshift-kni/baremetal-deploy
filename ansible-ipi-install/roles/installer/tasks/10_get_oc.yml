@@ -72,7 +72,7 @@
     registry_host_tempdir: "{{ registryhost_tempdir.path }}"
   when: registry_creation|bool
   tags:
-  - getoc 
+  - getoc
 
 - name: Setting Fact of which ansible temp file to use
   set_fact:
@@ -90,7 +90,7 @@
   delegate_to: "{{ registry_creation | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
   tags: getoc
 
-#If the registry host got the tar, lets just copy it to the prov host 
+#If the registry host got the tar, lets just copy it to the prov host
 # 15_disconnected_registry_create.yml can handle extracting to the registry host already
 - name: Get the openshift-client-linux-{{ release_version }}.tar.gz from registry host into temp file on control machine
   fetch:
@@ -122,7 +122,7 @@
   delegate_to: localhost
   tags:
   - getoc
- 
+
 - name: "Untar the openshift-client-linux-{{ release_version }}.tar.gz"
   unarchive:
     src: "{{ tempdir }}/openshift-client-linux-{{ release_version }}.tar.gz"
