@@ -1,0 +1,125 @@
+[id="ipi-install-troubleshooting-post-install-pod-errors"]
+= Post install pod errors
+
+* Error in metal³ pod during deployment(only applies for 4.3)
+
+[source,bash]
+----
+$ oc get all -n openshift-machine-api
+NAME                                          READY   STATUS                            RESTARTS   AGE
+pod/metal3-6c6cc7c56c-lj4lr                   0/8     Init:CreateContainerConfigError   0          <invalid>
+----
+
+This happens due to the missing `+ConfigMap+`
+
+....
+  Warning  Failed     <invalid> (x7 over 32s)  kubelet, master-1.cloud.example.com  Error: configmap "metal3-config" not found
+....
+
+Make sure to add the ConfigMap before starting the deployment as shown
+below to solve the above problem
+
+Create your `+metal3-config.yaml+` file as shown below:
+
+[source,yaml]
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: metal3-config
+  namespace: openshift-machine-api
+data:
+  cache_url: rhcos-43.81.202001142154.0-qemu.x86_64.qcow2.gz
+  deploy_kernel_url: http://172.22.0.1:6180/images/ironic-python-agent.kernel
+  deploy_ramdisk_url: http://172.22.0.1:6180/images/ironic-python-agent.initramfs
+  dhcp_range: 172.22.0.10,172.22.0.100
+  http_port: "6180"
+  ironic_endpoint: http://172.22.0.1:6385/v1/
+  ironic_inspector_endpoint: http://172.22.0.3:5050/v1/
+  provisioning_interface: eno1
+  provisioning_ip: 172.22.0.1/24
+  rhcos_image_url: <URL-which-has-qcow-image>
+----
+
+*Note*: Change your `+rhcos_image_url+` to the appropriate URL for your
+deployment.
+
+Place this file in `+<Install-Dir>+`
+
+[source,bash]
+----
+[kni@provisioner ~]$ cp metal3-config.yaml ocp/openshift/99_metal3-config.yaml
+----
+
+and then re-run the installation to fix the metal³ pod issue.
+
+After the installation is complete copy the config file to the `.kube/config` directory to interact with the cluster.
+
+[source,bash]
+----
+[kni@provisioner ~]$ export KUBECONFIG=/install-dir/ocp/auth/kubeconfig
+----
+
+Verify if all the OpenShift nodes are up and running
+
+[source,bash]
+----
+[kni@provisioner ~]$ oc get nodes
+NAME                                         STATUS   ROLES           AGE    VERSION
+master-0.cloud.lab.eng.bos.redhat.com   Ready    master,worker   4h   v1.16.2
+master-1.cloud.lab.eng.bos.redhat.com   Ready    master,worker   4h   v1.16.2
+master-2.cloud.lab.eng.bos.redhat.com   Ready    master,worker   4h   v1.16.2
+----
+
+If the installation fails:
+
+- Please check for logs `+.openshift-install.log+` .
+- Master Node in `+NotReady+` state.
+
+If any of the OpenShift nodes are in `+NotReady+` state, make sure the
+kubelet services are enabled.
+
+[source,bash]
+----
+$ oc get nodes
+NAME                                         STATUS     ROLES    AGE   VERSION
+master-0.cloud.example.com   NotReady   master   67m   v1.16.2
+master-1.cloud.example.com   Ready      master   67m   v1.16.2
+master-2.cloud.example.com   Ready      master   67m   v1.16.2
+----
+
+Verify kubelet on each master node, example of logging in to
+`+master-0+` below
+
+[source,bash]
+----
+[kni@provisioner~]$ssh core@master-0
+
+[core@master-0 ~]$ sudo systemctl status kubelet
+● kubelet.service - Kubernetes Kubelet
+   Loaded: loaded (/etc/systemd/system/kubelet.service; enabled; vendor preset: enabled)
+  Drop-In: /etc/systemd/system/kubelet.service.d
+           └─10-default-env.conf, 20-nodenet.conf
+   Active: inactive (dead) since Tue 2020-03-10 16:05:14 UTC; 33s ago
+ Main PID: 2358 (code=exited, status=0/SUCCESS)
+      CPU: 3min 34.752s
+----
+
+Start the kubelet services and check back the status of the node.
+
+[source,bash]
+----
+[core@master-0 ~]$ sudo systemctl start kubelet
+[core@master-0 ~]$ sudo systemctl status kubelet
+● kubelet.service - Kubernetes Kubelet
+   Loaded: loaded (/etc/systemd/system/kubelet.service; enabled; vendor preset: enabled)
+  Drop-In: /etc/systemd/system/kubelet.service.d
+           └─10-default-env.conf, 20-nodenet.conf
+   Active: active (running) since Tue 2020-03-10 16:07:27 UTC; 4s ago
+
+$ oc get nodes
+NAME                                         STATUS   ROLES    AGE   VERSION
+master-0.cloud.example.com   Ready    master   80m   v1.16.2
+master-1.cloud.example.com   Ready    master   80m   v1.16.2
+master-2.cloud.example.com   Ready    master   80m   v1.16.2
+----

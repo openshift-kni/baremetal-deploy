@@ -1,0 +1,42 @@
+[id="ipi-install-troubleshooting-registry-issues"]
+= Registry Issues
+
+At times, there may be a need to create a disconnected registry due to
+limited connectivity to an environment or creating a central location to
+host images locally. Details can be found in https://docs.openshift.com/container-platform/4.3/installing/install_config/installing-restricted-networks-preparations.html#installing-restricted-networks-preparations[Create a Disconnected Registry]
+
+*Note:* While Mirroring the registry using `+oc adm release mirror+`
+command, please make sure to add the additional `+registry.svc.io+`
+token to your pull-secret.json file
+https://docs.openshift.com/container-platform/4.3/installing/install_config/installing-restricted-networks-preparations.html#Procedure[Add-Token]
+
+In the pull-secret.json file make sure to add a section for
+
+[source,json]
+----
+    "registry.example.com:<registry-port>": {
+      "auth": "a25pOmtuaQ==",
+      "email": "<your-email-id>"
+    },
+----
+
+otherwise the mirroring process fails with
+
+[source,bash]
+----
+oc adm -a ${LOCAL_SECRET_JSON} release mirror \
+     --from=${PRODUCT_REPO}/${PROJECT}/${RELEASE_NAME}:${OCP_RELEASE} \
+     --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} \
+     --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}
+
+User Not Authorized
+----
+
+After the registry is mirrored, confirm that you can access this in your
+disconnected environment
+
+[source,bash]
+----
+# curl -k -u <user>:<password> https://registry.example.com:<registry-port>/v2/_catalog
+{"repositories":["<Repo-Name>"]}
+----

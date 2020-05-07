@@ -1,0 +1,17 @@
+[id="ipi-install-troubleshooting-install-config"]
+= Install-config
+
+The `+install-config.yaml+` represents all the nodes that will be part
+of your OpenShift cluster and the necessary options consisting of but
+not limited to `+apiVersion+`, `+baseDomain+`, `+networking+`, `+VIPS+`,
+`+imageContentSources+` etc.
+
+During the deployment of your OpenShift cluster, if errors occur early
+on due to the `+install-config.yaml+`, confirm the following
+
+* Use the guidelines as mentioned in the
+https://www.redhat.com/sysadmin/yaml-tips[YAML-tips]
+* Verifying syntax is correct within your YAML using
+http://www.yamllint.com/[syntax-check]
+* Verify the RHCOS QEMU images are properly defined and accessible via
+the URL provided in the `+install-config.yaml+`.

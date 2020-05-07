@@ -1,0 +1,65 @@
+[id="ipi-install-troubleshooting-misc-issues"]
+= Miscellaneous Issues
+
+* After cluster deployment if you see
+`+runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:Network plugin returns error: Missing CNI default network+`
+we need to inspect the pods in `+openshift-network-operator+` namespace.
+
+[source,bash]
+----
+oc get all -n openshift-network-operator
+NAME                                    READY   STATUS              RESTARTS   AGE
+pod/network-operator-69dfd7b577-bg89v   0/1     ContainerCreating   0          149m
+----
+
+The cluster network operator is responsible for deploying the networking
+components. It does this in response to a special object created by the
+installer.
+
+From a deployment perspective, the network operator is often the
+``canary in the coal mine``. It runs very early in the installation
+process, after the master nodes have come up but before the bootstrap
+control plane has been torn down. It can be indicative of more subtle
+installer issues, such as long delays in bringing up master nodes or
+issues with `+apiserver+` communication.
+
+First, determine that the network configuration exists, from
+`+provisioner+` node:
+
+[source,bash]
+----
+[kni@provisioner ~]$ kubectl get network.config.openshift.io cluster -oyaml
+apiVersion: config.openshift.io/v1
+kind: Network
+metadata:
+  name: cluster
+spec:
+  serviceNetwork:
+  - 172.30.0.0/16
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  networkType: OpenShiftSDN
+----
+
+If it doesn’t exist, the installer didn’t create it. You’ll have to run
+`+openshift-install create manifests+` to determine why.
+
+Next, check that the network-operator is running, from `+provisioner+`
+node issue:
+
+[source,bash]
+----
+[kni@provisioner ~]$ kubectl -n openshift-network-operator get pods
+----
+
+And retrieve the logs. Note that, on multi-master systems, the operator
+will perform leader election and all other operators will sleep:
+
+[source,bash]
+----
+[kni@provisioner ~]$ kubectl -n openshift-network-operator logs -l "name=network-operator"
+----
+
+*Note:* For more details please refer
+https://github.com/openshift/installer/blob/master/docs/user/troubleshooting.md[Troubleshooting]
