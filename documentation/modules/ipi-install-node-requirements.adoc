@@ -19,17 +19,18 @@ endif::[]
 
 - **Intelligent Platform Management Interface (IPMI):** IPI installation requires IPMI enabled on each node.
 
-- **Latest generation:** Nodes should be of the most recent generation. IPI installation relies on IPMI, which should be compatible across nodes. Additionally, RHEL 8 ships with the most recent drivers for RAID controllers. Ensure that the nodes are recent enough to support RHEL 8 for the provisioning node and RHCOS 8 for the worker nodes.
+- **Latest generation:** Nodes should be of the most recent generation. IPI installation relies on IPMI, which should be compatible across nodes. Additionally, RHEL 8 ships with the most recent drivers for RAID controllers. Ensure that the nodes are recent enough to https://catalog.redhat.com/hardware/servers/search?p=1&c_version=Red%20Hat%20Enterprise%20Linux%208&ch_architecture=x86_64[support RHEL 8] for the provisioning node and all the {product-title} nodes.
 
-- **Network interfaces:** Each node *must* have at least two 10 GB network interfaces (NICs)- one for the `provisioning` network and one for the public `baremetal` network.
+- **Network interfaces:** Each node *must* have at least two network interfaces (NICs)- one for the `provisioning` network and one for the public `baremetal` network.
 Network interface names *must* follow the same naming convention across all nodes.
 For example, the first NIC name on a node, such as `eth0` or `eno1`, should be the same name on all of the other nodes.
-The same principle applies to the remaining NICs on each node.
+The same principle applies to the remaining NICs on each node. It is recommended these network interfaces be 10 GB NICs. 
 
 - **Provisioning node:** IPI installation requires one provisioning node.
 
 - **Control plane:** IPI installation requires three control plane (master) nodes for high availability.
 
-- **Worker nodes:** A typical production cluster will have many worker nodes. IPI installation in a high availability environment requires at least two worker nodes in an initial cluster.
+- **Worker nodes (Optional):** A typical production cluster may include worker nodes. IPI installation in a high availability environment provides the flexibility of deploying an initial cluster with or without worker nodes. If worker nodes are deployed, at *least* two worker nodes are required for the initial cluster deployment. 
+//IS ZERO WORKERS SUPPORTED IN 4.3?
 
 - **Registry node:** (Optional) If setting up a disconnected mirrored registry, it is recommended this reside in its own node. 
