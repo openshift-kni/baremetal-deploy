@@ -8,7 +8,7 @@ RELEASES="4.4 4.3"
 DOCS="Deployment"
 
 # Documents using latest
-STATIC="Troubleshooting Deployment"
+STATIC="Ansible-Playbook Troubleshooting Deployment"
 
 # Devel releases for static documents and devel docs
 DEVRELEASE="4.5"

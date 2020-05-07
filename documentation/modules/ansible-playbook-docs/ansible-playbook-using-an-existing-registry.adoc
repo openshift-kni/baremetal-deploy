@@ -1,0 +1,70 @@
+[id="ansible-playbook-using-an-existing-registry"]
+= Using an Existing Registry
+
+NOTE: If no existing registry is already existing for your fully disconnected
+environment, visit https://github.com/openshift-kni/baremetal-deploy/blob/master/ansible-ipi-install/README.md#creating-a-new-disconnected-registry[Creating a New Disconnected Registry] section.
+
+When using an existing registry, two variables labeled
+`disconnected_registry_auths_file` and the `disconnected_registry_mirrors_file`
+must be set. These variables are located within your inventory/hosts file and
+the inventory/hosts.sample file can be used as reference.
+
+The `disconnected_registry_auths_file` variable should point to a file
+containing json data regarding your registry information. This will be appended
+to the `auths` section of the pull secret by the Ansible playbook itself.
+
+An example of the contents of the `disconnected_registry_auths_file` is shown
+below.
+
+[source,bash]
+----
+cat /path/to/registry-auths.json
+{"registry.example.com:5000": {"auth": "ZHVtbXk6ZHsFVtbXk=", "email": "user@example.com" } }
+----
+
+[NOTE]
+====
+The auth password given base64 encoding of the http credentials used to
+create the htpasswd file.
+
+Example:
+
+[user@registry ~]$ b64auth=$( echo -n '<username>:<passwd>' openssl base64 )
+[user@registry ~]$ echo $b64auth
+
+====
+
+The `disconnected_registry_mirrors_file` variable should point to a file
+containing the `additionalTrustBundle` and `imageContentSources` for
+the disconnected registry. The certificate that goes within the additional
+trust bundle is the disconnected registry node's certificate. The
+`imageContentSources` adds the mirrored information of the registry. The below
+content from the `install-config-appends.json` file gets automatically appended
+by the Ansible playbook.
+
+[source,bash]
+----
+cat /path/to/install-config-appends.json
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  MIIGPDCCBCSgAwIBAgIUWr1DxDq53hrsk6XVLRXUjfF9m+swDQYJKoZIhvcNAQEL
+  BQAwgZAxCzAJBgNVBAYTAlVTMRAwDgYDVQQIDAdNeVN0YXRlMQ8wDQYDVQQHDAZN
+  eUNpdHkxEjAQBgNVBAoMCU15Q29tcGFueTEVMBMGA1UECwwMTXlEZXBhcnRtZW50
+  MTMwMQYDVQQDDCpyZWdpc3RyeS5rbmk3LmNsb3VkLmxhYi5lbmcuYm9zLnJlZGhh
+  dC5jb20wHhcNMjAwNDA3MjM1MzI2WhcNMzAwNDA1MjM1MzI2WjCBkDELMAkGA1UE
+  -----END CERTIFICATE-----
+
+imageContentSources:
+- mirrors:
+  - registry.example.com:5000/ocp4/openshift4
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+- mirrors:
+  - registry.example.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ocp/release
+- mirrors:
+  - registry.example.com:5000/ocp4/openshift4
+  source: quay.io/openshift-release-dev/ocp-release
+
+----
+
+NOTE: Indentation is important in the json file. Ensure your copy of the `install-config-appends.json` is properly indented as in the example above.

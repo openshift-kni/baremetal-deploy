@@ -1,0 +1,102 @@
+[id="ansible-playbook-contents-of-the-webserver"]
+
+= Contents of the Webserver
+
+When following the details on how to create a https://openshift-kni.github.io/baremetal-deploy/4.4/#ipi-install-creating-an%20rhcos-images-cache_ipi-install-prerequisites[webserver], if one not already in place, there is still additional content required for
+a fully disconnected environment to be successfully deployed with the Ansible playbook.
+
+The Ansible playbook requires the end user to additionally include the following
+to there already existing webserver.
+
+The example provided below showcases how a user adds the required prerequisites
+to to the webserver in order install the latest
+{product-title} version {release}.
+
+.Procedure
+
+. Download the {product-title} version {release} latest https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-{release}/release.txt[release.txt] file
++
+[source,bash]
+[subs="attributes"]
+----
+[user@webserver ~]$ cd /path/to/webserver/dir
+[user@webserver ~]$ wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-{release}/release.txt
+----
++
+
+. Create a directory with the explict release version of the captured release.txt file
++
+[source,bash]
+----
+export VERSION=`cat release.txt | grep Name | awk {'print $2'}`
+[user@webserver ~]$ mkdir $OCP_RELEASE
+----
++
+
+. Move the release.txt file to the newly created release version directory
++
+[source,bash]
+----
+[user@webserver ~]$ mv release.txt $OCP_RELEASE/
+----
++
+
+. Download the `oc` client and untar its contents
++
+[source,bash]
+----
+[user@webserver ~]$ wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-{release}/openshift-client-linux-$OCP_RELEASE.tar.gz | tar zxvf - oc
+----
++
+
+. Extract the Installer
++
+[NOTE]
+====
+Extracting the installer currently has some caveats. Extracting the
+`openshift-baremetal-install` binary does not pull from a local registry when
+given a local registry, https://bugzilla.redhat.com/show_bug.cgi?id=1823143[BZ#1823143]
+Due to this, in order to properly extract the installer, the OpenShift disconnected
+mirrored registry that is to be used must be available and have access to quay.io
+temporary to properly extract the binary. The following step assumes this.
+====
++
+[source,bash]
+----
+[user@webserver ~]$ export LOCAL_REPOSITORY='ocp4'
+[user@webserver ~]$ export LOCAL_REGISTRY='registry.example.com:5000'
+[user@webserver ~]$ export cmd=openshift-baremetal-install
+[user@webserver ~]$ export pullsecret_file=~/pull-secret.txt
+[user@webserver ~]$ export extract_dir=$(pwd)
+[user@webserver ~]$ oc adm release extract --registry-config "${pullsecret_file}" --command="${cmd}" --to `pwd` ${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}
+----
++
+
+. The RHCOS.json file is required for the disconnected installs as it contains
+the appropriate image name and SHA hash
++
+NOTE: This assumes the `openshift-baremetal-install` has been extracted
+
++
+[source,bash]
+----
+[user@webserver ~]$ export COMMIT_ID=$(./openshift-baremetal-install version | grep '^built from commit' | awk '{print $4}')
+[user@webserver ~]$ curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json > rhcos.json
+----
++
+
+. Clean up the `oc` binary extraction as no longer required
++
+
+[source,bash]
+----
+[user@webserver ~]$ rm -f /path/to/$OCP_RELEASE/oc
+----
+
+. Confirm all four files have been captured within your $OCP_RELEASE directory
++
+[source,bash]
+----
+[user@webserver ~]$ ls -latr /path/to/$OCP_RELEASE
+openshift-baremetal-install openshift-client-linux-$OCP_RELEASE.tar.gz rhcos.json release.txt
+----
