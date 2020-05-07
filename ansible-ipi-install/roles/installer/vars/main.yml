@@ -29,3 +29,5 @@ pod_name_registry: ocpdiscon-registry
 local_registry: "{{ groups['registry_host'][0] }}:{{ registry_port }}"
 local_repo: ocp4/openshift4
 disconnected_installer: ""
+registry_creation: false
+url_passed: false

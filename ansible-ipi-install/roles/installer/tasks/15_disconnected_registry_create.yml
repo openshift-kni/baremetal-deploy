@@ -1,24 +1,91 @@
 ---
+- name: Find any old tmp dirs with OpenShift related binaries on registry host
+  find:
+    paths: /tmp
+    patterns: 'ansible.*'
+    file_type: directory
+  register: registry_tmp_results
+  when: groups['registry_host'][0] != groups['provisioner'][0]
+  delegate_to: "{{ groups['registry_host'][0] }}"
+  tags:
+  - create_registry
 
-- name: Get the oc command from provisioner into temporary file
+- name: Delete any old tmp dirs with OpenShift related binaries on registry host
+  file:
+    path: "{{ item['path'] }}"
+    state: absent
+  loop: "{{ registry_tmp_results['files'] }}"
+  when: groups['registry_host'][0] != groups['provisioner'][0]
+  delegate_to: "{{ groups['registry_host'][0] }}"
+  tags:
+  - create_registry
+
+- name: Find any existing /usr/local/bin OpenShift binaries on registry host
+  find:
+    paths: /usr/local/bin
+    patterns: 'oc,openshift-baremetal-install,kubectl'
+  register: binary_results
+  when: groups['registry_host'][0] != groups['provisioner'][0]
+  delegate_to: "{{ groups['registry_host'][0] }}"
+  tags:
+  - create_registry
+
+- name: Remove any existing /usr/local/bin OpenShift binaries on registry host
+  file:
+    path: "{{ item['path'] }}"
+    state: absent
+  loop: "{{ binary_results['files'] }}"
+  when: groups['registry_host'][0] != groups['provisioner'][0]
+  delegate_to: "{{ groups['registry_host'][0] }}"
+  become: yes
+  tags:
+  - create_registry
+ 
+- name: Get the oc command from provisioner into temp file on control machine
   fetch:
     dest: /tmp/
     flat: yes
     src: /usr/local/bin/oc
+  when: groups['registry_host'][0] != groups['provisioner'][0]
+  tags:
+  - create_registry
 
-- name: Copy the oc command to the registry host
+- name: Copy the oc command from control machine to the registry host
   copy:
     src: /tmp/oc
-    dest: "{{ ansible_env.HOME }}/oc"
-    owner: kni
-    group: kni
+    dest: "/usr/local/bin/oc"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: 0755
+  become: yes
+  when: groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: "{{ groups['registry_host'][0] }}"
+  tags:
+  - create_registry
 
-- name: Remove the temporary copy of the oc command
+- name: Remove the temporary copy of the oc command on control machine
   file:
     path: /tmp/oc
     state: absent
+  when: groups['registry_host'][0] != groups['provisioner'][0]
+  delegate_to: localhost
+  tags:
+  - create_registry
+
+- name: Create tmp directory to store OpenShift binaries on registry host
+  tempfile:
+    state: directory
+    suffix: "{{ release_version }}"
+  register: registry_tempdir
+  delegate_to: "{{ groups['registry_host'][0] }}"
+  tags:
+  - create_registry
+
+- name: Set fact for tmp directory on registry host
+  set_fact:
+    tempdir: "{{ registry_tempdir.path }}"
+  tags:
+  - create_registry
 
 - name: Create disconnected registry
   block:
@@ -29,7 +96,6 @@
         cert_locality: "{{ hostvars[groups['registry_host'][0]]['cert_locality'] }}"
         cert_organization: "{{ hostvars[groups['registry_host'][0]]['cert_organization'] }}"
         cert_organizational_unit: "{{ hostvars[groups['registry_host'][0]]['cert_organizational_unit'] }}"
-      tags: disconnected
 
     - name: Verify the certificate variables are set
       fail:
@@ -55,7 +121,6 @@
         or  ( cert_organizational_unit is not defined )
         or  ( cert_organizational_unit is none )
         or  ( cert_organizational_unit | trim == '' )
-      tags: disconnected
 
     - name: Make sure needed packages are installed
       package:
@@ -208,6 +273,7 @@
         name: "{{ pod_name_registry }}"
         image: docker.io/library/registry:2
         state: started
+        network: host
         publish:
           - "{{ registry_port }}:{{ registry_port_container }}"
         volumes:
@@ -272,7 +338,7 @@
     - name: Mirror remote registry to local
       command:
         '
-        {{ ansible_env.HOME }}/oc adm release mirror
+        /usr/local/bin/oc adm release mirror
           -a "{{ ansible_env.HOME }}/pullsecret.txt"
           --from="{{ release_image | quote }}"
           --to-release-image="{{ local_registry | quote }}/{{ local_repo | quote }}:{{ release_version | quote }}"
@@ -285,11 +351,15 @@
         state: absent
 
   delegate_to: "{{ groups['registry_host'][0] }}"
-  tags: disconnected
+  tags: 
+  - disconnected
+  - create_registry
 
 - name: Set fact to pull oc installer from disconnected registry
   set_fact:
     disconnected_installer: "{{ local_registry }}/{{ local_repo }}:{{ release_version}}"
+  tags:
+  - create_registry
 
 - name: Fetch the domain cert from the registry host
   fetch:
@@ -297,16 +367,23 @@
     src: "{{ registry_dir_cert }}/domain.crt"
     flat: yes
   delegate_to: "{{ groups['registry_host'][0] }}"
+  tags:
+  - create_registry
 
 - name: Copy the domain cert to the provisioner host
   copy:
     src: /tmp/domain.crt
     dest: "/etc/pki/ca-trust/source/anchors/{{ groups['registry_host'][0] }}-domain.crt"
-    owner: kni
-    group: kni
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: 0644
   become: true
+  tags:
+  - create_registry
 
 - name: Update the CA trust files on the provisioner host
   command: update-ca-trust extract
   become: true
+  tags:
+  - create_registry
+

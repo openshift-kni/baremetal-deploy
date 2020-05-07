@@ -3,7 +3,63 @@
 # 1. cache_enabled is true
 # 2. Either one or both bootstraposimage/clusterosimage variables are unset
 
-- name: Create {{ provision_cache_store }} on provisioning host
+- name: Confirm whether or not internet connectivity on provisioner host
+  uri:
+    url: https://www.redhat.com
+    status_code: [-1,200]
+    timeout: 1
+  register: the_url
+  tags: cache
+
+#- name: Default url_passed to false
+#  set_fact:
+#    url_passed: false
+#  when:
+#    - the_url.status == -1
+#  tags: cache
+
+- name: Check if url status is 200 is true
+  set_fact:
+   url_passed : true
+  when:
+    - the_url.status == 200
+  tags: cache
+
+- name: Get URL of host providing the webserver
+  set_fact:
+    host_url: "{{ url_passed | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
+  tags: cache
+
+# Ansible didn't like me putting these facts in same task
+# separating to get correct value
+- name: the host url
+  set_fact:
+    the_host_url: "{{ host_url }}"
+  tags: cache
+
+- name: the_host url
+  debug:
+    msg: "{{ the_host_url }}"
+    verbosity: 2
+  tags: cache
+
+- debug:
+    msg: "{{ url_passed }}"
+    verbosity: 2
+  tags: cache
+  
+#if i made it this far to create a webserver, one of the hosts needs online access
+#if disconnected_installer is true use the registry host as it indeed does have access
+#if not true use the provision host but only do that when: the_url.status == 200
+- name: Fail when provision host no online access and registry host not creating registry (can't assume access)
+  fail:
+    msg: A host with online access is required to create cache webserver (provision host or a registry host)
+  when: 
+    - the_url.status == -1
+    - disconnected_installer|length == 0
+  tags: cache
+
+- name: Create {{ provision_cache_store }} on host with online access
   file:
     path: "{{ provision_cache_store }}"
     state: directory
@@ -11,6 +67,7 @@
     group: "{{ ansible_user }}"
     mode: '0755'
     setype: httpd_sys_content_t
+  delegate_to: "{{ url_passed | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
   tags: cache
 
 # rhcos_json fact already set in 23_rhcos_image_paths.yaml
@@ -32,6 +89,7 @@
     checksum: "sha256:{{ rhcos_qemu_sha256 }}"
     timeout: 3600
   when: (bootstraposimage is not defined or bootstraposimage|length < 1)
+  delegate_to: "{{ url_passed | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
   tags: cache
 
 - name: Download {{ rhcos_uri }} for cache
@@ -45,28 +103,50 @@
     checksum: "sha256:{{ rhcos_sha256 }}"
     timeout: 3600
   when: (clusterosimage is not defined or clusterosimage|length < 1)
+  delegate_to: "{{ url_passed | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
+  tags: cache
+
+  #use the hostname from the inventory to groups[registry][0] or provisioner[0] as the http://URL
+  #use a ternary to toggle between the url status
+  #use a ternary for the delegate_to
+  #
+- name: Get URL of host providing the webserver
+  set_fact:
+    host_url: "{{ the_url.status == 200 | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
   tags: cache
 
 - name: Set bootstrap image URL override if not provided by the user
   set_fact:
-    bootstraposimage: "http://{{ ansible_facts[provisioning_bridge]['ipv4']['address'] }}:{{ webserver_caching_port }}/{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256_unzipped }}"
+    bootstraposimage: "http://{{ the_host_url }}:{{ webserver_caching_port }}/{{ rhcos_qemu_uri }}?sha256={{ rhcos_qemu_sha256_unzipped }}"
   when: bootstraposimage is not defined or bootstraposimage|length < 1
+  delegate_to: "{{ url_passed | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
   tags: cache
 
 - name: Set cluster image URL override if not provided by the user
   set_fact:
-    clusterosimage: "http://{{ ansible_facts[provisioning_bridge]['ipv4']['address'] }}:{{ webserver_caching_port }}/{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
+    clusterosimage: "http://{{ the_host_url }}:{{ webserver_caching_port }}/{{ rhcos_uri }}?sha256={{ rhcos_sha256 }}"
   when: clusterosimage is not defined or clusterosimage|length < 1
+  delegate_to: "{{ url_passed | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
   tags: cache
+
+- name: What thebootstraposimage
+  debug:
+    msg: "{{ bootstraposimage }}"
+
+- name: the clusterosimage
+  debug:
+    msg: "{{ clusterosimage }}"
+
 
 - name: Start RHCOS image cache container
   podman_container:
     name: rhcos_image_cache
     image: registry.centos.org/centos/httpd-24-centos7:latest
     state: started
+    network: host
     publish:
       - "{{ webserver_caching_port }}:{{ webserver_caching_port_container  }}"
     volumes:
       - "{{ provision_cache_store }}:/var/www/html"
+  delegate_to: "{{ url_passed | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
   tags: cache
-  

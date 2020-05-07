@@ -5,24 +5,32 @@
     disconnected_registry_auths_file: "{{ hostvars[groups['registry_host'][0]]['disconnected_registry_auths_file'] }}"
   when:
     - hostvars[groups['registry_host'][0]]['disconnected_registry_auths_file'] is defined
+  tags:
+  - create_registry
 
 - name: Set fact disconnected_registry_mirrors_file
   set_fact:
     disconnected_registry_mirrors_file: "{{ hostvars[groups['registry_host'][0]]['disconnected_registry_mirrors_file'] }}"
   when:
     - hostvars[groups['registry_host'][0]]['disconnected_registry_mirrors_file'] is defined
+  tags:
+  - create_registry
 
 - name: Set fact registry_port
   set_fact:
     registry_port: "{{ hostvars[groups['registry_host'][0]]['registry_port'] }}"
   when:
     - hostvars[groups['registry_host'][0]]['registry_port'] is defined
+  tags:
+  - create_registry
 
 - name: Set fact disconnected_registry_mirrors_file
   set_fact:
     registry_dir: "{{ hostvars[groups['registry_host'][0]]['registry_dir'] }}"
   when:
     - hostvars[groups['registry_host'][0]]['registry_dir'] is defined
+  tags:
+  - create_registry
 
 - name: Check if disconnected_registry_auths_file is set
   set_fact:
@@ -30,6 +38,8 @@
   when:
     - disconnected_registry_auths_file is defined
     - disconnected_registry_auths_file is not none
+  tags:
+  - create_registry
     - disconnected_registry_auths_file | trim != ''
 
 - name: Check if disconnected_registry_mirrors_file is set
@@ -39,6 +49,8 @@
     - disconnected_registry_mirrors_file is defined
     - disconnected_registry_mirrors_file is not none
     - disconnected_registry_mirrors_file | trim != ''
+  tags:
+  - create_registry
 
 - name: Make sure disconnected_registry_variables are sane
   fail:
@@ -49,6 +61,8 @@
   when:
         not ( dra_set and drm_set )
     and not ( not dra_set and not drm_set )
+  tags:
+  - create_registry
 
 
 - name: Check if using existing disconnected registry.
@@ -57,6 +71,8 @@
   when:
     - dra_set
     - drm_set
+  tags:
+  - create_registry
 
 - name: Check if creating a new disconnected registry.
   set_fact:
@@ -64,3 +80,5 @@
   when:
     - not dra_set
     - not drm_set
+  tags:
+  - create_registry

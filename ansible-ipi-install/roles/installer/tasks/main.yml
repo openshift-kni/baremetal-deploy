@@ -4,6 +4,7 @@
   tags:
   - cleanup
   - getoc
+  - create_registry
 
 - include_tasks: 15_disconnected_registry_existing.yml
   when:
@@ -15,7 +16,9 @@
   when:
     - disconnected_registry is defined
     - disconnected_registry == "create"
-  tags: disconnected
+  tags: 
+  - disconnected
+  - create_registry
 
 - include_tasks: 20_extract_installer.yml
   tags:

@@ -9,6 +9,7 @@
   tags:
   - always
   - validation
+  - fully_disconnected
 
 - name: Ensure Python libraries are installed
   python_requirements_info:
@@ -85,7 +86,8 @@
   - always
   - validation
 
-- debug:
+- name: Check whether caching is enabled 
+  debug:
     msg: "cache enable {{ cache_enabled }}"
     verbosity: 2
   tags: validation
@@ -99,12 +101,14 @@
   - always
   - validation
 
-- debug:
+- name: Display API VIP IP
+  debug:
     msg: "The API VIP is {{ apivip }}"
     verbosity: 2
   tags: validation
 
-- debug:
+- name: Display Ingress VIP IP
+  debug:
     msg: "The Wildcard (Ingress) VIP is {{ ingressvip }}"
     verbosity: 2
   tags: validation
@@ -125,20 +129,100 @@
   - always
   - validation
 
-- name: Set fact of release_url
+- name: Set release_url for development envs
   set_fact:
-    release_url: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp"
+    release_url: "{{ (webserver_url|length) | ternary(webserver_url, 'https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview') }}"
+  when: build == 'dev'
+  tags:
+  - always
+  - validation
+
+- name: Set release_url for GA envs
+  set_fact:
+    release_url: "{{ (webserver_url|length) | ternary(webserver_url, 'https://mirror.openshift.com/pub/openshift-v4/clients/ocp') }}"
   when: build == 'ga'
   tags:
   - always
   - validation
 
+- name: Confirm whether or not internet connectivity on provisioner host
+  uri:
+    url: https://www.redhat.com
+    status_code: [-1,200]
+    timeout: 1
+  register: check_url
+
+- name: Set fact disconnected_registry_auths_file
+  set_fact:
+    disconnected_registry_auths_file: "{{ hostvars[groups['registry_host'][0]]['disconnected_registry_auths_file'] }}"
+  when:
+    - groups['registry_host'] is defined
+    - groups['registry_host']|length
+    - hostvars[groups['registry_host'][0]]['disconnected_registry_auths_file'] is defined
+  tags:
+  - validation
+
+- name: Set fact disconnected_registry_mirrors_file
+  set_fact:
+    disconnected_registry_mirrors_file: "{{ hostvars[groups['registry_host'][0]]['disconnected_registry_mirrors_file'] }}"
+  when:
+    - groups['registry_host'] is defined
+    - groups['registry_host']|length
+    - hostvars[groups['registry_host'][0]]['disconnected_registry_mirrors_file'] is defined
+  tags:
+  - validation
+
+- name: Verify Registry host details
+  set_fact:
+    registry_host_exists: true
+  when:
+    - groups['registry_host'] is defined
+    - groups['registry_host']|length
+  tags:
+  - validation
+
+- name: Check if disconnected_registry_auths_file is set
+  set_fact:
+    dra_set: true
+  when:
+    - disconnected_registry_auths_file is defined
+    - disconnected_registry_auths_file is not none
+    - disconnected_registry_auths_file | trim != ''
+  tags:
+  - validation
+
+- name: Check if disconnected_registry_mirrors_file is set
+  set_fact:
+    drm_set: true
+  when:
+    - disconnected_registry_mirrors_file is defined
+    - disconnected_registry_mirrors_file is not none
+    - disconnected_registry_mirrors_file | trim != ''
+  tags:
+  - validation
+
+- name: Fail when provision host no online access and registry host not creating registry (can't assume access)
+  fail:
+    msg: |
+         A host with online access is required to create cache webserver.
+         Either provision host or registry host (if creating registry)
+         must be online or you must set the webserver_url to a pre-existing
+         URL i.e. http://example.com:8080
+  when:
+    - check_url.status == -1
+    - groups['registry_host'] is defined
+    - groups['registry_host']|length
+    - dra_set
+    - drm_set
+    - webserver_url|length == 0
+    
 - name: Get Release.txt File
   uri:
     url: "{{ release_url }}/{{ version }}/release.txt"
     return_content: yes
   register: result
-  failed_when: result.status >= 400
+  failed_when: result.content|length == 0 or result.status >= 400
+  delegate_to: "{{ (not dra_set and not drm_set and registry_host_exists) | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
   tags:
   - always
   - validation
@@ -151,14 +235,18 @@
   - always
   - validation
 
-- debug:
+- name: Get the release version
+  debug:
     msg: "release version {{ release_version }}"
     verbosity: 2
   tags: validation
 
-- debug:
-    msg: "release image {{ release_image }}"
-    verbosity: 2
+- name: Check if openshift-client-linux-{{ version }}.tar.gz exists
+  uri:
+    url: "{{ release_url }}/{{ version }}/openshift-client-linux-{{ release_version }}.tar.gz"
+    method: HEAD
+  register: ocp_client_chk
+  delegate_to: "{{ (not dra_set and not drm_set and registry_host_exists) | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
   tags: validation
 
 - name: Fail if hostgroups not defined in inventory/hosts file
