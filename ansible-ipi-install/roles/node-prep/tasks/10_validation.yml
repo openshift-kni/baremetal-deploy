@@ -151,6 +151,8 @@
     status_code: [-1,200]
     timeout: 1
   register: check_url
+  tags:
+  - validation
 
 - name: Set fact disconnected_registry_auths_file
   set_fact:
@@ -215,7 +217,7 @@
     - dra_set
     - drm_set
     - webserver_url|length == 0
-    
+
 - name: Get Release.txt File
   uri:
     url: "{{ release_url }}/{{ version }}/release.txt"
