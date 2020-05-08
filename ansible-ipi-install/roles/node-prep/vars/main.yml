@@ -1,5 +1,8 @@
 ---
 # vars file for node-prep
+# the ternary states if provision host has no online access
+# just verify the python3-crypto, python3-pyghmi packages are present
+# otherwise attempt to install them from trunk.rdoproject.org
 package_list:
   - "{{ firewall }}"
   - tar
@@ -15,8 +18,8 @@ package_list:
   - nm-connection-editor
   - libsemanage-python3
   - policycoreutils-python3
-  - https://trunk.rdoproject.org/rhel8-master/deps/latest/Packages/python3-crypto-2.6.1-18.el8ost.x86_64.rpm
-  - https://trunk.rdoproject.org/rhel8-master/deps/latest/Packages/python3-pyghmi-1.0.22-2.el8ost.noarch.rpm
+  - "{{ (check_url.status == -1) | ternary('python3-crypto','https://trunk.rdoproject.org/rhel8-master/deps/latest/Packages/python3-crypto-2.6.1-18.el8ost.x86_64.rpm') }}"
+  - "{{ (check_url.status == -1) | ternary('python3-pyghmi','https://trunk.rdoproject.org/rhel8-master/deps/latest/Packages/python3-pyghmi-1.0.22-2.el8ost.noarch.rpm') }}"
 
 cache_package_list:
   - podman
