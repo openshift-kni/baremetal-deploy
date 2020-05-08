@@ -16,7 +16,7 @@
   when:
     - disconnected_registry is defined
     - disconnected_registry == "create"
-  tags: 
+  tags:
   - disconnected
   - create_registry
 

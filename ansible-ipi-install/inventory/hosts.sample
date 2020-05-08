@@ -10,7 +10,7 @@ prov_nic=eno1
 # The public NIC (NIC2) used on all baremetal nodes
 pub_nic=eno2
 
-# (Optional) Set the provisioning bridge name. Default value is 'provisioning'. 
+# (Optional) Set the provisioning bridge name. Default value is 'provisioning'.
 #provisioning_bridge=provisioning
 
 # (Optional) Activation-key for proper setup of subscription-manager, empty value skips registration
@@ -27,7 +27,7 @@ dir="{{ ansible_user_dir }}/clusterconfigs"
 version=""
 
 # (Optional) Fully disconnected installs require manually downloading the release.txt file and hosting the file
-# on a webserver accessible to the provision host. The release.txt file can be downloaded at 
+# on a webserver accessible to the provision host. The release.txt file can be downloaded at
 # https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/{{ version }}/release.txt (for DEV version)
 # https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/release.txt (for GA version)
 # Example of hosting the release.txt on your example.com webserver under the 'latest-4.3' version directory.

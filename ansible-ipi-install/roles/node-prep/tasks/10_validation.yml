@@ -86,7 +86,7 @@
   - always
   - validation
 
-- name: Check whether caching is enabled 
+- name: Check whether caching is enabled
   debug:
     msg: "cache enable {{ cache_enabled }}"
     verbosity: 2

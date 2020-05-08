@@ -4,12 +4,13 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'status': ['preview'],
-    'supported_by': 'community'
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "community",
 }
 
 DOCUMENTATION = """
@@ -719,293 +720,298 @@ def construct_command_from_params(action, params):
     Returns:
         list -- list of byte strings for Popen command
     """
-    if action == 'start':
-        cmd = ['start', params['name']]
-        return [to_bytes(i, errors='surrogate_or_strict') for i in cmd]
+    if action == "start":
+        cmd = ["start", params["name"]]
+        return [to_bytes(i, errors="surrogate_or_strict") for i in cmd]
 
-    if action == 'stop':
-        cmd = ['stop', params['name']]
-        return [to_bytes(i, errors='surrogate_or_strict') for i in cmd]
+    if action == "stop":
+        cmd = ["stop", params["name"]]
+        return [to_bytes(i, errors="surrogate_or_strict") for i in cmd]
 
-    if action == 'delete':
-        cmd = ['rm', '-f', params['name']]
-        return [to_bytes(i, errors='surrogate_or_strict') for i in cmd]
+    if action == "delete":
+        cmd = ["rm", "-f", params["name"]]
+        return [to_bytes(i, errors="surrogate_or_strict") for i in cmd]
 
-    if action in ['create', 'run']:
-        cmd = [action, '--name', params['name']]
+    if action in ["create", "run"]:
+        cmd = [action, "--name", params["name"]]
 
-        if params['detach']:
-            cmd += ['--detach']
+        if params["detach"]:
+            cmd += ["--detach"]
 
-        for host_ip in params['etc_hosts'].items():
-            cmd += ['--add-host', ':'.join(host_ip)]
+        for host_ip in params["etc_hosts"].items():
+            cmd += ["--add-host", ":".join(host_ip)]
 
-        for annotate in params['annotation'].items():
-            cmd += ['--annotation', '='.join(annotate)]
+        for annotate in params["annotation"].items():
+            cmd += ["--annotation", "=".join(annotate)]
         # Another thousand parameters
 
-        if params['blkio_weight'] is not None:
-            cmd += ['--blkio-weight', params['blkio_weight']]
+        if params["blkio_weight"] is not None:
+            cmd += ["--blkio-weight", params["blkio_weight"]]
 
-        if params['blkio_weight_device']:
-            cmd += ['--blkio-weight-device', params['blkio_weight_device']]
+        if params["blkio_weight_device"]:
+            cmd += ["--blkio-weight-device", params["blkio_weight_device"]]
 
-        for cap_add in params['cap_add']:
-            cmd += ['--cap-add', cap_add]
+        for cap_add in params["cap_add"]:
+            cmd += ["--cap-add", cap_add]
 
-        for cap_drop in params['cap_drop']:
-            cmd += ['--cap-drop', cap_drop]
+        for cap_drop in params["cap_drop"]:
+            cmd += ["--cap-drop", cap_drop]
 
-        if params['cgroup_parent']:
-            cmd += ['--cgroup-parent', params['cgroup_parent']]
+        if params["cgroup_parent"]:
+            cmd += ["--cgroup-parent", params["cgroup_parent"]]
 
-        if params['cidfile']:
-            cmd += ['--cidfile', params['cidfile']]
+        if params["cidfile"]:
+            cmd += ["--cidfile", params["cidfile"]]
 
-        if params['conmon_pidfile']:
-            cmd += ['--conmon-pidfile', params['conmon_pidfile']]
+        if params["conmon_pidfile"]:
+            cmd += ["--conmon-pidfile", params["conmon_pidfile"]]
 
-        if params['cpu_period']:
-            cmd += ['--cpu-period', params['cpu_period']]
+        if params["cpu_period"]:
+            cmd += ["--cpu-period", params["cpu_period"]]
 
-        if params['cpu_rt_runtime'] is not None:
-            cmd += ['--cpu-rt-runtime', params['cpu_rt_runtime']]
+        if params["cpu_rt_runtime"] is not None:
+            cmd += ["--cpu-rt-runtime", params["cpu_rt_runtime"]]
 
-        if params['cpu_shares'] is not None:
-            cmd += ['--cpu-shares', params['cpu_shares']]
+        if params["cpu_shares"] is not None:
+            cmd += ["--cpu-shares", params["cpu_shares"]]
 
-        if params['cpus']:
-            cmd += ['--cpus', params['cpus']]
+        if params["cpus"]:
+            cmd += ["--cpus", params["cpus"]]
 
-        if params['cpuset_cpusr']:
-            cmd += ['--cpuset-cpusr', params['cpuset_cpusr']]
+        if params["cpuset_cpusr"]:
+            cmd += ["--cpuset-cpusr", params["cpuset_cpusr"]]
 
-        if params['cpuset_mems']:
-            cmd += ['--cpuset-mems', params['cpuset_mems']]
+        if params["cpuset_mems"]:
+            cmd += ["--cpuset-mems", params["cpuset_mems"]]
 
-        if params['detach_keys']:
-            cmd += ['--detach-keys', params['detach_keys']]
+        if params["detach_keys"]:
+            cmd += ["--detach-keys", params["detach_keys"]]
 
-        if params['device']:
-            cmd += ['--device', params['device']]
+        if params["device"]:
+            cmd += ["--device", params["device"]]
 
-        if params['device_read_bps']:
-            cmd += ['--device-read-bps', params['device_read_bps']]
+        if params["device_read_bps"]:
+            cmd += ["--device-read-bps", params["device_read_bps"]]
 
-        if params['device_read_iops']:
-            cmd += ['--device-read-iops', params['device_read_iops']]
+        if params["device_read_iops"]:
+            cmd += ["--device-read-iops", params["device_read_iops"]]
 
-        if params['device_write_bps']:
-            cmd += ['--device-write-bps', params['device_write_bps']]
+        if params["device_write_bps"]:
+            cmd += ["--device-write-bps", params["device_write_bps"]]
 
-        if params['device_write_iops']:
-            cmd += ['--device-write-iops', params['device_write_iops']]
+        if params["device_write_iops"]:
+            cmd += ["--device-write-iops", params["device_write_iops"]]
 
-        if params['dns']:
-            cmd += ['--dns', ','.join(params['dns'])]
+        if params["dns"]:
+            cmd += ["--dns", ",".join(params["dns"])]
 
-        if params['dns_option']:
-            cmd += ['--dns-option', params['dns_option']]
+        if params["dns_option"]:
+            cmd += ["--dns-option", params["dns_option"]]
 
-        if params['dns_search'] is not None:
-            cmd += ['--dns-search', params['dns_search']]
+        if params["dns_search"] is not None:
+            cmd += ["--dns-search", params["dns_search"]]
 
-        if params['entrypoint']:
-            cmd += ['--entrypoint', params['entrypoint']]
+        if params["entrypoint"]:
+            cmd += ["--entrypoint", params["entrypoint"]]
 
-        for env_value in params['env'].items():
-            cmd += ['--env', b"=".join([to_bytes(k, errors='surrogate_or_strict') for k in env_value])]
+        for env_value in params["env"].items():
+            cmd += [
+                "--env",
+                b"=".join(
+                    [to_bytes(k, errors="surrogate_or_strict") for k in env_value]
+                ),
+            ]
 
-        if params['env_file']:
-            cmd += ['--env-file', params['env_file']]
+        if params["env_file"]:
+            cmd += ["--env-file", params["env_file"]]
 
-        for exp in params['expose']:
-            cmd += ['--expose', exp]
+        for exp in params["expose"]:
+            cmd += ["--expose", exp]
 
-        if params['gidmap']:
-            cmd += ['--gidmap', params['gidmap']]
+        if params["gidmap"]:
+            cmd += ["--gidmap", params["gidmap"]]
 
-        if params['group_add']:
-            cmd += ['--group-add', params['group_add']]
+        if params["group_add"]:
+            cmd += ["--group-add", params["group_add"]]
 
-        if params['healthcheck']:
-            cmd += ['--healthcheck', params['healthcheck']]
+        if params["healthcheck"]:
+            cmd += ["--healthcheck", params["healthcheck"]]
 
-        if params['healthcheck_interval']:
-            cmd += ['--healthcheck-interval', params['healthcheck_interval']]
+        if params["healthcheck_interval"]:
+            cmd += ["--healthcheck-interval", params["healthcheck_interval"]]
 
-        if params['healthcheck_retries']:
-            cmd += ['--healthcheck-retries', params['healthcheck_retries']]
+        if params["healthcheck_retries"]:
+            cmd += ["--healthcheck-retries", params["healthcheck_retries"]]
 
-        if params['healthcheck_start_period']:
-            cmd += ['--healthcheck-start-period', params['healthcheck_start_period']]
+        if params["healthcheck_start_period"]:
+            cmd += ["--healthcheck-start-period", params["healthcheck_start_period"]]
 
-        if params['healthcheck_timeout']:
-            cmd += ['--healthcheck-timeout', params['healthcheck_timeout']]
+        if params["healthcheck_timeout"]:
+            cmd += ["--healthcheck-timeout", params["healthcheck_timeout"]]
 
-        if params['hostname']:
-            cmd += ['--hostname', params['hostname']]
+        if params["hostname"]:
+            cmd += ["--hostname", params["hostname"]]
 
-        if params['http_proxy'] is not None:
-            cmd += ['--http-proxy', params['http_proxy']]
+        if params["http_proxy"] is not None:
+            cmd += ["--http-proxy", params["http_proxy"]]
 
-        if params['image_volume']:
-            cmd += ['--image-volume', params['image_volume']]
+        if params["image_volume"]:
+            cmd += ["--image-volume", params["image_volume"]]
 
-        if params['init']:
-            cmd += ['--init', params['init']]
+        if params["init"]:
+            cmd += ["--init", params["init"]]
 
-        if params['init_path']:
-            cmd += ['--init-path', params['init_path']]
+        if params["init_path"]:
+            cmd += ["--init-path", params["init_path"]]
 
-        if params['interactive'] is not None:
-            cmd += ['--interactive', params['interactive']]
+        if params["interactive"] is not None:
+            cmd += ["--interactive", params["interactive"]]
 
-        if params['ip']:
-            cmd += ['--ip', params['ip']]
+        if params["ip"]:
+            cmd += ["--ip", params["ip"]]
 
-        if params['ipc']:
-            cmd += ['--ipc', params['ipc']]
+        if params["ipc"]:
+            cmd += ["--ipc", params["ipc"]]
 
-        if params['kernel_memory']:
-            cmd += ['--kernel-memory', params['kernel_memory']]
+        if params["kernel_memory"]:
+            cmd += ["--kernel-memory", params["kernel_memory"]]
 
-        for label in params['label'].items():
-            cmd += ['--label', '='.join(label)]
+        for label in params["label"].items():
+            cmd += ["--label", "=".join(label)]
 
-        if params['label_file']:
-            cmd += ['--label-file', params['label_file']]
+        if params["label_file"]:
+            cmd += ["--label-file", params["label_file"]]
 
-        if params['log_opt']:
-            cmd += ['--log-opt', params['log_opt']]
+        if params["log_opt"]:
+            cmd += ["--log-opt", params["log_opt"]]
 
-        if params['memory']:
-            cmd += ['--memory', params['memory']]
+        if params["memory"]:
+            cmd += ["--memory", params["memory"]]
 
-        if params['memory_reservation']:
-            cmd += ['--memory-reservation', params['memory_reservation']]
+        if params["memory_reservation"]:
+            cmd += ["--memory-reservation", params["memory_reservation"]]
 
-        if params['memory_swap']:
-            cmd += ['--memory-swap', params['memory_swap']]
+        if params["memory_swap"]:
+            cmd += ["--memory-swap", params["memory_swap"]]
 
-        if params['memory_swappiness']:
-            cmd += ['--memory-swappiness', params['memory_swappiness']]
+        if params["memory_swappiness"]:
+            cmd += ["--memory-swappiness", params["memory_swappiness"]]
 
-        if params['mount']:
-            cmd += ['--mount', params['mount']]
+        if params["mount"]:
+            cmd += ["--mount", params["mount"]]
 
-        if params['network']:
-            cmd += ['--network', params['network']]
+        if params["network"]:
+            cmd += ["--network", params["network"]]
 
-        if params['no_hosts'] is not None:
-            cmd += ['--no-hosts', params['no_hosts']]
+        if params["no_hosts"] is not None:
+            cmd += ["--no-hosts", params["no_hosts"]]
 
-        if params['oom_kill_disable'] is not None:
-            cmd += ['--oom-kill-disable', params['oom_kill_disable']]
+        if params["oom_kill_disable"] is not None:
+            cmd += ["--oom-kill-disable", params["oom_kill_disable"]]
 
-        if params['oom_score_adj']:
-            cmd += ['--oom-score-adj', params['oom_score_adj']]
+        if params["oom_score_adj"]:
+            cmd += ["--oom-score-adj", params["oom_score_adj"]]
 
-        if params['pid']:
-            cmd += ['--pid', params['pid']]
+        if params["pid"]:
+            cmd += ["--pid", params["pid"]]
 
-        if params['pids_limit']:
-            cmd += ['--pids-limit', params['pids_limit']]
+        if params["pids_limit"]:
+            cmd += ["--pids-limit", params["pids_limit"]]
 
-        if params['pod']:
-            cmd += ['--pod', params['pod']]
+        if params["pod"]:
+            cmd += ["--pod", params["pod"]]
 
-        if params['privileged'] is not None:
-            cmd += ['--privileged', params['privileged']]
+        if params["privileged"] is not None:
+            cmd += ["--privileged", params["privileged"]]
 
-        for pub in params['publish']:
-            cmd += ['--publish', pub]
+        for pub in params["publish"]:
+            cmd += ["--publish", pub]
 
-        if params['publish_all'] is not None:
-            cmd += ['--publish-all', params['publish_all']]
+        if params["publish_all"] is not None:
+            cmd += ["--publish-all", params["publish_all"]]
 
-        if params['read_only'] is not None:
-            cmd += ['--read-only', params['read_only']]
+        if params["read_only"] is not None:
+            cmd += ["--read-only", params["read_only"]]
 
-        if params['read_only_tmpfs'] is not None:
-            cmd += ['--read-only-tmpfs', params['read_only_tmpfs']]
+        if params["read_only_tmpfs"] is not None:
+            cmd += ["--read-only-tmpfs", params["read_only_tmpfs"]]
 
-        if params['restart_policy']:
-            cmd += ['--restart=%s' % params['restart_policy']]
+        if params["restart_policy"]:
+            cmd += ["--restart=%s" % params["restart_policy"]]
 
-        if params['rm'] is not None:
-            cmd += ['--rm', params['rm']]
+        if params["rm"] is not None:
+            cmd += ["--rm", params["rm"]]
 
-        if params['rootfs'] is not None and params['rootfs']:
-            cmd += ['--rootfs']
+        if params["rootfs"] is not None and params["rootfs"]:
+            cmd += ["--rootfs"]
 
-        if params['security_opt']:
-            cmd += ['--security-opt', params['security_opt']]
+        if params["security_opt"]:
+            cmd += ["--security-opt", params["security_opt"]]
 
-        if params['shm_size']:
-            cmd += ['--shm-size', params['shm_size']]
+        if params["shm_size"]:
+            cmd += ["--shm-size", params["shm_size"]]
 
-        if params['sig_proxy'] is not None:
-            cmd += ['--sig-proxy', params['sig_proxy']]
+        if params["sig_proxy"] is not None:
+            cmd += ["--sig-proxy", params["sig_proxy"]]
 
-        if params['stop_signal']:
-            cmd += ['--stop-signal', params['stop_signal']]
+        if params["stop_signal"]:
+            cmd += ["--stop-signal", params["stop_signal"]]
 
-        if params['stop_timeout']:
-            cmd += ['--stop-timeout', params['stop_timeout']]
+        if params["stop_timeout"]:
+            cmd += ["--stop-timeout", params["stop_timeout"]]
 
-        if params['subgidname']:
-            cmd += ['--subgidname', params['subgidname']]
+        if params["subgidname"]:
+            cmd += ["--subgidname", params["subgidname"]]
 
-        if params['subuidname']:
-            cmd += ['--subuidname', params['subuidname']]
+        if params["subuidname"]:
+            cmd += ["--subuidname", params["subuidname"]]
 
-        if params['sysctl']:
-            cmd += ['--sysctl', params['sysctl']]
+        if params["sysctl"]:
+            cmd += ["--sysctl", params["sysctl"]]
 
-        if params['systemd'] is not None:
-            cmd += ['--systemd', params['systemd']]
+        if params["systemd"] is not None:
+            cmd += ["--systemd", params["systemd"]]
 
-        if params['tmpfs']:
-            cmd += ['--tmpfs', params['tmpfs']]
+        if params["tmpfs"]:
+            cmd += ["--tmpfs", params["tmpfs"]]
 
-        if params['tty'] is not None:
-            cmd += ['--tty', params['tty']]
+        if params["tty"] is not None:
+            cmd += ["--tty", params["tty"]]
 
-        if params['uidmap']:
-            cmd += ['--uidmap', params['uidmap']]
+        if params["uidmap"]:
+            cmd += ["--uidmap", params["uidmap"]]
 
-        if params['ulimit']:
-            cmd += ['--ulimit', params['ulimit']]
+        if params["ulimit"]:
+            cmd += ["--ulimit", params["ulimit"]]
 
-        if params['user']:
-            cmd += ['--user', params['user']]
+        if params["user"]:
+            cmd += ["--user", params["user"]]
 
-        if params['userns']:
-            cmd += ['--userns', params['userns']]
+        if params["userns"]:
+            cmd += ["--userns", params["userns"]]
 
-        if params['uts']:
-            cmd += ['--uts', params['uts']]
+        if params["uts"]:
+            cmd += ["--uts", params["uts"]]
 
-        for vol in params['volume']:
-            cmd += ['--volume', vol]
+        for vol in params["volume"]:
+            cmd += ["--volume", vol]
 
-        for vol in params['volumes_from']:
-            cmd += ['--volumes-from', vol]
+        for vol in params["volumes_from"]:
+            cmd += ["--volumes-from", vol]
 
-        if params['workdir']:
-            cmd += ['--workdir', params['workdir']]
+        if params["workdir"]:
+            cmd += ["--workdir", params["workdir"]]
 
         # Add your own args for podman command
-        if params['cmd_args']:
-            cmd += params['cmd_args']
+        if params["cmd_args"]:
+            cmd += params["cmd_args"]
 
-        cmd.append(params['image'])
+        cmd.append(params["image"])
 
-        if params['command']:
-            cmd += params['command'].split()
+        if params["command"]:
+            cmd += params["command"].split()
 
-        return [to_bytes(i, errors='surrogate_or_strict') for i in cmd]
+        return [to_bytes(i, errors="surrogate_or_strict") for i in cmd]
 
 
 def ensure_image_exists(module, image):
@@ -1021,10 +1027,14 @@ def ensure_image_exists(module, image):
     image_actions = []
     if not image:
         return image_actions
-    rc, out, err = run_podman_command(module, args=['image', 'exists', image], ignore_errors=True)
+    rc, out, err = run_podman_command(
+        module, args=["image", "exists", image], ignore_errors=True
+    )
     if rc == 0:
         return image_actions
-    rc, out, err = run_podman_command(module, args=['image', 'pull', image], ignore_errors=True)
+    rc, out, err = run_podman_command(
+        module, args=["image", "pull", image], ignore_errors=True
+    )
     if rc != 0:
         module.fail_json(msg="Can't pull image %s" % image, stdout=out, stderr=err)
     image_actions.append("pulled image %s" % image)
@@ -1036,6 +1046,7 @@ class PodmanContainer:
 
     Manages podman container, inspects it and checks its current state
     """
+
     def __init__(self, module, name):
         """Initialize PodmanContainer class
 
@@ -1064,18 +1075,20 @@ class PodmanContainer:
     @property
     def running(self):
         """Return True if container is running now"""
-        return self.exists and self.info['State']['Running']
+        return self.exists and self.info["State"]["Running"]
 
     @property
     def stopped(self):
         """Return True if container exists and is not running now"""
-        return self.exists and not self.info['State']['Running']
+        return self.exists and not self.info["State"]["Running"]
 
     def get_info(self):
         """Inspect container and gather info about it"""
         rc, out, err = run_podman_command(
             module=self.module,
-            args=['container', 'inspect', self.name], ignore_errors=True)
+            args=["container", "inspect", self.name],
+            ignore_errors=True,
+        )
         return json.loads(out)[0] if rc == 0 else {}
 
     def _perform_action(self, action):
@@ -1085,35 +1098,38 @@ class PodmanContainer:
             action {str} -- action to perform - start, create, stop, run, delete
         """
         b_command = construct_command_from_params(action, self.module.params)
-        self.module.log("PODMAN-DEBUG: %s" % " ".join([to_native(i) for i in b_command]))
+        self.module.log(
+            "PODMAN-DEBUG: %s" % " ".join([to_native(i) for i in b_command])
+        )
         rc, out, err = run_podman_command(
-            module=self.module,
-            args=[b'container'] + b_command,
-            ignore_errors=True)
+            module=self.module, args=[b"container"] + b_command, ignore_errors=True
+        )
         if rc != 0:
             self.module.fail_json(
                 msg="Can't %s container %s" % (action, self.name),
-                stdout=out, stderr=err)
+                stdout=out,
+                stderr=err,
+            )
 
     def run(self):
         """Run the container"""
-        self._perform_action('run')
+        self._perform_action("run")
 
     def delete(self):
         """Delete the container"""
-        self._perform_action('delete')
+        self._perform_action("delete")
 
     def stop(self):
         """Stop the container"""
-        self._perform_action('stop')
+        self._perform_action("stop")
 
     def start(self):
         """Start the container"""
-        self._perform_action('start')
+        self._perform_action("start")
 
     def create(self):
         """Create the container"""
-        self._perform_action('create')
+        self._perform_action("create")
 
     def recreate(self):
         """Recreate the container"""
@@ -1143,18 +1159,20 @@ class PodmanManager:
 
         self.module = module
         self.results = {
-            'changed': False,
-            'actions': [],
-            'container': {},
+            "changed": False,
+            "actions": [],
+            "container": {},
         }
-        self.name = self.module.params['name']
-        self.executable = self.module.get_bin_path(self.module.params['executable'], required=True)
-        self.image = self.module.params['image']
+        self.name = self.module.params["name"]
+        self.executable = self.module.get_bin_path(
+            self.module.params["executable"], required=True
+        )
+        self.image = self.module.params["image"]
         image_actions = ensure_image_exists(self.module, self.image)
-        self.results['actions'] += image_actions
-        self.state = self.module.params['state']
-        self.restart = self.module.params['force_restart']
-        self.recreate = self.module.params['recreate']
+        self.results["actions"] += image_actions
+        self.state = self.module.params["state"]
+        self.restart = self.module.params["force_restart"]
+        self.recreate = self.module.params["recreate"]
         self.container = PodmanContainer(self.module, self.name)
 
     def update_container_result(self, changed=True):
@@ -1164,187 +1182,209 @@ class PodmanManager:
             changed {bool} -- whether any action was performed (default: {True})
         """
         facts = self.container.get_info()
-        self.results.update({'changed': changed, 'container': facts,
-                             'ansible_facts': {'podman_container': facts}})
+        self.results.update(
+            {
+                "changed": changed,
+                "container": facts,
+                "ansible_facts": {"podman_container": facts},
+            }
+        )
         self.module.exit_json(**self.results)
 
     def make_started(self):
         """Run actions if desired state is 'started'"""
         if self.container.running and (self.container.different or self.recreate):
             self.container.recreate()
-            self.results['actions'].append('recreated %s' % self.container.name)
+            self.results["actions"].append("recreated %s" % self.container.name)
             self.update_container_result()
         elif self.container.running and not self.container.different:
             if self.restart:
                 self.container.restart()
-                self.results['actions'].append('restarted %s' % self.container.name)
+                self.results["actions"].append("restarted %s" % self.container.name)
                 self.update_container_result()
             self.module.exit_json(**self.results)
         elif not self.container.exists:
             self.container.run()
-            self.results['actions'].append('started %s' % self.container.name)
+            self.results["actions"].append("started %s" % self.container.name)
             self.update_container_result()
         elif self.container.stopped and self.container.different:
             self.container.recreate()
-            self.results['actions'].append('recreated %s' % self.container.name)
+            self.results["actions"].append("recreated %s" % self.container.name)
             self.update_container_result()
         elif self.container.stopped and not self.container.different:
             self.container.start()
-            self.results['actions'].append('started %s' % self.container.name)
+            self.results["actions"].append("started %s" % self.container.name)
             self.update_container_result()
 
     def make_stopped(self):
         """Run actions if desired state is 'stopped'"""
         if not self.container.exists and not self.image:
-            self.module.fail_json(msg='Cannot create container when image is not specified!')
+            self.module.fail_json(
+                msg="Cannot create container when image is not specified!"
+            )
         if not self.container.exists:
             self.container.create()
-            self.results['actions'].append('created %s' % self.container.name)
+            self.results["actions"].append("created %s" % self.container.name)
             self.update_container_result()
         if self.container.stopped:
             self.update_container_result(changed=False)
         elif self.container.running:
             self.container.stop()
-            self.results['actions'].append('stopped %s' % self.container.name)
+            self.results["actions"].append("stopped %s" % self.container.name)
             self.update_container_result()
 
     def make_absent(self):
         """Run actions if desired state is 'absent'"""
         if not self.container.exists:
-            self.results.update({'changed': False})
+            self.results.update({"changed": False})
         elif self.container.exists:
             self.container.delete()
-            self.results['actions'].append('deleted %s' % self.container.name)
-            self.results.update({'changed': True})
-        self.results.update({'container': {},
-                             'ansible_facts': {'podman_container': {}}})
+            self.results["actions"].append("deleted %s" % self.container.name)
+            self.results.update({"changed": True})
+        self.results.update(
+            {"container": {}, "ansible_facts": {"podman_container": {}}}
+        )
         self.module.exit_json(**self.results)
 
     def execute(self):
         """Execute the desired action according to map of actions and states"""
         states_map = {
-            'present': self.make_started,
-            'started': self.make_started,
-            'absent': self.make_absent,
-            'stopped': self.make_stopped
+            "present": self.make_started,
+            "started": self.make_started,
+            "absent": self.make_absent,
+            "stopped": self.make_stopped,
         }
         process_action = states_map[self.state]
         process_action()
-        self.module.fail_json(msg="Unexpected logic error happened, please contact maintainers ASAP!")
+        self.module.fail_json(
+            msg="Unexpected logic error happened, please contact maintainers ASAP!"
+        )
 
 
 def main():
     module = AnsibleModule(
         argument_spec=dict(
-            cmd_args=dict(type='list', default=[], elements='str'),
-            command=dict(type='raw'),
-            detach=dict(type='bool', default=True),
-            executable=dict(type='str', default='podman'),
-            image=dict(type='str'),
-            name=dict(type='str', required=True),
-            force_restart=dict(type='bool', default=False, aliases=['restart']),
-            recreate=dict(type='bool', default=False),
-            state=dict(type='str', default='started',
-                       choices=['started', 'present', 'stopped', 'absent'],),
-            etc_hosts=dict(type='dict', default={}, aliases=['add_hosts']),
-            annotation=dict(type='dict', default={}),
-            authfile=dict(type='str', fallback=(env_fallback, ['REGISTRY_AUTH_FILE'])),
-            blkio_weight=dict(type='int'),
-            blkio_weight_device=dict(type='str'),
-            cap_add=dict(type='list', elements='str', default=[]),
-            cap_drop=dict(type='list', elements='str', default=[]),
-            cgroup_parent=dict(type='str'),
-            cidfile=dict(type='str'),
-            conmon_pidfile=dict(type='str'),
-            cpu_period=dict(type='int'),
-            cpu_rt_runtime=dict(type='int'),
-            cpu_shares=dict(type='int'),
-            cpus=dict(type='str'),
-            cpuset_cpusr=dict(type='str'),
-            cpuset_mems=dict(type='str'),
-            detach_keys=dict(type='str'),
-            device=dict(type='str'),
-            device_read_bps=dict(type='str'),
-            device_read_iops=dict(type='str'),
-            device_write_bps=dict(type='str'),
-            device_write_iops=dict(type='str'),
-            dns=dict(type='list', elements='str', default=[]),
-            dns_option=dict(type='str'),
-            dns_search=dict(type='str'),
-            entrypoint=dict(type='str'),
-            env=dict(type='dict', default={}),
-            env_file=dict(type='str'),
-            expose=dict(type='list', elements='str', aliases=['exposed', 'exposed_ports'], default=[]),
-            gidmap=dict(type='str'),
-            group_add=dict(type='str'),
-            healthcheck=dict(type='str'),
-            healthcheck_interval=dict(type='str'),
-            healthcheck_retries=dict(type='int'),
-            healthcheck_start_period=dict(type='str'),
-            healthcheck_timeout=dict(type='str'),
-            hostname=dict(type='str'),
-            http_proxy=dict(type='bool'),
-            image_volume=dict(type='str', choices=['bind', 'tmpfs', 'ignore']),
-            init=dict(type='str'),
-            init_path=dict(type='str'),
-            interactive=dict(type='bool'),
-            ip=dict(type='str'),
-            ipc=dict(type='str'),
-            kernel_memory=dict(type='str'),
-            label=dict(type='dict', default={}),
-            label_file=dict(type='str'),
-            log_opt=dict(type='str', aliases=['log_options']),
-            memory=dict(type='str'),
-            memory_reservation=dict(type='str'),
-            memory_swap=dict(type='str'),
-            memory_swappiness=dict(type='int'),
-            mount=dict(type='str'),
-            network=dict(type='str', aliases=['net']),
-            no_hosts=dict(type='bool'),
-            oom_kill_disable=dict(type='bool'),
-            oom_score_adj=dict(type='int'),
-            pid=dict(type='str'),
-            pids_limit=dict(type='str'),
-            pod=dict(type='str'),
-            privileged=dict(type='bool'),
-            publish=dict(type='list', elements='str', aliases=['ports', 'published', 'published_ports'], default=[]),
-            publish_all=dict(type='bool'),
-            read_only=dict(type='bool'),
-            read_only_tmpfs=dict(type='bool'),
-            restart_policy=dict(type='str'),
-            rm=dict(type='bool', aliases=['remove']),
-            rootfs=dict(type='bool'),
-            security_opt=dict(type='str'),
-            shm_size=dict(type='str'),
-            sig_proxy=dict(type='bool'),
-            stop_signal=dict(type='str'),
-            stop_timeout=dict(type='int'),
-            subuidname=dict(type='str'),
-            subgidname=dict(type='str'),
-            sysctl=dict(type='str'),
-            systemd=dict(type='bool'),
-            tmpfs=dict(type='str'),
-            tty=dict(type='bool'),
-            uidmap=dict(type='str'),
-            ulimit=dict(type='str'),
-            user=dict(type='str'),
-            userns=dict(type='str'),
-            uts=dict(type='str'),
-            volume=dict(type='list', elements='str', aliases=['volumes'], default=[]),
-            volumes_from=dict(type='list', elements='str', default=[]),
-            workdir=dict(type='str'),
+            cmd_args=dict(type="list", default=[], elements="str"),
+            command=dict(type="raw"),
+            detach=dict(type="bool", default=True),
+            executable=dict(type="str", default="podman"),
+            image=dict(type="str"),
+            name=dict(type="str", required=True),
+            force_restart=dict(type="bool", default=False, aliases=["restart"]),
+            recreate=dict(type="bool", default=False),
+            state=dict(
+                type="str",
+                default="started",
+                choices=["started", "present", "stopped", "absent"],
+            ),
+            etc_hosts=dict(type="dict", default={}, aliases=["add_hosts"]),
+            annotation=dict(type="dict", default={}),
+            authfile=dict(type="str", fallback=(env_fallback, ["REGISTRY_AUTH_FILE"])),
+            blkio_weight=dict(type="int"),
+            blkio_weight_device=dict(type="str"),
+            cap_add=dict(type="list", elements="str", default=[]),
+            cap_drop=dict(type="list", elements="str", default=[]),
+            cgroup_parent=dict(type="str"),
+            cidfile=dict(type="str"),
+            conmon_pidfile=dict(type="str"),
+            cpu_period=dict(type="int"),
+            cpu_rt_runtime=dict(type="int"),
+            cpu_shares=dict(type="int"),
+            cpus=dict(type="str"),
+            cpuset_cpusr=dict(type="str"),
+            cpuset_mems=dict(type="str"),
+            detach_keys=dict(type="str"),
+            device=dict(type="str"),
+            device_read_bps=dict(type="str"),
+            device_read_iops=dict(type="str"),
+            device_write_bps=dict(type="str"),
+            device_write_iops=dict(type="str"),
+            dns=dict(type="list", elements="str", default=[]),
+            dns_option=dict(type="str"),
+            dns_search=dict(type="str"),
+            entrypoint=dict(type="str"),
+            env=dict(type="dict", default={}),
+            env_file=dict(type="str"),
+            expose=dict(
+                type="list",
+                elements="str",
+                aliases=["exposed", "exposed_ports"],
+                default=[],
+            ),
+            gidmap=dict(type="str"),
+            group_add=dict(type="str"),
+            healthcheck=dict(type="str"),
+            healthcheck_interval=dict(type="str"),
+            healthcheck_retries=dict(type="int"),
+            healthcheck_start_period=dict(type="str"),
+            healthcheck_timeout=dict(type="str"),
+            hostname=dict(type="str"),
+            http_proxy=dict(type="bool"),
+            image_volume=dict(type="str", choices=["bind", "tmpfs", "ignore"]),
+            init=dict(type="str"),
+            init_path=dict(type="str"),
+            interactive=dict(type="bool"),
+            ip=dict(type="str"),
+            ipc=dict(type="str"),
+            kernel_memory=dict(type="str"),
+            label=dict(type="dict", default={}),
+            label_file=dict(type="str"),
+            log_opt=dict(type="str", aliases=["log_options"]),
+            memory=dict(type="str"),
+            memory_reservation=dict(type="str"),
+            memory_swap=dict(type="str"),
+            memory_swappiness=dict(type="int"),
+            mount=dict(type="str"),
+            network=dict(type="str", aliases=["net"]),
+            no_hosts=dict(type="bool"),
+            oom_kill_disable=dict(type="bool"),
+            oom_score_adj=dict(type="int"),
+            pid=dict(type="str"),
+            pids_limit=dict(type="str"),
+            pod=dict(type="str"),
+            privileged=dict(type="bool"),
+            publish=dict(
+                type="list",
+                elements="str",
+                aliases=["ports", "published", "published_ports"],
+                default=[],
+            ),
+            publish_all=dict(type="bool"),
+            read_only=dict(type="bool"),
+            read_only_tmpfs=dict(type="bool"),
+            restart_policy=dict(type="str"),
+            rm=dict(type="bool", aliases=["remove"]),
+            rootfs=dict(type="bool"),
+            security_opt=dict(type="str"),
+            shm_size=dict(type="str"),
+            sig_proxy=dict(type="bool"),
+            stop_signal=dict(type="str"),
+            stop_timeout=dict(type="int"),
+            subuidname=dict(type="str"),
+            subgidname=dict(type="str"),
+            sysctl=dict(type="str"),
+            systemd=dict(type="bool"),
+            tmpfs=dict(type="str"),
+            tty=dict(type="bool"),
+            uidmap=dict(type="str"),
+            ulimit=dict(type="str"),
+            user=dict(type="str"),
+            userns=dict(type="str"),
+            uts=dict(type="str"),
+            volume=dict(type="list", elements="str", aliases=["volumes"], default=[]),
+            volumes_from=dict(type="list", elements="str", default=[]),
+            workdir=dict(type="str"),
         ),
-        mutually_exclusive=(
-            ['no_hosts', 'etc_hosts'],
-
-        ),
+        mutually_exclusive=(["no_hosts", "etc_hosts"],),
     )
     # work on input vars
-    if module.params['state'] in ['started', 'present'] and not module.params['image']:
-        module.fail_json(msg="State '%s' required image to be configured!" % module.params['state'])
+    if module.params["state"] in ["started", "present"] and not module.params["image"]:
+        module.fail_json(
+            msg="State '%s' required image to be configured!" % module.params["state"]
+        )
 
     PodmanManager(module).execute()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

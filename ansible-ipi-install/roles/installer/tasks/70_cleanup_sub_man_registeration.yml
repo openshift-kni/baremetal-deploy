@@ -6,4 +6,3 @@
     state: absent
   ignore_errors: yes
   tags: unregister
-
