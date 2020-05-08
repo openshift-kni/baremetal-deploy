@@ -1,0 +1,8 @@
+[id="ipi-install-troubleshooting-api-not-accessible"]
+
+= API not accessible
+
+* Make sure your name resolutions are properly set in the DNS server,
+make use of `+dig+` and `+nslookup+` commands.
+* `+SSH+` into the OpenShift cluster and make sure they are getting the
+FQDN and not just `+localhost.localdomain+`.

@@ -1,0 +1,40 @@
+// Module included in the following assemblies:
+//
+// * list of assemblies where this module is included
+// ipi-install-installation-workflow.adoc
+// Upstream module
+
+[id="creating-dns-records-using-dnsmasq-option2_{context}"]
+
+= Configuring dnsmasq (Option 2)
+
+To create DNS records, open the `/etc/hosts` file and add the NIC2 (baremetal net) IP followed by the hostname.
+In our example, the domain used is `example.com` and the cluster name used is `openshift`.
+Make sure to change these according to your environment specifics.
+
+.Procedure
+
+. Edit `/etc/hosts` and add the NIC2 (baremetal net) IP followed by the hostname.
++
+----
+cat /etc/hosts
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+<NIC2-IP> provisioner.openshift.example.com provisioner
+<NIC2-IP> openshift-master-0.openshift.example.com openshift-master-0
+<NIC2-IP> openshift-master-1.openshift.example.com openshift-master-1
+<NIC2-IP> openshift-master-2.openshift.example.com openshift-master-2
+<NIC2-IP> openshift-worker-0.openshift.example.com openshift-worker-0
+<NIC2-IP> openshift-worker-1.openshift.example.com openshift-worker-1
+<API-IP>  api.openshift.example.com api
+<DNS-VIP-IP> ns1.openshift.example.com ns1
+----
+
+. Open the appropriate `firewalld` DNS service and reload the rules.
++
+[source,bash]
+----
+systemctl restart firewalld
+firewall-cmd --add-service=dns --permanent
+firewall-cmd --reload
+----

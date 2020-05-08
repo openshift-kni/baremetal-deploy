@@ -1,0 +1,42 @@
+// Module included in the following assemblies:
+//
+// * list of assemblies where this module is included
+// ipi-install-installation-workflow.adoc
+// Upstream module
+
+[id="appending-dns-records-for-the worker-2-old-provisioner-on-a-DNS-server-option1_{context}"]
+
+= Configuring Bind (Option 1)
+
+.Procedure
+
+. Login to the DNS server using `ssh`.
+
+. Suspend updates to all dynamic zones: `rndc freeze`.
+
+. Edit `/var/named/dynamic/example.com`.
++
+----
+$ORIGIN openshift.example.com.
+<OUTPUT_OMITTED>
+openshift-worker-1      A       <ip-of-worker-1>
+openshift-worker-2      A       <ip-of-worker-2>
+----
++
+[NOTE]
+====
+Remove the provisioner as it is replaced by openshift-worker-2.
+====
+
+. Increase the SERIAL value by `1`.
+
+. Edit `/var/named/dynamic/1.0.10.in-addr.arpa`.
++
+[NOTE]
+====
+The filename `1.0.10.in-addr.arpa` is the reverse of the public CIDR example `10.0.1.0/24`.
+====
+
+. Increase the SERIAL value by `1`.
+
+. Enable updates to all dynamic zones and reload them: `rndc thaw`.

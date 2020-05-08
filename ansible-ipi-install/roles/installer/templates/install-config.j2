@@ -11,7 +11,7 @@ metadata:
 networking:
   machineCIDR: {{ extcidrnet }}
   networkType: {{ network_type }}
-{% if ipv6_enabled|bool %}
+{% if ipv6_enabled|bool and not ipv4_baremetal|bool %}
   clusterNetwork:
   - cidr: fd01::/48
     hostPrefix: 64
@@ -31,8 +31,10 @@ platform:
     apiVIP: {{ apivip }}
     ingressVIP: {{ ingressvip }}
     dnsVIP: {{ dnsvip }}
+    provisioningBridge: {{ provisioning_bridge }}
 {% if (release_version[0]|int > 4) or ((release_version[0]|int == 4) and (release_version[2]|int > 3)) %}
-    provisioningNetworkInterface: {{ prov_nic }}
+    provisioningNetworkInterface: {{ masters_prov_nic }}
+    provisioningNetworkCIDR: {{ provisioning_subnet }}
 {% endif %}
 {% if bootstraposimage is defined and bootstraposimage|length %}
     bootstrapOSImage: {{ bootstraposimage }}
@@ -42,7 +44,7 @@ platform:
 {% endif %}
     hosts:
 {% for host in groups['masters'] %}
-      - name: {{ hostvars[host]['name'] }}
+      - name: {{ hostvars[host]['inventory_hostname'] }}
         role: {{ hostvars[host]['role'] }}
         bmc:
 {% if 'ipmi_port' in hostvars[host] %}
@@ -59,8 +61,9 @@ platform:
         hardwareProfile: default
 {% endif %}
 {% endfor %}
+{% if groups['workers'] is defined %}
 {% for host in groups['workers'] %}
-      - name: {{ hostvars[host]['name'] }}
+      - name: {{ hostvars[host]['inventory_hostname'] }}
         role: {{ hostvars[host]['role'] }}
         bmc:
 {% if 'ipmi_port' in hostvars[host] %}
@@ -77,6 +80,7 @@ platform:
         hardwareProfile: unknown
 {% endif %}
 {% endfor %}
+{% endif %}
 pullSecret: '{{ pullsecret }}'
 sshKey: '{{ key }}'
 {% if install_config_appends is defined and install_config_appends|length %}

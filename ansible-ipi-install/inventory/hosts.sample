@@ -10,6 +10,9 @@ prov_nic=eno1
 # The public NIC (NIC2) used on all baremetal nodes
 pub_nic=eno2
 
+# (Optional) Set the provisioning bridge name. Default value is 'provisioning'. 
+#provisioning_bridge=provisioning
+
 # (Optional) Activation-key for proper setup of subscription-manager, empty value skips registration
 #activation_key=""
 
@@ -22,6 +25,15 @@ dir="{{ ansible_user_dir }}/clusterconfigs"
 # The version of the openshift-installer, undefined or empty results in the playbook failing with error message.
 # Values accepted: 'latest-4.3', 'latest-4.4', explicit version i.e. 4.3.0-0.nightly-2019-12-09-035405
 version=""
+
+# (Optional) Fully disconnected installs require manually downloading the release.txt file and hosting the file
+# on a webserver accessible to the provision host. The release.txt file can be downloaded at 
+# https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/{{ version }}/release.txt (for DEV version)
+# https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/release.txt (for GA version)
+# Example of hosting the release.txt on your example.com webserver under the 'latest-4.3' version directory.
+# http://example.com:<port>/latest-4.3/release.txt
+# Provide the webserver URL as shown below if using fully disconnected
+#webserver_url=http://example.com:<port>
 
 # Enter whether the build should use 'dev' (nightly builds) or 'ga' for Generally Available version of OpenShift
 # Empty value results in playbook failing with error message.
@@ -60,10 +72,18 @@ prov_ip=172.22.0.3
 # excluded from proxying
 # NOTE: OpenShift does not accept '*' as a wildcard attached to a domain suffix
 # i.e. *.example.com
-# Use '.' as the wildcard for a domain suffix as shown in the example below. 
+# Use '.' as the wildcard for a domain suffix as shown in the example below.
 # i.e. .example.com
 #no_proxy_list="172.22.0.0/24,.example.com"
 
+# The default installer timeouts for the bootstrap and install processes may be too short for some baremetal
+# deployments. The variables below can be used to extend those timeouts.
+
+# (Optional) Increase bootstrap process timeout by N iterations.
+#increase_bootstrap_timeout=2
+
+# (Optional) Increase install process timeout by N iterations.
+#increase_install_timeout=2
 
 ######################################
 # Vars regarding install-config.yaml #
@@ -83,6 +103,9 @@ dnsvip=""
 # An IP reserved on the baremetal network for the Ingress endpoint.
 # (Optional) If not set, a DNS lookup verifies that *.apps.<clustername>.<domain> provides an IP
 #ingressvip=""
+# The master hosts provisioning nic
+# (Optional) If not set, the prov_nic will be used
+#masters_prov_nic=""
 # Network Type (OpenShiftSDN or OVNKubernetes). Playbook defaults to OVNKubernetes.
 # Uncomment below for OpenShiftSDN
 #network_type="OpenShiftSDN"
@@ -123,7 +146,7 @@ provisioner.example.com
 #   Define a host here to create or use a local copy of the installation registry
 #   Used for disconnected installation
 # [registry_host]
-# disconnected.example.com
+# registry.example.com
 
 # [registry_host:vars]
 # The following cert_* variables are needed to create the certificates
@@ -146,9 +169,9 @@ provisioner.example.com
 #
 # Specify a file that contains extra auth tokens to include in the
 #   pull-secret if they are not already there.
-# disconnected_registry_auths_file=/home/kni/mirror_auth.json
+# disconnected_registry_auths_file=/path/to/registry-auths.json
 
 # Specify a file that contains the addition trust bundle and image
 #   content sources for the local registry. The contents of this file
 #   will be appended to the install-config.yml file.
-# disconnected_registry_mirrors_file=/home/kni/ic-appends.yml
+# disconnected_registry_mirrors_file=/path/to/install-config-appends.json

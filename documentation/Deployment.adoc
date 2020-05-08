@@ -1,0 +1,1 @@
+ipi-install/ipi-install-upstream-master.adoc

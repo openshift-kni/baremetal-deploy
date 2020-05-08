@@ -1,0 +1,95 @@
+[id="ipi-install-installation-workflow"]
+= Deploying Installer Provisioned Infrastructure (IPI) of OpenShift on Bare Metal - {release}
+Deployment Integration Team
+:data-uri:
+:email: https://github.com/openshift-kni/baremetal-deploy
+:experimental:
+:toc-title:
+:imagesdir: images
+:prewrap!:
+:context: ipi-install-installation-workflow
+//Upstream attribute
+:upstream:
+:toc:
+:toclevels: 5
+:sectnums:
+:icons: font
+:product-title: OpenShift Container Platform
+:source-highlighter: pygments
+
+[TIP]
+====
+link:Deployment.pdf[Download] the PDF version of this document or visit https://openshift-kni.github.io/baremetal-deploy/
+====
+
+
+// Deploying IPI Baremetal
+include::deploying-ipi-bare-metal.adoc[leveloffset=+1]
+
+// Prerequisites
+include::ipi-install-prerequisites.adoc[leveloffset=+1]
+
+After an environment has been prepared according to the documented prerequisites, the installation process is the same as other IPI-based platforms.
+
+// Installing RHEL on the provision node
+ifdef::upstream[]
+// include::ipi-install-upstream-installation-workflow.adoc[leveloffset=+1]
+
+include::modules/ipi-install-upstream-installing-rhel-on-the-provision-node.adoc[leveloffset=+1]
+endif::[]
+
+// Preparing the provision node for OCP
+include::modules/ipi-install-preparing-the-provisioner-node-for-openshift-install.adoc[leveloffset=+1]
+
+// Retrieving OpenShift Installer
+include::modules/ipi-install-retrieving-openshift-installer.adoc[leveloffset=+1]
+
+// RHCOS image cache
+include::modules/ipi-install-creating-an-rhcos-images-cache.adoc[leveloffset=+1]
+
+
+// Configuring the files
+include::modules/ipi-install-configuration-files.adoc[leveloffset=+1]
+
+
+// Creating a disconnected registry
+include::modules/ipi-install-creating-a-disconnected-registry.adoc[leveloffset=+1]
+
+
+// Deploying routers on worker nodes
+ifdef::upstream[]
+include::modules/ipi-install-upstream-deploying-routers-on-worker-nodes.adoc[leveloffset=+1]
+endif::[]
+
+// Validation checklist
+include::modules/ipi-install-validation-checklist-for-installation.adoc[leveloffset=+1]
+
+
+// Installing via OCP GA installer
+include::modules/ipi-install-deploying-the-cluster-via-the-openshift-installer.adoc[leveloffset=+1]
+
+
+// Backing up the cluster configuration
+ifndef::upstream[]
+include::modules/ipi-install-upstream-backing-up-the-cluster-configuration.adoc[leveloffset=+1]
+endif::[]
+
+
+// Day 2 Operations
+
+ifdef::upstream[]
+include::modules/ipi-install-upstream-day2.adoc[leveloffset=+1]
+include::modules/ipi-install-upstream-backing-up-the-cluster-configuration.adoc[leveloffset=+2]
+include::modules/ipi-install-upstream-preparing-the-provisioner-node-to-be-deployed-as-a-worker-node.adoc[leveloffset=+2]
+
+include::modules/ipi-install-upstream-dns-records-for-the-worker.adoc[leveloffset=+3]
+include::modules/ipi-install-upstream-dhcp-for-the-worker.adoc[leveloffset=+3]
+include::modules/ipi-install-upstream-deploying-the-provisioner-node-as-a-worker-node-using-metal3.adoc[leveloffset=+3]
+
+endif::[]
+
+
+// Appendix
+ifdef::upstream[]
+include::modules/ipi-install-upstream-appendix.adoc[leveloffset=+1]
+endif::[]

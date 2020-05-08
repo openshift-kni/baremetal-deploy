@@ -1,0 +1,4 @@
+[id="ipi-install-upstream-day2"]
+= Day 2 operations
+
+The following sections are optional, but may be of interest after the initial deployment has been completed.

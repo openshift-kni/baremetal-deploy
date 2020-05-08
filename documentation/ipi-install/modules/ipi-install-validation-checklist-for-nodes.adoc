@@ -1,0 +1,18 @@
+// Module included in the following assemblies:
+//
+// * installing/installing_bare_metal_ipi/ipi-install-prerequisites.adoc
+
+
+[id="validation-checklist-for-nodes{context}"]
+= Validation checklist for nodes
+
+* [ ] NIC1 VLAN is configured on the provisioning network.
+* [ ] NIC2 VLAN is configured on the  baremetal network.
+* [ ] NIC1 is PXE-enabled on the provisioning network for the control plane (master) and worker nodes.
+* [ ] (Optional) NIC2 is PXE-enabled on *only* the provisioning node for easy deployment of RHEL operating system via a local Satellite server or PXE server
+* [ ] Aside from provisioning network NIC1, PXE has been disabled on all other NICs for all {product-title} nodes
+* [ ] DNS records configured for the {product-title} nodes using a subdomain or subzone and cluster name i.e. `<cluster-name>.<domain-name>`
+* [ ] DHCP reservations for the {product-title} nodes, API, ingress endpoint, and nameserver.
+* [ ] A separate out-of-band management network has been created.
+* [ ] All nodes accessible via out-of-band management network.
+* [ ] Required data for installation (out-of-band management IP and credentials, provisioning NIC1 MAC address for all {product-title} nodes.

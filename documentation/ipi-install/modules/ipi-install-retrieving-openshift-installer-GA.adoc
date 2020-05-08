@@ -1,0 +1,4 @@
+[id="retrieving-openshift-installer-ga"]
+= Retrieving OpenShift Installer GA
+include::ipi-install-retrieving-the-openshift-installer.adoc[leveloffset=+1]
+include::ipi-install-extracting-the-openshift-installer.adoc[leveloffset=+1]

@@ -12,7 +12,7 @@
 - name: Manage chrony configuration
   block:
   - name: Create chrony.conf
-    set_fact: 
+    set_fact:
       chronyconfig: "{{ lookup('template', 'chrony.conf.j2') | b64encode }}"
 
   - name: Inject chrony.conf in a machine-config object

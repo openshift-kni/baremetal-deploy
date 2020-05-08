@@ -1,0 +1,14 @@
+[id="retrieving-openshift-installer-devel"]
+= Select Development version of installer
+
+You can choose from the following approaches:
+
+- xref:choosing-an-openshift-installer-release-from-ci-development_{context}[Choose a successfully deployed release that passed CI]
+- xref:retrieving-the-latest-openshift-installer-development_{context}[Deploy the latest development version]
+
+
+// Retrieving the OpenShift Installer from CI
+
+include::ipi-install-upstream-select-an-openshift-installer-release-from-ci-development.adoc[leveloffset=+1]
+include::ipi-install-upstream-retrieving-the-latest-openshift-installer-development.adoc[leveloffset=+1]
+include::ipi-install-upstream-extracting-the-installer-development.adoc[leveloffset=+1]

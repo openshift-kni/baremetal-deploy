@@ -1,0 +1,69 @@
+---
+- name: Verify if {{ role_path }}/files/customize_filesystem/master/worker is empty
+  find:
+    paths: "{{ role_path }}/files/customize_filesystem/{{ item }}"
+    recurse: yes
+    follow: yes
+  register: filesFound
+  with_items:
+    - "master"
+    - "worker"
+  delegate_to: localhost
+  tags: customfs
+
+- name: Modify Ignition Configs
+  block:
+
+  - name: Create OpenShift Ignition Configs
+    shell: |
+      /usr/local/bin/openshift-baremetal-install --dir {{ dir }} create ignition-configs
+
+  - name: Copy Ignition Config Files
+    copy:
+      src: "{{ dir }}/{{ item }}.ign"
+      dest: "{{ dir }}/{{ item }}.ign.orig"
+      remote_src: yes
+    with_items:
+      - "master"
+      - "worker"
+
+  - name: Copy customize_filesystem to tempdir
+    copy:
+      src: "{{ role_path }}/files/customize_filesystem"
+      dest: "{{ tempdir }}"
+      force: yes
+
+  - name: Cleanup Any .gitkeep Files in the Fake Root
+    file:
+      path: "{{ tempdir }}/customize_filesystem/{{ item }}/.gitkeep"
+      state: absent
+      follow: yes
+    with_items:
+      - "master"
+      - "worker"
+    become: true
+
+  - name: Augment Ignition Config Files
+    script: |
+      filetranspile-1.1.1.py -i {{ dir }}/{{ item }}.ign.orig -f {{ tempdir }}/customize_filesystem/{{ item }} -o {{ dir }}/{{ item }}.ign
+    args:
+      executable: python3
+    with_items:
+      - "master"
+      - "worker"
+    become: true
+
+  - name: Create backup of ignition config files
+    copy:
+      src: "{{ dir }}/{{ item }}.ign"
+      dest: "{{ dir }}/{{ item }}.ign.bkup"
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+      mode: '0644'
+      remote_src: yes
+    with_items:
+      - "master"
+      - "worker"
+
+  when: (filesFound | json_query('results[*].matched') | sum) > 0
+  tags: customfs

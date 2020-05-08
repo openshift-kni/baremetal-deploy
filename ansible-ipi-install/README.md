@@ -28,7 +28,7 @@ _**Table of contents**_
 - [Appendix A. Using Ansible Tags with the `playbook.yml`](#appendix-a-using-ansible-tags-with-the-playbookyml)
   - [How to use the Ansible tags](#how-to-use-the-ansible-tags)
   - [Skipping particular tasks using Ansible tags](#skipping-particular-tasks-using-ansible-tags)
-- [Appendix B - Using a proxy with your Ansible playbook](#appendix-b-using-a-proxy-with-your-ansible-playbook)
+- [Appendix B. Using a proxy with your Ansible playbook](#appendix-b-using-a-proxy-with-your-ansible-playbook)
 
 <!-- /TOC -->
 
@@ -36,7 +36,7 @@ _**Table of contents**_
 
 This write-up will guide you through the process of using the Ansible playbooks to deploy a Baremetal Installer Provisioned Infrastructure (`IPI`) of Red Hat OpenShift 4.
 
-For the manual details, visit our [Installation Guide](https://github.com/openshift-kni/baremetal-deploy/blob/master/install-steps.md)
+For the manual details, visit our [Installation Guide](https://openshift-kni.github.io/baremetal-deploy/)
 
 # Prerequisites
 
@@ -114,9 +114,9 @@ The tree structure is shown below:
     │   │   ├── 24_rhcos_image_cache.yml
     │   │   ├── 25_create-install-config.yml
     │   │   ├── 30_create_metal3.yml
-    │   │   ├── 35_customize_filesystem.yml
     │   │   ├── 40_create_manifest.yml
     │   │   ├── 50_extramanifests.yml
+    │   │   ├── 55_customize_filesystem.yml
     │   │   ├── 59_cleanup_bootstrap.yml
     │   │   ├── 60_deploy_ocp.yml
     │   │   ├── 70_cleanup_sub_man_registeration.yml
@@ -148,6 +148,7 @@ The tree structure is shown below:
         │   ├── 20_sub_man_register.yml
         │   ├── 30_req_packages.yml
         │   ├── 40_bridge.yml
+        │   ├── 45_networking_facts.yml
         │   ├── 50_modify_sudo_user.yml
         │   ├── 60_enabled_services.yml
         │   ├── 70_enabled_fw_services.yml
@@ -230,6 +231,9 @@ prov_nic=eno1
 # The public NIC (NIC2) used on all baremetal nodes
 pub_nic=eno2
 
+# (Optional) Set the provisioning bridge name. Default value is 'provisioning'. 
+#provisioning_bridge=provisioning
+
 # (Optional) Activation-key for proper setup of subscription-manager, empty value skips registration
 #activation_key=""
 
@@ -267,6 +271,29 @@ prov_ip=172.22.0.3
 # (Optional) A list of clock servers to be used in chrony by the masters and workers
 #clock_servers=["pool.ntp.org","clock.redhat.com"]
 
+# (Optional) Provide HTTP proxy settings
+#http_proxy=http://USERNAME:PASSWORD@proxy.example.com:8080
+
+# (Optional) Provide HTTPS proxy settings
+#https_proxy=https://USERNAME:PASSWORD@proxy.example.com:8080
+
+# (Optional) comma-separated list of hosts, IP Addresses, or IP ranges in CIDR format
+# excluded from proxying
+# NOTE: OpenShift does not accept '*' as a wildcard attached to a domain suffix
+# i.e. *.example.com
+# Use '.' as the wildcard for a domain suffix as shown in the example below.
+# i.e. .example.com
+#no_proxy_list="172.22.0.0/24,.example.com"
+
+# The default installer timeouts for the bootstrap and install processes may be too short for some baremetal
+# deployments. The variables below can be used to extend those timeouts.
+
+# (Optional) Increase bootstrap process timeout by N iterations.
+#increase_bootstrap_timeout=2
+
+# (Optional) Increase install process timeout by N iterations.
+#increase_install_timeout=2
+
 ######################################
 # Vars regarding install-config.yaml #
 ######################################
@@ -285,6 +312,9 @@ dnsvip=""
 # An IP reserved on the baremetal network for the Ingress endpoint.
 # (Optional) If not set, a DNS lookup verifies that *.apps.<clustername>.<domain> provides an IP
 #ingressvip=""
+# The master hosts provisioning nic
+# (Optional) If not set, the prov_nic will be used
+#masters_prov_nic=""
 # Network Type (OpenShiftSDN or OVNKubernetes). Playbook defaults to OVNKubernetes.
 # Uncomment below for OpenShiftSDN
 #network_type="OpenShiftSDN"
@@ -325,7 +355,7 @@ provisioner.example.com
 #   Define a host here to create or use a local copy of the installation registry
 #   Used for disconnected installation
 # [registry_host]
-# disconnected.example.com
+# registry.example.com
 
 # [registry_host:vars]
 # The following cert_* variables are needed to create the certificates
@@ -348,12 +378,12 @@ provisioner.example.com
 #
 # Specify a file that contains extra auth tokens to include in the
 #   pull-secret if they are not already there.
-# disconnected_registry_auths_file=/home/kni/mirror_auth.json
+# disconnected_registry_auths_file=/path/to/registry-auths.json
 
 # Specify a file that contains the addition trust bundle and image
 #   content sources for the local registry. The contents of this file
 #   will be appended to the install-config.yml file.
-# disconnected_registry_mirrors_file=/home/kni/ic-appends.yml
+# disconnected_registry_mirrors_file=/path/to/install-config-appends.json
 ```
 
 NOTE: The `ipmi_address` can take a fully qualified name assuming it is resolvable.
@@ -361,8 +391,6 @@ NOTE: The `ipmi_address` can take a fully qualified name assuming it is resolvab
 NOTE: The `ipmi_port` examples above show how a user can specify a different `ipmi_port` for each host within their inventory file. If the `ipmi_port` variable is omitted from the inventory file, the default of 623 will be used.
 
 NOTE: A detailed description of the `vars` under the section `Vars regarding install-config.yaml` may be reviewed within [Configure the install-config and metal3-config](https://github.com/openshift-kni/baremetal-deploy/blob/master/install-steps.md#configure-the-install-config-and-metal3-config) if unsure how to populate.
-
-WARNING: If no `workers` are included, do not remove the workers group (`[workers]`) as it is required to properly build the `install-config.yaml` file.
 
 ## The Ansible `playbook.yml`
 
@@ -447,22 +475,32 @@ The `disconnected_registry_auths_file` variable should point to a file containin
 
 The `disconnected_registry_mirrors_file` variable should point to a file containing the `additionalTrustBundle` and `imageContentSources` for the disconnected registry.
 
-The file should be in the following format. Change the `disconnected.example.com` and port 5000 to reflect your environment.
+The file should be in the following format. Change the `registry.example.com` and port 5000 to reflect your environment.
 
 ```
 additionalTrustBundle: |
   -----BEGIN CERTIFICATE-----
-  The servers certificate should go here
+  MIIGPDCCBCSgAwIBAgIUWr1DxDq53hrsk6XVLRXUjfF9m+swDQYJKoZIhvcNAQEL
+  BQAwgZAxCzAJBgNVBAYTAlVTMRAwDgYDVQQIDAdNeVN0YXRlMQ8wDQYDVQQHDAZN
+  eUNpdHkxEjAQBgNVBAoMCU15Q29tcGFueTEVMBMGA1UECwwMTXlEZXBhcnRtZW50
+  MTMwMQYDVQQDDCpyZWdpc3RyeS5rbmk3LmNsb3VkLmxhYi5lbmcuYm9zLnJlZGhh
+  dC5jb20wHhcNMjAwNDA3MjM1MzI2WhcNMzAwNDA1MjM1MzI2WjCBkDELMAkGA1UE
   -----END CERTIFICATE-----
-
+  
 imageContentSources:
 - mirrors:
-  - disconnected.example.com:5000/ocp4/openshift4
+  - registry.example.com:5000/ocp4/openshift4
   source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
 - mirrors:
-  - disconnected.example.com:5000/ocp4/openshift4
+  - registry.example.com:5000/ocp4/openshift4
   source: registry.svc.ci.openshift.org/ocp/release
+- mirrors:
+  - registry.example.com:5000/ocp4/openshift4
+  source: quay.io/openshift-release-dev/ocp-release
 ```
+
+NOTE: Indentation is important in the json file. Ensure your copy of the `
+install-config-appends.json` is properly indented as in the example above.
 
 ## Running the `playbook.yml`
 
@@ -681,6 +719,7 @@ playbook: playbook.yml
       include_tasks	TAGS: [subscription]
       include_tasks	TAGS: [packages]
       include_tasks	TAGS: [network]
+      include_tasks	TAGS: [network_facts]
       include_tasks	TAGS: [user]
       include_tasks	TAGS: [services]
       include_tasks	TAGS: [firewall]
@@ -698,7 +737,7 @@ playbook: playbook.yml
       include_tasks	TAGS: [extramanifests]
       include_tasks	TAGS: [cleanup]
       include_tasks	TAGS: [install]
-      TASK TAGS: [cache, cleanup, clusterconfigs, customfs, extract, extramanifests, firewall, getoc, install, installconfig, manifests, metal3config, network, packages, powerservers, pullsecret, rhcospath, services, storagepool, subscription, user, validation]
+      TASK TAGS: [cache, cleanup, clusterconfigs, customfs, extract, extramanifests, firewall, getoc, install, installconfig, manifests, metal3config, network, network_facts, packages, powerservers, pullsecret, rhcospath, services, storagepool, subscription, user, validation]
 ```
 
 To break this down further, the following is a description of each tag.
@@ -709,6 +748,7 @@ To break this down further, the following is a description of each tag.
 | `subscription`   | subscribe via Red Hat subscription manager                                                                                                                       |
 | `packages`       | install required package for OpenShift                                                                                                                           |
 | `network`        | setup the provisioning and baremetal network bridges and bridge slaves                                                                                           |
+| `network_facts`  | regather networking facts of environment                                                                                                                         |
 | `user`           | add remote user to `libvirt` group and generate SSH keys                                                                                                         |
 | `services`       | enable appropriate services for OpenShift                                                                                                                        |
 | `firewall`       | set firewall rules for OpenShift                                                                                                                                 |
@@ -766,7 +806,7 @@ When running behind a proxy, it is important to properly set the environment
 to handle such scenario such that you can run the Ansible playbook. In order
 to use a proxy for the ansible playbook set the appropriate variables within
 your `inventory/hosts` file. These values will also be included within your
-generated `install-config.yaml` file. 
+generated `install-config.yaml` file.
 
 ```sh
 # (Optional) Provide HTTP proxy settings
@@ -779,7 +819,7 @@ generated `install-config.yaml` file.
 # excluded from proxying
 # NOTE: OpenShift does not accept '*' as a wildcard attached to a domain suffix
 # i.e. *.example.com
-# Use '.' as the wildcard for a domain suffix as shown in the example below. 
+# Use '.' as the wildcard for a domain suffix as shown in the example below.
 # i.e. .example.com
 #no_proxy_list="172.22.0.0/24,.example.com"
 ```

@@ -1,0 +1,34 @@
+[id="ansible-playbook-fully-disconnected"]
+
+= Fully Disconnected Deployment of IPI on BM using the Ansible Playbook
+Deployment Integration Team
+:data-uri:
+:email: https://github.com/openshift-kni/baremetal-deploy
+:experimental:
+:toc-title:
+:imagesdir: images
+:prewrap!:
+:context: ipi-install-troubleshooting
+//Upstream attribute
+:playbook:
+:toc:
+:toclevels: 5
+:sectnums:
+:icons: font
+:product-title: OpenShift Container Platform
+:source-highlighter: pygments
+
+[TIP]
+====
+link:Ansible-Playbook.pdf[Download] the PDF version of this document or visit https://openshift-kni.github.io/baremetal-deploy/
+====
+
+include::modules/ansible-playbook-introduction.adoc[leveloffset=+1]
+include::modules/ansible-playbook-prerequisites.adoc[leveloffset=+1]
+include::modules/ansible-playbook-using-an-existing-registry.adoc[leveloffset=+1]
+include::modules/ansible-playbook-contents-of-the-webserver.adoc[leveloffset=+1]
+include::modules/ansible-playbook-checklist.adoc[leveloffset=+1]
+include::modules/ansible-playbook-modifying-the-inventoryhosts-file-for-fully-disconnected-deployments.adoc[leveloffset=+1]
+
+//TODO
+//Add Run playbook.yml from main playbook README.md once that becomes a module

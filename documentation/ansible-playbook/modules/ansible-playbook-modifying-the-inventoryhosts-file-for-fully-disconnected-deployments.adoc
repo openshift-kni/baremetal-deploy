@@ -1,0 +1,29 @@
+[id="ansible-playbook-modifying-the-inventoryhosts-file-for-fully-disconnected-deployments"]
+
+= Modifying the `inventory/hosts` file for Fully Disconnected Deployments
+
+While there are many options that may be set when deploying IPI on baremetal
+using the Ansible playbook. This portion will strictly focus on what are the
+requirements for including your existing webserver and registry node
+for a successful deployment.
+
+A sample of the required variables with regards to the existing webserver and
+registry node are shown below
+
+[source,ini]
+----
+# Provide the webserver URL as shown below if using fully disconnected
+webserver_url=http://example.com:8080'
+
+
+[registry_host]
+registry.example.com
+
+[registry_host:vars]
+
+
+disconnected_registry_auths_file=/path/to/registry-auths.json
+
+
+disconnected_registry_mirrors_file=/path/to/install-config-appends.json
+----

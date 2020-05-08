@@ -1,0 +1,1 @@
+troubleshooting/ipi-install-upstream-troubleshooting.adoc

@@ -1,10 +1,24 @@
 # See the OWNERS docs at https://go.k8s.io/owners
-  
 filters:
   ".*":
     reviewers:
-      - code-reviewers
-      - cnf-reviewers
+      - directedsoul1
+      - iranzo
     approvers:
-      - approvers
+      - rlopez133
 
+  "^documentation/.*":
+    labels:
+      - kind/documentation
+    reviewers:
+      - johnwilkins
+    approvers:
+      - rlopez133
+
+  "^website/.*":
+    labels:
+      - kind/website
+
+  "^ansible-ipi-install/.*":
+    labels:
+      - kind/installer

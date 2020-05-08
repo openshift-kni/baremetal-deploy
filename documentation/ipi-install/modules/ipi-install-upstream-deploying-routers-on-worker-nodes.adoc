@@ -1,0 +1,64 @@
+// Module included in the following assemblies:
+//
+// * list of assemblies where this module is included
+// ipi-install-installation-workflow.adoc
+// Upstream module
+
+[id="deploying-routers-on-worker-nodes_{context}"]
+
+= Deploying routers on worker nodes
+
+During the installation of an OpenShift cluster, router pods are deployed on worker nodes (the default is two router pods).
+In the event that an installation only has one worker node or additional routers are required in order to handle
+external traffic destined for services within your OpenShift cluster, a `yaml` file can be created to set
+the appropriate amount of router replicas.
+
+[NOTE]
+====
+By default two routers are deployed.
+If you already have two worker nodes you can skip this section.
+For more information on the Ingress Operator see: https://docs.openshift.com/container-platform/4.2/networking/ingress-operator.html[Ingress Operator in OpenShift Container Platform].
+====
+
+[NOTE]
+====
+If you have an environment where no workers are deployed and only has master nodes, by default two routers are deployed on
+the master nodes.
+If this is the case, you can skip this section.
+====
+
+.Procedure
+
+. Create the `router-replicas.yaml` file.
++
+[source,yaml]
+----
+apiVersion: operator.openshift.io/v1
+kind: IngressController
+metadata:
+  name: default
+  namespace: openshift-ingress-operator
+spec:
+  replicas: <num-of-router-pods>
+  endpointPublishingStrategy:
+    type: HostNetwork
+  nodePlacement:
+    nodeSelector:
+      matchLabels:
+        node-role.kubernetes.io/worker: "<value>" <1>
+----
+
+[NOTE]
+====
+<1> Setting for workers:
+- When working with just one worker node, set this value to `1`.
+- When working with more than 3+ workers, additional router pods (default 2) may be recommended.
+====
+
+
+. Save and copy the `router-replicas.yaml` file to the `clusterconfigs/openshift` directory.
++
+[source,bash]
+----
+cp ~/router-replicas.yaml clusterconfigs/openshift/99_router-replicas.yaml
+----

@@ -1,0 +1,9 @@
+[id="DHCP"]
+= Creating DHCP reservations
+Two options are documented for configuring DHCP:
+
+- xref:creating-dhcp-reservations-option1_{context}[On dhcpd (Option 1)]
+- xref:creating-dhcp-reservations-using-dnsmasq-option2_{context}[Using dnsmasq (Option 2)]
+
+include::ipi-install-upstream-creating-dhcp-reservations-option1.adoc[leveloffset=+1]
+include::ipi-install-upstream-creating-dhcp-reservations-using-dnsmasq-option2.adoc[leveloffset=+1]

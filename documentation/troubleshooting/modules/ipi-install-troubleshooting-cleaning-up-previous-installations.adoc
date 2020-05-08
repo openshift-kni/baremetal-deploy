@@ -1,0 +1,17 @@
+[id="ipi-install-troubleshooting-cleaning-up-previous-installations"]
+= Cleaning up previous installations
+
+If re-running the deployment, delete all the older bootstrap VMs
+including its volume as shown below. Failure to do so will cause future
+deployment failures.
+
+Clean up the older VMs and their volumes with the help of below script.
+
+[source,bash]
+----
+BOOTSTRAP=$(virsh list --all | grep "$CLUSTER.*bootstrap" | tail -1 | awk '{print $2}')
+virsh destroy $BOOTSTRAP
+virsh undefine $BOOTSTRAP
+virsh vol-delete $BOOTSTRAP default
+virsh vol-delete $BOOTSTRAP.ign default
+----
