@@ -1,0 +1,24 @@
+[id="ansible-playbook-git-clone"]
+
+= `git` clone the Ansible playbook 
+
+The first step to using the Ansible playbook is to clone the 
+https://github.com/openshift-kni/baremetal-deploy/[baremetal-deploy] repository.
+
+NOTE: This should be done on a system that can access the provision host
+
+. Clone the `git` repository
++
+[source,bash]
+----
+[user@laptop ~]$ git clone https://github.com/openshift-kni/baremetal-deploy.git
+----
++
+NOTE: Ensure `git` is installed on your localhost
++
+. Change to the `ansible-ipi-install` directory
++
+[source,bash]
+----
+[user@laptop ~]$ cd /path/to/git/repo/baremetal-deploy/ansible-ipi-install
+----

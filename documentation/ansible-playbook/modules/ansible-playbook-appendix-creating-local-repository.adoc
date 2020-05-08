@@ -1,0 +1,81 @@
+[id="ansible-playbook-appendix-local-repository"]
+
+[[local_repository]]
+[appendix]
+== Setup a local RHEL8 repository using an ISO
+
+. On the provision host, mount your RHEL8 ISO
++
+[source,bash]
+----
+[user@provisioner ~]$ sudo mount -o loop rhel-8.0-x86_64-dvd.iso /mnt/
+----
++
+. Copy `media.repo` file from mounted directory to `/etc/yum.repos.d/`
++
+[source,bash]
++
+----
+[user@provisioner ~]$ sudo cp /mnt/media.repo /etc/yum.repos.d/rhel8.repo
+----
++
+. Set permissions of the newly created `rhel8.repo` file
++
+[source,bash]
+----
+[user@provisioner ~]$ sudo chmod 644 /etc/yum.repos.d/rhel8.repo
+----
++
+. Edit the `rhel8.repo` file to match the following
++
+[source,bash]
+----
+[InstallMedia-BaseOS]
+name=Red Hat Enterprise Linux 8 - BaseOS
+metadata_expire=-1
+gpgcheck=1
+enabled=1
+baseurl=file:///mnt/BaseOS/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+
+[InstallMedia-AppStream]
+name=Red Hat Enterprise Linux 8 - AppStream
+metadata_expire=-1
+gpgcheck=1
+enabled=1
+baseurl=file:///mnt/AppStream/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+----
++
+. Clear the subscription-manager cache
++
+[source,bash]
+----
+[user@provisioner ~]$ sudo dnf clean all
+----
++
+. Modify the `/etc/yum.conf` file and set plugins to zero
++
+[source,bash]
+----
+[user@provisioner ~]$ sudo echo "plugins=0" >> /etc/yum.conf
+----
++ 
+[NOTE]
+====
+This is required as certain plugins won't properly load when
+not directly subscripted with subscription-manager and may
+give the error of Unable to read consumer identity
+====
++
+. Verify the BaseOS and AppStream repos are available
++
+[source,bash]
+----
+[user@provisioner ~]$ sudo dnf repolist
+$ sudo dnf repolist
+Last metadata expiration check: 0:29:59 ago on Tue 12 May 2020 08:15:46 PM UTC.
+repo id                    repo name                                           status
+InstallMedia-AppStream     Red Hat Enterprise Linux 8 - AppStream              4,820
+InstallMedia-BaseOS        Red Hat Enterprise Linux 8 - BaseOS                 1,661
+----

@@ -30,6 +30,7 @@ create the htpasswd file.
 Example:
 
 [user@registry ~]$ b64auth=$( echo -n '<username>:<passwd>' openssl base64 )
+{nbsp} +
 [user@registry ~]$ echo $b64auth
 
 ====
@@ -50,6 +51,9 @@ additionalTrustBundle: |
   MIIGPDCCBCSgAwIBAgIUWr1DxDq53hrsk6XVLRXUjfF9m+swDQYJKoZIhvcNAQEL
   BQAwgZAxCzAJBgNVBAYTAlVTMRAwDgYDVQQIDAdNeVN0YXRlMQ8wDQYDVQQHDAZN
   eUNpdHkxEjAQBgNVBAoMCU15Q29tcGFueTEVMBMGA1UECwwMTXlEZXBhcnRtZW50
+  .
+  . [ABBREVIATED CERTIFICATE FOR BREVITY]
+  . 
   MTMwMQYDVQQDDCpyZWdpc3RyeS5rbmk3LmNsb3VkLmxhYi5lbmcuYm9zLnJlZGhh
   dC5jb20wHhcNMjAwNDA3MjM1MzI2WhcNMzAwNDA1MjM1MzI2WjCBkDELMAkGA1UE
   -----END CERTIFICATE-----
