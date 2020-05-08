@@ -29,7 +29,7 @@ To use baremetal-prep.sh the system needs the following:
 
 **Usage:**
 
-To use baremetal-prep.sh one simply needs to clone the repo down to the provisioning host.  Then set the execute bit on baremetal-prep.sh.  Then copy the hosts.sample file to hosts and update the information in the file according to the deployment environment.
+To use baremetal-prep.sh one simply needs to clone the repo down to the provisioning host. Then set the execute bit on baremetal-prep.sh. Then copy the hosts.sample file to hosts and update the information in the file according to the deployment environment.
 
 There are currently 7 options that can be passed:
 
@@ -44,8 +44,8 @@ There are currently 7 options that can be passed:
 **Example:**
 
 ```bash
-./baremetal-prep.sh 
-Usage: 
+./baremetal-prep.sh
+Usage:
          ./baremetal-prep.sh
            -p <provisioning interface>
            -b <baremetal interface>
