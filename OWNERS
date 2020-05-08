@@ -22,3 +22,10 @@ filters:
   "^ansible-ipi-install/.*":
     labels:
       - kind/installer
+
+  "^features":
+    reviewers:
+      - code-reviewers
+      - cnf-reviewers
+    approvers:
+      - approvers
