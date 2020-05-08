@@ -47,14 +47,14 @@
     msg: "{{ url_passed }}"
     verbosity: 2
   tags: cache
-  
+
 #if i made it this far to create a webserver, one of the hosts needs online access
 #if disconnected_installer is true use the registry host as it indeed does have access
 #if not true use the provision host but only do that when: the_url.status == 200
 - name: Fail when provision host no online access and registry host not creating registry (can't assume access)
   fail:
     msg: A host with online access is required to create cache webserver (provision host or a registry host)
-  when: 
+  when:
     - the_url.status == -1
     - disconnected_installer|length == 0
   tags: cache

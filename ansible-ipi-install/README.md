@@ -234,7 +234,7 @@ prov_nic=eno1
 # The public NIC (NIC2) used on all baremetal nodes
 pub_nic=eno2
 
-# (Optional) Set the provisioning bridge name. Default value is 'provisioning'. 
+# (Optional) Set the provisioning bridge name. Default value is 'provisioning'.
 #provisioning_bridge=provisioning
 
 # (Optional) Activation-key for proper setup of subscription-manager, empty value skips registration
@@ -489,7 +489,7 @@ additionalTrustBundle: |
   MTMwMQYDVQQDDCpyZWdpc3RyeS5rbmk3LmNsb3VkLmxhYi5lbmcuYm9zLnJlZGhh
   dC5jb20wHhcNMjAwNDA3MjM1MzI2WhcNMzAwNDA1MjM1MzI2WjCBkDELMAkGA1UE
   -----END CERTIFICATE-----
-  
+
 imageContentSources:
 - mirrors:
   - registry.example.com:5000/ocp4/openshift4
@@ -502,8 +502,7 @@ imageContentSources:
   source: quay.io/openshift-release-dev/ocp-release
 ```
 
-NOTE: Indentation is important in the json file. Ensure your copy of the `
-install-config-appends.json` is properly indented as in the example above.
+NOTE: Indentation is important in the json file. Ensure your copy of the `install-config-appends.json` is properly indented as in the example above.
 
 ## Running the `playbook.yml`
 

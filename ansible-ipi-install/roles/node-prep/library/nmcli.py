@@ -5,17 +5,18 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 
 ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'status': ['preview'],
-    'supported_by': 'community'
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "community",
 }
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = """
 ---
 module: nmcli
 author: "Chris Long (@alcamie101)"
@@ -215,9 +216,9 @@ options:
        description:
             - This is only used with IPIP - IPIP local IP address.
        version_added: "2.8"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = """
 # These examples are using the following inventory:
 #
 # ## Directory layout:
@@ -505,22 +506,25 @@ EXAMPLES = '''
 #     - 8 NetworkManager is not running
 #     - 9 nmcli and NetworkManager versions mismatch
 #     - 10 Connection, device, or access point does not exist.
-'''
+"""
 
 RETURN = r"""#
 """
 
 try:
     import dbus
+
     HAVE_DBUS = True
 except ImportError:
     HAVE_DBUS = False
 
 try:
     import gi
-    gi.require_version('NM', '1.0')
+
+    gi.require_version("NM", "1.0")
 
     from gi.repository import NM
+
     HAVE_NM_CLIENT = True
 except (ImportError, ValueError):
     HAVE_NM_CLIENT = False
@@ -542,7 +546,7 @@ class Nmcli(object):
     All subclasses MUST define platform and distribution (which may be None).
     """
 
-    platform = 'Generic'
+    platform = "Generic"
     distribution = None
     if HAVE_DBUS:
         bus = dbus.SystemBus()
@@ -577,63 +581,75 @@ class Nmcli(object):
         90: "Secondaries",
         100: "Activated",
         110: "Deactivating",
-        120: "Failed"
+        120: "Failed",
     }
 
     def __init__(self, module):
         self.module = module
-        self.state = module.params['state']
-        self.autoconnect = module.params['autoconnect']
-        self.conn_name = module.params['conn_name']
-        self.master = module.params['master']
-        self.ifname = module.params['ifname']
-        self.type = module.params['type']
-        self.ip4 = module.params['ip4']
-        self.ip4_method = module.params['ip4_method']
-        self.gw4 = module.params['gw4']
-        self.dns4 = ' '.join(module.params['dns4']) if module.params.get('dns4') else None
-        self.dns4_search = ' '.join(module.params['dns4_search']) if module.params.get('dns4_search') else None
-        self.ip6 = module.params['ip6']
-        self.ip6_method = module.params['ip6_method']
-        self.ip6_dhcp_duid = module.params['ip6_dhcp_duid']
-        self.gw6 = module.params['gw6']
-        self.dns6 = module.params['dns6']
-        self.dns6_search = ' '.join(module.params['dns6_search']) if module.params.get('dns6_search') else None
-        self.mtu = module.params['mtu']
-        self.stp = module.params['stp']
-        self.priority = module.params['priority']
-        self.mode = module.params['mode']
-        self.miimon = module.params['miimon']
-        self.primary = module.params['primary']
-        self.id = module.params['id']
-        self.downdelay = module.params['downdelay']
-        self.updelay = module.params['updelay']
-        self.arp_interval = module.params['arp_interval']
-        self.arp_ip_target = module.params['arp_ip_target']
-        self.slavepriority = module.params['slavepriority']
-        self.forwarddelay = module.params['forwarddelay']
-        self.hellotime = module.params['hellotime']
-        self.maxage = module.params['maxage']
-        self.ageingtime = module.params['ageingtime']
-        self.hairpin = module.params['hairpin']
-        self.path_cost = module.params['path_cost']
-        self.mac = module.params['mac']
-        self.vlanid = module.params['vlanid']
-        self.vlandev = module.params['vlandev']
-        self.flags = module.params['flags']
-        self.ingress = module.params['ingress']
-        self.egress = module.params['egress']
-        self.vxlan_id = module.params['vxlan_id']
-        self.vxlan_local = module.params['vxlan_local']
-        self.vxlan_remote = module.params['vxlan_remote']
-        self.ip_tunnel_dev = module.params['ip_tunnel_dev']
-        self.ip_tunnel_local = module.params['ip_tunnel_local']
-        self.ip_tunnel_remote = module.params['ip_tunnel_remote']
-        self.nmcli_bin = self.module.get_bin_path('nmcli', True)
-        self.dhcp_client_id = module.params['dhcp_client_id']
+        self.state = module.params["state"]
+        self.autoconnect = module.params["autoconnect"]
+        self.conn_name = module.params["conn_name"]
+        self.master = module.params["master"]
+        self.ifname = module.params["ifname"]
+        self.type = module.params["type"]
+        self.ip4 = module.params["ip4"]
+        self.ip4_method = module.params["ip4_method"]
+        self.gw4 = module.params["gw4"]
+        self.dns4 = (
+            " ".join(module.params["dns4"]) if module.params.get("dns4") else None
+        )
+        self.dns4_search = (
+            " ".join(module.params["dns4_search"])
+            if module.params.get("dns4_search")
+            else None
+        )
+        self.ip6 = module.params["ip6"]
+        self.ip6_method = module.params["ip6_method"]
+        self.ip6_dhcp_duid = module.params["ip6_dhcp_duid"]
+        self.gw6 = module.params["gw6"]
+        self.dns6 = module.params["dns6"]
+        self.dns6_search = (
+            " ".join(module.params["dns6_search"])
+            if module.params.get("dns6_search")
+            else None
+        )
+        self.mtu = module.params["mtu"]
+        self.stp = module.params["stp"]
+        self.priority = module.params["priority"]
+        self.mode = module.params["mode"]
+        self.miimon = module.params["miimon"]
+        self.primary = module.params["primary"]
+        self.id = module.params["id"]
+        self.downdelay = module.params["downdelay"]
+        self.updelay = module.params["updelay"]
+        self.arp_interval = module.params["arp_interval"]
+        self.arp_ip_target = module.params["arp_ip_target"]
+        self.slavepriority = module.params["slavepriority"]
+        self.forwarddelay = module.params["forwarddelay"]
+        self.hellotime = module.params["hellotime"]
+        self.maxage = module.params["maxage"]
+        self.ageingtime = module.params["ageingtime"]
+        self.hairpin = module.params["hairpin"]
+        self.path_cost = module.params["path_cost"]
+        self.mac = module.params["mac"]
+        self.vlanid = module.params["vlanid"]
+        self.vlandev = module.params["vlandev"]
+        self.flags = module.params["flags"]
+        self.ingress = module.params["ingress"]
+        self.egress = module.params["egress"]
+        self.vxlan_id = module.params["vxlan_id"]
+        self.vxlan_local = module.params["vxlan_local"]
+        self.vxlan_remote = module.params["vxlan_remote"]
+        self.ip_tunnel_dev = module.params["ip_tunnel_dev"]
+        self.ip_tunnel_local = module.params["ip_tunnel_local"]
+        self.ip_tunnel_remote = module.params["ip_tunnel_remote"]
+        self.nmcli_bin = self.module.get_bin_path("nmcli", True)
+        self.dhcp_client_id = module.params["dhcp_client_id"]
 
     def execute_command(self, cmd, use_unsafe_shell=False, data=None):
-        return self.module.run_command(cmd, use_unsafe_shell=use_unsafe_shell, data=data)
+        return self.module.run_command(
+            cmd, use_unsafe_shell=use_unsafe_shell, data=data
+        )
 
     def merge_secrets(self, proxy, config, setting_name):
         try:
@@ -692,36 +708,43 @@ class Nmcli(object):
         service_name = "org.freedesktop.NetworkManager"
         settings = None
         try:
-            proxy = bus.get_object(service_name, "/org/freedesktop/NetworkManager/Settings")
+            proxy = bus.get_object(
+                service_name, "/org/freedesktop/NetworkManager/Settings"
+            )
             settings = dbus.Interface(proxy, "org.freedesktop.NetworkManager.Settings")
         except dbus.exceptions.DBusException as e:
-            self.module.fail_json(msg="Unable to read Network Manager settings from DBus system bus: %s" % to_native(e),
-                                  details="Please check if NetworkManager is installed and"
-                                          " service network-manager is started.")
+            self.module.fail_json(
+                msg="Unable to read Network Manager settings from DBus system bus: %s"
+                % to_native(e),
+                details="Please check if NetworkManager is installed and"
+                " service network-manager is started.",
+            )
         connection_paths = settings.ListConnections()
         connection_list = []
         # List each connection's name, UUID, and type
         for path in connection_paths:
             con_proxy = bus.get_object(service_name, path)
-            settings_connection = dbus.Interface(con_proxy, "org.freedesktop.NetworkManager.Settings.Connection")
+            settings_connection = dbus.Interface(
+                con_proxy, "org.freedesktop.NetworkManager.Settings.Connection"
+            )
             config = settings_connection.GetSettings()
 
             # Now get secrets too; we grab the secrets for each type of connection
             # (since there isn't a "get all secrets" call because most of the time
             # you only need 'wifi' secrets or '802.1x' secrets, not everything) and
             # merge that into the configuration data - To use at a later stage
-            self.merge_secrets(settings_connection, config, '802-11-wireless')
-            self.merge_secrets(settings_connection, config, '802-11-wireless-security')
-            self.merge_secrets(settings_connection, config, '802-1x')
-            self.merge_secrets(settings_connection, config, 'gsm')
-            self.merge_secrets(settings_connection, config, 'cdma')
-            self.merge_secrets(settings_connection, config, 'ppp')
+            self.merge_secrets(settings_connection, config, "802-11-wireless")
+            self.merge_secrets(settings_connection, config, "802-11-wireless-security")
+            self.merge_secrets(settings_connection, config, "802-1x")
+            self.merge_secrets(settings_connection, config, "gsm")
+            self.merge_secrets(settings_connection, config, "cdma")
+            self.merge_secrets(settings_connection, config, "ppp")
 
             # Get the details of the 'connection' setting
-            s_con = config['connection']
-            connection_list.append(s_con['id'])
-            connection_list.append(s_con['uuid'])
-            connection_list.append(s_con['type'])
+            s_con = config["connection"]
+            connection_list.append(s_con["id"])
+            connection_list.append(s_con["uuid"])
+            connection_list.append(s_con["type"])
             connection_list.append(self.connection_to_string(config))
         return connection_list
 
@@ -734,38 +757,38 @@ class Nmcli(object):
                 return True
 
     def down_connection(self):
-        cmd = [self.nmcli_bin, 'con', 'down', self.conn_name]
+        cmd = [self.nmcli_bin, "con", "down", self.conn_name]
         return self.execute_command(cmd)
 
     def up_connection(self):
-        cmd = [self.nmcli_bin, 'con', 'up', self.conn_name]
+        cmd = [self.nmcli_bin, "con", "up", self.conn_name]
         return self.execute_command(cmd)
 
     def create_connection_team(self):
-        cmd = [self.nmcli_bin, 'con', 'add', 'type', 'team', 'con-name']
+        cmd = [self.nmcli_bin, "con", "add", "type", "team", "con-name"]
         # format for creating team interface
         if self.conn_name is not None:
             cmd.append(self.conn_name)
         elif self.ifname is not None:
             cmd.append(self.ifname)
-        cmd.append('ifname')
+        cmd.append("ifname")
         if self.ifname is not None:
             cmd.append(self.ifname)
         elif self.conn_name is not None:
             cmd.append(self.conn_name)
 
         options = {
-            'ip4': self.ip4,
-            'ipv4.method': self.ip4_method,
-            'gw4': self.gw4,
-            'ip6': self.ip6,
-            'ipv6.method': self.ip6_method,
-            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
-            'gw6': self.gw6,
-            'autoconnect': self.bool_to_string(self.autoconnect),
-            'ipv4.dns-search': self.dns4_search,
-            'ipv6.dns-search': self.dns6_search,
-            'ipv4.dhcp-client-id': self.dhcp_client_id,
+            "ip4": self.ip4,
+            "ipv4.method": self.ip4_method,
+            "gw4": self.gw4,
+            "ip6": self.ip6,
+            "ipv6.method": self.ip6_method,
+            "ipv6.dhcp-duid": self.ip6_dhcp_duid,
+            "gw6": self.gw6,
+            "autoconnect": self.bool_to_string(self.autoconnect),
+            "ipv4.dns-search": self.dns4_search,
+            "ipv6.dns-search": self.dns6_search,
+            "ipv4.dhcp-client-id": self.dhcp_client_id,
         }
 
         for key, value in options.items():
@@ -775,21 +798,21 @@ class Nmcli(object):
         return cmd
 
     def modify_connection_team(self):
-        cmd = [self.nmcli_bin, 'con', 'mod', self.conn_name]
+        cmd = [self.nmcli_bin, "con", "mod", self.conn_name]
         options = {
-            'ipv4.address': self.ip4,
-            'ipv4.method': self.ip4_method,
-            'ipv4.gateway': self.gw4,
-            'ipv4.dns': self.dns4,
-            'ipv6.address': self.ip6,
-            'ipv6.method': self.ip6_method,
-            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
-            'ipv6.gateway': self.gw6,
-            'ipv6.dns': self.dns6,
-            'autoconnect': self.bool_to_string(self.autoconnect),
-            'ipv4.dns-search': self.dns4_search,
-            'ipv6.dns-search': self.dns6_search,
-            'ipv4.dhcp-client-id': self.dhcp_client_id,
+            "ipv4.address": self.ip4,
+            "ipv4.method": self.ip4_method,
+            "ipv4.gateway": self.gw4,
+            "ipv4.dns": self.dns4,
+            "ipv6.address": self.ip6,
+            "ipv6.method": self.ip6_method,
+            "ipv6.dhcp-duid": self.ip6_dhcp_duid,
+            "ipv6.gateway": self.gw6,
+            "ipv6.dns": self.dns6,
+            "autoconnect": self.bool_to_string(self.autoconnect),
+            "ipv4.dns-search": self.dns4_search,
+            "ipv6.dns-search": self.dns6_search,
+            "ipv4.dhcp-client-id": self.dhcp_client_id,
         }
 
         for key, value in options.items():
@@ -799,61 +822,68 @@ class Nmcli(object):
         return cmd
 
     def create_connection_team_slave(self):
-        cmd = [self.nmcli_bin, 'connection', 'add', 'type', self.type, 'con-name']
+        cmd = [self.nmcli_bin, "connection", "add", "type", self.type, "con-name"]
         # format for creating team-slave interface
         if self.conn_name is not None:
             cmd.append(self.conn_name)
         elif self.ifname is not None:
             cmd.append(self.ifname)
-        cmd.append('ifname')
+        cmd.append("ifname")
         if self.ifname is not None:
             cmd.append(self.ifname)
         elif self.conn_name is not None:
             cmd.append(self.conn_name)
-        cmd.append('master')
+        cmd.append("master")
         if self.conn_name is not None:
             cmd.append(self.master)
         return cmd
 
     def modify_connection_team_slave(self):
-        cmd = [self.nmcli_bin, 'con', 'mod', self.conn_name, 'connection.master', self.master]
+        cmd = [
+            self.nmcli_bin,
+            "con",
+            "mod",
+            self.conn_name,
+            "connection.master",
+            self.master,
+        ]
         # format for modifying team-slave interface
         if self.mtu is not None:
-            cmd.append('802-3-ethernet.mtu')
+            cmd.append("802-3-ethernet.mtu")
             cmd.append(self.mtu)
         return cmd
 
     def create_connection_bond(self):
-        cmd = [self.nmcli_bin, 'con', 'add', 'type', 'bond', 'con-name']
+        cmd = [self.nmcli_bin, "con", "add", "type", "bond", "con-name"]
         # format for creating bond interface
         if self.conn_name is not None:
             cmd.append(self.conn_name)
         elif self.ifname is not None:
             cmd.append(self.ifname)
-        cmd.append('ifname')
+        cmd.append("ifname")
         if self.ifname is not None:
             cmd.append(self.ifname)
         elif self.conn_name is not None:
             cmd.append(self.conn_name)
         options = {
-            'mode': self.mode,
-            'ip4': self.ip4,
-            'ipv4.method': self.ip4_method,
-            'gw4': self.gw4,
-            'ip6': self.ip6,
-            'ipv6.method': self.ip6_method,
-            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
-            'gw6': self.gw6,
-            'autoconnect': self.bool_to_string(self.autoconnect),
-            'ipv4.dns-search': self.dns4_search,
-            'ipv6.dns-search': self.dns6_search,
-            'miimon': self.miimon,
-            'downdelay': self.downdelay,
-            'updelay': self.updelay,
-            'arp-interval': self.arp_interval,
-            'arp-ip-target': self.arp_ip_target,
-            'primary': self.primary,
-            'ipv4.dhcp-client-id': self.dhcp_client_id,
+            "mode": self.mode,
+            "ip4": self.ip4,
+            "ipv4.method": self.ip4_method,
+            "gw4": self.gw4,
+            "ip6": self.ip6,
+            "ipv6.method": self.ip6_method,
+            "ipv6.dhcp-duid": self.ip6_dhcp_duid,
+            "gw6": self.gw6,
+            "autoconnect": self.bool_to_string(self.autoconnect),
+            "ipv4.dns-search": self.dns4_search,
+            "ipv6.dns-search": self.dns6_search,
+            "miimon": self.miimon,
+            "downdelay": self.downdelay,
+            "updelay": self.updelay,
+            "arp-interval": self.arp_interval,
+            "arp-ip-target": self.arp_ip_target,
+            "primary": self.primary,
+            "ipv4.dhcp-client-id": self.dhcp_client_id,
         }
 
         for key, value in options.items():
@@ -862,28 +892,28 @@ class Nmcli(object):
         return cmd
 
     def modify_connection_bond(self):
-        cmd = [self.nmcli_bin, 'con', 'mod', self.conn_name]
+        cmd = [self.nmcli_bin, "con", "mod", self.conn_name]
         # format for modifying bond interface
 
         options = {
-            'ipv4.address': self.ip4,
-            'ipv4.method': self.ip4_method,
-            'ipv4.gateway': self.gw4,
-            'ipv4.dns': self.dns4,
-            'ipv6.address': self.ip6,
-            'ipv6.method': self.ip6_method,
-            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
-            'ipv6.gateway': self.gw6,
-            'ipv6.dns': self.dns6,
-            'autoconnect': self.bool_to_string(self.autoconnect),
-            'ipv4.dns-search': self.dns4_search,
-            'ipv6.dns-search': self.dns6_search,
-            'miimon': self.miimon,
-            'downdelay': self.downdelay,
-            'updelay': self.updelay,
-            'arp-interval': self.arp_interval,
-            'arp-ip-target': self.arp_ip_target,
-            'ipv4.dhcp-client-id': self.dhcp_client_id,
+            "ipv4.address": self.ip4,
+            "ipv4.method": self.ip4_method,
+            "ipv4.gateway": self.gw4,
+            "ipv4.dns": self.dns4,
+            "ipv6.address": self.ip6,
+            "ipv6.method": self.ip6_method,
+            "ipv6.dhcp-duid": self.ip6_dhcp_duid,
+            "ipv6.gateway": self.gw6,
+            "ipv6.dns": self.dns6,
+            "autoconnect": self.bool_to_string(self.autoconnect),
+            "ipv4.dns-search": self.dns4_search,
+            "ipv6.dns-search": self.dns6_search,
+            "miimon": self.miimon,
+            "downdelay": self.downdelay,
+            "updelay": self.updelay,
+            "arp-interval": self.arp_interval,
+            "arp-ip-target": self.arp_ip_target,
+            "ipv4.dhcp-client-id": self.dhcp_client_id,
         }
 
         for key, value in options.items():
@@ -893,60 +923,67 @@ class Nmcli(object):
         return cmd
 
     def create_connection_bond_slave(self):
-        cmd = [self.nmcli_bin, 'connection', 'add', 'type', 'bond-slave', 'con-name']
+        cmd = [self.nmcli_bin, "connection", "add", "type", "bond-slave", "con-name"]
         # format for creating bond-slave interface
         if self.conn_name is not None:
             cmd.append(self.conn_name)
         elif self.ifname is not None:
             cmd.append(self.ifname)
-        cmd.append('ifname')
+        cmd.append("ifname")
         if self.ifname is not None:
             cmd.append(self.ifname)
         elif self.conn_name is not None:
             cmd.append(self.conn_name)
-        cmd.append('master')
+        cmd.append("master")
         if self.conn_name is not None:
             cmd.append(self.master)
         return cmd
 
     def modify_connection_bond_slave(self):
-        cmd = [self.nmcli_bin, 'con', 'mod', self.conn_name, 'connection.master', self.master]
+        cmd = [
+            self.nmcli_bin,
+            "con",
+            "mod",
+            self.conn_name,
+            "connection.master",
+            self.master,
+        ]
         # format for modifying bond-slave interface
         return cmd
 
-    def create_connection_ethernet(self, conn_type='ethernet'):
+    def create_connection_ethernet(self, conn_type="ethernet"):
         # format for creating ethernet interface
         # To add an Ethernet connection with static IP configuration, issue a command as follows
         # - nmcli: name=add conn_name=my-eth1 ifname=eth1 type=ethernet ip4=192.0.2.100/24 gw4=192.0.2.1 state=present
         # nmcli con add con-name my-eth1 ifname eth1 type ethernet ip4 192.0.2.100/24 gw4 192.0.2.1
-        cmd = [self.nmcli_bin, 'con', 'add', 'type']
-        if conn_type == 'ethernet':
-            cmd.append('ethernet')
-        elif conn_type == 'generic':
-            cmd.append('generic')
-        cmd.append('con-name')
+        cmd = [self.nmcli_bin, "con", "add", "type"]
+        if conn_type == "ethernet":
+            cmd.append("ethernet")
+        elif conn_type == "generic":
+            cmd.append("generic")
+        cmd.append("con-name")
         if self.conn_name is not None:
             cmd.append(self.conn_name)
         elif self.ifname is not None:
             cmd.append(self.ifname)
-        cmd.append('ifname')
+        cmd.append("ifname")
         if self.ifname is not None:
             cmd.append(self.ifname)
         elif self.conn_name is not None:
             cmd.append(self.conn_name)
 
         options = {
-            'ip4': self.ip4,
-            'ipv4.method': self.ip4_method,
-            'gw4': self.gw4,
-            'ip6': self.ip6,
-            'ipv6.method': self.ip6_method,
-            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
-            'gw6': self.gw6,
-            'autoconnect': self.bool_to_string(self.autoconnect),
-            'ipv4.dns-search': self.dns4_search,
-            'ipv6.dns-search': self.dns6_search,
-            'ipv4.dhcp-client-id': self.dhcp_client_id,
+            "ip4": self.ip4,
+            "ipv4.method": self.ip4_method,
+            "gw4": self.gw4,
+            "ip6": self.ip6,
+            "ipv6.method": self.ip6_method,
+            "ipv6.dhcp-duid": self.ip6_dhcp_duid,
+            "gw6": self.gw6,
+            "autoconnect": self.bool_to_string(self.autoconnect),
+            "ipv4.dns-search": self.dns4_search,
+            "ipv6.dns-search": self.dns6_search,
+            "ipv4.dhcp-client-id": self.dhcp_client_id,
         }
 
         for key, value in options.items():
@@ -955,33 +992,33 @@ class Nmcli(object):
 
         return cmd
 
-    def modify_connection_ethernet(self, conn_type='ethernet'):
-        cmd = [self.nmcli_bin, 'con', 'mod', self.conn_name]
+    def modify_connection_ethernet(self, conn_type="ethernet"):
+        cmd = [self.nmcli_bin, "con", "mod", self.conn_name]
         # format for modifying ethernet interface
         # To modify an Ethernet connection with static IP configuration, issue a command as follows
         # - nmcli: conn_name=my-eth1 ifname=eth1 type=ethernet ip4=192.0.2.100/24 gw4=192.0.2.1 state=present
         # nmcli con mod con-name my-eth1 ifname eth1 type ethernet ip4 192.0.2.100/24 gw4 192.0.2.1
         options = {
-            'ipv4.address': self.ip4,
-            'ipv4.method': self.ip4_method,
-            'ipv4.gateway': self.gw4,
-            'ipv4.dns': self.dns4,
-            'ipv6.address': self.ip6,
-            'ipv6.method': self.ip6_method,
-            'connection.id': self.id,
-            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
-            'ipv6.gateway': self.gw6,
-            'ipv6.dns': self.dns6,
-            'autoconnect': self.bool_to_string(self.autoconnect),
-            'ipv4.dns-search': self.dns4_search,
-            'ipv6.dns-search': self.dns6_search,
-            '802-3-ethernet.mtu': self.mtu,
-            'ipv4.dhcp-client-id': self.dhcp_client_id,
+            "ipv4.address": self.ip4,
+            "ipv4.method": self.ip4_method,
+            "ipv4.gateway": self.gw4,
+            "ipv4.dns": self.dns4,
+            "ipv6.address": self.ip6,
+            "ipv6.method": self.ip6_method,
+            "connection.id": self.id,
+            "ipv6.dhcp-duid": self.ip6_dhcp_duid,
+            "ipv6.gateway": self.gw6,
+            "ipv6.dns": self.dns6,
+            "autoconnect": self.bool_to_string(self.autoconnect),
+            "ipv4.dns-search": self.dns4_search,
+            "ipv6.dns-search": self.dns6_search,
+            "802-3-ethernet.mtu": self.mtu,
+            "ipv4.dhcp-client-id": self.dhcp_client_id,
         }
 
         for key, value in options.items():
             if value is not None:
-                if key == '802-3-ethernet.mtu' and conn_type != 'ethernet':
+                if key == "802-3-ethernet.mtu" and conn_type != "ethernet":
                     continue
                 cmd.extend([key, value])
 
@@ -992,33 +1029,33 @@ class Nmcli(object):
         # To add an Bridge connection with static IP configuration, issue a command as follows
         # - nmcli: name=add conn_name=my-eth1 ifname=eth1 type=bridge ip4=192.0.2.100/24 gw4=192.0.2.1 state=present
         # nmcli con add con-name my-eth1 ifname eth1 type bridge ip4 192.0.2.100/24 gw4 192.0.2.1
-        cmd = [self.nmcli_bin, 'con', 'add', 'type', 'bridge', 'con-name']
+        cmd = [self.nmcli_bin, "con", "add", "type", "bridge", "con-name"]
         if self.conn_name is not None:
             cmd.append(self.conn_name)
         elif self.ifname is not None:
             cmd.append(self.ifname)
-        cmd.append('ifname')
+        cmd.append("ifname")
         if self.ifname is not None:
             cmd.append(self.ifname)
         elif self.conn_name is not None:
             cmd.append(self.conn_name)
 
         options = {
-            'ipv4.addresses': self.ip4,
-            'ipv4.method': self.ip4_method,
-            'ipv4.gateway': self.gw4,
-            'ipv6.addresses': self.ip6,
-            'ipv6.method': self.ip6_method,
-            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
-            'ipv6.gateway': self.gw6,
-            'autoconnect': self.bool_to_string(self.autoconnect),
-            'bridge.ageing-time': self.ageingtime,
-            'bridge.forward-delay': self.forwarddelay,
-            'bridge.hello-time': self.hellotime,
-            'bridge.mac-address': self.mac,
-            'bridge.max-age': self.maxage,
-            'bridge.priority': self.priority,
-            'bridge.stp': self.bool_to_string(self.stp)
+            "ipv4.addresses": self.ip4,
+            "ipv4.method": self.ip4_method,
+            "ipv4.gateway": self.gw4,
+            "ipv6.addresses": self.ip6,
+            "ipv6.method": self.ip6_method,
+            "ipv6.dhcp-duid": self.ip6_dhcp_duid,
+            "ipv6.gateway": self.gw6,
+            "autoconnect": self.bool_to_string(self.autoconnect),
+            "bridge.ageing-time": self.ageingtime,
+            "bridge.forward-delay": self.forwarddelay,
+            "bridge.hello-time": self.hellotime,
+            "bridge.mac-address": self.mac,
+            "bridge.max-age": self.maxage,
+            "bridge.priority": self.priority,
+            "bridge.stp": self.bool_to_string(self.stp),
         }
 
         for key, value in options.items():
@@ -1032,24 +1069,24 @@ class Nmcli(object):
         # To add an Bridge connection with static IP configuration, issue a command as follows
         # - nmcli: name=mod conn_name=my-eth1 ifname=eth1 type=bridge ip4=192.0.2.100/24 gw4=192.0.2.1 state=present
         # nmcli con mod my-eth1 ifname eth1 type bridge ip4 192.0.2.100/24 gw4 192.0.2.1
-        cmd = [self.nmcli_bin, 'con', 'mod', self.conn_name]
+        cmd = [self.nmcli_bin, "con", "mod", self.conn_name]
 
         options = {
-            'ipv4.addresses': self.ip4,
-            'ipv4.method': self.ip4_method,
-            'ipv4.gateway': self.gw4,
-            'ipv6.addresses': self.ip6,
-            'ipv6.method': self.ip6_method,
-            'ipv6.dhcp-duid': self.ip6_dhcp_duid,
-            'ipv6.gateway': self.gw6,
-            'autoconnect': self.bool_to_string(self.autoconnect),
-            'bridge.ageing-time': self.ageingtime,
-            'bridge.forward-delay': self.forwarddelay,
-            'bridge.hello-time': self.hellotime,
-            'bridge.mac-address': self.mac,
-            'bridge.max-age': self.maxage,
-            'bridge.priority': self.priority,
-            'bridge.stp': self.bool_to_string(self.stp)
+            "ipv4.addresses": self.ip4,
+            "ipv4.method": self.ip4_method,
+            "ipv4.gateway": self.gw4,
+            "ipv6.addresses": self.ip6,
+            "ipv6.method": self.ip6_method,
+            "ipv6.dhcp-duid": self.ip6_dhcp_duid,
+            "ipv6.gateway": self.gw6,
+            "autoconnect": self.bool_to_string(self.autoconnect),
+            "bridge.ageing-time": self.ageingtime,
+            "bridge.forward-delay": self.forwarddelay,
+            "bridge.hello-time": self.hellotime,
+            "bridge.mac-address": self.mac,
+            "bridge.max-age": self.maxage,
+            "bridge.priority": self.priority,
+            "bridge.stp": self.bool_to_string(self.stp),
         }
 
         for key, value in options.items():
@@ -1060,23 +1097,23 @@ class Nmcli(object):
 
     def create_connection_bridge_slave(self):
         # format for creating bond-slave interface
-        cmd = [self.nmcli_bin, 'con', 'add', 'type', 'bridge-slave', 'con-name']
+        cmd = [self.nmcli_bin, "con", "add", "type", "bridge-slave", "con-name"]
         if self.conn_name is not None:
             cmd.append(self.conn_name)
         elif self.ifname is not None:
             cmd.append(self.ifname)
-        cmd.append('ifname')
+        cmd.append("ifname")
         if self.ifname is not None:
             cmd.append(self.ifname)
         elif self.conn_name is not None:
             cmd.append(self.conn_name)
 
         options = {
-            'master': self.master,
-            'connection.id': self.id,
-            'bridge-port.path-cost': self.path_cost,
-            'bridge-port.hairpin': self.bool_to_string(self.hairpin),
-            'bridge-port.priority': self.slavepriority,
+            "master": self.master,
+            "connection.id": self.id,
+            "bridge-port.path-cost": self.path_cost,
+            "bridge-port.hairpin": self.bool_to_string(self.hairpin),
+            "bridge-port.priority": self.slavepriority,
         }
 
         for key, value in options.items():
@@ -1087,13 +1124,13 @@ class Nmcli(object):
 
     def modify_connection_bridge_slave(self):
         # format for modifying bond-slave interface
-        cmd = [self.nmcli_bin, 'con', 'mod', self.conn_name]
+        cmd = [self.nmcli_bin, "con", "mod", self.conn_name]
         options = {
-            'master': self.master,
-            'connection.id': self.id,
-            'bridge-port.path-cost': self.path_cost,
-            'bridge-port.hairpin': self.bool_to_string(self.hairpin),
-            'bridge-port.priority': self.slavepriority,
+            "master": self.master,
+            "connection.id": self.id,
+            "bridge-port.path-cost": self.path_cost,
+            "bridge-port.hairpin": self.bool_to_string(self.hairpin),
+            "bridge-port.priority": self.slavepriority,
         }
 
         for key, value in options.items():
@@ -1104,38 +1141,39 @@ class Nmcli(object):
 
     def create_connection_vlan(self):
         cmd = [self.nmcli_bin]
-        cmd.append('con')
-        cmd.append('add')
-        cmd.append('type')
-        cmd.append('vlan')
-        cmd.append('con-name')
+        cmd.append("con")
+        cmd.append("add")
+        cmd.append("type")
+        cmd.append("vlan")
+        cmd.append("con-name")
 
         if self.conn_name is not None:
             cmd.append(self.conn_name)
         elif self.ifname is not None:
             cmd.append(self.ifname)
         else:
-            cmd.append('vlan%s' % self.vlanid)
+            cmd.append("vlan%s" % self.vlanid)
 
-        cmd.append('ifname')
+        cmd.append("ifname")
         if self.ifname is not None:
             cmd.append(self.ifname)
         elif self.conn_name is not None:
             cmd.append(self.conn_name)
         else:
-            cmd.append('vlan%s' % self.vlanid)
+            cmd.append("vlan%s" % self.vlanid)
 
-        params = {'dev': self.vlandev,
-                  'id': self.vlanid,
-                  'ip4': self.ip4 or '',
-                  'ip4.method': self.ip4_method or '',
-                  'gw4': self.gw4 or '',
-                  'ip6': self.ip6 or '',
-                  'ip6.method': self.ip6_method or '',
-                  'ip6.dhcp-duid': self.ip6_dhcp_duid or '',
-                  'gw6': self.gw6 or '',
-                  'autoconnect': self.bool_to_string(self.autoconnect)
-                  }
+        params = {
+            "dev": self.vlandev,
+            "id": self.vlanid,
+            "ip4": self.ip4 or "",
+            "ip4.method": self.ip4_method or "",
+            "gw4": self.gw4 or "",
+            "ip6": self.ip6 or "",
+            "ip6.method": self.ip6_method or "",
+            "ip6.dhcp-duid": self.ip6_dhcp_duid or "",
+            "gw6": self.gw6 or "",
+            "autoconnect": self.bool_to_string(self.autoconnect),
+        }
         for k, v in params.items():
             cmd.extend([k, v])
 
@@ -1143,29 +1181,30 @@ class Nmcli(object):
 
     def modify_connection_vlan(self):
         cmd = [self.nmcli_bin]
-        cmd.append('con')
-        cmd.append('mod')
+        cmd.append("con")
+        cmd.append("mod")
 
         if self.conn_name is not None:
             cmd.append(self.conn_name)
         elif self.ifname is not None:
             cmd.append(self.ifname)
         else:
-            cmd.append('vlan%s' % self.vlanid)
+            cmd.append("vlan%s" % self.vlanid)
 
-        params = {'vlan.parent': self.vlandev,
-                  'vlan.id': self.vlanid,
-                  'ipv4.address': self.ip4 or '',
-                  'ipv4.method': self.ip4_method or '',
-                  'ipv4.gateway': self.gw4 or '',
-                  'ipv4.dns': self.dns4 or '',
-                  'ipv6.address': self.ip6 or '',
-                  'ipv6.method': self.ip6_method or '',
-                  'ipv6.dhcp-duid': self.ip6_dhcp_duid or '',
-                  'ipv6.gateway': self.gw6 or '',
-                  'ipv6.dns': self.dns6 or '',
-                  'autoconnect': self.bool_to_string(self.autoconnect)
-                  }
+        params = {
+            "vlan.parent": self.vlandev,
+            "vlan.id": self.vlanid,
+            "ipv4.address": self.ip4 or "",
+            "ipv4.method": self.ip4_method or "",
+            "ipv4.gateway": self.gw4 or "",
+            "ipv4.dns": self.dns4 or "",
+            "ipv6.address": self.ip6 or "",
+            "ipv6.method": self.ip6_method or "",
+            "ipv6.dhcp-duid": self.ip6_dhcp_duid or "",
+            "ipv6.gateway": self.gw6 or "",
+            "ipv6.dns": self.dns6 or "",
+            "autoconnect": self.bool_to_string(self.autoconnect),
+        }
 
         for k, v in params.items():
             cmd.extend([k, v])
@@ -1173,104 +1212,117 @@ class Nmcli(object):
         return cmd
 
     def create_connection_vxlan(self):
-        cmd = [self.nmcli_bin, 'con', 'add', 'type', 'vxlan', 'con-name']
+        cmd = [self.nmcli_bin, "con", "add", "type", "vxlan", "con-name"]
 
         if self.conn_name is not None:
             cmd.append(self.conn_name)
         elif self.ifname is not None:
             cmd.append(self.ifname)
         else:
-            cmd.append('vxlan%s' % self.vxlanid)
+            cmd.append("vxlan%s" % self.vxlanid)
 
-        cmd.append('ifname')
+        cmd.append("ifname")
         if self.ifname is not None:
             cmd.append(self.ifname)
         elif self.conn_name is not None:
             cmd.append(self.conn_name)
         else:
-            cmd.append('vxan%s' % self.vxlanid)
+            cmd.append("vxan%s" % self.vxlanid)
 
-        params = {'vxlan.id': self.vxlan_id,
-                  'vxlan.local': self.vxlan_local,
-                  'vxlan.remote': self.vxlan_remote,
-                  'autoconnect': self.bool_to_string(self.autoconnect)
-                  }
+        params = {
+            "vxlan.id": self.vxlan_id,
+            "vxlan.local": self.vxlan_local,
+            "vxlan.remote": self.vxlan_remote,
+            "autoconnect": self.bool_to_string(self.autoconnect),
+        }
         for k, v in params.items():
             cmd.extend([k, v])
 
         return cmd
 
     def modify_connection_vxlan(self):
-        cmd = [self.nmcli_bin, 'con', 'mod']
+        cmd = [self.nmcli_bin, "con", "mod"]
 
         if self.conn_name is not None:
             cmd.append(self.conn_name)
         elif self.ifname is not None:
             cmd.append(self.ifname)
         else:
-            cmd.append('vxlan%s' % self.vxlanid)
+            cmd.append("vxlan%s" % self.vxlanid)
 
-        params = {'vxlan.id': self.vxlan_id,
-                  'vxlan.local': self.vxlan_local,
-                  'vxlan.remote': self.vxlan_remote,
-                  'autoconnect': self.bool_to_string(self.autoconnect)
-                  }
+        params = {
+            "vxlan.id": self.vxlan_id,
+            "vxlan.local": self.vxlan_local,
+            "vxlan.remote": self.vxlan_remote,
+            "autoconnect": self.bool_to_string(self.autoconnect),
+        }
         for k, v in params.items():
             cmd.extend([k, v])
         return cmd
 
     def create_connection_ipip(self):
-        cmd = [self.nmcli_bin, 'con', 'add', 'type', 'ip-tunnel', 'mode', 'ipip', 'con-name']
+        cmd = [
+            self.nmcli_bin,
+            "con",
+            "add",
+            "type",
+            "ip-tunnel",
+            "mode",
+            "ipip",
+            "con-name",
+        ]
 
         if self.conn_name is not None:
             cmd.append(self.conn_name)
         elif self.ifname is not None:
             cmd.append(self.ifname)
         elif self.ip_tunnel_dev is not None:
-            cmd.append('ipip%s' % self.ip_tunnel_dev)
+            cmd.append("ipip%s" % self.ip_tunnel_dev)
 
-        cmd.append('ifname')
+        cmd.append("ifname")
         if self.ifname is not None:
             cmd.append(self.ifname)
         elif self.conn_name is not None:
             cmd.append(self.conn_name)
         else:
-            cmd.append('ipip%s' % self.ipip_dev)
+            cmd.append("ipip%s" % self.ipip_dev)
 
         if self.ip_tunnel_dev is not None:
-            cmd.append('dev')
+            cmd.append("dev")
             cmd.append(self.ip_tunnel_dev)
 
-        params = {'ip-tunnel.local': self.ip_tunnel_local,
-                  'ip-tunnel.remote': self.ip_tunnel_remote,
-                  'autoconnect': self.bool_to_string(self.autoconnect)
-                  }
+        params = {
+            "ip-tunnel.local": self.ip_tunnel_local,
+            "ip-tunnel.remote": self.ip_tunnel_remote,
+            "autoconnect": self.bool_to_string(self.autoconnect),
+        }
         for k, v in params.items():
             cmd.extend([k, v])
 
         return cmd
 
     def modify_connection_ipip(self):
-        cmd = [self.nmcli_bin, 'con', 'mod']
+        cmd = [self.nmcli_bin, "con", "mod"]
 
         if self.conn_name is not None:
             cmd.append(self.conn_name)
         elif self.ifname is not None:
             cmd.append(self.ifname)
         elif self.ip_tunnel_dev is not None:
-            cmd.append('ipip%s' % self.ip_tunnel_dev)
+            cmd.append("ipip%s" % self.ip_tunnel_dev)
 
-        params = {'ip-tunnel.local': self.ip_tunnel_local,
-                  'ip-tunnel.remote': self.ip_tunnel_remote,
-                  'autoconnect': self.bool_to_string(self.autoconnect)
-                  }
+        params = {
+            "ip-tunnel.local": self.ip_tunnel_local,
+            "ip-tunnel.remote": self.ip_tunnel_remote,
+            "autoconnect": self.bool_to_string(self.autoconnect),
+        }
         for k, v in params.items():
             cmd.extend([k, v])
         return cmd
 
     def create_connection(self):
         cmd = []
-        if self.type == 'team':
+        if self.type == "team":
             if (self.dns4 is not None) or (self.dns6 is not None):
                 cmd = self.create_connection_team()
                 self.execute_command(cmd)
@@ -1279,7 +1331,7 @@ class Nmcli(object):
                 return self.up_connection()
             elif (self.dns4 is None) or (self.dns6 is None):
                 cmd = self.create_connection_team()
-        elif self.type == 'team-slave':
+        elif self.type == "team-slave":
             if self.mtu is not None:
                 cmd = self.create_connection_team_slave()
                 self.execute_command(cmd)
@@ -1287,8 +1339,12 @@ class Nmcli(object):
                 return self.execute_command(cmd)
             else:
                 cmd = self.create_connection_team_slave()
-        elif self.type == 'bond':
-            if (self.mtu is not None) or (self.dns4 is not None) or (self.dns6 is not None):
+        elif self.type == "bond":
+            if (
+                (self.mtu is not None)
+                or (self.dns4 is not None)
+                or (self.dns6 is not None)
+            ):
                 cmd = self.create_connection_bond()
                 self.execute_command(cmd)
                 cmd = self.modify_connection_bond()
@@ -1296,10 +1352,14 @@ class Nmcli(object):
                 return self.up_connection()
             else:
                 cmd = self.create_connection_bond()
-        elif self.type == 'bond-slave':
+        elif self.type == "bond-slave":
             cmd = self.create_connection_bond_slave()
-        elif self.type == 'ethernet':
-            if (self.mtu is not None) or (self.dns4 is not None) or (self.dns6 is not None):
+        elif self.type == "ethernet":
+            if (
+                (self.mtu is not None)
+                or (self.dns4 is not None)
+                or (self.dns6 is not None)
+            ):
                 cmd = self.create_connection_ethernet()
                 self.execute_command(cmd)
                 cmd = self.modify_connection_ethernet()
@@ -1307,126 +1367,155 @@ class Nmcli(object):
                 return self.up_connection()
             else:
                 cmd = self.create_connection_ethernet()
-        elif self.type == 'bridge':
+        elif self.type == "bridge":
             cmd = self.create_connection_bridge()
-        elif self.type == 'bridge-slave':
+        elif self.type == "bridge-slave":
             cmd = self.create_connection_bridge_slave()
-        elif self.type == 'vlan':
+        elif self.type == "vlan":
             cmd = self.create_connection_vlan()
-        elif self.type == 'vxlan':
+        elif self.type == "vxlan":
             cmd = self.create_connection_vxlan()
-        elif self.type == 'ipip':
+        elif self.type == "ipip":
             cmd = self.create_connection_ipip()
-        elif self.type == 'generic':
-            cmd = self.create_connection_ethernet(conn_type='generic')
+        elif self.type == "generic":
+            cmd = self.create_connection_ethernet(conn_type="generic")
 
         if cmd:
             return self.execute_command(cmd)
         else:
-            self.module.fail_json(msg="Type of device or network connection is required "
-                                      "while performing 'create' operation. Please specify 'type' as an argument.")
+            self.module.fail_json(
+                msg="Type of device or network connection is required "
+                "while performing 'create' operation. Please specify 'type' as an argument."
+            )
 
     def remove_connection(self):
         # self.down_connection()
-        cmd = [self.nmcli_bin, 'con', 'del', self.conn_name]
+        cmd = [self.nmcli_bin, "con", "del", self.conn_name]
         return self.execute_command(cmd)
 
     def modify_connection(self):
         cmd = []
-        if self.type == 'team':
+        if self.type == "team":
             cmd = self.modify_connection_team()
-        elif self.type == 'team-slave':
+        elif self.type == "team-slave":
             cmd = self.modify_connection_team_slave()
-        elif self.type == 'bond':
+        elif self.type == "bond":
             cmd = self.modify_connection_bond()
-        elif self.type == 'bond-slave':
+        elif self.type == "bond-slave":
             cmd = self.modify_connection_bond_slave()
-        elif self.type == 'ethernet':
+        elif self.type == "ethernet":
             cmd = self.modify_connection_ethernet()
-        elif self.type == 'bridge':
+        elif self.type == "bridge":
             cmd = self.modify_connection_bridge()
-        elif self.type == 'bridge-slave':
+        elif self.type == "bridge-slave":
             cmd = self.modify_connection_bridge_slave()
-        elif self.type == 'vlan':
+        elif self.type == "vlan":
             cmd = self.modify_connection_vlan()
-        elif self.type == 'vxlan':
+        elif self.type == "vxlan":
             cmd = self.modify_connection_vxlan()
-        elif self.type == 'ipip':
+        elif self.type == "ipip":
             cmd = self.modify_connection_ipip()
-        elif self.type == 'generic':
-            cmd = self.modify_connection_ethernet(conn_type='generic')
+        elif self.type == "generic":
+            cmd = self.modify_connection_ethernet(conn_type="generic")
         if cmd:
             return self.execute_command(cmd)
         else:
-            self.module.fail_json(msg="Type of device or network connection is required "
-                                      "while performing 'modify' operation. Please specify 'type' as an argument.")
+            self.module.fail_json(
+                msg="Type of device or network connection is required "
+                "while performing 'modify' operation. Please specify 'type' as an argument."
+            )
 
 
 def main():
     # Parsing argument file
     module = AnsibleModule(
         argument_spec=dict(
-            autoconnect=dict(required=False, default=True, type='bool'),
-            state=dict(required=True, choices=['present', 'absent'], type='str'),
-            conn_name=dict(required=True, type='str'),
-            master=dict(required=False, default=None, type='str'),
-            id=dict(required=False, default=None, type='str'),
-            ifname=dict(required=False, default=None, type='str'),
-            type=dict(required=False, default=None,
-                      choices=['ethernet', 'team', 'team-slave', 'bond',
-                               'bond-slave', 'bridge', 'bridge-slave',
-                               'vlan', 'vxlan', 'ipip', 'generic'],
-                      type='str'),
-            ip4=dict(required=False, default=None, type='str'),
-            ip4_method=dict(required=False, default=None, type='str'),
-            gw4=dict(required=False, default=None, type='str'),
-            dns4=dict(required=False, default=None, type='list'),
-            dns4_search=dict(type='list'),
-            dhcp_client_id=dict(required=False, default=None, type='str'),
-            ip6=dict(required=False, default=None, type='str'),
-            ip6_method=dict(required=False, default=None, type='str'),
-            ip6_dhcp_duid=dict(required=False, default=None, type='str'),
-            gw6=dict(required=False, default=None, type='str'),
-            dns6=dict(required=False, default=None, type='str'),
-            dns6_search=dict(type='list'),
+            autoconnect=dict(required=False, default=True, type="bool"),
+            state=dict(required=True, choices=["present", "absent"], type="str"),
+            conn_name=dict(required=True, type="str"),
+            master=dict(required=False, default=None, type="str"),
+            id=dict(required=False, default=None, type="str"),
+            ifname=dict(required=False, default=None, type="str"),
+            type=dict(
+                required=False,
+                default=None,
+                choices=[
+                    "ethernet",
+                    "team",
+                    "team-slave",
+                    "bond",
+                    "bond-slave",
+                    "bridge",
+                    "bridge-slave",
+                    "vlan",
+                    "vxlan",
+                    "ipip",
+                    "generic",
+                ],
+                type="str",
+            ),
+            ip4=dict(required=False, default=None, type="str"),
+            ip4_method=dict(required=False, default=None, type="str"),
+            gw4=dict(required=False, default=None, type="str"),
+            dns4=dict(required=False, default=None, type="list"),
+            dns4_search=dict(type="list"),
+            dhcp_client_id=dict(required=False, default=None, type="str"),
+            ip6=dict(required=False, default=None, type="str"),
+            ip6_method=dict(required=False, default=None, type="str"),
+            ip6_dhcp_duid=dict(required=False, default=None, type="str"),
+            gw6=dict(required=False, default=None, type="str"),
+            dns6=dict(required=False, default=None, type="str"),
+            dns6_search=dict(type="list"),
             # Bond Specific vars
-            mode=dict(require=False, default="balance-rr", type='str', choices=["balance-rr", "active-backup", "balance-xor", "broadcast", "802.3ad",
-                                                                                "balance-tlb", "balance-alb"]),
-            miimon=dict(required=False, default=None, type='str'),
-            downdelay=dict(required=False, default=None, type='str'),
-            updelay=dict(required=False, default=None, type='str'),
-            arp_interval=dict(required=False, default=None, type='str'),
-            arp_ip_target=dict(required=False, default=None, type='str'),
-            primary=dict(required=False, default=None, type='str'),
+            mode=dict(
+                require=False,
+                default="balance-rr",
+                type="str",
+                choices=[
+                    "balance-rr",
+                    "active-backup",
+                    "balance-xor",
+                    "broadcast",
+                    "802.3ad",
+                    "balance-tlb",
+                    "balance-alb",
+                ],
+            ),
+            miimon=dict(required=False, default=None, type="str"),
+            downdelay=dict(required=False, default=None, type="str"),
+            updelay=dict(required=False, default=None, type="str"),
+            arp_interval=dict(required=False, default=None, type="str"),
+            arp_ip_target=dict(required=False, default=None, type="str"),
+            primary=dict(required=False, default=None, type="str"),
             # general usage
-            mtu=dict(required=False, default=None, type='str'),
-            mac=dict(required=False, default=None, type='str'),
+            mtu=dict(required=False, default=None, type="str"),
+            mac=dict(required=False, default=None, type="str"),
             # bridge specific vars
-            stp=dict(required=False, default=True, type='bool'),
-            priority=dict(required=False, default="128", type='str'),
-            slavepriority=dict(required=False, default="32", type='str'),
-            forwarddelay=dict(required=False, default="15", type='str'),
-            hellotime=dict(required=False, default="2", type='str'),
-            maxage=dict(required=False, default="20", type='str'),
-            ageingtime=dict(required=False, default="300", type='str'),
-            hairpin=dict(required=False, default=True, type='bool'),
-            path_cost=dict(required=False, default="100", type='str'),
+            stp=dict(required=False, default=True, type="bool"),
+            priority=dict(required=False, default="128", type="str"),
+            slavepriority=dict(required=False, default="32", type="str"),
+            forwarddelay=dict(required=False, default="15", type="str"),
+            hellotime=dict(required=False, default="2", type="str"),
+            maxage=dict(required=False, default="20", type="str"),
+            ageingtime=dict(required=False, default="300", type="str"),
+            hairpin=dict(required=False, default=True, type="bool"),
+            path_cost=dict(required=False, default="100", type="str"),
             # vlan specific vars
-            vlanid=dict(required=False, default=None, type='str'),
-            vlandev=dict(required=False, default=None, type='str'),
-            flags=dict(required=False, default=None, type='str'),
-            ingress=dict(required=False, default=None, type='str'),
-            egress=dict(required=False, default=None, type='str'),
+            vlanid=dict(required=False, default=None, type="str"),
+            vlandev=dict(required=False, default=None, type="str"),
+            flags=dict(required=False, default=None, type="str"),
+            ingress=dict(required=False, default=None, type="str"),
+            egress=dict(required=False, default=None, type="str"),
             # vxlan specific vars
-            vxlan_id=dict(required=False, default=None, type='str'),
-            vxlan_local=dict(required=False, default=None, type='str'),
-            vxlan_remote=dict(required=False, default=None, type='str'),
+            vxlan_id=dict(required=False, default=None, type="str"),
+            vxlan_local=dict(required=False, default=None, type="str"),
+            vxlan_remote=dict(required=False, default=None, type="str"),
             # ip-tunnel specific vars
-            ip_tunnel_dev=dict(required=False, default=None, type='str'),
-            ip_tunnel_local=dict(required=False, default=None, type='str'),
-            ip_tunnel_remote=dict(required=False, default=None, type='str'),
+            ip_tunnel_dev=dict(required=False, default=None, type="str"),
+            ip_tunnel_local=dict(required=False, default=None, type="str"),
+            ip_tunnel_remote=dict(required=False, default=None, type="str"),
         ),
-        supports_check_mode=True
+        supports_check_mode=True,
     )
 
     if not HAVE_DBUS:
@@ -1437,37 +1526,46 @@ def main():
 
     nmcli = Nmcli(module)
 
-    (rc, out, err) = (None, '', '')
-    result = {'conn_name': nmcli.conn_name, 'state': nmcli.state}
+    (rc, out, err) = (None, "", "")
+    result = {"conn_name": nmcli.conn_name, "state": nmcli.state}
 
     # check for issues
     if nmcli.conn_name is None:
         nmcli.module.fail_json(msg="Please specify a name for the connection")
     # team-slave checks
-    if nmcli.type == 'team-slave' and nmcli.master is None:
+    if nmcli.type == "team-slave" and nmcli.master is None:
         nmcli.module.fail_json(msg="Please specify a name for the master")
-    if nmcli.type == 'team-slave' and nmcli.ifname is None:
-        nmcli.module.fail_json(msg="Please specify an interface name for the connection")
+    if nmcli.type == "team-slave" and nmcli.ifname is None:
+        nmcli.module.fail_json(
+            msg="Please specify an interface name for the connection"
+        )
 
-    if nmcli.state == 'absent':
+    if nmcli.state == "absent":
         if nmcli.connection_exists():
             if module.check_mode:
                 module.exit_json(changed=True)
             (rc, out, err) = nmcli.down_connection()
             (rc, out, err) = nmcli.remove_connection()
             if rc != 0:
-                module.fail_json(name=('No Connection named %s exists' % nmcli.conn_name), msg=err, rc=rc)
+                module.fail_json(
+                    name=("No Connection named %s exists" % nmcli.conn_name),
+                    msg=err,
+                    rc=rc,
+                )
 
-    elif nmcli.state == 'present':
+    elif nmcli.state == "present":
         if nmcli.connection_exists():
             # modify connection (note: this function is check mode aware)
             # result['Connection']=('Connection %s of Type %s is not being added' % (nmcli.conn_name, nmcli.type))
-            result['Exists'] = 'Connections do exist so we are modifying them'
+            result["Exists"] = "Connections do exist so we are modifying them"
             if module.check_mode:
                 module.exit_json(changed=True)
             (rc, out, err) = nmcli.modify_connection()
         if not nmcli.connection_exists():
-            result['Connection'] = ('Connection %s of Type %s is being added' % (nmcli.conn_name, nmcli.type))
+            result["Connection"] = "Connection %s of Type %s is being added" % (
+                nmcli.conn_name,
+                nmcli.type,
+            )
             if module.check_mode:
                 module.exit_json(changed=True)
             (rc, out, err) = nmcli.create_connection()
@@ -1475,16 +1573,16 @@ def main():
             module.fail_json(name=nmcli.conn_name, msg=err, rc=rc)
 
     if rc is None:
-        result['changed'] = False
+        result["changed"] = False
     else:
-        result['changed'] = True
+        result["changed"] = True
     if out:
-        result['stdout'] = out
+        result["stdout"] = out
     if err:
-        result['stderr'] = err
+        result["stderr"] = err
 
     module.exit_json(**result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
