@@ -23,9 +23,7 @@ filters:
     labels:
       - kind/installer
 
-  "^features":
+  "^features/.*":
     reviewers:
       - code-reviewers
       - cnf-reviewers
-    approvers:
-      - approvers
