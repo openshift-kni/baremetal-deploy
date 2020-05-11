@@ -3,13 +3,6 @@
 # 1. cache_enabled is true
 # 2. Either one or both bootstraposimage/clusterosimage variables are unset
 
-- name: Confirm whether or not internet connectivity on provisioner host
-  uri:
-    url: https://www.redhat.com
-    status_code: [-1,200]
-    timeout: 1
-  register: the_url
-  tags: cache
 
 #- name: Default url_passed to false
 #  set_fact:

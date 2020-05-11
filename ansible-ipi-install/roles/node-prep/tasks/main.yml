@@ -3,6 +3,7 @@
   tags:
   - validation
   - create_registry
+  - cache
 
 - include_tasks: 15_validation_disconnected_registry.yml
   when:
