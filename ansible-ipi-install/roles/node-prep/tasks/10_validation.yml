@@ -1,10 +1,8 @@
 ---
 - name: Check ansible version
-  assert:
-    that:
-      - "ansible_version.full is version('2.9.0', '>=')"
-    msg: >
-        Use Ansible version 2.9 or greater to run this playbook
+  fail:
+    msg: Use Ansible version 2.9 or greater to run this playbook
+  when: ansible_version.full is version('2.9.0', '<')
   delegate_to: localhost
   tags:
   - always
