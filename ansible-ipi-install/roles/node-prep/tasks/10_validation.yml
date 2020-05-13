@@ -20,6 +20,7 @@
   - always
   - validation
 
+
 - name: Fail if Python modules are missing
   fail:
     msg: |
@@ -180,6 +181,7 @@
     - groups['registry_host']|length
   tags:
   - validation
+  - create_registry
 
 - name: Check if disconnected_registry_auths_file is set
   set_fact:
@@ -190,6 +192,7 @@
     - disconnected_registry_auths_file | trim != ''
   tags:
   - validation
+  - create_registry
 
 - name: Check if disconnected_registry_mirrors_file is set
   set_fact:
@@ -200,6 +203,7 @@
     - disconnected_registry_mirrors_file | trim != ''
   tags:
   - validation
+  - create_registry
 
 - name: Fail when provision host no online access and registry host not creating registry (can't assume access)
   fail:
@@ -215,6 +219,34 @@
     - dra_set
     - drm_set
     - webserver_url|length == 0
+
+- block:
+  - name: Check if Python cryptography libraries are installed
+    python_requirements_info:
+      dependencies:
+      - cryptography>=1.2.3
+    delegate_to: localhost
+    register: _py_crypto
+
+  - name: Check if Python PyOpenSSL libraries are installed
+    python_requirements_info:
+      dependencies:
+      - PyOpenSSL>=0.6
+    delegate_to: localhost
+    register: _py_pyopenssl
+
+  - name: "Fail on missing required cryptography libraries cryptography OR PyOpenSSL"
+    fail:
+      msg: "Required cryptography libraries are missing cryptography OR PyOpenSSL"
+    when: (_py_crypto.not_found != []) and
+          (_py_pyopenssl.not_found != [] )
+  tags:
+  - create_registry
+  - validation
+  when:
+    - not dra_set
+    - not drm_set
+    - registry_host_exists
 
 - name: Get Release.txt File
   uri:
