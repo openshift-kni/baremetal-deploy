@@ -8,14 +8,14 @@
 #  set_fact:
 #    url_passed: false
 #  when:
-#    - the_url.status == -1
+#    - check_url.status == -1
 #  tags: cache
 
 - name: Check if url status is 200 is true
   set_fact:
    url_passed : true
   when:
-    - the_url.status == 200
+    - check_url.status == 200
   tags: cache
 
 - name: Get URL of host providing the webserver
@@ -43,12 +43,12 @@
 
 #if i made it this far to create a webserver, one of the hosts needs online access
 #if disconnected_installer is true use the registry host as it indeed does have access
-#if not true use the provision host but only do that when: the_url.status == 200
+#if not true use the provision host but only do that when: check_url.status == 200
 - name: Fail when provision host no online access and registry host not creating registry (can't assume access)
   fail:
     msg: A host with online access is required to create cache webserver (provision host or a registry host)
   when:
-    - the_url.status == -1
+    - check_url.status == -1
     - disconnected_installer|length == 0
   tags: cache
 
@@ -105,7 +105,7 @@
   #
 - name: Get URL of host providing the webserver
   set_fact:
-    host_url: "{{ the_url.status == 200 | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
+    host_url: "{{ check_url.status == 200 | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
   tags: cache
 
 - name: Set bootstrap image URL override if not provided by the user

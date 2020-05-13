@@ -127,14 +127,6 @@
   - always
   - validation
 
-- name: Confirm whether or not internet connectivity on provisioner host
-  uri:
-    url: https://www.redhat.com
-    status_code: [-1,200]
-    timeout: 1
-  register: the_url
-  tags: cache
-
 - name: Set release_url for development envs
   set_fact:
     release_url: "{{ (webserver_url|length) | ternary(webserver_url, 'https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview') }}"
@@ -159,6 +151,8 @@
   register: check_url
   tags:
   - validation
+  - cache
+  - extract
 
 - name: Set fact disconnected_registry_auths_file
   set_fact:

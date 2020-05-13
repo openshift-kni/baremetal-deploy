@@ -62,15 +62,6 @@
   tags:
   - extract
 
-- name: Confirm whether or not internet connectivity on provisioner host
-  uri:
-    url: https://www.redhat.com
-    status_code: [-1,200]
-    timeout: 1
-  register: the_url
-  tags:
-  - extract
-
 - name: Setting Fact of which ansible temp file to use
   set_fact:
     tempdir_loc: "{{ disconnected_installer | ternary(registry_host_tempdir, tempdir) }}"
@@ -84,7 +75,7 @@
   args:
     chdir: "{{ tempdir }}"
     executable: /bin/bash
-  when: (disconnected_installer|length or the_url.status == 200)
+  when: (disconnected_installer|length or check_url.status == 200)
   delegate_to: "{{ disconnected_installer | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
   tags: extract
 
@@ -111,7 +102,7 @@
   get_url:
     url: "{{ webserver_url }}/{{ version }}/openshift-baremetal-install"
     dest: "{{ tempdir }}/openshift-baremetal-install"
-  when: (the_url.status == -1 and disconnected_installer|length == 0)
+  when: (check_url.status == -1 and disconnected_installer|length == 0)
   tags:
   - extract
 

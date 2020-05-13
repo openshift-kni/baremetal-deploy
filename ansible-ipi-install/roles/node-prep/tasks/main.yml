@@ -4,6 +4,7 @@
   - validation
   - create_registry
   - cache
+  - extract
 
 - include_tasks: 15_validation_disconnected_registry.yml
   when:

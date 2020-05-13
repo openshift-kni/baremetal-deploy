@@ -18,7 +18,7 @@
 
 - name: Get RHCOS JSON File
   uri:
-    url: "{{ (disconnected_installer|length == 0 and the_url.status == -1) | ternary(offline_url, online_url) }}"
+    url: "{{ (disconnected_installer|length == 0 and check_url.status == -1) | ternary(offline_url, online_url) }}"
     return_content: yes
   register: rhcos_json
   delegate_to: "{{ disconnected_installer | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
