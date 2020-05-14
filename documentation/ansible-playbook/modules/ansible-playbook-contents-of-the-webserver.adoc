@@ -1,7 +1,7 @@
 [id="ansible-playbook-contents-of-the-webserver"]
 
 = Contents of the Webserver
-
+//FIXME This link doesn't exist yet, bc piece is not a module
 When following the details on how to create a https://openshift-kni.github.io/baremetal-deploy/4.4/#ipi-install-creating-an%20rhcos-images-cache_ipi-install-prerequisites[webserver], if one not already in place, there is still additional content required for
 a fully disconnected environment to be successfully deployed with the Ansible playbook.
 
@@ -9,11 +9,54 @@ The Ansible playbook requires the end user to additionally include the following
 to there already existing webserver.
 
 The example provided below showcases how a user adds the required prerequisites
-to to the webserver in order install the latest
+to the webserver in order install the latest
 {product-title} version {release}.
 
-.Procedure
+.Automatic Procedure
+. Change to the webserver directory that is to store your OpenShift related binaries
++
+[source,bash]
+----
+[user@webserver ~]$ cd /path/to/webserver/dir
+----
++
+. Create a local copy of <<env_vars, environment variables script>> and make the script executable.
++
+[source,bash]
+----
+[user@webserver ~]$ chmod +x /path/to/webserver/dir/env_vars.sh
+----
++
+. Create a local copy of <<helper_script, helper script>> that downloads all the prerequisites to the webserver
++
+[source,bash]
+----
+[user@webserver ~]$ chmod +x /path/to/webserver/dir/helper_script.sh
+----
++
+. Open the the `env_vars.sh` script and fill out the appopriate environment variable values
++ 
+. Run the `helper_script.sh` script 
++
+[source,bash]
+----
+[user@webserver ~]$ /path/to/webserver/dir/helper_script.sh
+----
++
+[NOTE]
+====
+Using the `helper_script.sh` has some caveats. Extracting the
+`openshift-baremetal-install` binary does not pull from a local registry when
+given a local registry, https://bugzilla.redhat.com/show_bug.cgi?id=1823143[BZ#1823143]
+Due to this, in order to properly extract the installer, the OpenShift disconnected
+mirrored registry that is to be used must be available and have access to quay.io
+temporary to properly extract the binary.
+====
 
+NOTE: The following manual procedure can be skipped if used the <<helper_script, helper script>>.
+
+.Manual Procedure
+//FIXME This link doesn't exist bc ocp4.5 isn't GA, should we just point to 4.4 as an example? Do we want to provide the dev link too?
 . Download the {product-title} version {release} latest https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-{release}/release.txt[release.txt] file
 +
 [source,bash]
@@ -28,7 +71,7 @@ to to the webserver in order install the latest
 +
 [source,bash]
 ----
-export VERSION=`cat release.txt | grep Name | awk {'print $2'}`
+export OCP_RELEASE=`cat release.txt | grep Name | awk {'print $2'}`
 [user@webserver ~]$ mkdir $OCP_RELEASE
 ----
 +
@@ -45,7 +88,7 @@ export VERSION=`cat release.txt | grep Name | awk {'print $2'}`
 +
 [source,bash]
 ----
-[user@webserver ~]$ wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-{release}/openshift-client-linux-$OCP_RELEASE.tar.gz | tar zxvf - oc
+[user@webserver ~]$ wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$OCP_RELEASE/openshift-client-linux-$OCP_RELEASE.tar.gz | tar zxvf - oc
 ----
 +
 
@@ -72,7 +115,18 @@ temporary to properly extract the binary. The following step assumes this.
 ----
 +
 
-. The RHCOS.json file is required for the disconnected installs as it contains
+. Ensure the `openshift-baremetal-install` binary points to the appopriate release image (i.e. `registry.example.com` )
++
+[source,bash]
+----
+[user@webserver ~]$ ./openshift-baremetal-install version
+openshift-baremetal-install 4.4.3
+built from commit 78b817ceb7657f81176bbe182cc6efc73004c841
+release image registry.example.com:5000/ocp4/openshift4@sha256:e805d6a36762e22ecf66fd3f3642e609a00ed25ab44f89f064b5138cf3f0f554
+----
++
+
+. The `rhcos.json` file is required for the disconnected installs as it contains
 the appropriate image name and SHA hash
 +
 NOTE: This assumes the `openshift-baremetal-install` has been extracted
@@ -85,12 +139,12 @@ NOTE: This assumes the `openshift-baremetal-install` has been extracted
 ----
 +
 
-. Clean up the `oc` binary extraction as no longer required
+. Clean up the `oc` and `kubelet` binary extraction as no longer required
 +
 
 [source,bash]
 ----
-[user@webserver ~]$ rm -f /path/to/$OCP_RELEASE/oc
+[user@webserver ~]$ rm -f /path/to/$OCP_RELEASE/oc /path/to/$OCP_RELEASE/kubelet
 ----
 
 . Confirm all four files have been captured within your $OCP_RELEASE directory

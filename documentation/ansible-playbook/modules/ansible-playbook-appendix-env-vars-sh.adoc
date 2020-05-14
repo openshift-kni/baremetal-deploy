@@ -1,0 +1,23 @@
+[id="ansible-playbook-appendix-env-vars-sh"]
+
+[[env_vars]]
+[appendix]
+== Environment Variable Script
+
+[source,bash]
+----
+#!/bin/bash
+
+#Enter 'dev' for development or 'ga' for Generally Available version of OCP
+export release=''
+
+#Provide build version, i.e. 4.3.18, 4.4.4, nightly build: 4.3.0-0.nightly-2019-10-29-073252
+export build_version='<desired-build-version>'
+
+export LOCAL_REPOSITORY='ocp4'
+export LOCAL_REGISTRY='registry.example.com:5000'
+export OCP_RELEASE='4.4.3'
+export LOCAL_PULL_SECRET='<Path-to-your-pull-secret.txt'                
+export cmd=openshift-baremetal-install
+----
+

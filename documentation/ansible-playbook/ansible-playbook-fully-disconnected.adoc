@@ -28,7 +28,8 @@ include::modules/ansible-playbook-prerequisites.adoc[leveloffset=+1]
 include::modules/ansible-playbook-using-an-existing-registry.adoc[leveloffset=+1]
 include::modules/ansible-playbook-contents-of-the-webserver.adoc[leveloffset=+1]
 include::modules/ansible-playbook-checklist.adoc[leveloffset=+1]
-include::modules/ansible-playbook-modifying-the-inventoryhosts-file-for-fully-disconnected-deployments.adoc[leveloffset=+1]
-
-//TODO
-//Add Run playbook.yml from main playbook README.md once that becomes a module
+include::modules/ansible-playbook-running-the-playbook.adoc[leveloffset=+1]
+include::modules/ansible-playbook-appendix-creating-local-repository.adoc[]
+include::modules/ansible-playbook-appendix-python3-crypto-pyghmi.adoc[]
+include::modules/ansible-playbook-appendix-env-vars-sh.adoc[]
+include::modules/ansible-playbook-appendix-helper-script-sh.adoc[]

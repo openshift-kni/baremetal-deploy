@@ -1,0 +1,35 @@
+[id="ansible-playbook-appendix-appendix-python3-crypto-pyghmi"] 
+
+[[packages]]
+[appendix]
+== Installing `python3-crypto` and `python3-pyghmi`
+
+The Ansible playbook uses the https://docs.ansible.com/ansible/latest/modules/ipmi_power_module.html[`ipmi_power`]
+module to power off the OpenShift cluster nodes prior to deployment. This 
+particular module has a dependency for two packages: 
+`python3-crypto` and `python3-pyghmi`. When using Red Hat Enterprise Linux 8, 
+these packages do not reside in BaseOS nor AppStream repositories. If using 
+`subscription-manager`, they reside in the OpenStack repositories such as
+`openstack-16-for-rhel-8-x86_64-rpms`, however, to simplify the installation
+of these packages, the playbook uses the available versions from 
+`trunk.rdoproject.org`.
+
+The playbook assumes that the rpm packages are manually installed on 
+provision host.  
+
+When the provision host packages are
+not already installed on the system, the following error can be expected
+
+```sh
+TASK [node-prep : Install required packages] ************************************************************************************************
+Thursday 07 May 2020  19:11:35 +0000 (0:00:00.161)       0:00:11.940 ********** 
+fatal: [provisioner.example.com]: FAILED! => {"changed": false, "failures": ["No package python3-crypto available.", "No package python3-pyghmi available."], "msg": "Failed to install some of the specified packages", "rc": 1, "results": []}
+```
+---
+
+The `python3-crypto` and `python3-pyghmi` can be downloaded from the following
+links for install on an offline provision host and transferred locally for local install of the rpms. 
+
+- https://trunk.rdoproject.org/rhel8-master/deps/latest/Packages/python3-crypto-2.6.1-18.el8ost.x86_64.rpm[python3-crypto]
+- https://trunk.rdoproject.org/rhel8-master/deps/latest/Packages/python3-pyghmi-1.0.22-2.el8ost.noarch.rpm[python3-pyghmi]
+
