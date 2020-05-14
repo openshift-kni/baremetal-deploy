@@ -21,6 +21,19 @@
     dest: "{{ badfish_tempdir.path }}"
     force: yes
 
+- name: Set badfish venv
+  set_fact:
+    badfish_venv: "{{ badfish_tempdir.path}}/.venv"
+
+- name: Create badfish venv
+  command: python3 -m venv {{ badfish_venv }} creates={{ badfish_venv }}
+
+- name: Install badfish requirements
+  pip:
+    requirements: "{{ badfish_tempdir.path}}/requirements.txt"
+    virtualenv_command: /usr/bin/python3 -m venv
+    virtualenv: "{{ badfish_venv }}"
+
 - name: Clean network interfaces created by lab automation
   shell: |
     /root/clean-interfaces.sh --nuke
@@ -122,8 +135,9 @@
 
 - name: Clear redfish job queues
   shell:
-    chdir: "{{ badfish_tempdir.path }}"
+    chdir: "{{ badfish_tempdir.path }}/src/badfish"
     cmd: |
+      source {{ badfish_venv }}/bin/activate
       {{ badfish_cmd }}{{ item }} --clear-jobs --force
   with_items:
     - "{{ master_fqdns }}"
@@ -137,8 +151,9 @@
 
 - name: Set nodes to director boot order
   shell:
-    chdir: "{{ badfish_tempdir.path }}"
+    chdir: "{{ badfish_tempdir.path }}/src/badfish"
     cmd: |
+      source {{ badfish_venv }}/bin/activate
       {{ badfish_cmd }}{{ item }} -t director
   with_items:
     - "{{ master_fqdns }}"
