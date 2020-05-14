@@ -1,6 +1,6 @@
-[id="ansible-playbook-running-the-playbook"]
+[id="ansible-playbook-running-the-ansible-playbook"]
 
-= Running the `playbook.yml`
+= Running the Ansible Playbook
 
 The following are the steps to successfully run the Ansible playbook.
 
@@ -8,8 +8,14 @@ include::ansible-playbook-git-clone.adoc[leveloffset=+1]
 include::ansible-playbook-ansiblecfg-file.adoc[leveloffset=+1]
 include::ansible-playbook-ansible-version.adoc[leveloffset=+1]
 include::ansible-playbook-ssh-key.adoc[leveloffset=+1]
-include::ansible-playbook-modifying-the-inventoryhosts-file-for-fully-disconnected-deployments.adoc[leveloffset=+1]
+include::ansible-playbook-modifying-the-inventoryhosts-file.adoc[leveloffset=+1]
 include::ansible-playbook-the-ansible-playbook.adoc[leveloffset=+1]
+include::ansible-playbook-customizing-the-node-filesystems.adoc[leveloffset=+1]
+include::ansible-playbook-adding-extra-configurations-to-the-openshift-installer.adoc[leveloffset=+1]
+include::ansible-playbook-precaching-rhcos-images.adoc[leveloffset=+1]
+include::ansible-playbook-disconnected-registry.adoc[leveloffset=+1]
+
+== Running the `playbook.yml`
 
 With the `playbook.yml` set and in-place, run the `playbook.yml`
 

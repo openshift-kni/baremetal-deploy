@@ -1,0 +1,6 @@
+[id="ansible-playbook-gotchas"]
+
+= Gotchas
+
+include::ansible-playbook-using-become-yes-within-ansiblecfg-or-inside-playbookyml.adoc[leveloffset=+1]
+include::ansible-playbook-failed-to-install-python3-crypto-python3-pyghmi.adoc[leveloffset=+1]

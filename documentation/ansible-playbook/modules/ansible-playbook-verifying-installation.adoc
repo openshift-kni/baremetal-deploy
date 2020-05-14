@@ -1,0 +1,36 @@
+[id="ansible-playbook-verifying-installation"]
+
+= Verifying Installation
+
+Once the playbook has successfully completed, verify that your 
+environment is up and running.
+
+. Log into the provision node
++
+[source,bash]
+----
+ssh kni@provisioner.example.com
+----
++
+NOTE: `kni` user is my privileged user.
++
+. Export the `kubeconfig` file located in the `~/clusterconfigs/auth` directory
++
+[source,bash]
+----
+export KUBECONFIG=~/clusterconfigs/auth/kubeconfig
+----
++
+. Verify the nodes in the OpenShift cluster
++
+[source,bash]
+----
+[kni@worker-0 ~]$ oc get nodes
+NAME                                         STATUS   ROLES           AGE   VERSION
+master-0.openshift.example.com               Ready    master          19h   v1.16.2
+master-1.openshift.example.com               Ready    master          19h   v1.16.2
+master-2.openshift.example.com               Ready    master          19h   v1.16.2
+worker-0.openshift.example.com               Ready    worker          19h   v1.16.2
+worker-1.openshift.example.com               Ready    worker          19h   v1.16.2
+----
+

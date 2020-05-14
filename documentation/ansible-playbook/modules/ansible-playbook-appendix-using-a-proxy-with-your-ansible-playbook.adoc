@@ -1,0 +1,27 @@
+[id="ansible-playbook-appendix-using-a-proxy-with-your-ansible-playbook"]
+
+[appendix]
+= Using a proxy with your Ansible playbook
+
+When running behind a proxy, it is important to properly set the environment
+to handle such scenario such that you can run the Ansible playbook. In order
+to use a proxy for the ansible playbook set the appropriate variables within
+your `inventory/hosts` file. These values will also be included within your
+generated `install-config.yaml` file.
+
+[source,bash]
+----
+# (Optional) Provide HTTP proxy settings
+#http_proxy=http://USERNAME:PASSWORD@proxy.example.com:8080
+
+# (Optional) Provide HTTPS proxy settings
+#https_proxy=https://USERNAME:PASSWORD@proxy.example.com:8080
+
+# (Optional) comma-separated list of hosts, IP Addresses, or IP ranges in CIDR format
+# excluded from proxying
+# NOTE: OpenShift does not accept '*' as a wildcard attached to a domain suffix
+# i.e. *.example.com
+# Use '.' as the wildcard for a domain suffix as shown in the example below.
+# i.e. .example.com
+#no_proxy_list="172.22.0.0/24,.example.com"
+----

@@ -2,7 +2,7 @@
 
 = Contents of the Webserver
 //FIXME This link doesn't exist yet, bc piece is not a module
-When following the details on how to create a https://openshift-kni.github.io/baremetal-deploy/4.4/#ipi-install-creating-an%20rhcos-images-cache_ipi-install-prerequisites[webserver], if one not already in place, there is still additional content required for
+When following the details on how to create a link:../../{release}/Deployment#ipi-install-creating-an%20rhcos-images-cache_ipi-install-prerequisites[webserver], if one not already in place, there is still additional content required for
 a fully disconnected environment to be successfully deployed with the Ansible playbook.
 
 The Ansible playbook requires the end user to additionally include the following
@@ -66,7 +66,13 @@ NOTE: The following manual procedure can be skipped if used the <<helper_script,
 [user@webserver ~]$ wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-{release}/release.txt
 ----
 +
-
+[NOTE]
+====
+When working with a development version of {product-tile}, use the following link for the
+development version of the 
+https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest-{release}/release.txt[release.txt]
+====
++
 . Create a directory with the explict release version of the captured release.txt file
 +
 [source,bash]

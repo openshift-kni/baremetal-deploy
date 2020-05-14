@@ -1,0 +1,48 @@
+[id="ansible-playbook-customizing-the-node-filesystems"]
+
+= Customizing the Node Filesystems
+
+If you need to modify files on the node filesystems, you can augment 
+the "fake" roots for the masters and workers under the 
+`roles/installer/files/customize_filesystem/{master,worker}` 
+directories. Any files added here will be included in the ignition 
+config files for each of the machine types, leading to permanent 
+changes to the node filesystem.
+
+[NOTE]
+====
+Do not place any files directly in the "fake" root -- only in 
+subdirectories. Files in the root will cause the ignition process to 
+fail. (There is a task in the playbook to cleanup the `.gitkeep` file 
+in the root, if it is left in place.)
+====
+
+This will utilize the Ignition
+https://github.com/ashcrow/filetranspiler/blob/master/filetranspile[`filetranspiler` tool], 
+which you can read about for more information on how to use the "fake" 
+root directories.
+
+An example of using this customization is to disable a network 
+interface that you need to not receive a DHCP assignment that is 
+outside of the cluster configuration. To do this for the `eno1` 
+interface on the master nodes, create the appropriate 
+`etc/sysconfig/network-scripts/ifcfg-eno1` file in the "fake" root:
+
+[source,bash]
+----
+IFCFG_DIR="roles/installer/files/customize_filesystem/master/etc/sysconfig/network-scripts"
+IFNAME="eno1"
+mkdir -p $IFCFG_DIR
+cat << EOF > $IFCFG_DIR/ifcfg-${IFNAME}
+DEVICE=${IFNAME}
+BOOTPROTO=none
+ONBOOT=no
+EOF
+----
+
+[NOTE]
+====
+By default these directories are empty, and the `worker` subdirectory 
+is a symbolic link to the `master` subdirectory so that changes are 
+universal.
+====
