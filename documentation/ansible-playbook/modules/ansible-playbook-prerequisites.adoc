@@ -2,16 +2,16 @@
 
 = Prerequisites
 
-* Best Practice Minimum Setup: 7 Physical servers (1 provision node, 1 registry node, 3 master and 2 worker nodes)
-* Minimum Setup: 5 Physical servers (1 provision node, 1 registry nodefootnote:[If creating the mirrored registry, this system will require online access.], 3 master nodes)
-* Each server needs 2 NICs pre-configured. NIC1 for the private network and NIC2 for the baremetal network. NIC interface names must be identical across all nodes. See https://github.com/openshift/installer/issues/2762[issue]
+* Best Practice Minimum Setup: 7 Physical servers (1 provision node, 1 registry nodefootnote:registry[If creating the mirrored registry, this system will require online access.], 3 master and 2 worker nodes)
+* Minimum Setup: 5 Physical servers (1 provision node, 1 registry nodefootnote:registry[], 3 master nodes)
+* Each server needs 2 NICs pre-configured. NIC1 for the private network and NIC2 for the baremetal network. NIC interface names must be identical across all nodesfootnote:issue[https://github.com/openshift/installer/issues/2762]
 * It is recommended each server have a RAID-1 configured and initialized (though not enforced)
 * Each server must have IPMI configured
 * Each server must have DHCP setup for the baremetal NICs
 * Each server must have DNS setup for the API, wildcard applications
 * A DNS VIP is IP on the `baremetal` network is required for reservation. Reservation is done via our DHCP server (though not required).
 * Optional - Include DNS entries for the hostnames for each of the servers
-* Download a copy of your [Pull secret](https://cloud.redhat.com/openshift/install/metal/user-provisioned)
+* Download a copy of your https://cloud.redhat.com/openshift/install/metal/user-provisioned[Pull Secret]
 
 Due to the complexities of properly configuring an environment, it is
 recommended to review the following steps prior to running the Ansible
@@ -19,31 +19,36 @@ playbook as without proper setup, the Ansible playbook won't work.
 
 The section to review and ensure proper configuration are as follows:
 
-* https://openshift-kni.github.io/baremetal-deploy/4.4/#validation-checklist-for-nodesipi-install-prerequisites[Validation checklist for nodes]
+* https://openshift-kni.github.io/baremetal-deploy/4.4/Deployment.html#validation-checklist-for-nodesipi-install-prerequisites[Validation checklist for nodes]
 
 * One of the Create DNS records sections
-** https://openshift-kni.github.io/baremetal-deploy/4.4//#creating-dns-records-on-a-dns-server-option1_ipi-install-prerequisites[Create DNS records on a DNS server (Option 1)]
-** https://openshift-kni.github.io/baremetal-deploy/4.4//#creating-dns-records-using-dnsmasq-option2_ipi-install-prerequisites[Create DNS records using dnsmasq (Option 2)]
+** https://openshift-kni.github.io/baremetal-deploy/4.4/Deployment.html#creating-dns-records-on-a-dns-server-option1_ipi-install-prerequisites[Create DNS records on a DNS server (Option 1)]
+** https://openshift-kni.github.io/baremetal-deploy/4.4/Deployment.html#creating-dns-records-using-dnsmasq-option2_ipi-install-prerequisites[Create DNS records using dnsmasq (Option 2)]
 * One of the Create DHCP reservation sections
-** https://openshift-kni.github.io/baremetal-deploy/4.4//#creating-dhcp-reservations-option1_ipi-install-prerequisites[Create DHCP reservations (Option 1)]
-** https://openshift-kni.github.io/baremetal-deploy/4.4//#creating-dhcp-reservations-using-dnsmasq-option2_ipi-install-prerequisites[Create DHCP reservations using dnsmasq (Option 2)]
+** https://openshift-kni.github.io/baremetal-deploy/4.4/Deployment.html#creating-dhcp-reservations-option1_ipi-install-prerequisites[Create DHCP reservations (Option 1)]
+** https://openshift-kni.github.io/baremetal-deploy/4.4/Deployment.html#creating-dhcp-reservations-using-dnsmasq-option2_ipi-install-prerequisites[Create DHCP reservations using dnsmasq (Option 2)]
 * An existing Registry node (details on creating a registry if required below)
-** https://openshift-kni.github.io/baremetal-deploy/4.4//#ipi-install-creating-a-disconnected-registry_ipi-install-prerequisites[Create a disconnected registry]
+** https://openshift-kni.github.io/baremetal-deploy/4.4/Deployment.html#ipi-install-creating-a-disconnected-registry_ipi-install-prerequisites[Create a disconnected registry]
 * An existing webserver to cache required files and the RHCOS images (details on creating a webserver if required below)
-** https://openshift-kni.github.io/baremetal-deploy/4.4//#ipi-install-creating-an%20rhcos-images-cache_ipi-install-prerequisites[Webserver]
+** https://openshift-kni.github.io/baremetal-deploy/4.4/Deployment.html#ipi-install-creating-an%20rhcos-images-cache_ipi-install-prerequisites[Webserver]
 
-Once the above is complete, the final step is to install Red Hat Enterprise Linux (RHEL) 8.x on your provision node and create a user (i.e. `kni`) to deploy as non-root and provide that user `sudo` privileges.
+Once the above is complete, install Red Hat Enterprise Linux (RHEL) 8.x on your provision node and create a user (i.e. `kni`) to deploy as non-root and provide that user `sudo` privileges.
 
 
 For simplicity, the steps to create the user named `kni` is as follows:
 
 . Login into the provision node via `ssh`
-. Create a user (i.e `kni`) to deploy as non-root and provide that user `sudo` privileges
 
-   [source,sh]
-   ----
-   useradd kni
-   passwd kni
-   echo "kni ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/kni
-   chmod 0440 /etc/sudoers.d/kni
-   ---
+. Create a user (i.e `kni`) to deploy as non-root and provide that user `sudo` privileges
++
+[source,sh]
+----
+useradd kni
+passwd kni
+echo "kni ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/kni
+chmod 0440 /etc/sudoers.d/kni
+----
++
+. Enable a `dnf` <<local_repository,local repository>> on the provision host
+
+. Manually install <<packages,`python3-crypto` and `python3-pyghmi`>> packages on the provision host

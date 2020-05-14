@@ -1,0 +1,75 @@
+[id="ansible-playbook-appendix-helper-script-sh"]
+
+[[helper_script]]
+[appendix]
+== Helper Script
+
+[source,bash]
+----
+#!/bin/bash
+
+echo "***This script downloads the files needed for Ansible Automation****"
+echo "***Downloads
+      1. Release.txt
+      2. `openshift-client-linux-$build_version.tar.gz`
+      3. openshift-baremetal-install binary
+      4. rhcos.json****"
+
+. ./source_env_vars.sh
+
+code=$(curl -sL -w "%{http_code}\\n" "https://mirror.openshift.com/pub/" -o /dev/null)
+if [[ $code != 200 ]]; then
+    echo "Did not receive a successful 200 code, exiting..."
+    exit
+fi
+
+if [ $release == 'dev' ]
+then
+  export release_version='ocp-dev-preview'
+elif [ $release == 'ga' ]
+then
+   export release_version='ocp'
+else
+   echo Provide either dev or ga as a value for release.
+fi
+
+rm -f release.txt rhcos.json oc kubelet openshift-client-linux-$build_version.tar.gz
+
+echo "****Below are the values that has been set****"
+echo Local Repo = $LOCAL_REPOSITORY
+echo Local Registry = $LOCAL_REGISTRY
+echo Release = $OCP_RELEASE
+echo Pull-Secret File = $LOCAL_PULL_SECRET
+echo Build Version = $build_version
+
+GREEN='\033[0;32m' 
+NC='\033[0m'
+echo -e "**** Download the release.txt for ${GREEN}$build_version${NC}*******"
+wget https://mirror.openshift.com/pub/openshift-v4/clients/$release_version/$build_version/release.txt
+
+echo "****Download the openshift-client-linux-$build_version.tar.gz for the $build_version*********"
+wget https://mirror.openshift.com/pub/openshift-v4/clients/$release_version/$build_version/openshift-client-linux-$build_version.tar.gz
+tar -xvzf openshift-client-linux-$build_version.tar.gz
+
+echo "******Download the 'openshift-baremetal-install' binary for the $build_version and extract it*******"
+
+web_url=$(curl -sL -w "%{http_code}\\n" "http://ipv6-jump.cloud.lab.eng.bos.redhat.com/$RHCOS_QEMU_URI" -o /dev/null)
+if [[ $web_url != 200 ]]; then
+    echo "Did not receive a successful 200 code, exiting..."
+    echo "****Extracting the installer currently has some caveats. Extracting the openshift-baremetal-install binary does not pull from a local registry when given a local registry, BZ#1823143 Due to this, in order to properly extract the installer, the OpenShift disconnected mirrored registry that is to be used must be available and have access to quay.io temporary to properly extract the binary. The following step assumes this.*****"
+    exit    # other actions
+fi
+
+oc adm release extract --registry-config "${LOCAL_PULL_SECRET}" --command="${cmd}" --to `pwd` ${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}
+
+
+echo "******Download the rhcos.json file for the $build_version*******"
+export COMMIT_ID=$(./openshift-baremetal-install version | grep '^built from commit' | awk '{print $4}')
+curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json > rhcos.json
+
+ls -ltr release.txt rhcos.json openshift-baremetal-install openshift-client-linux-$build_version.tar.gz 
+
+echo "****Confirm the version*****"
+
+./openshift-baremetal-install version
+----
