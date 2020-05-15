@@ -1,0 +1,12 @@
+[id="ansible-playbook-disconnected-registry"]
+
+= Disconnected Registry
+
+A disconnected registry can be used to deploy the cluster. This 
+registry can exist or can be created.
+
+To use a disconnected registry, set the registries host name in the 
+`[registry_host]` group in the inventory file.
+
+include::ansible-playbook-creating-a-new-disconnected-registry.adoc[leveloffset=+1]
+include::ansible-playbook-using-an-existing-registry.adoc[leveloffset=+1]

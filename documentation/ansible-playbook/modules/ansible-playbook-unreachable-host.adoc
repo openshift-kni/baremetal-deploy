@@ -1,0 +1,59 @@
+[id="ansible-playbook-unreachable-host"]
+
+= Unreachable Host
+
+One of the most common errors is not being able to reach the 
+`provisioner` host and seeing an error similar to
+
+[source,bash]
+----
+$ ansible-playbook -i inventory/hosts playbook.yml
+
+PLAY [IPI on Baremetal Installation Playbook] **********************************
+
+TASK [Gathering Facts] *********************************************************
+fatal: [provisioner.example.com]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: ssh: Could not resolve hostname provisioner.example.com: Name or service not known", "unreachable": true}
+
+PLAY RECAP *********************************************************************
+provisioner.example.com    : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0
+----
+
+In order to solve this issue, ensure your `provisioner` hostname is 
+pingable.
+
+. The system you are currently on can `ping` the `provisioner.example.com`
++
+[source,bash]
+----
+ping provisioner.example.com
+----
++
+. Once pingable, ensure that you have copied your public SSH key from your local system to the privileged user via the `ssh-copy-id` command.
++
+[source,bash]
+----
+ssh-copy-id kni@provisioner.example.com
+----
++
+NOTE: When prompted, enter the password of your privileged user (i.e. `kni`).
++
+. Verify connectivity using the `ping` module in Ansible
++
+[source,bash]
+----
+ansible -i inventory/hosts provisioner -m ping
+provisioner.example.com | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+----
++
+. Re-run the Ansible playbook
++
+[source,bash]
+----
+$ ansible-playbook -i inventory/hosts playbook.yml
+----

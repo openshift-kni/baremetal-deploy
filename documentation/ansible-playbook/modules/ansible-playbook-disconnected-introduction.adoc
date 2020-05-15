@@ -1,0 +1,6 @@
+[id="ansible-playbook-disconnected-introduction"]
+
+= Introduction
+
+This write-up will guide you through the process of deploying a fully-disconnectedfootnote:[Fully disconnected infers that no system in the {product-title} has deployment access to the internet.] Baremetal IPI installation of {product-title} 4 via the Ansible
+playbook.

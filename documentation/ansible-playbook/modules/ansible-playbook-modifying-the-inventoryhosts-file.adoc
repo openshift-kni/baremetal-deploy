@@ -1,0 +1,203 @@
+[id="ansible-playbook-modifying-the-inventoryhosts-file"]
+
+= Modifying the `inventory/hosts`
+
+
+The hosts file provides all the definable variables and provides a 
+description of each variable. Some of the variables are explicitly left
+ empty and **require** user input for the playbook to run.
+
+The hosts file ensures all your nodes that will be used to deploy
+IPI on baremetal are setup. There are 4 groups: `masters`, `workers`, 
+`provisioner`, and `registry_host` (optional). The `masters` and 
+`workers` group collects information about the host such as its name, 
+role, user management (i.e. iDRAC) user, user management (i.e. iDRAC) 
+password, `ipmi_address`, `ipmi_port` to access the server and the 
+provision mac address (NIC1) that resides on the provisioning network.
+
+Below is a sample of the inventory/hosts file
+
+[source,ini]
+----
+[all:vars]
+
+###############################################################################
+# Required configuration variables for IPI on Baremetal Installations         #
+###############################################################################
+
+# The provisioning NIC (NIC1) used on all baremetal nodes
+prov_nic=eno1
+
+# The public NIC (NIC2) used on all baremetal nodes
+pub_nic=eno2
+
+# (Optional) Set the provisioning bridge name. Default value is 'provisioning'.
+#provisioning_bridge=provisioning
+
+# (Optional) Activation-key for proper setup of subscription-manager, empty value skips registration
+#activation_key=""
+
+# (Optional) Activation-key org_id for proper setup of subscription-manager, empty value skips registration
+#org_id=""
+
+# The directory used to store the cluster configuration files (install-config.yaml, pull-secret.txt, metal3-config.yaml)
+dir="{{ ansible_user_dir }}/clusterconfigs"
+
+# The version of the openshift-installer, undefined or empty results in the playbook failing with error message.
+# Values accepted: 'latest-4.3', 'latest-4.4', explicit version i.e. 4.3.0-0.nightly-2019-12-09-035405
+version=""
+
+# Enter whether the build should use 'dev' (nightly builds) or 'ga' for Generally Available version of OpenShift
+# Empty value results in playbook failing with error message.
+build=""
+
+# Provisioning IP address (default value)
+prov_ip=172.22.0.3
+
+# (Optional) Enable playbook to pre-download RHCOS images prior to cluster deployment and use them as a local
+# cache.  Default is false.
+#cache_enabled=True
+
+# (Optional) Enable IPv6 addressing instead of IPv4 addressing
+#ipv6_enabled=True
+
+# (Optional) When ipv6_enabled is set to True, but want IPv4 addressing on provisioning network
+# Default is false.
+#ipv4_provisioning=True
+
+# (Optional) When ipv6_enabled is set to True, but want IPv4 addressing on baremetal network
+#ipv4_baremetal=True
+
+# (Optional) A list of clock servers to be used in chrony by the masters and workers
+#clock_servers=["pool.ntp.org","clock.redhat.com"]
+
+# (Optional) Provide HTTP proxy settings
+#http_proxy=http://USERNAME:PASSWORD@proxy.example.com:8080
+
+# (Optional) Provide HTTPS proxy settings
+#https_proxy=https://USERNAME:PASSWORD@proxy.example.com:8080
+
+# (Optional) comma-separated list of hosts, IP Addresses, or IP ranges in CIDR format
+# excluded from proxying
+# NOTE: OpenShift does not accept '*' as a wildcard attached to a domain suffix
+# i.e. *.example.com
+# Use '.' as the wildcard for a domain suffix as shown in the example below.
+# i.e. .example.com
+#no_proxy_list="172.22.0.0/24,.example.com"
+
+# The default installer timeouts for the bootstrap and install processes may be too short for some baremetal
+# deployments. The variables below can be used to extend those timeouts.
+
+# (Optional) Increase bootstrap process timeout by N iterations.
+#increase_bootstrap_timeout=2
+
+# (Optional) Increase install process timeout by N iterations.
+#increase_install_timeout=2
+
+######################################
+# Vars regarding install-config.yaml #
+######################################
+
+# Base domain, i.e. example.com
+domain=""
+# Name of the cluster, i.e. openshift
+cluster=""
+# The public CIDR address, i.e. 10.1.1.0/21
+extcidrnet=""
+# An IP reserved on the baremetal network.
+dnsvip=""
+# An IP reserved on the baremetal network for the API endpoint.
+# (Optional) If not set, a DNS lookup verifies that api.<clustername>.<domain> provides an IP
+#apivip=""
+# An IP reserved on the baremetal network for the Ingress endpoint.
+# (Optional) If not set, a DNS lookup verifies that *.apps.<clustername>.<domain> provides an IP
+#ingressvip=""
+# The master hosts provisioning nic
+# (Optional) If not set, the prov_nic will be used
+#masters_prov_nic=""
+# Network Type (OpenShiftSDN or OVNKubernetes). Playbook defaults to OVNKubernetes.
+# Uncomment below for OpenShiftSDN
+#network_type="OpenShiftSDN"
+# (Optional) A URL to override the default operating system image for the bootstrap node.
+# The URL must contain a sha256 hash of the image.
+# See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
+#   Example https://mirror.example.com/images/qemu.qcow2.gz?sha256=a07bd...
+#bootstraposimage=""
+# (Optional) A URL to override the default operating system image for the cluster nodes.
+# The URL must contain a sha256 hash of the image.
+# See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
+# Example https://mirror.example.com/images/metal.qcow2.gz?sha256=3b5a8...
+#clusterosimage=""
+# A copy of your pullsecret from https://cloud.redhat.com/openshift/install/metal/user-provisioned
+pullsecret=""
+
+# Master nodes
+# The hardware_profile is used by the baremetal operator to match the hardware discovered on the host
+# See https://github.com/metal3-io/baremetal-operator/blob/master/docs/api.md#baremetalhost-status
+# ipmi_port is optional for each host. 623 is the common default used if omitted
+# poweroff is optional. True or ommited (by default) indicates the playbook will power off the node before deploying OCP
+#  otherwise set it to false
+[masters]
+master-0 name=master-0 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.1 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:58 hardware_profile=default poweroff=true
+master-1 name=master-1 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.2 ipmi_port=623 provision_mac=ec:f4:bb:da:32:88 hardware_profile=default poweroff=true
+master-2 name=master-2 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.3 ipmi_port=623 provision_mac=ec:f4:bb:da:0d:98 hardware_profile=default poweroff=true
+
+# Worker nodes
+[workers]
+worker-0 name=worker-0 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.4 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:18 hardware_profile=unknown poweroff=true
+worker-1 name=worker-1 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.5 ipmi_port=623 provision_mac=ec:f4:bb:da:32:28 hardware_profile=unknown poweroff=true
+
+# Provision Host
+[provisioner]
+provisioner.example.com
+
+# Registry Host
+#   Define a host here to create or use a local copy of the installation registry
+#   Used for disconnected installation
+# [registry_host]
+# registry.example.com
+
+# [registry_host:vars]
+# The following cert_* variables are needed to create the certificates
+#   when creating a disconnected registry. They are not needed to use
+#   an existing disconnected registry.
+# cert_country=US #it must be two letters country
+# cert_state=MyState
+# cert_locality=MyCity
+# cert_organization=MyCompany
+# cert_organizational_unit=MyDepartment
+
+# The port exposed on the disconnected registry host can be changed from
+# the default 5000 to something else by changing the following variable.
+# registry_port=5000
+
+# The directory the mirrored registry files are written to can be modified from teh default /opt/registry by changing the following variable.
+# registry_dir="/opt/registry"
+
+# The following two variables must be set to use an existing disconnected registry.
+#
+# Specify a file that contains extra auth tokens to include in the
+#   pull-secret if they are not already there.
+# disconnected_registry_auths_file=/path/to/registry-auths.json
+
+# Specify a file that contains the addition trust bundle and image
+#   content sources for the local registry. The contents of this file
+#   will be appended to the install-config.yml file.
+# disconnected_registry_mirrors_file=/path/to/install-config-appends.json
+----
+
+[NOTE]
+====
+The `ipmi_address` can take a fully qualified name assuming it is 
+resolvable.
+
+The `ipmi_port` examples above show how a user can specify a different 
+`ipmi_port` for each host within their inventory file. If the 
+`ipmi_port` variable is omitted from the inventory file, the default 
+of 623 will be used.
+
+//FIXME This link to use https://openshift-kni.github.io/baremetal-deploy/4.4/Deployment.html#ipi-install-configuration-files
+A detailed description of the `vars` under the section 
+`Vars regarding install-config.yaml` may be reviewed within 
+link:../../{release}/Deployment#ipi-install-configuration-files[Configuration Files] if unsure how to populate.
+====
