@@ -1,0 +1,12 @@
+[id="ansible-playbook-using-become-yes-within-ansiblecfg-or-inside-playbookyml"]
+
+= Using `become: yes` within `ansible.cfg` or inside `playbook.yml`
+
+This Ansible playbook takes advantage of the `ansible_user_dir` 
+variable. As such, it is important to note that if within your 
+`ansible.cfg` or within the `playbook.yml` file the privilege 
+escalation of `become: yes` is used, this will modify the home 
+directory to that of the root user (i.e. `/root`) instead of using the 
+home directory of your privileged user, `kni` with a home directory of 
+`/home/kni`
+

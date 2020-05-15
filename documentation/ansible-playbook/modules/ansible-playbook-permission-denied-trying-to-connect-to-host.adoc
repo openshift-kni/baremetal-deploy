@@ -1,0 +1,71 @@
+[id="ansible-playbook-permission-denied-trying-to-connect-to-host"]
+
+= Permission Denied Trying To Connect To Host
+
+Another very common error is getting a permission denied error similar 
+to:
+
+[source,bash]
+----
+$ ansible-playbook -i inventory/hosts playbook.yml
+
+PLAY [IPI on Baremetal Installation Playbook] *****************************************************************************************************
+
+TASK [Gathering Facts] ****************************************************************************************************************************
+fatal: [provisioner.example.com]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: rlopez@provisioner.example.com: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).", "unreachable": true}
+
+PLAY RECAP ****************************************************************************************************************************************
+provisioner.example.com : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0
+----
+
+The above issue is typically related to a problem with your 
+`ansible.cfg` file. Either it does not exist, has errors inside it, or 
+you have not copied your SSH public key onto the 
+provisioner.example.com system. If you notice closely, the Ansible 
+playbook attempted to use my `rlopez` user instead of my `kni` user 
+since my local `ansible.cfg` did not exist **AND** I had not yet set 
+the `remote_user` parameter to `kni` (my privileged user).
+
+. When working with the Ansible playbook ensure you have an `ansible.cfg` located in the same directory as your `playbook.yml` file. The contents of the `ansible.cfg` should look similar to the below with the exception of changing your inventory path (location of `inventory` directory) and potentially your privileged user if not using `kni`.
++
+[source,ini]
+----
+$ cat ansible.cfg
+[defaults]
+inventory=/path/to/baremetal-deploy/ansible-ipi-install/inventory
+remote_user=kni
+
+[privilege_escalation]
+become=true
+become_method=sudo
+----
++
+. Next, ensure that you have copied your public SSH key from your local system to the privileged user via the `ssh-copy-id` command.
++
+[source,bash]
+----
+ssh-copy-id kni@provisioner.example.com
+----
++
+NOTE: When prompted, enter the password of your privileged user (i.e. `kni`).
++
+. Verify connectivity using the `ping` module in Ansible
++
+[source,bash]
+----
+ansible -i inventory/hosts provisioner -m ping
+provisioner.example.com | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+----
++
+. Re-run the Ansible playbook
++
+[source,bash]
+----
+$ ansible-playbook -i inventory/hosts playbook.yml
+----

@@ -2,7 +2,7 @@
 = Using an Existing Registry
 
 NOTE: If no existing registry is already existing for your fully disconnected
-environment, visit https://github.com/openshift-kni/baremetal-deploy/blob/master/ansible-ipi-install/README.md#creating-a-new-disconnected-registry[Creating a New Disconnected Registry] section.
+environment, visit link:../../{release}/Deployment#ipi-install-creating-a-disconnected-registry_ipi-install-prerequisites[Creating a New Disconnected Registry] section.
 
 When using an existing registry, two variables labeled
 `disconnected_registry_auths_file` and the `disconnected_registry_mirrors_file`
@@ -40,12 +40,12 @@ containing the `additionalTrustBundle` and `imageContentSources` for
 the disconnected registry. The certificate that goes within the additional
 trust bundle is the disconnected registry node's certificate. The
 `imageContentSources` adds the mirrored information of the registry. The below
-content from the `install-config-appends.json` file gets automatically appended
+content from the `install-config-appends.yml` file gets automatically appended
 by the Ansible playbook.
 
 [source,bash]
 ----
-cat /path/to/install-config-appends.json
+cat /path/to/install-config-appends.yml
 additionalTrustBundle: |
   -----BEGIN CERTIFICATE-----
   MIIGPDCCBCSgAwIBAgIUWr1DxDq53hrsk6XVLRXUjfF9m+swDQYJKoZIhvcNAQEL
@@ -71,4 +71,4 @@ imageContentSources:
 
 ----
 
-NOTE: Indentation is important in the json file. Ensure your copy of the `install-config-appends.json` is properly indented as in the example above.
+NOTE: Indentation is important in the yml file. Ensure your copy of the `install-config-appends.yml` is properly indented as in the example above.

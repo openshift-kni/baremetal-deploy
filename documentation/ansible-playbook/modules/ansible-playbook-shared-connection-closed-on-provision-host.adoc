@@ -1,0 +1,93 @@
+[id="ansible-playbook-shared-connection-closed-on-provision-host"]
+
+= Shared connection closed on provision host when installing packages
+
+When deploying in an environment where subscription manager is not 
+being used and a local repository is being setup on the provision host 
+due to the nature that the provision host is offline, you may see the 
+following error.
+
+[source,bash]
+----
+TASK [node-prep : Install required packages] ************************************************************************************************
+Thursday 07 May 2020  17:04:21 +0000 (0:00:00.152)       0:00:11.854 ********** 
+fatal: [provisioner.kni7.cloud.lab.eng.bos.redhat.com]: FAILED! => {"changed": false, "module_stderr": "Shared connection to provisioner.kni7.cloud.lab.eng.bos.redhat.com closed.\r\n", "module_stdout": "[Errno 101] Network is unreachable\r\n\r\n{\"msg\": \"Nothing to do\", \"changed\": false, \"results\": [], \"rc\": 0, \"invocation\": {\"module_args\": {\"name\": [\"firewalld\", \"tar\", \"libvirt\", \"qemu-kvm\", \"python3-devel\", \"jq\", \"ipmitool\", \"python3-libvirt\", \"python3-lxml\", \"python3-yaml\", \"NetworkManager-libnm\", \"nm-connection-editor\", \"libsemanage-python3\", \"policycoreutils-python3\", \"podman\"], \"state\": \"present\", \"update_cache\": true, \"allow_downgrade\": false, \"autoremove\": false, \"bugfix\": false, \"disable_gpg_check\": false, \"disable_plugin\": [], \"disablerepo\": [], \"download_only\": false, \"enable_plugin\": [], \"enablerepo\": [], \"exclude\": [], \"installroot\": \"/\", \"install_repoquery\": true, \"install_weak_deps\": true, \"security\": false, \"skip_broken\": false, \"update_only\": false, \"validate_certs\": true, \"lock_timeout\": 30, \"conf_file\": null, \"disable_excludes\": null, \"download_dir\": null, \"list\": null, \"releasever\": null}}}\r\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 0}
+----
+
+The error basically means that `dnf` was not able to load particular 
+plugins, specifically the `product-id` and the `subscription-manager` 
+plugins. However,since this is a local repository with offline access, 
+we will want to disable these plugins when this error occurs.
+
+On the provision host, if you run the following command:
+
+[source,bash]
+----
+[kni@provisioner ~]$ sudo dnf info dnf
+Updating Subscription Management repositories.
+Unable to read consumer identity
+[Errno 101] Network is unreachable
+Last metadata expiration check: 0:08:49 ago on Thu 07 May 2020 08:11:19 PM UTC.
+Installed Packages
+Name         : dnf
+Version      : 4.2.7
+Release      : 7.el8_1
+Architecture : noarch
+Size         : 1.7 M
+Source       : dnf-4.2.7-7.el8_1.src.rpm
+Repository   : @System
+From repo    : rhel-8-for-x86_64-baseos-rpms
+Summary      : Package manager
+URL          : https://github.com/rpm-software-management/dnf
+License      : GPLv2+ and GPLv2 and GPL
+Description  : Utility that allows users to manage packages on their systems.
+             : It supports RPMs, modules and comps groups & environments.
+----
+
+To ensure the issue is plugin related, we can attempt to run the same command
+with plugins disabled as such:
+
+[source,bash]
+----
+[kni@provisioner ~]$ sudo dnf info dnf --disableplugin=product-id,subscription-manager
+Last metadata expiration check: 0:11:17 ago on Thu 07 May 2020 08:11:19 PM UTC.
+Installed Packages
+Name         : dnf
+Version      : 4.2.7
+Release      : 7.el8_1
+Architecture : noarch
+Size         : 1.7 M
+Source       : dnf-4.2.7-7.el8_1.src.rpm
+Repository   : @System
+From repo    : rhel-8-for-x86_64-baseos-rpms
+Summary      : Package manager
+URL          : https://github.com/rpm-software-management/dnf
+License      : GPLv2+ and GPLv2 and GPL
+Description  : Utility that allows users to manage packages on their systems.
+             : It supports RPMs, modules and comps groups & environments.
+----
+
+If you notice, the portion that says
+
+[source,bash]
+----
+Unable to read consumer identity
+[Errno 101] Network is unreachable
+----
+
+is no longer stated.
+
+For this fix to be permanent, modify the `/etc/yum.conf` file and include
+the `plugins=0` into the `[main]` section of the configuration file.
+
+[source,bash]
+----
+[kni@provisioner ~]$ cat /etc/yum.conf
+
+[main]
+gpgcheck=1
+installonly_limit=3
+clean_requirements_on_remove=True
+best=True
+plugins=0
+----

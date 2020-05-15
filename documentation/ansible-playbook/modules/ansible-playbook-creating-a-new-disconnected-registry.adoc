@@ -1,0 +1,24 @@
+[id="ansible-playbook-creating-a-new-disconnected-registry"]
+
+[[creating_registry]]
+= Creating a new disconnected registry
+
+To create a new disconnected registry, the 
+`disconnected_registry_auths_file` and 
+`disconnected_registry_mirrors_file` variables must not be set.
+
+The certificate information used to generate the host certificate must 
+be defined. These variables must be defined as variables to the 
+`registry_host` group in the inventory file.
+
+[source,ini]
+----
+[registry_host:vars]
+cert_country=US
+cert_state=MyState
+cert_locality=MyCity
+cert_organization=MyCompany
+cert_organizational_unit=MyDepartment
+----
+
+NOTE: `cert_country` must be only two letters, i.e. `US`
