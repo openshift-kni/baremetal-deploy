@@ -3,16 +3,16 @@
 = Modifying the `inventory/hosts`
 
 
-The hosts file provides all the definable variables and provides a 
+The hosts file provides all the definable variables and provides a
 description of each variable. Some of the variables are explicitly left
  empty and **require** user input for the playbook to run.
 
 The hosts file ensures all your nodes that will be used to deploy
-IPI on baremetal are setup. There are 4 groups: `masters`, `workers`, 
-`provisioner`, and `registry_host` (optional). The `masters` and 
-`workers` group collects information about the host such as its name, 
-role, user management (i.e. iDRAC) user, user management (i.e. iDRAC) 
-password, `ipmi_address`, `ipmi_port` to access the server and the 
+IPI on baremetal are setup. There are 4 groups: `masters`, `workers`,
+`provisioner`, and `registry_host` (optional). The `masters` and
+`workers` group collects information about the host such as its name,
+role, user management (i.e. iDRAC) user, user management (i.e. iDRAC)
+password, `ipmi_address`, `ipmi_port` to access the server and the
 provision mac address (NIC1) that resides on the provisioning network.
 
 Below is a sample of the inventory/hosts file
@@ -188,16 +188,16 @@ provisioner.example.com
 
 [NOTE]
 ====
-The `ipmi_address` can take a fully qualified name assuming it is 
+The `ipmi_address` can take a fully qualified name assuming it is
 resolvable.
 
-The `ipmi_port` examples above show how a user can specify a different 
-`ipmi_port` for each host within their inventory file. If the 
-`ipmi_port` variable is omitted from the inventory file, the default 
+The `ipmi_port` examples above show how a user can specify a different
+`ipmi_port` for each host within their inventory file. If the
+`ipmi_port` variable is omitted from the inventory file, the default
 of 623 will be used.
 
 //FIXME This link to use https://openshift-kni.github.io/baremetal-deploy/4.4/Deployment.html#ipi-install-configuration-files
-A detailed description of the `vars` under the section 
-`Vars regarding install-config.yaml` may be reviewed within 
+A detailed description of the `vars` under the section
+`Vars regarding install-config.yaml` may be reviewed within
 link:../../{release}/Deployment#ipi-install-configuration-files[Configuration Files] if unsure how to populate.
 ====

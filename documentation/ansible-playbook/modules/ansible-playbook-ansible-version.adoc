@@ -2,7 +2,7 @@
 
 = Ansible version
 
-Ensure that your environment is using Ansible 2.9 or 
+Ensure that your environment is using Ansible 2.9 or
 greater. The following command can be used to verify.
 
 [source,bash]

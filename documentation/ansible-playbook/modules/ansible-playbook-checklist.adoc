@@ -24,7 +24,7 @@ include::../../ipi-install/modules/ipi-install-validation-checklist-for-nodes.ad
 * [ ] Ensure `release.txt` file exists within the webserver path/to/webserver/<ocp_release_version>
 * [ ] Ensure `rhcos.json` file exists within the webserver path/to/webserver/<ocp_release_version>
 * [ ] Ensure `openshift-baremetal-install` binary exists within the webserver path/to/webserver/<ocp_release_version>
-* [ ] Ensure the `openshift-baremetal-install` binary points to the appopriate release image registry (i.e. `registry.example.com` ) 
+* [ ] Ensure the `openshift-baremetal-install` binary points to the appopriate release image registry (i.e. `registry.example.com` )
 * [ ] Ensure `release.txt` file exists within the webserver path/to/webserver/<ocp_release_version>
 * [ ] Ensure `openshift-client-linux-<ocp_release_version>.tar.gz` tar.gz exists within the webserver path/to/webserver/<ocp_release_version>
 * [ ] Create `registry-auths.json`

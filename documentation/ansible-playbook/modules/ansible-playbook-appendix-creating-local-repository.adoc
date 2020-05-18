@@ -60,7 +60,7 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 ----
 [user@provisioner ~]$ sudo echo "plugins=0" >> /etc/yum.conf
 ----
-+ 
++
 [NOTE]
 ====
 This is required as certain plugins won't properly load when
