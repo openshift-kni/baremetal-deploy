@@ -2,7 +2,7 @@
 
 = Verifying Installation
 
-Once the playbook has successfully completed, verify that your 
+Once the playbook has successfully completed, verify that your
 environment is up and running.
 
 . Log into the provision node
@@ -33,4 +33,3 @@ master-2.openshift.example.com               Ready    master          19h   v1.1
 worker-0.openshift.example.com               Ready    worker          19h   v1.16.2
 worker-1.openshift.example.com               Ready    worker          19h   v1.16.2
 ----
-

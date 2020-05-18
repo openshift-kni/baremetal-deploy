@@ -17,7 +17,6 @@ export build_version='<desired-build-version>'
 export LOCAL_REPOSITORY='ocp4'
 export LOCAL_REGISTRY='registry.example.com:5000'
 export OCP_RELEASE='4.4.3'
-export LOCAL_PULL_SECRET='<Path-to-your-pull-secret.txt'                
+export LOCAL_PULL_SECRET='<Path-to-your-pull-secret.txt'
 export cmd=openshift-baremetal-install
 ----
-

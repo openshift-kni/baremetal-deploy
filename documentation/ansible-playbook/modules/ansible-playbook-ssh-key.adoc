@@ -2,11 +2,11 @@
 
 = Copy local SSH key to provision node
 
-With the `ansible.cfg` file in place, the next step is 
+With the `ansible.cfg` file in place, the next step is
 to ensure to copy your public `ssh` key to your provision
  node using `ssh-copy-id`.
 
-From the system that is to run the playbook, 
+From the system that is to run the playbook,
 
 [source,bash]
 ----

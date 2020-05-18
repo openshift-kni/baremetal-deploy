@@ -20,7 +20,7 @@ Deployment Integration Team
 
 [TIP]
 ====
-link:Ansible-Playbook-Disconnected-Install.pdf[Download] the PDF version of this document or visit https://openshift-kni.github.io/baremetal-deploy/
+link:Ansible%20Playbook%20Disconnected%20Install.pdf[Download] the PDF version of this document or visit https://openshift-kni.github.io/baremetal-deploy/
 ====
 
 include::modules/ansible-playbook-disconnected-introduction.adoc[leveloffset=+1]

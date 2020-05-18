@@ -2,9 +2,9 @@
 
 = Introduction
 
-This write-up will guide you through the process of using the Ansible 
-playbooks to deploy a Baremetal Installer Provisioned Infrastructure 
+This write-up will guide you through the process of using the Ansible
+playbooks to deploy a Baremetal Installer Provisioned Infrastructure
 (`IPI`) of Red Hat OpenShift 4.
 
-For the manual details, visit our 
+For the manual details, visit our
 https://openshift-kni.github.io/baremetal-deploy/[Deployment Guide]
