@@ -35,8 +35,8 @@ to the webserver in order install the latest
 ----
 +
 . Open the the `env_vars.sh` script and fill out the appopriate environment variable values
-+ 
-. Run the `helper_script.sh` script 
++
+. Run the `helper_script.sh` script
 +
 [source,bash]
 ----
@@ -69,7 +69,7 @@ NOTE: The following manual procedure can be skipped if used the <<helper_script,
 [NOTE]
 ====
 When working with a development version of {product-tile}, use the following link for the
-development version of the 
+development version of the
 https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest-{release}/release.txt[release.txt]
 ====
 +

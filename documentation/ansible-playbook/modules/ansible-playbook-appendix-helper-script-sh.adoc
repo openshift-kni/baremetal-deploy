@@ -42,7 +42,7 @@ echo Release = $OCP_RELEASE
 echo Pull-Secret File = $LOCAL_PULL_SECRET
 echo Build Version = $build_version
 
-GREEN='\033[0;32m' 
+GREEN='\033[0;32m'
 NC='\033[0m'
 echo -e "**** Download the release.txt for ${GREEN}$build_version${NC}*******"
 wget https://mirror.openshift.com/pub/openshift-v4/clients/$release_version/$build_version/release.txt
@@ -67,7 +67,7 @@ echo "******Download the rhcos.json file for the $build_version*******"
 export COMMIT_ID=$(./openshift-baremetal-install version | grep '^built from commit' | awk '{print $4}')
 curl -s -S https://raw.githubusercontent.com/openshift/installer/$COMMIT_ID/data/data/rhcos.json > rhcos.json
 
-ls -ltr release.txt rhcos.json openshift-baremetal-install openshift-client-linux-$build_version.tar.gz 
+ls -ltr release.txt rhcos.json openshift-baremetal-install openshift-client-linux-$build_version.tar.gz
 
 echo "****Confirm the version*****"
 

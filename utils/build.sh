@@ -5,10 +5,17 @@
 RELEASES="4.4 4.3"
 
 # Versioned documents
-DOCS="Deployment"
+DOCS=(
+    'Deployment'
+)
 
 # Documents using latest
-STATIC="Ansible-Playbook-Install Troubleshooting Deployment Ansible-Playbook-Disconnected-Install"
+STATIC=(
+    'Ansible Playbook Install'
+    'Troubleshooting'
+    'Deployment'
+    'Ansible Playbook Disconnected Install'
+)
 
 # Devel releases for static documents and devel docs
 DEVRELEASE="4.5"
@@ -22,8 +29,8 @@ build_for_release() {
 
     echo "Building documentation doc ${doc} for release ${release}"
 
-    basedir="$(dirname $(readlink documentation/${doc}.adoc))"
-    basefile="$(basename $(readlink documentation/${doc}.adoc))"
+    basedir=$(dirname $(readlink "documentation/${doc}.adoc"))
+    basefile=$(basename $(readlink "documentation/${doc}.adoc"))
 
     # Build the documentation
     asciidoctor -a release="${release}" -a toc=left -b xhtml5 -d book -B "documentation/${basedir}/" "documentation/${basedir}/${basefile}" -o "${doc}.html" -D "../../website/${release}" 2>&1 | grep -v 'Try: gem'
@@ -37,14 +44,14 @@ RC=0
 
 # Build all releases
 for release in ${RELEASES}; do
-    for doc in ${DOCS}; do
+    for doc in "${DOCS[@]}"; do
         build_for_release "${doc}" "${release}"
     done
 done
 
 # Build latest for static
 for release in ${DEVRELEASE}; do
-    for doc in ${STATIC}; do
+    for doc in "${STATIC[@]}"; do
         build_for_release "${doc}" "${release}"
     done
 done
@@ -58,7 +65,7 @@ mkdir -p ${TARGET}
 # Empty file before starting
 >${TARGET}/releases.yml
 for release in ${RELEASES}; do
-    for doc in ${DOCS}; do
+    for doc in "${DOCS[@]}"; do
         echo """
 ${doc}-${release}:
     name: ${doc}
@@ -71,7 +78,7 @@ done
 # Empty file before starting
 >${TARGET}/static.yml
 for release in ${DEVRELEASE}; do
-    for doc in ${STATIC}; do
+    for doc in "${STATIC[@]}"; do
         echo """
 ${doc}-${release}:
     name: ${doc}

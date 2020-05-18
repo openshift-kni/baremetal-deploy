@@ -2,7 +2,7 @@
 
 = The `ansible.cfg` file
 
-While the `ansible.cfg` may vary upon your environment 
+While the `ansible.cfg` may vary upon your environment
 a sample is provided in the repository.
 
 [source,ini]
@@ -18,7 +18,7 @@ become_method=sudo
 
 [NOTE]
 ====
-Ensure to change the `remote_user` as deemed appropriate for 
-your environment. The `remote_user` is the user previously 
+Ensure to change the `remote_user` as deemed appropriate for
+your environment. The `remote_user` is the user previously
 created on the provision node.
 ====

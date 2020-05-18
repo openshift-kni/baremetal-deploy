@@ -1,11 +1,11 @@
 [id="ansible-playbook-missing-python-netaddr-library"]
 
-= Missing python `netaddr` library 
+= Missing python `netaddr` library
 
-The Ansible playbook takes advantage of certain filters such as the 
+The Ansible playbook takes advantage of certain filters such as the
 https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters_ipaddr.html[`ipaddr`]
-filter. In order to use this filter, your localhost running the 
-Ansible playbook requires the python `netaddr` library. 
+filter. In order to use this filter, your localhost running the
+Ansible playbook requires the python `netaddr` library.
 
 The error when running the playbook looks like the following:
 
@@ -16,7 +16,7 @@ Tuesday 05 May 2020  19:30:19 +0000 (0:00:00.512)       0:00:13.829 ***********
 fatal: [bootstrap.kni8.cloud.lab.eng.bos.redhat.com]: FAILED! => {"changed": false, "msg": "Missing python module(s) ['netaddr'] on localhost\n"}
 ----
 
-The above issue can be fixed by simply installing `python3-netaddr` on 
+The above issue can be fixed by simply installing `python3-netaddr` on
 your local system (assuming your using an OS such as Fedora, Red Hat)
 
 On a local host running Red Hat 8.x, run:

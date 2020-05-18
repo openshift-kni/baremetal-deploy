@@ -2,7 +2,7 @@
 
 = Unreachable Host
 
-One of the most common errors is not being able to reach the 
+One of the most common errors is not being able to reach the
 `provisioner` host and seeing an error similar to
 
 [source,bash]
@@ -18,7 +18,7 @@ PLAY RECAP *********************************************************************
 provisioner.example.com    : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0
 ----
 
-In order to solve this issue, ensure your `provisioner` hostname is 
+In order to solve this issue, ensure your `provisioner` hostname is
 pingable.
 
 . The system you are currently on can `ping` the `provisioner.example.com`

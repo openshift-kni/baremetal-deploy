@@ -2,7 +2,7 @@
 
 = Permission Denied Trying To Connect To Host
 
-Another very common error is getting a permission denied error similar 
+Another very common error is getting a permission denied error similar
 to:
 
 [source,bash]
@@ -18,12 +18,12 @@ PLAY RECAP *********************************************************************
 provisioner.example.com : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0
 ----
 
-The above issue is typically related to a problem with your 
-`ansible.cfg` file. Either it does not exist, has errors inside it, or 
-you have not copied your SSH public key onto the 
-provisioner.example.com system. If you notice closely, the Ansible 
-playbook attempted to use my `rlopez` user instead of my `kni` user 
-since my local `ansible.cfg` did not exist **AND** I had not yet set 
+The above issue is typically related to a problem with your
+`ansible.cfg` file. Either it does not exist, has errors inside it, or
+you have not copied your SSH public key onto the
+provisioner.example.com system. If you notice closely, the Ansible
+playbook attempted to use my `rlopez` user instead of my `kni` user
+since my local `ansible.cfg` did not exist **AND** I had not yet set
 the `remote_user` parameter to `kni` (my privileged user).
 
 . When working with the Ansible playbook ensure you have an `ansible.cfg` located in the same directory as your `playbook.yml` file. The contents of the `ansible.cfg` should look similar to the below with the exception of changing your inventory path (location of `inventory` directory) and potentially your privileged user if not using `kni`.

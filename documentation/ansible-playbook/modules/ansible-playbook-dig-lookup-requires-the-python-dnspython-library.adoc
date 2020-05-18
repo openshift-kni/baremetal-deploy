@@ -2,12 +2,12 @@
 
 = Dig lookup requires the python '`dnspython`' library and it is not installed
 
-One of the tasks in the `node-prep` role captures your API VIP and the 
-Ingress VIP of your environment using a `lookup` via `dig`. It does 
-this https://docs.ansible.com/ansible/latest/plugins/lookup/dig.html[DNS query using the `dnspython` library]. 
-This error is a little deceiving because the `dnspython` package 
-does **not need to be installed on the remote server** 
-(i.e. `provisioner.example.com`) but the package must be **installed on 
+One of the tasks in the `node-prep` role captures your API VIP and the
+Ingress VIP of your environment using a `lookup` via `dig`. It does
+this https://docs.ansible.com/ansible/latest/plugins/lookup/dig.html[DNS query using the `dnspython` library].
+This error is a little deceiving because the `dnspython` package
+does **not need to be installed on the remote server**
+(i.e. `provisioner.example.com`) but the package must be **installed on
 your local host** that is running the Ansible playbook.
 
 [source,bash]
@@ -22,7 +22,7 @@ PLAY RECAP *********************************************************************
 provisioner.example.com : ok=2    changed=0    unreachable=0    failed=1    skipped=3    rescued=0    ignored=0
 ----
 
-The above issue can be fixed by simply installing `python3-dns` on 
+The above issue can be fixed by simply installing `python3-dns` on
 your local system (assuming your using an OS such as Fedora, Red Hat)
 
 On a local host running Red Hat 8.x, run:

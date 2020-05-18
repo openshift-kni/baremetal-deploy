@@ -2,21 +2,21 @@
 
 = Shared connection closed on provision host when installing packages
 
-When deploying in an environment where subscription manager is not 
-being used and a local repository is being setup on the provision host 
-due to the nature that the provision host is offline, you may see the 
+When deploying in an environment where subscription manager is not
+being used and a local repository is being setup on the provision host
+due to the nature that the provision host is offline, you may see the
 following error.
 
 [source,bash]
 ----
 TASK [node-prep : Install required packages] ************************************************************************************************
-Thursday 07 May 2020  17:04:21 +0000 (0:00:00.152)       0:00:11.854 ********** 
+Thursday 07 May 2020  17:04:21 +0000 (0:00:00.152)       0:00:11.854 **********
 fatal: [provisioner.kni7.cloud.lab.eng.bos.redhat.com]: FAILED! => {"changed": false, "module_stderr": "Shared connection to provisioner.kni7.cloud.lab.eng.bos.redhat.com closed.\r\n", "module_stdout": "[Errno 101] Network is unreachable\r\n\r\n{\"msg\": \"Nothing to do\", \"changed\": false, \"results\": [], \"rc\": 0, \"invocation\": {\"module_args\": {\"name\": [\"firewalld\", \"tar\", \"libvirt\", \"qemu-kvm\", \"python3-devel\", \"jq\", \"ipmitool\", \"python3-libvirt\", \"python3-lxml\", \"python3-yaml\", \"NetworkManager-libnm\", \"nm-connection-editor\", \"libsemanage-python3\", \"policycoreutils-python3\", \"podman\"], \"state\": \"present\", \"update_cache\": true, \"allow_downgrade\": false, \"autoremove\": false, \"bugfix\": false, \"disable_gpg_check\": false, \"disable_plugin\": [], \"disablerepo\": [], \"download_only\": false, \"enable_plugin\": [], \"enablerepo\": [], \"exclude\": [], \"installroot\": \"/\", \"install_repoquery\": true, \"install_weak_deps\": true, \"security\": false, \"skip_broken\": false, \"update_only\": false, \"validate_certs\": true, \"lock_timeout\": 30, \"conf_file\": null, \"disable_excludes\": null, \"download_dir\": null, \"list\": null, \"releasever\": null}}}\r\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 0}
 ----
 
-The error basically means that `dnf` was not able to load particular 
-plugins, specifically the `product-id` and the `subscription-manager` 
-plugins. However,since this is a local repository with offline access, 
+The error basically means that `dnf` was not able to load particular
+plugins, specifically the `product-id` and the `subscription-manager`
+plugins. However,since this is a local repository with offline access,
 we will want to disable these plugins when this error occurs.
 
 On the provision host, if you run the following command:

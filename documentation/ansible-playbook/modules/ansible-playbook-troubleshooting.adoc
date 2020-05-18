@@ -2,7 +2,7 @@
 
 = Troubleshooting
 
-The following section troubleshoots common errors that 
+The following section troubleshoots common errors that
 may arise when running the Ansible playbook.
 
 include::ansible-playbook-unreachable-host.adoc[leveloffset=+1]
@@ -10,5 +10,3 @@ include::ansible-playbook-permission-denied-trying-to-connect-to-host.adoc[level
 include::ansible-playbook-dig-lookup-requires-the-python-dnspython-library.adoc[leveloffset=+1]
 include::ansible-playbook-missing-python-netaddr-library.adoc[leveloffset=+1]
 include::ansible-playbook-shared-connection-closed-on-provision-host.adoc[leveloffset=+1]
-
-
