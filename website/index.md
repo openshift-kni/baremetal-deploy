@@ -56,7 +56,7 @@ Below is the list of generated documentation versions
 </table>
 
 > info ""
-> Documents in this section are additional information.
+> These guides are created from the contents of the repository under [`documentation/`](https://github.com/openshift-kni/baremetal-deploy/tree/master/documentation) folder.
 
 ### Development Draft
 
@@ -86,4 +86,4 @@ Below is the list of generated documentation versions
 </table>
 
 > error ""
-> Documents in this section are still not released drafts and might be not accurate or complete
+> Documents in this section are incomplete drafts and may contain inaccuracies
