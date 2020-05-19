@@ -17,11 +17,32 @@ Deployment Integration Team
 :icons: font
 :product-title: OpenShift Container Platform
 :source-highlighter: pygments
+ifdef::watermark[]
+// :title-page-background-image: none
+:page-background-image: image:watermark.png[]
+
+
+[IMPORTANT]
+.Draft documentation
+====
+This document is considered a DRAFT:
+
+. It might not be complete
+. It might be not accurate
+. It might break your environment
+====
+
+endif::[]
 
 [TIP]
 ====
 link:Ansible%20Playbook%20Install.pdf[Download] the PDF version of this document or visit https://openshift-kni.github.io/baremetal-deploy/
 ====
+
+
+
+
+
 
 include::modules/ansible-playbook-introduction.adoc[leveloffset=+1]
 include::modules/ansible-playbook-prerequisites.adoc[leveloffset=+1]
