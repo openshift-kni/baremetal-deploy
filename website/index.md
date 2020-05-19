@@ -35,24 +35,12 @@ Below is the list of generated documentation versions
   </tr>
 {% endfor %}
 
-</table>
-
-> info ""
-> These guides are created from the contents of the repository under [`documentation/`](https://github.com/openshift-kni/baremetal-deploy/tree/master/documentation) folder.
-
-### Supplemental
-
-<table style="width:100%">
-  <tr>
-    <th>Document</th>
-    <th>Format</th>
-  </tr>
-
 {% for release in site.data.static %}
 {% assign version = release[1] %}
 
   <tr>
   <td>{{version.name}}</td>
+  <td>-</td>
   <td>
     <a href="{{ version.folder }}">
        <i class="fab fa-html5"></i> HTML
@@ -70,7 +58,7 @@ Below is the list of generated documentation versions
 > info ""
 > Documents in this section are additional information.
 
-### Development preview
+### Development Draft
 
 <table style="width:100%">
   <tr>
