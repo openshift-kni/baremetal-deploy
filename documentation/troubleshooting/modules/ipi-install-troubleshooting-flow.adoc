@@ -3,8 +3,32 @@
 = Troubleshooting Flow
 
 Prior to troubleshooting your environment, it is critical to understand
-the overall flow of the IPI on BM installation. The diagram below is a
-troubleshooting flowchart providing a step-by-step breakdown of where to
-start debugging your environment.
+the overall flow of the IPI on BM installation. The diagrams below
+provide a troubleshooting flow providing a step-by-step breakdown of 
+where to start debugging your environment.
 
-image:troubleshooting.png[Flow-Diagram]
+image:flow1.png[Flow-Diagram-1]
+
+_Flow-Diagram-1_ relates with issues that relate to your
+install-config.yaml file. Troubleshooting suggestions
+can be found at <<install_config,install-config.yaml>>
+
+image:flow2.png[Flow-Diagram-2]
+
+_Flow-Diagram-2_ relates with issues that relate to your
+
+* <<bootstrap_vm_issues,Bootstrap VM>>
+* <<cluster_nodes_wont_pxe,Cluster nodes that won't PXE>>
+
+image:flow3.png[Flow-Diagram-3]
+
+_Flow-Diagram-3_ relates with issues that relate to your
+
+* <<cluster_nodes_wont_pxe,Cluster nodes that won't PXE>>
+
+image:flow4.png[Flow-Diagram-4]
+
+_Flow-Diagram-4_ relates with issues that relate to your
+
+* <<api, API accessibility>>
+* <<review_install, reviewing installation>>

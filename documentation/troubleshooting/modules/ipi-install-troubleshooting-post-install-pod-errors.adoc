@@ -1,11 +1,13 @@
 [id="ipi-install-troubleshooting-post-install-pod-errors"]
+[[post_install]]
 = Post install pod errors
 
-* Error in metal³ pod during deployment(only applies for 4.3)
+The following section describes how to handle metal3 pod errors
+during deployment. (only applies for 4.3)
 
 [source,bash]
 ----
-$ oc get all -n openshift-machine-api
+[kni@provisioner ~]$ oc get all -n openshift-machine-api
 NAME                                          READY   STATUS                            RESTARTS   AGE
 pod/metal3-6c6cc7c56c-lj4lr                   0/8     Init:CreateContainerConfigError   0          <invalid>
 ----
@@ -13,7 +15,7 @@ pod/metal3-6c6cc7c56c-lj4lr                   0/8     Init:CreateContainerConfig
 This happens due to the missing `+ConfigMap+`
 
 ....
-  Warning  Failed     <invalid> (x7 over 32s)  kubelet, master-1.cloud.example.com  Error: configmap "metal3-config" not found
+  Warning  Failed     <invalid> (x7 over 32s)  kubelet, master-1.<cluster-name>.example.com  Error: configmap "metal3-config" not found
 ....
 
 Make sure to add the ConfigMap before starting the deployment as shown
@@ -65,7 +67,7 @@ Verify if all the OpenShift nodes are up and running
 [source,bash]
 ----
 [kni@provisioner ~]$ oc get nodes
-NAME                                         STATUS   ROLES           AGE    VERSION
+NAME                                    STATUS   ROLES           AGE    VERSION
 master-0.cloud.lab.eng.bos.redhat.com   Ready    master,worker   4h   v1.16.2
 master-1.cloud.lab.eng.bos.redhat.com   Ready    master,worker   4h   v1.16.2
 master-2.cloud.lab.eng.bos.redhat.com   Ready    master,worker   4h   v1.16.2
@@ -81,8 +83,8 @@ kubelet services are enabled.
 
 [source,bash]
 ----
-$ oc get nodes
-NAME                                         STATUS     ROLES    AGE   VERSION
+[kni@provisioner~]$ oc get nodes
+NAME                         STATUS     ROLES    AGE   VERSION
 master-0.cloud.example.com   NotReady   master   67m   v1.16.2
 master-1.cloud.example.com   Ready      master   67m   v1.16.2
 master-2.cloud.example.com   Ready      master   67m   v1.16.2
@@ -93,7 +95,7 @@ Verify kubelet on each master node, example of logging in to
 
 [source,bash]
 ----
-[kni@provisioner~]$ssh core@master-0
+[kni@provisioner~]$ ssh core@master-0
 
 [core@master-0 ~]$ sudo systemctl status kubelet
 ● kubelet.service - Kubernetes Kubelet
@@ -117,8 +119,8 @@ Start the kubelet services and check back the status of the node.
            └─10-default-env.conf, 20-nodenet.conf
    Active: active (running) since Tue 2020-03-10 16:07:27 UTC; 4s ago
 
-$ oc get nodes
-NAME                                         STATUS   ROLES    AGE   VERSION
+[kni@provisioner~]$ oc get nodes
+NAME                         STATUS   ROLES    AGE   VERSION
 master-0.cloud.example.com   Ready    master   80m   v1.16.2
 master-1.cloud.example.com   Ready    master   80m   v1.16.2
 master-2.cloud.example.com   Ready    master   80m   v1.16.2

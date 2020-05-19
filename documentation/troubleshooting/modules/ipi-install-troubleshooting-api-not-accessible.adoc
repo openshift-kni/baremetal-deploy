@@ -1,8 +1,49 @@
 [id="ipi-install-troubleshooting-api-not-accessible"]
 
+[[api]]
 = API not accessible
 
-* Make sure your name resolutions are properly set in the DNS server,
+When the API is not accessible these issues often arise when the
+following is not properly addressed. 
+
+* Incorrect name resolutions are set in the DNS server,
 make use of `+dig+` and `+nslookup+` commands.
 * `+SSH+` into the OpenShift cluster and make sure they are getting the
 FQDN and not just `+localhost.localdomain+`.
+
+For example, if we wanted to verify the API VIP was properly set via
+`dig`, we could:
+
+[source,bash]
+----
+dig api.<cluster-name>.example.com
+; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el8 <<>> api.<cluster-name>.example.com
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 37551
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 2
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+; COOKIE: 866929d2f8e8563582af23f05ec44203d313e50948d43f60 (good)
+;; QUESTION SECTION:
+;api.<cluster-name>.example.com. IN A
+
+;; ANSWER SECTION:
+api.<cluster-name>.example.com. 10800 IN	A 10.19.13.86
+
+;; AUTHORITY SECTION:
+<cluster-name>.example.com. 10800 IN NS	<cluster-name>.example.com.
+
+;; ADDITIONAL SECTION:
+<cluster-name>.example.com. 10800 IN A	10.19.14.247
+
+;; Query time: 0 msec
+;; SERVER: 10.19.14.247#53(10.19.14.247)
+;; WHEN: Tue May 19 20:30:59 UTC 2020
+;; MSG SIZE  rcvd: 140
+----
+
+This concludes that the appropriate IP for the 
+api.<cluster-name>.example.com VIP was `10.19.13.86`.
+This IP address should reside on the `baremetal` network.

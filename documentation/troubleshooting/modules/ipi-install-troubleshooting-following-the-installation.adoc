@@ -1,4 +1,5 @@
 [id="ipi-install-troubleshooting-following-the-installation"]
+[[following_install]]
 = Following the Installation
 
 During the deployment process, we can check its overall status by
@@ -7,5 +8,5 @@ which will be under the install directory folder.
 
 [source,bash]
 ----
-# tail -f /path/to/install-dir/.openshift_install.log
+tail -f /path/to/install-dir/.openshift_install.log
 ----
