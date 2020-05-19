@@ -76,6 +76,7 @@
     "Jekyll",
     "ipi",
     "versioned",
-    "unversioned"
+    "unversioned",
+    "devprev"
   ]
 }
