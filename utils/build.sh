@@ -4,6 +4,9 @@
 # Space separated version list to build
 RELEASES="4.4 4.3"
 
+# Devel releases for static documents and devel docs
+DEVRELEASE="4.5"
+
 # Versioned documents
 DOCS=(
     'Deployment'
@@ -13,12 +16,12 @@ DOCS=(
 STATIC=(
     'Ansible Playbook Install'
     'Troubleshooting'
-    'Deployment'
     'Ansible Playbook Disconnected Install'
 )
 
-# Devel releases for static documents and devel docs
-DEVRELEASE="4.5"
+DEV=(
+    'Deployment'
+)
 
 # Get latest version for 'static' documents
 LATEST=$(echo ${RELEASES} | tr " " "\n" | sort -V -r | head -1)
@@ -26,6 +29,7 @@ LATEST=$(echo ${RELEASES} | tr " " "\n" | sort -V -r | head -1)
 build_for_release() {
     doc="${1}"
     release="${2}"
+    extraargs="${3}"
 
     echo "Building documentation doc ${doc} for release ${release}"
 
@@ -33,11 +37,11 @@ build_for_release() {
     basefile=$(basename $(readlink "documentation/${doc}.adoc"))
 
     # Build the documentation
-    asciidoctor -a release="${release}" -a toc=left -b xhtml5 -d book -B "documentation/${basedir}/" "documentation/${basedir}/${basefile}" -o "${doc}.html" -D "../../website/${release}" 2>&1 | grep -v 'Try: gem'
+    asciidoctor -a release="${release}" -a toc=left ${extraargs} -b xhtml5 -d book -B "documentation/${basedir}/" "documentation/${basedir}/${basefile}" -o "${doc}.html" -D "../../website/${release}" 2>&1 | grep -v 'Try: gem'
     myrc=${?}
 
     # Build the documentation PDF
-    asciidoctor-pdf -a release="${release}" -a toc=left -d book -B "documentation/${basedir}/" "documentation/${basedir}/${basefile}" -o "${doc}.pdf" -D "../../website/${release}" 2>&1 | grep -v 'Try: gem'
+    asciidoctor-pdf -a release="${release}" -a toc=left  ${extraargs} -d book -B "documentation/${basedir}/" "documentation/${basedir}/${basefile}" -o "${doc}.pdf" -D "../../website/${release}" 2>&1 | grep -v 'Try: gem'
 }
 
 RC=0
@@ -53,6 +57,13 @@ done
 for release in ${DEVRELEASE}; do
     for doc in "${STATIC[@]}"; do
         build_for_release "${doc}" "${release}"
+    done
+done
+
+# Build latest for DEVEL
+for release in ${DEVRELEASE}; do
+    for doc in "${DEV[@]}"; do
+        build_for_release "${doc}" "${release}" "-a watermark=True"
     done
 done
 
@@ -85,6 +96,19 @@ ${doc}-${release}:
     release: ${release}
     folder: ${release}/${doc}
     """ >>${TARGET}/static.yml
+    done
+done
+
+# Empty file before starting
+>${TARGET}/devprev.yml
+for release in ${DEVRELEASE}; do
+    for doc in "${DEV[@]}"; do
+        echo """
+${doc}-${release}:
+    name: ${doc}
+    release: ${release}
+    folder: ${release}/${doc}
+    """ >>${TARGET}/devprev.yml
     done
 done
 

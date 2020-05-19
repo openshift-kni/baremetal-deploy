@@ -1,7 +1,7 @@
 # Site settings
 show_downloads: false
-title: 'Deployment Integration Team website'
-description: "Documents produced by DIT team"
+title: 'OpenShift Cluster Managed Bare Metal Documentation'
+description: "Documents produced by Deployment Integration team"
 permalink: pretty
 repository: openshift-kni/baremetal-deploy
 
