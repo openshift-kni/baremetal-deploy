@@ -29,17 +29,14 @@ logs as per the below syntax
 If you encounter an issue where the master nodes are not booting up via
 PXE, check the `+ironic-conductor+` pod
 
-Potential reason: They might be in `+ON+` state when deployment started.
+.Potential reason 
+They might be in `+ON+` state when deployment started.
 
-Solution: Make sure to power off the master nodes before you begin the
-installation via iDRAC/iLO. Feel free to use this below script:
+.Solution
+Make sure to power off the OpenShift nodes before you begin the
+installation via iDRAC/iLO.
 
 [source,bash]
 ----
-#!/bin/bash
-
-echo "***Power Off master-0,master1,master-2****"
-ipmitool -I lanplus -U root -P <Password> -H <Out-of-band-ip> power off
-ipmitool -I lanplus -U root -P <Password> -H <Out-of-band-ip> power off
 ipmitool -I lanplus -U root -P <Password> -H <Out-of-band-ip> power off
 ----

@@ -1,5 +1,6 @@
 [id="ipi-install-troubleshooting-install-config"]
-= Install-config
+[[install_config]]
+= Install-config.yaml
 
 The `+install-config.yaml+` represents all the nodes that will be part
 of your OpenShift cluster and the necessary options consisting of but
@@ -14,4 +15,14 @@ https://www.redhat.com/sysadmin/yaml-tips[YAML-tips]
 * Verifying syntax is correct within your YAML using
 http://www.yamllint.com/[syntax-check]
 * Verify the RHCOS QEMU images are properly defined and accessible via
-the URL provided in the `+install-config.yaml+`.
+the URL provided in the `+install-config.yaml+` via a command such as:
++
+[source,bash]
+----
+curl -s -o /dev/null -I -w "%{http_code}\n" http://webserver.example.com:8080/rhcos-44.81.202004250133-0-qemu.x86_64.qcow2.gz?sha256=7d884b46ee54fe87bbc3893bf2aa99af3b2d31f2e19ab5529c60636fbd0f1ce7
+
+200
+----
++
+The output of 200 ensures that we are geting a valid response from our webserver that is indeed storing our bootstrap VM image in the
+above example.

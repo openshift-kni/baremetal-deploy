@@ -3,69 +3,68 @@
 
 * bootstrap VM cannot download RHCOS image
 
-After the bootstrap VM goes up comes a phase where podman raises 2
-containers:
+When experiencing issues downloading or access the RHCOS images,
+verify the following two containers are up and running:
 
 ....
 ipa-downloader
 coreos-downloader
 ....
 
-These both containers will download resources from the registry.This is
-the relevant section where is this step performed, modify it in order to
-let the provisioner to access to the resources:
+These containers download resources from a provided webserver or
+the external quay.io registry (which ever is provided in the
+install-config.yaml).
 
+.Example of internal webserver hosting RHCOS images
 [source,yaml]
 ----
-bootstrapOSImage: http://[<IPv4/Ipv6-IP-Registry]/rhcos-43.81.202001142154.0-qemu.x86_64.qcow2.gz?sha256=9d999f55ff1d44f7ed7c106508e5deecd04dc3c06095d34d36bf1cd127837e0c
-clusterOSImage: http://[<IPv4/Ipv6-IP-Registry>]/rhcos-43.81.202001142154.0-openstack.x86_64.qcow2.gz?sha256=a1bda656fa0892f7b936fdc6b6a6086bddaed5dafacedcd7a1e811abb78fe3b0
+bootstrapOSImage: http://<ip:port>/rhcos-43.81.202001142154.0-qemu.x86_64.qcow2.gz?sha256=9d999f55ff1d44f7ed7c106508e5deecd04dc3c06095d34d36bf1cd127837e0c
+clusterOSImage: http://<ip:port>/rhcos-43.81.202001142154.0-openstack.x86_64.qcow2.gz?sha256=a1bda656fa0892f7b936fdc6b6a6086bddaed5dafacedcd7a1e811abb78fe3b0
 ----
 
 Check the status of these containers using
 
 [source,bash]
 ----
-#podman logs -f ipa-downloader
+[core@localhost ~]$ podman logs -f ipa-downloader
 
-#podman logs -f coreos-downloader
+[core@localhost ~]$ podman logs -f coreos-downloader
 ----
 
-* There can be scenario where there is a problem in the `+baremetal+`
-network which uses external registry(https://quay.io) to download the
+* There can be scenarios where there is a problem in the `+baremetal+`
+network that uses external registry (https://quay.io) to download the
 images, make use of `+curl+` command to confirm that you can reach the
 registry.
-* If using a caching Webserver to host the images, bootstrap VM cannot
+* If using a caching webserver to host the images, bootstrap VM cannot
 access the URL and verify it is correct.
 
 With the ability to login to the bootstrap VM
 
 [source,bash]
 ----
-$ ssh -i ~/.ssh/id_rsa core@172.22.0.2
+[kni@provisioner ~]$ ssh core@172.22.0.2
 ----
 
-Issue the `+journalctl+` command to inspect the `+bootkube+` logs which
-shows all the containers which spin up during the deployment phase(you
-can follow along this log) by:
+Issue the following `+journalctl+` commands to inspect the `+bootkube+`
+logs that shows all the containers launched during the deployment phase. 
 
+Within the bootstrap VM,
 [source,bash]
 ----
+[core@localhost ~]$ journalctl -xe
 [core@localhost ~]$ journalctl -b -f -u bootkube.service
 ----
 
 Verify all the pods(`+dnsmasq+`, `+mariadb+`, `+httpd+`, `+ironic+` pods
-etc) are in running state using `+sudo podman ps+` command(which
-displays the containers).
+etc) are in running state using `+sudo podman ps+` command 
+(displays the containers).
 
 If there are issues with the pods, check the logs of all the containers
-with issues , use the below command for an example on how to check the
+with issues. Use the below command for an example on how to check the
 log of the `+ironic-apis+`:
 
-Ex:
-
-`+sudo podman logs <container-name/container-id>+`
-
+.Example one
 [source,bash]
 ----
-sudo podman logs ironic-api
+[core@localhost ~]$ sudo podman logs <container-id>
 ----

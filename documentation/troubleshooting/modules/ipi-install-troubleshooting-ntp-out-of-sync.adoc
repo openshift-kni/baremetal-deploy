@@ -1,15 +1,16 @@
 [id="ipi-install-troubleshooting-ntp-out-of-sync"]
+[[ntp]]
 = NTP out of sync
 
 The deployment of OpenShift clusters depends on having synced time.
-Without synced time, the deployment will fail as ensuring time
-consistency is of the utmost important when talking about clusters. For
+Without synced time, the deployment may fail due to the time
+inaccuracies if larger than two seconds. For
 example, notice the AGE of the nodes below.
 
 [source,bash]
 ----
-$ oc get nodes
-NAME                                         STATUS   ROLES    AGE   VERSION
+[kni@provisioner ~]$ oc get nodes
+NAME                         STATUS   ROLES    AGE   VERSION
 master-0.cloud.example.com   Ready    master   145m   v1.16.2
 master-1.cloud.example.com   Ready    master   135m   v1.16.2
 master-2.cloud.example.com   Ready    master   145m   v1.16.2
@@ -20,8 +21,8 @@ This leads to inconsistent timing delays as shown below
 
 [source,bash]
 ----
-# oc get bmh -n openshift-machine-api
-master-1   error    registering              kni7-master-1         ipmi://[fd35:919d:4042:2:c7ed:9a9f:a9ec:102]
+[kni@provisioner ~]$ oc get bmh -n openshift-machine-api
+master-1   error    registering              kni7-master-1         ipmi://<out-of-band-ip>
 
 #sudo timedatectl
                Local time: Tue 2020-03-10 18:20:02 UTC
@@ -33,36 +34,39 @@ System clock synchronized: no
           RTC in local TZ: no
 ----
 
-This can be fixed by following the below steps.
+In an already existing cluster, this can be 
+fixed by following the below steps.
 
-- Add `+chrony.conf+` file and encode it as base64, for example:
+- Add `+chrony.conf+` file and encode it as `base64`, for example:
 
 [source,bash]
 ----
 cat << EOF | base 64
-server registry.cloud.example.com
+server <NTP-server> iburst
+stratumweight 0
 driftfile /var/lib/chrony/drift
-logdir /var/log/chrony
-log measurements statistics tracking
+rtcsync
+makestep 10 3
+bindcmdaddress 127.0.0.1
+bindcmdaddress ::1
 keyfile /etc/chrony.keys
-commandkey 24
-local stratum 10
-initstepslew 20 registry.cloud.example.com
+commandkey 1
+generatecommandkey
+noclientlog
 logchange 0.5
-allow fd35:919d:4042:2::1000 #IP-address-of-NTP-server
+logdir /var/log/chrony
 EOF
 [text-in-base-64]
 ----
 
-
-- Create the `+MachineConfig+` file, replacing the base64 string with
+- Create the `+MachineConfig+` file, replacing the `base64` string with
 the one you just created yourself. This example adds the file to master
 nodes. You can change it to worker or make an additional
 `+MachineConfig+` for the worker role:
 
 [source,yaml]
 ----
-cat << EOF > ./99_masters-chrony-configuration.yaml
+[kni@provisioner ~]$ cat << EOF > ./99_masters-chrony-configuration.yaml
 apiVersion: machineconfiguration.openshift.io/v1
 kind: MachineConfig
 metadata:
@@ -96,22 +100,13 @@ spec:
   osImageURL: ""
 ----
 
+Make a backup copy of the configuration file.
 
-- Make a backup copy of the configuration file.
-- If doing a clean deployment, generate manifest files, add this file to
-the openshift directory, then continue to create the cluster.
-
-[source,bash]
-----
-$ cp chrony-masters.yaml <Install-Dir>/ocp/openshift/99_masters-chrony-configuration.yaml
-----
-
-
-- If the cluster is already running, apply the file as follows:
+Since, the cluster is already running, apply the file as follows:
 
 [source,bash]
 ----
-# oc apply -f ./masters-chrony-configuration.yaml
+[kni@provisioner ~]$ oc apply -f ./masters-chrony-configuration.yaml
 sudo timedatectl
                Local time: Tue 2020-03-10 19:10:02 UTC
            Universal time: Tue 2020-03-10 19:10:02 UTC
@@ -121,3 +116,13 @@ System clock synchronized: yes
               NTP service: active
           RTC in local TZ: no
 ----
+
+NOTE: When wanting to setup time sync prior to deployment,
+generate manifest files, add this file to
+the `openshift` directory, then continue to create the cluster.
+
+[source,bash]
+----
+[kni@provisioner ~]$ cp chrony-masters.yaml <Install-Dir>/ocp/openshift/99_masters-chrony-configuration.yaml
+----
+
