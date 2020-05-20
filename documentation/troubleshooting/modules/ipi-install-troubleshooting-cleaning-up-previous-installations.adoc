@@ -2,8 +2,8 @@
 = Cleaning up previous installations
 
 If re-running the deployment, delete all the older bootstrap VMs
-including its volume as shown below. Failure to do so will cause future
-deployment failures.
+including its volume as shown below. Failure to do so may cause over
+consumption of resources on the provisioner host.
 
 Clean up the older VMs and their volumes with the help of below script.
 

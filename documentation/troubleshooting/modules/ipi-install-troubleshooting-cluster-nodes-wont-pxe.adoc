@@ -1,24 +1,26 @@
 [id="ipi-install-troubleshooting-cluster-nodes-wont-pxe"]
 
+[[cluster_nodes_wont_pxe]]
 = Cluster nodes won’t PXE
 
+When dealing with issues of OpenShift cluster nodes not
+PXE booting the following issues should be further verified:
+
 * Check the network connectivity to your `+Provisioning+`
-Network(172.22.0.0/24).
+Network
 * Make sure to have PXE enabled on the provisioning NIC and PXE disabled
 for all other NICs.
 * Verify you have the proper boot MAC address(provisioning NIC MAC
 address) and hardware profiles in `+install-config.yaml+` file.
 
-Master node settings
-
+.Master node settings
 ....
-bootMACAddress: 24:6E:96:1B:96:90 # MAC of bootable internal NIC
+bootMACAddress: 24:6E:96:1B:96:90 # MAC of bootable provisioning NIC
 hardwareProfile: default          #master node settings
 ....
 
-Worker node settings
-
+.Worker node settings
 ....
-bootMACAddress: 24:6E:96:1B:96:90 # MAC of bootable internal NIC
+bootMACAddress: 24:6E:96:1B:96:90 # MAC of bootable provisioning NIC
 hardwareProfile: unknown          #worker node settings
 ....
