@@ -1,3 +1,3 @@
-Relocated!
+We've moved!
 
-Please, check <https://openshift-kni.github.io/baremetal-deploy/> for the Appendix containing the troubleshooting guide.
+Check <https://openshift-kni.github.io/baremetal-deploy/> for the updated version.
