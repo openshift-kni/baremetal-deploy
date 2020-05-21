@@ -91,11 +91,18 @@
     verbosity: 2
   tags: validation
 
-- name: Verify DNS records for API VIP, Wildcard (Ingress) VIP
+- name: Verify DNS records for Wildcard (Ingress) VIP
+  set_fact:
+    ingressvip: "{{ lookup('dig', 'foo.apps.{{ cluster |quote }}.{{ domain | quote }}.', '{{ qtype }}' )}}"
+  when: ((ingressvip is undefined) or (ingressvip|length == 0))
+  tags:
+  - always
+  - validation
+
+- name: Verify DNS records for API VIP
   set_fact:
     apivip: "{{ lookup('dig', 'api.{{ cluster |quote }}.{{ domain | quote }}.', '{{ qtype }}' )}}"
-    ingressvip: "{{ lookup('dig', 'foo.apps.{{ cluster |quote }}.{{ domain | quote }}.', '{{ qtype }}' )}}"
-  when: ((apivip is undefined) or (ingressvip is undefined) or (apivip|length == 0) or (ingressvip|length == 0))
+  when: ((apivip is undefined) or (apivip|length == 0))
   tags:
   - always
   - validation
@@ -114,16 +121,16 @@
 
 - name: Fail if incorrect API VIP
   fail:
-    msg: "The API VIP IP seems to be incorrect. Value was NXDOMAIN."
-  when: (apivip == 'NXDOMAIN')
+    msg: "The API VIP IP seems to be incorrect. Value was NXDOMAIN or empty string."
+  when: (apivip == 'NXDOMAIN') or (apivip|length == 0)
   tags:
   - always
   - validation
 
 - name: Fail if incorrect Ingress VIP
   fail:
-    msg: "The Ingress VIP IP seems to be incorrect. Value was NXDOMAIN."
-  when: (ingressvip == 'NXDOMAIN')
+    msg: "The Ingress VIP IP seems to be incorrect. Value was NXDOMAIN or empty string."
+  when: (ingressvip == 'NXDOMAIN') or (ingressvip|length == 0)
   tags:
   - always
   - validation
