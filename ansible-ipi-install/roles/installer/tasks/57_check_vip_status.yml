@@ -1,0 +1,20 @@
+---
+- name: Capture API VIP status
+  uri:
+    url: "{{ item }}" 
+    validate_certs: no
+  register: return_status
+  ignore_errors: yes
+  loop:
+    - https://{{ apivip }}:6443/readyz
+    - https://{{ ingressvip}}:433/readyz
+  when: ('Expected output is failed with a status code of -1 as VIP's should not be active' | warn_me()) 
+  tags: vip_status
+
+- name: Fail if Ingress VIP already exists
+  fail:
+    msg: |
+      The API VIP or Ingress VIP is still active in your cluster
+      please ensure to turn off all the nodes before deployment
+  when: return_status.results[0].status != -1 or return_statusi.results[1].status != -1
+  tags: vip_status
