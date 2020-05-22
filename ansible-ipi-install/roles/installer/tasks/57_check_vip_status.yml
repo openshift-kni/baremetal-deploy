@@ -1,0 +1,30 @@
+---
+- name: Capture API VIP status
+  uri:
+    url: https://{{ apivip }}:6443/readyz
+    validate_certs: no
+  register: api_vip
+  tags: vip_status
+
+- name: Fail if API VIP already exists
+  fail:
+    msg: |
+      The API VIP is already running, please ensure you don't have
+      any rogue servers up and running.
+  when: api_vip.status == 200
+  tags: vip_status
+
+- name: Capture Ingress VIP status
+  uri:
+    url: https://{{ ingressvip }}:443/readyz
+    validate_certs: no
+  register: ingress_vip
+  tags: vip_status
+
+- name: Fail if Ingress VIP already exists
+  fail:
+    msg: |
+      The Ingress VIP is being active in your cluster
+      please ensure to turn off all the nodes before deployment
+  when: ingress_vip.status == 503
+  tags: vip_status
