@@ -1,0 +1,74 @@
+// Module included in the following assemblies:
+//
+// *
+
+[id='external-dhcp_{context}']
+= External DHCP server for provisioning network
+
+It is possible to use an external DHCP server instead of the internal one but it's not the recommended procedure.
+
+CAUTION: External PXE Server is not supported as several configuration files for ignition are created on it, so DHCP should fallback to the installer PXE Server so that the booting nodes can grab the required files from there.
+
+Steps to perform:
+
+- modify the `install-config.j2` and add the following lines:
+[source,diff]
+---
+diff --git a/ansible-ipi-install/roles/installer/templates/install-config.j2 b/ansible-ipi-install/roles/i
+nstaller/templates/install-config.j2
+index 09b58f6..3a15b90 100644
+--- a/ansible-ipi-install/roles/installer/templates/install-config.j2
++++ b/ansible-ipi-install/roles/installer/templates/install-config.j2
+@@ -28,6 +28,8 @@ controlPlane:
+     baremetal: {}
+ platform:
+   baremetal:
++    provisioningDHCPRange: ""
++    provisioningDHCPExternal: true
+     apiVIP: {{ apivip }}
+     ingressVIP: {{ ingressvip }}
+     dnsVIP: {{ dnsvip }}
+---
+
+- Setup a DHCP server listening on the provisioning interface
+    . The DHCP  server must be configured for the right boot mode of the hosts (BIOS, UEFI, IPv4, IPv6) and the system BIOS/UEFI must use the same protocol version (IPv4 or IPv6) for PXE boot.
+    . The DHCP server must point as `next-server` for PXE boot to the server provided by the installer, so that relevant `ignition` configuration files are used.
+    . Create a configuration file that can build the addresses based on the ones on the provisioning network:
+[source,dnsmasq]
+---
+domain-needed
+bind-dynamic
+bogus-priv
+domain=<yourdomain>
+enable-ra
+strict-order
+bind-dynamic
+bogus-priv
+#except-interface=lo
+interface=provisioning
+# Next line uses address in provisioning network to construct the DHCP range automatically
+dhcp-range=tag:provisioning,::1,constructor:provisioning, ra-names, 12h
+dhcp-authoritative
+dhcp-lease-max=253
+log-dhcp
+expand-hosts
+local=/<yourdomain>/
+address=/apps.<yourdomain>/<address>
+host-record=api.<yourdomain>/<address>
+host-record=ns1.<yourdomain>/<address>
+#host-record=registry.<yourdomain>/<address>
+dhcp-host=<nicMAC>,master-0.<yourdomain>,<address>
+dhcp-host=<nicMAC>,master-1..<yourdomain>,<address>
+dhcp-host=<nicMAC>,master-2.<yourdomain>,<address>
+# IPv6 Configuration:
+ra-param=provisioning,0,0
+dhcp-vendorclass=set:pxe6,enterprise:343,PXEClient
+dhcp-userclass=set:ipxe6,iPXE
+dhcp-option=tag:pxe6,option6:bootfile-url,tftp://[<next-server>]/snponly.efi
+dhcp-option=tag:ipxe6,option6:bootfile-url,http://[<next-server>]:80/dualboot.ipxe
+# Disable default router(s) and DNS over provisioning network
+dhcp-option=3
+dhcp-option=6
+---
+
+There were found some issues while setting this up, check bugzilla <https://bugzilla.redhat.com/show_bug.cgi?id=1823359#c2> as reference.
