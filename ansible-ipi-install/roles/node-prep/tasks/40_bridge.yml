@@ -98,22 +98,22 @@
           release_version[0]|int > 4
         - not ipv4_provisioning|bool
 
-    - name: Create Bridge labeled baremetal for ipv4
+    - name: Create Bridge labeled {{ baremetal_bridge }} for ipv4
       nmcli:
-        conn_name: baremetal
+        conn_name: "{{ baremetal_bridge }}"
         type: bridge
-        ifname: baremetal
+        ifname: "{{ baremetal_bridge }}"
         autoconnect: yes
         stp: off
         state: present
       when: (not ipv6_enabled|bool) or
             (ipv4_baremetal|bool)
 
-    - name: Create Bridge labeled baremetal for ipv6
+    - name: Create Bridge labeled {{ baremetal_bridge }} for ipv6
       nmcli:
-        conn_name: baremetal
+        conn_name: "{{ baremetal_bridge }}"
         type: bridge
-        ifname: baremetal
+        ifname: "{{ baremetal_bridge }}"
         autoconnect: yes
         stp: off
         state: present
@@ -127,15 +127,15 @@
         hairpin: no
         id: "{{ pub_nic }}"
         ifname: "{{ pub_nic }}"
-        master: baremetal
+        master: "{{ baremetal_bridge }}"
         autoconnect: yes
         state: present
 
-    - name: Reload baremetal bridge and slave interfaces
+    - name: Reload {{ baremetal_bridge }} bridge and slave interfaces
       shell: |
         /usr/bin/nmcli con reload {{ item }}; /usr/bin/nmcli con up {{ item }}
       with_items:
-        - baremetal
+        - "{{ baremetal_bridge }}"
         - "{{ pub_nic }}"
         - "{{ provisioning_bridge }}"
         - "{{ prov_nic }}"

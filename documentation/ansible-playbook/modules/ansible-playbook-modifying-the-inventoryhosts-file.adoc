@@ -34,6 +34,9 @@ pub_nic=eno2
 # (Optional) Set the provisioning bridge name. Default value is 'provisioning'.
 #provisioning_bridge=provisioning
 
+# (Optional) Set the baremetal bridge name. Default value is 'baremetal'.
+#baremetal_bridge=baremetal
+
 # (Optional) Activation-key for proper setup of subscription-manager, empty value skips registration
 #activation_key=""
 
