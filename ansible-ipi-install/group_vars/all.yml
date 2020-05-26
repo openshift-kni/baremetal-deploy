@@ -34,7 +34,7 @@ rebuild_provisioner: false
 worker_count: 1
 alias:
 #lab specific vars, leave default
-  lab_url: "http://quads.alias.bos.scalelab.redhat.com"
+  lab_url: "http://quads11.alias.bos.scalelab.redhat.com"
 scale:
 # lab specific vars, leave default
   lab_url: "http://quads.rdu2.scalelab.redhat.com"
