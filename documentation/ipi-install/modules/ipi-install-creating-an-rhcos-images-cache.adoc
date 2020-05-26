@@ -13,11 +13,11 @@ If you are running the installer on a network with limited bandwidth and the RHC
 Use the following steps to install a container that contains the images.
 
 
-. Install `podman`.
+. Install `podman` and `policycoreutils-python-utils`.
 +
 [source,bash]
 ----
-[kni@provisioner ~]$ sudo dnf install -y podman
+[kni@provisioner ~]$ sudo dnf install -y podman policycoreutils-python-utils
 ----
 
 . Open firewall port `8080` to be used for RHCOS Image caching.

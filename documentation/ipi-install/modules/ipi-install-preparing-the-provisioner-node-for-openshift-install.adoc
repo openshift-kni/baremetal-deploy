@@ -53,7 +53,7 @@ For more information about Red Hat Subscription Manager, see link:https://access
 +
 [source,bash]
 ----
-[kni@provisioner ~]$ sudo dnf install -y libvirt qemu-kvm mkisofs python3-devel jq ipmitool
+[kni@provisioner ~]$ sudo dnf install -y libvirt qemu-kvm mkisofs python3-devel jq ipmitool tar
 ----
 
 . Modify the user to add the `libvirt` group to the newly created user.
