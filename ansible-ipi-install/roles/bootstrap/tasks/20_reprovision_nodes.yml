@@ -46,12 +46,21 @@
         hostname: "{{ hammer_host }}"
         user: "root"
 
-    - name: update host to install new os
+    - name: update host to install new os (scale lab)
       shell: hammer -u {{ cloud_name }} -p {{ lab_ipmi_password }}  host update --name {{ provisioner_hostname }} --build 1 --operatingsystem '{{ os_install }}' --overwrite 1
       delegate_to: "{{ hammer_host }}"
       vars:
         ansible_user: root
         ansible_python_interpreter: "{{ python_interpreter }}"
+      when: lab_name == "scale"
+
+    - name: update host to install new os (scale lab)
+      shell: hammer -u {{ cloud_name }} -p {{ lab_ipmi_password }}  host update --name {{ provisioner_hostname }} --build 1 --operatingsystem '{{ os_install }}' --medium '{{ os_install }}' --partition-table 'ALIAS-Partition' --overwrite 1
+      delegate_to: "{{ hammer_host }}"
+      vars:
+        ansible_user: root
+        ansible_python_interpreter: "{{ python_interpreter }}"
+      when: lab_name == "alias"
 
     - name: Set provisioner host to foreman boot order
       shell: |

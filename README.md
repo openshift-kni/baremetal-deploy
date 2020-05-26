@@ -14,6 +14,7 @@ _**Table of contents**_
 - [Versions Tested](#versions-tested)
 - [Limitations](#limitations)
 - [Additional Material/Advanced Usage](#additional-materialadvanced-usage)
+- [Troubleshooting](#troubleshooting)
 <!-- /TOC -->
 
 ## Introduction
@@ -27,7 +28,7 @@ The playbook is intended to be run from outside the cluster of machines you wish
 
 * Ansible >= 2.9
 * Python 3.6+ 
-* Fedora/CentOS/RHEL
+* Fedora/CentOS/RHEL (preferably Fedora 30+)
 * Passwordless sudo for user running the playbook on the ansible control node (host where the playbooks are being run from), since certain package installs are done
 
 Passwordless sudo can be setup as below:
@@ -283,16 +284,19 @@ rebuild_provisioner: false
 worker_count: 0
 alias:
 #lab specific vars, leave default
-  lab_url: "http://quads.alias.bos.scalelab.redhat.com"
+  lab_url: "http://quads11.alias.bos.scalelab.redhat.com/"
 scale:
 # lab specific vars, leave default
   lab_url: "http://quads.rdu2.scalelab.redhat.com"
 
 ```
- 
-### Modifying the `inventory/hosts` file
 
-The bare minimum variables to get a successful install are listed in `ansible-ipi-install/group_vars/all.yml`. Typically, correctly filing `ansible-ipi-install/group_vars/all.yml` should suffice for the shared labs use case, but in cases where some advanced configuration is needed and to fully utilize the options supported by the installer and the [`upstream playbooks`]([https://github.com/openshift-kni/baremetal-deploy](https://github.com/openshift-kni/baremetal-deploy)), the `inventory/hosts` can be edited by the user. For example, the `SDN` for OpenShift can be set ising the `network_type` variable in the inventory. Some of the variables are explicitly left empty and **require** user input for the playbook to run.
+Here's a sample all.yml for the scale lab with the pull secret and password scraped: http://pastebin.test.redhat.com/868904
+Here's a sample al.yml for the ALIAS lab with the pull secret and password scraped: http://pastebin.test.redhat.com/868905 
+
+### Modifying the `ansible-ipi-install/inventory/hosts` file
+
+The bare minimum variables to get a successful install are listed in `ansible-ipi-install/group_vars/all.yml`. Typically, correctly filing `ansible-ipi-install/group_vars/all.yml` should suffice for the shared labs use case, but in cases where some advanced configuration is needed and to fully utilize the options supported by the installer and the [`upstream playbooks`]([https://github.com/openshift-kni/baremetal-deploy](https://github.com/openshift-kni/baremetal-deploy)), the `inventory/hosts` can be edited by the user. For example, the `SDN` for OpenShift can be set ising the `network_type` variable in the inventory. Some of the variables are explicitly left empty and **require** user input for the playbook to run. The sample is provided at `ansible-ipi-install/inventory/hosts.sample` and needs to be copied to `ansible-ipi-install/inventory/hosts` before running the playbook (edit it if needed).
 Below is a sample of the `ansible-ipi-install/inventory/hosts` file
 
 ```ini
@@ -509,9 +513,31 @@ worker-1.openshift.example.com               Ready    worker          19h   v1.1
 Deployment of OCP 4.3 and 4.4 has been tested with the playbook.
 
 ## Limitations
-* Currently only tested in Scale Lab (adding support for ALIAS will require further minimal work)
 * Tested only on Dell Servers (adding support for Supermicros will require further minimal work)
 * Homogeneous hardware expected for masters and workers
 
 ## Additional Material/Advanced Usage
 For additional reading material and advanced usage of all the options provided by `ansible-ipi-install/inventory/hosts.sample` please refer to [https://github.com/openshift-kni/baremetal-deploy/tree/master/ansible-ipi-install](https://github.com/openshift-kni/baremetal-deploy/tree/master/ansible-ipi-install) and [upstream docs]([https://openshift-kni.github.io/baremetal-deploy/](https://openshift-kni.github.io/baremetal-deploy/)). The playbook provided in this repo contantly aims to support everything supported [upstream](https://github.com/openshift-kni/baremetal-deploy/tree/master/ansible-ipi-install) which is made possible by the modular architecture of using upstream roles as is without change and only having extra roles that run before the upstream roles.
+
+## Troubleshooting
+
+Once the playbook reaches the task
+
+```sh
+TASK [installer : Deploy OpenShift Cluster]
+```
+
+the control is passed to the OpenShift installer and any failure in the deployment of OpenShift after that point is either due to hardware issues or installer issues itself. It is not a JetSki failure.
+
+Something that has worked out well in the past is to keep the consoles of all three of your master nodes open during deployment, so that you can observe if any one node is misbehaving when compared to the others. There are 3 boots total before the masters fully become operational and cluster operators start rolling out.
+
+* First PXE boot into RHEL 8.1 for introspection and download of CoreOS image
+* Then second boot to disk to boot into CoreOS image and run OSTree
+* One final reboot and the node should come up as master-0 or master-1 or master-2 at the prompt
+
+Deployments usually fail if the above three steps do not happen. Sometimes, a node might not boot to disk and be stuck in a PXE loop even when asked to boot to hard disk by the installer or it might be stuck at the OS selection menu when asked to boot to disk. These among several other issues have been seen with hardware in the past and it is worth keeping an eye on the console and intervening if needed for a successful deploy. This is beyond the scope of the playbook or for that matter even the installer.
+
+
+
+
+

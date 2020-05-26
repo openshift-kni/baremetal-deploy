@@ -126,7 +126,7 @@ ingressvip="{{ extcidrnet | next_nth_usable(4) }}"
 #masters_prov_nic=""
 # Network Type (OpenShiftSDN or OVNKubernetes). Playbook defaults to OVNKubernetes.
 # Uncomment below for OpenShiftSDN
-network_type="OpenShiftSDN"
+network_type="OVNKubernetes"
 # (Optional) A URL to override the default operating system image for the bootstrap node.
 # The URL must contain a sha256 hash of the image.
 # See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
