@@ -272,10 +272,8 @@
       podman_container:
         name: "{{ pod_name_registry }}"
         image: docker.io/library/registry:2
-        state: started
+        state: stopped
         network: host
-        publish:
-          - "{{ registry_port }}:{{ registry_port_container }}"
         volumes:
           - "{{ registry_dir_data }}:/var/lib/registry:z"
           - "{{ registry_dir_auth }}:/auth:z"
@@ -287,7 +285,64 @@
           REGISTRY_AUTH_HTPASSWD_PATH: auth/htpasswd
           REGISTRY_HTTP_TLS_CERTIFICATE: certs/domain.crt
           REGISTRY_HTTP_TLS_KEY: certs/domain.key
+      register: registry_container_info
 
+    - name: Setting facts about container
+      set_fact:
+        container_registry_name: "{{ registry_container_info.ansible_facts.podman_container.Name }}"
+        container_registry_pidfile: "{{ registry_container_info.ansible_facts.podman_container.ConmonPidFile }}"
+
+    - name: Ensure user specific systemd instance are persistent
+      command:  |
+              /usr/bin/loginctl enable-linger {{ ansible_user }}
+
+    - name: Create systemd user directory
+      file:
+        path: "{{ ansible_user_dir }}/.config/systemd/user"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0775'
+
+    - name: Copy the systemd service file
+      copy:
+        content: |
+          [Unit]
+          Description=Podman container-registry.service
+          [Service]
+          Restart=on-failure
+          ExecStart=/usr/bin/podman start {{ container_registry_name }}
+          ExecStop=/usr/bin/podman stop -t 10 {{ container_registry_name }}
+          KillMode=none
+          Type=forking
+          PIDFile={{ container_registry_pidfile }}
+          [Install]
+          WantedBy=default.target
+        dest: "{{ ansible_user_dir }}/.config/systemd/user/container-registry.service"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+
+    - name: Reload systemd service
+      systemd:
+        daemon_reexec: yes
+        scope: user
+      environment:
+        DBUS_SESSION_BUS_ADDRESS: "{{ ansible_env.DBUS_SESSION_BUS_ADDRESS|default('unix:path=/run/user/' +  ansible_effective_user_id|string + '/bus') }}"
+    - name: Enable container-registry.service
+      systemd:
+        name: container-registry
+        enabled: yes
+        scope: user
+      environment:
+        DBUS_SESSION_BUS_ADDRESS: "{{ ansible_env.DBUS_SESSION_BUS_ADDRESS|default('unix:path=/run/user/' +  ansible_effective_user_id|string + '/bus') }}"
+    - name: Start container-registry.service
+      systemd:
+        name: container-registry
+        state: started
+        scope: user
+      environment:
+        DBUS_SESSION_BUS_ADDRESS: "{{ ansible_env.DBUS_SESSION_BUS_ADDRESS|default('unix:path=/run/user/' +  ansible_effective_user_id|string + '/bus') }}"
     - name: Read in the contents of domain.crt
       slurp:
         src: "{{ registry_dir_cert }}/domain.crt"
