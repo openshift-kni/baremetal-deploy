@@ -45,6 +45,10 @@ build=""
 # Provisioning IP address (default value)
 prov_ip=172.22.0.3
 
+# (Optional) Provisioning network configuration overrides (4.4+)
+#prov_bootstrap_ip=172.22.0.2
+#prov_dhcp_range="172.22.0.10,172.22.0.100"
+
 # (Optional) Enable playbook to pre-download RHCOS images prior to cluster deployment and use them as a local
 # cache. Default is false.
 #cache_enabled=True
