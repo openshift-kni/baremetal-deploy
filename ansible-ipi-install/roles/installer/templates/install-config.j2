@@ -40,6 +40,15 @@ platform:
 {% if (release_version[0]|int > 4) or ((release_version[0]|int == 4) and (release_version[2]|int > 3)) %}
     provisioningNetworkInterface: {{ masters_prov_nic }}
     provisioningNetworkCIDR: {{ provisioning_subnet }}
+{% if prov_dhcp_range is defined and prov_dhcp_range|length %}
+    provisioningDHCPRange: {{ prov_dhcp_range }}
+{% endif %}
+{% if prov_bootstrap_ip is defined and prov_bootstrap_ip|length %}
+    bootstrapProvisioningIP: {{ prov_bootstrap_ip }}
+{% endif %}
+{% if prov_ip is defined and prov_ip|length %}
+    clusterProvisioningIP: {{ prov_ip }}
+{% endif %}
 {% endif %}
 {% if bootstraposimage is defined and bootstraposimage|length %}
     bootstrapOSImage: {{ bootstraposimage }}
