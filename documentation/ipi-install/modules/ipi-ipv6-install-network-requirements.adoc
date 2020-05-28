@@ -1,0 +1,49 @@
+[id='network-requirements-ipv6']
+= Network requirements IPv6
+
+=== SLAAC Addressing
+
+If you don't plan to use SLAAC addresses on your OpenShift node then SLAAC addressing should be disabled for the `baremetal` networks, that means that if your network equipment is configured to send SLAAC addresses when replying to Route Advertisements that behavior should be changed, so it only sends the route and not the SLAAC address.
+
+You can install ndptool on your system in order to check what your RAs look like:
+
+[source,shell]
+----
+# Turn down/up baremetal iface on a master Node
+$ sudo nmcli con down "Wired connection 5" && sudo nmcli con up "Wired connection 5"
+Connection 'Wired connection 5' successfully deactivated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/1983)
+Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/2044)
+
+# ndptool monitor on Helper node
+$ sudo ndptool monitor -t ra
+NDP payload len 80, from addr: fe80::c0a4:6464:bcb3:d657, iface: baremetal.153
+  Type: RA
+  Hop limit: 64
+  Managed address configuration: yes
+  Other configuration: no
+  Default router preference: medium
+  Router lifetime: 0s
+  Reachable time: unspecified
+  Retransmit time: unspecified
+  Source linkaddr: 1c:40:24:1b:0c:34
+  Prefix: 2620:52:0:1303::/64, valid_time: 86400s, preferred_time: 14400s, on_link: yes, autonomous_addr_conf: no, router_addr: no
+  Route: ::/0, lifetime: 0s, preference: low
+----
+
+The `ndptool monitor` should report `Managed address configuration: yes`.
+
+=== Network Ranges and Configurations
+
+A different `baremetal` and `provisioning` networks are required for each environment, every environment will have a different IPv6 range for each of these networks.
+
+In our configuration we used subinterfaces attached to two different physical interfaces, VLAN tagging was done at O.S level (this required switch ports configured with `trunk` mode).
+
+Our different IPv6 networks were all routable, usually, the only routable networks are the `baremetal` ones.
+
+Keep in mind that `provisioning` networks cannot be in the same broadcast domain, since there will be services such as DHCP running.
+
+Router Advertisements must be enabled for both networks `baremetal` and `provisioning`.
+
+=== Router Advertisements
+
+As mentioned during the doc, both the `baremetal` and the `provisioning` networks need to have Router Advertisements enabled. We used `radvd` daemon for that on the `baremetal` network, the `provisioning` network will have the RA enabled in the Metal3 dnsmasq, so no configuration is needed.
