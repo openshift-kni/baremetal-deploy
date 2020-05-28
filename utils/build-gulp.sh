@@ -20,6 +20,7 @@ readarray -t mystaticdocs <<<$(cat website/_data/static.yml | grep name | cut -d
 echo "<ul>" >>website/index.html
 for release in ${myreleases}; do
     for doc in "${mydocs[@]}"; do
+        doc=$(echo "${doc}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
         echo "<li><a href=\"${release}/${doc}\">${release}-${doc}</a></li>" >>website/index.html
     done
 done

@@ -138,7 +138,7 @@ sudo systemctl daemon-reload
 [core@master-X ~]$ sudo journalctl -fu kubelet.service
 ----
 
-NOTE: where `X` is the master node number. 
+NOTE: where `X` is the master node number.
 
 If you already had this cluster running when the node booted up with the
 wrong hostname you will have pending `+csrs+` on the cluster, you *MUST

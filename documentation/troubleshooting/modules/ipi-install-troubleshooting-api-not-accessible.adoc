@@ -4,7 +4,7 @@
 = API not accessible
 
 When the API is not accessible these issues often arise when the
-following is not properly addressed. 
+following is not properly addressed.
 
 * Incorrect name resolutions are set in the DNS server,
 make use of `+dig+` and `+nslookup+` commands.
@@ -44,6 +44,6 @@ api.<cluster-name>.example.com. 10800 IN	A 10.19.13.86
 ;; MSG SIZE  rcvd: 140
 ----
 
-This concludes that the appropriate IP for the 
+This concludes that the appropriate IP for the
 api.<cluster-name>.example.com VIP was `10.19.13.86`.
 This IP address should reside on the `baremetal` network.

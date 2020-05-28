@@ -34,7 +34,7 @@ System clock synchronized: no
           RTC in local TZ: no
 ----
 
-In an already existing cluster, this can be 
+In an already existing cluster, this can be
 fixed by following the below steps.
 
 - Add `+chrony.conf+` file and encode it as `base64`, for example:
@@ -125,4 +125,3 @@ the `openshift` directory, then continue to create the cluster.
 ----
 [kni@provisioner ~]$ cp chrony-masters.yaml <Install-Dir>/ocp/openshift/99_masters-chrony-configuration.yaml
 ----
-
