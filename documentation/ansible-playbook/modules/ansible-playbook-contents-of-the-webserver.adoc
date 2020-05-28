@@ -2,7 +2,7 @@
 
 = Contents of the Webserver
 //FIXME This link doesn't exist yet, bc piece is not a module
-When following the details on how to create a link:../../{release}/Deployment#ipi-install-creating-an%20rhcos-images-cache_ipi-install-prerequisites[webserver], if one not already in place, there is still additional content required for
+When following the details on how to create a link:../{release}/Deployment#ipi-install-creating-an%20rhcos-images-cache_ipi-install-prerequisites[webserver], if one not already in place, there is still additional content required for
 a fully disconnected environment to be successfully deployed with the Ansible playbook.
 
 The Ansible playbook requires the end user to additionally include the following
