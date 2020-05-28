@@ -29,7 +29,7 @@ create the htpasswd file.
 
 Example:
 
-[user@registry ~]$ b64auth=$( echo -n '<username>:<passwd>' openssl base64 )
+[user@registry ~]$ b64auth=$( echo -n '<username>:<passwd>' | openssl base64 )
 {nbsp} +
 [user@registry ~]$ echo $b64auth
 

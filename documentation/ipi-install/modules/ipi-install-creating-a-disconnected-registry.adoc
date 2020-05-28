@@ -153,7 +153,7 @@ Copy the pull secret file from the provisioner node to the registry node and mod
 +
 [source,bash]
 ----
-[user@registry ~]$ b64auth=$( echo -n '<username>:<passwd>' openssl base64 )
+[user@registry ~]$ b64auth=$( echo -n '<username>:<passwd>' | openssl base64 )
 ----
 +
 Replace `<username>` with the user name and `<passwd>` with the password.
@@ -193,6 +193,14 @@ Replace `<username>` with the user name and `<passwd>` with the password.
   --from=$UPSTREAM_REPO \
   --to-release-image=$LOCAL_REG/$LOCAL_REPO:${VERSION} \
   --to=$LOCAL_REG/$LOCAL_REPO
+----
++
+NOTE: Example output of the variables used to mirror the install images
++
+----
+UPSTREAM_STREAM=${RELEASE_IMAGE}
+LOCAL_REG=<registry_FQDN>:<registry_port>
+LOCAL_REPO='ocp4/openshift4'
 ----
 
 == Modify the `install-config.yaml` file to use the disconnected registry (optional)

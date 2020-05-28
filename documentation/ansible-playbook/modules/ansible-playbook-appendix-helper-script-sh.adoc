@@ -38,6 +38,7 @@ rm -f release.txt rhcos.json oc kubelet openshift-client-linux-$build_version.ta
 echo "****Below are the values that has been set****"
 echo Local Repo = $LOCAL_REPOSITORY
 echo Local Registry = $LOCAL_REGISTRY
+echo Registry Port = $REGISTRY_PORT
 echo Release = $OCP_RELEASE
 echo Pull-Secret File = $LOCAL_PULL_SECRET
 echo Build Version = $build_version
@@ -53,14 +54,14 @@ tar -xvzf openshift-client-linux-$build_version.tar.gz
 
 echo "******Download the 'openshift-baremetal-install' binary for the $build_version and extract it*******"
 
-web_url=$(curl -sL -w "%{http_code}\\n" "http://ipv6-jump.cloud.lab.eng.bos.redhat.com/$RHCOS_QEMU_URI" -o /dev/null)
+web_url=$(curl -sL -w "%{http_code}\\n" "http://${LOCAL_REGISTRY}/${RHCOS_QEMU_URI}" -o /dev/null)
 if [[ $web_url != 200 ]]; then
     echo "Did not receive a successful 200 code, exiting..."
     echo "****Extracting the installer currently has some caveats. Extracting the openshift-baremetal-install binary does not pull from a local registry when given a local registry, BZ#1823143 Due to this, in order to properly extract the installer, the OpenShift disconnected mirrored registry that is to be used must be available and have access to quay.io temporary to properly extract the binary. The following step assumes this.*****"
     exit    # other actions
 fi
 
-oc adm release extract --registry-config "${LOCAL_PULL_SECRET}" --command="${cmd}" --to `pwd` ${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}
+oc adm release extract --registry-config "${LOCAL_PULL_SECRET}" --command="${cmd}" --to `pwd` ${LOCAL_REGISTRY}:${REGISTRY_PORT}/${LOCAL_REPOSITORY}:${OCP_RELEASE}
 
 
 echo "******Download the rhcos.json file for the $build_version*******"
