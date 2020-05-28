@@ -9,7 +9,7 @@ host images locally. Details can be found in link:../../{release}/Deployment#ipi
 
 When attempting to mirror the registry and if you receive a 'User Not Authorized'
 error, this is due to not appending the new authentication to your already
-existing pull-secret.txt file. 
+existing pull-secret.txt file.
 
 [source,bash]
 ----
