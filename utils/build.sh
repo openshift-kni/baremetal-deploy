@@ -41,7 +41,7 @@ build_for_release() {
     myrc=${?}
 
     # Build the documentation PDF
-    asciidoctor-pdf -a release="${release}" -a toc=left  ${extraargs} -d book -B "documentation/${basedir}/" "documentation/${basedir}/${basefile}" -o "${doc}.pdf" -D "../../website/${release}" 2>&1 | grep -v 'Try: gem'
+    asciidoctor-pdf -a release="${release}" -a toc=left ${extraargs} -d book -B "documentation/${basedir}/" "documentation/${basedir}/${basefile}" -o "${doc}.pdf" -D "../../website/${release}" 2>&1 | grep -v 'Try: gem'
 }
 
 RC=0

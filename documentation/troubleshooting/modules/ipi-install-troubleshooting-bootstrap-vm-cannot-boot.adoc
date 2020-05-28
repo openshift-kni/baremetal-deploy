@@ -29,7 +29,7 @@ logs as per the below syntax
 If you encounter an issue where the master nodes are not booting up via
 PXE, check the `+ironic-conductor+` pod
 
-.Potential reason 
+.Potential reason
 They might be in `+ON+` state when deployment started.
 
 .Solution
