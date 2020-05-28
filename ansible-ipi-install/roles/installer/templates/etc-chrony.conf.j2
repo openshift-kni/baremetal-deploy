@@ -3,7 +3,7 @@ kind: MachineConfig
 metadata:
   labels:
     machineconfiguration.openshift.io/role: {{ item }}
-  name: 99-{{ item }}-etc-chrony-conf
+  name: 98-{{ item }}-etc-chrony-conf
 spec:
   config:
     ignition:
