@@ -14,7 +14,8 @@
 
 - name: add provisioner to inventory file
   add_host:
-    name: "provisioner"
+    name: "{{ provisioner_hostname }}"
+    groups: "provisioner"
     ansible_host: "{{ provisioner_hostname }}"
     ansible_ssh_private_key_file: "{{ ansible_ssh_key }}"
     ansible_user: "root"
