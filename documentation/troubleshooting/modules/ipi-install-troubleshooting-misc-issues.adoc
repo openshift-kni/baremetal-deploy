@@ -70,8 +70,7 @@ https://github.com/openshift/installer/blob/master/docs/user/troubleshooting.md[
 == Servers not getting the correct IPv6 over DHCP
 
 . The reserved IPv6 addresses should be outside your DHCP Range
-. In the reservation make sure you’re using the correct MAC Address and
-Client ID (if supported), example below:
+. In the reservation make sure you’re using the correct DUID, example below:
 +
 [source,bash]
 ----

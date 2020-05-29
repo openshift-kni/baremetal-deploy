@@ -53,6 +53,7 @@ include::modules/ipi-install-troubleshooting-bootstrap-vm-cannot-boot.adoc[level
 include::modules/ipi-install-troubleshooting-bootstrap-vm-inspecting-logs.adoc[leveloffset=+2]
 
 include::modules/ipi-install-troubleshooting-cluster-nodes-wont-pxe.adoc[leveloffset=+1]
+
 include::modules/ipi-install-troubleshooting-api-not-accessible.adoc[leveloffset=+1]
 
 include::modules/ipi-install-troubleshooting-review-install.adoc[leveloffset=+1]
@@ -65,3 +66,4 @@ include::modules/ipi-install-troubleshooting-cleaning-up-previous-installations.
 include::modules/ipi-install-troubleshooting-registry-issues.adoc[leveloffset=+1]
 
 include::modules/ipi-install-troubleshooting-misc-issues.adoc[leveloffset=+1]
+include::modules/ipi-install-troubleshooting-failed-ignition-during-firstboot.adoc[leveloffset=+2]
