@@ -1,10 +1,9 @@
 ## JetSki
-JetSki inherits roles from [upstream](https://github.com/openshift-kni/baremetal-deploy) and [midstream](https://github.com/dustinblack/baremetal-deploy/tree/rh_scale_shared_labs), and aims to provide a consistent, seamless OpenShift installation experience in Red Hat's Shared Labs.
+JetSki inherits roles from [upstream](https://github.com/openshift-kni/baremetal-deploy) and aims to provide a consistent, seamless OpenShift installation experience on bare metal in Red Hat's Shared Labs.
 
-_**Table of contents**_
+_**Table of Contents**_
 
 <!-- TOC -->
-
 - [Introduction](#introduction)
 - [Prerequisites](#prerequisites)
 - [Features of JetSki](#features-of-jetski)
@@ -19,7 +18,7 @@ _**Table of contents**_
 
 ## Introduction
 
-This Ansible  playbook and set of Ansible roles are aimed at providing a cluster of Red Hat OpenShift 4 (`IPI`) in the Red Hat shared labs with as little user input and intervention as possible.
+This Ansible playbook and set of Ansible roles are aimed at providing a cluster of Red Hat OpenShift 4 (`IPI`) in the Red Hat shared labs with as little user input and intervention as possible.
 
 
 ## Prerequisites
@@ -36,7 +35,7 @@ Passwordless sudo can be setup as below:
 echo "username ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/username
 chmod 0440 /etc/sudoers.d/username
 ```
-The `username` should be the user with which the playbook is run as.
+The `username` should be the user with which the playbook is run.
 
 The playbook has been most extensively tested running from a Fedora 30 `jumphost`.
 
@@ -52,16 +51,16 @@ The servers used for the OpenShift deployment itself are recommended to satisfy 
 * Dynamic generation of inventory for a seamless deployment experience 
 * Minimum variables needed for deployment, meaning more heavy lifting done by  the automation, resulting in lower margin of error and lesser time spent by user populating the inventory
 * Low barrier of entry, no need for user to even simply copy keys for ansible to run against provisioner host, everything is done by the playbook
-* *Consistent user experience with everything being orchestrated through one playbook
+* Consistent user experience with everything being orchestrated through one playbook
 * Can be run from outside the cluster, from a user's laptop or any `jumphost`
 * Automatic detection of python interpreter on provisioner node
 * Re-Images Provisioner node as needed through Foreman
 * Prepares the the provisioner node for subsequent run of the installer
 * Tightly integrated with lab automation, uses some metadata provided by the Lab Wiki along with automated network discovery for dynamic inventory generation
-* Modular architecture, inherits roles from [upstream](https://github.com/openshift-kni/baremetal-deploy) and [midstream](https://github.com/dustinblack/baremetal-deploy/tree/rh_scale_shared_labs) without changing them, only adding roles that run before them, to setup the inventory and required parameters for the success of those roles
+* Modular architecture, inherits roles from [upstream](https://github.com/openshift-kni/baremetal-deploy) without changing them, only adding roles that run before them, to setup the inventory and required parameters for the success of those roles
 
 ##  Deployment Architecture
-For end-to-end automation and easy deployment, JetSki makes certain assumptions. The first node in your lab allocation is deployed as the provisioner host and the next 3 nodes are deployed as masters. The rest of the nodes are deployed asworkers depending on how many workers were requested by user (by default all remaining nodes are deployed as workers unless otherwise specified by `worker_count` variable in `ansible-ipi-install/group_vars/all.yml`). `dnsmasq` is also setup on the provisioner to provide `DNS` and `DHCP` for the baremetal interfaces of the OpenShift nodes.
+For end-to-end automation and easy deployment, JetSki makes certain assumptions. The first node in your lab allocation is deployed as the provisioner host and the next 3 nodes are deployed as masters. The rest of the nodes are deployed as workers depending on how many workers were requested by user (by default all remaining nodes are deployed as workers unless otherwise specified by `worker_count` variable in `ansible-ipi-install/group_vars/all.yml`). `dnsmasq` is also setup on the provisioner to provide `DNS` and `DHCP` for the baremetal interfaces of the OpenShift nodes.
 
 ## Tour of the Ansible Playbook
 
@@ -72,14 +71,14 @@ The `ansible-ipi-install`  directory consists of three main sub-directories in a
 - `roles` - contains eight roles: `bootstrap`, `prepare-kni`, `add-provisioner`, `network-discovery`, `set-deployment-facts`, `shared-labs-prep`,`node-prep` and `installer`. `node-prep` handles all the prerequisites that the provisioner node requires prior to running the installer. The `installer` role handles extracting the installer, setting up the manifests, and running the Red Hat OpenShift installation.
 
 The purpose served by each role can be summarized as follows:
-* `bootstrap`- This role does a **lot** of heavy lifting for seamless deployment in the shared labs. On a high level, this role is responsible for installing needed packages on the `jumphost`, obtaining the list of nodes in your lab allocation dynamically, setting some variables required in inventory as ansible facts (like list of master nodes, worker nodes, mgmt interfaces), copying keys of the `jumphost` to the provisioner, rebuilding the provisioner if needed and finally adding the master and worker nodes to the in-memory dynamic inventory of ansible. This role runs on the `jumphost` aka `localhost`.
-* `prepare-kni`-  Prepares the `kni` user and related artifacts on the provisioner node. This role runs on the provisioner host.
-* `add-provisioner`- Adds provsioner host to the dynamic in-memory inventory. This role runs on the `jumphost` aka `localhost`.
-* `network-discovery`- Set several important variables for the inventory including the NICs and MACs to be used for the provisioning and baremetal networks. Some of the MAC details are obtained from an inventory automatically generated on the Lab Wiki which the network-discovery role uses to further set all variables needed for proper networking. This role runs on the provisioner host.
-* `set-deployment-facts`- This role is used to set some of the facts registered on the jumphost on to the provisioner host for use in future roles. This role runs on the provisioner host.
-* `shared-labs-prep`- Creates the BM bridge, powers on nodes, sets boot order etc. This role runs on the provisioner host.
-* `node-prep`- Prepares the provisioner node for the OpenShift Installer by installing needed packages, creating necessary directories etc. This role runs on the provisioner host.
-* `installer`- Actually drives the OpenShift Installer. This role runs on the provisioner host.
+* `bootstrap` - This role does a **lot** of heavy lifting for seamless deployment in the shared labs. On a high level, this role is responsible for installing needed packages on the `jumphost`, obtaining the list of nodes in your lab allocation dynamically, setting some variables required in inventory as ansible facts (like list of master nodes, worker nodes, mgmt interfaces), copying keys of the `jumphost` to the provisioner, rebuilding the provisioner if needed and finally adding the master and worker nodes to the in-memory dynamic inventory of ansible. This role runs on the `jumphost` aka `localhost`.
+* `prepare-kni` -  Prepares the `kni` user and related artifacts on the provisioner node. This role runs on the provisioner host.
+* `add-provisioner` - Adds provsioner host to the dynamic in-memory inventory. This role runs on the `jumphost` aka `localhost`.
+* `network-discovery` - Set several important variables for the inventory including the NICs and MACs to be used for the provisioning and baremetal networks. Some of the MAC details are obtained from an inventory automatically generated on the Lab Wiki which the network-discovery role uses to further set all variables needed for proper networking. This role runs on the provisioner host.
+* `set-deployment-facts` - This role is used to set some of the facts registered on the jumphost on to the provisioner host for use in future roles. This role runs on the provisioner host.
+* `shared-labs-prep` - Creates the BM bridge, powers on nodes, sets boot order etc. This role runs on the provisioner host.
+* `node-prep` - Prepares the provisioner node for the OpenShift Installer by installing needed packages, creating necessary directories etc. This role runs on the provisioner host.
+* `installer` - Actually drives the OpenShift Installer. This role runs on the provisioner host.
 
 The tree structure is shown below:
 
@@ -247,13 +246,14 @@ This is the most important file to modify for a successful install of OpenShift 
 * `pullsecret`
 * `hammer_host` (Optional, if you manually provisioned a clean RHEL 8.1 install on the first node   in your lab allocation, because this variable is to rebuild the provisioning host using foreman)
 
-Here's a sample
+Here's a sample:
 ```yml
-# This is the location where the list of hosts your lab allocation will be 
-# downloaded to in json format. Leave default, for most cases
+# This is the location on the jumphost (ansible controller) where the list 
+# of hosts your lab allocation will be downloaded to in json format. 
+# Leave default, for most cases
 ocpinv_file: "{{ playbook_dir }}/ocpinv.json"
 # Your allocation name/number in the shared labs
-cloud_name: cloud10
+cloud_name: cloud00
 # Lab name, typically can be alias or scale
 lab_name: scale
 # Default lab password to your nodes so that keys can be added automatically for ansible to run
@@ -263,7 +263,7 @@ ansible_ssh_key: "{{ ansible_user_dir }}/.ssh/id_rsa"
 # The version of the openshift-installer, undefined or empty results in the playbook failing with error message.
 # Values accepted: 'latest-4.3', 'latest-4.4', explicit version i.e. 4.3.0-0.nightly-2019-12-09-035405
 # For reference, https://openshift-release.svc.ci.openshift.org/
-version: "4.3.5"
+version: "latest-4.4"
 # Enter whether the build should use 'dev' (nightly builds) or 'ga' for Generally Available version of OpenShift
 # Empty value results in playbook failing with error message.
 build: "ga"
@@ -272,7 +272,7 @@ pullsecret: ''
 # This variable serves two purposes, one: If the host being used as provisioner (automatically, the first host in your lab assignment) is not pre-installed with RHEL 8.1
 # the playbook logs into this host to make hammer cli calls to mark the host for a build with RHEL 8.1. Two: If you are redeploying on an allocation with a previously installed
 # OpenShift cluster, it might be better to start with a clean provisioning host, in that case also, the hammer_host variable is used to reprovision the system based on 
-# `rebuild_provisioner` variable below. If you do not have access to this type of host for reprovisioning/making hammer cli calls, it is recommended that you start with a RHEL 8.1
+# rebuild_provisioner variable below. If you do not have access to this type of host for reprovisioning/making hammer cli calls, it is recommended that you start with a RHEL 8.1
 # clean provisioning host (manually install RHEL 8.1 on the first host in your lab allocation), so that `hammer_host` is never needed
 hammer_host: hwstore.example.com
 # The automation automatically rebuilds provisioner node to rhel 8.1 if not already rhel 8.1 (see nammer_host variable)
@@ -281,14 +281,13 @@ rebuild_provisioner: false
 # Number of workers desired, by default all hosts in your allocation except 1 provisioner and 3 masters are used workers
 # However that behaviour can be overrided by explicitly settign the desired number of workers here. For a masters only deploy,
 # set worker_count to 0
-worker_count: 0
+worker_count: 2
 alias:
 #lab specific vars, leave default
-  lab_url: "http://quads11.alias.bos.scalelab.redhat.com/"
+  lab_url: "http://quads11.alias.bos.scalelab.redhat.com"
 scale:
 # lab specific vars, leave default
   lab_url: "http://quads.rdu2.scalelab.redhat.com"
-
 ```
 
 Here's a sample all.yml for the scale lab with the pull secret and password scraped: http://pastebin.test.redhat.com/868904
@@ -297,9 +296,11 @@ Here's a sample al.yml for the ALIAS lab with the pull secret and password scrap
 ### Modifying the `ansible-ipi-install/inventory/hosts` file
 
 The bare minimum variables to get a successful install are listed in `ansible-ipi-install/group_vars/all.yml`. Typically, correctly filing `ansible-ipi-install/group_vars/all.yml` should suffice for the shared labs use case, but in cases where some advanced configuration is needed and to fully utilize the options supported by the installer and the [`upstream playbooks`]([https://github.com/openshift-kni/baremetal-deploy](https://github.com/openshift-kni/baremetal-deploy)), the `inventory/hosts` can be edited by the user. For example, the `SDN` for OpenShift can be set ising the `network_type` variable in the inventory. Some of the variables are explicitly left empty and **require** user input for the playbook to run. The sample is provided at `ansible-ipi-install/inventory/hosts.sample` and needs to be copied to `ansible-ipi-install/inventory/hosts` before running the playbook (edit it if needed).
-Below is a sample of the `ansible-ipi-install/inventory/hosts` file
+
+Below is a sample of the `ansible-ipi-install/inventory/hosts` file:
 
 ```ini
+
 [all:vars]
 
 ###############################################################################
@@ -317,6 +318,10 @@ dir="{{ ansible_user_dir }}/clusterconfigs"
 
 # Provisioning IP address (default value)
 prov_ip=172.22.0.3
+
+# (Optional) Provisioning network configuration overrides (4.4+)
+prov_bootstrap_ip=172.22.0.2
+prov_dhcp_range="172.22.0.10,172.22.0.254"
 
 # (Optional) Enable playbook to pre-download RHCOS images prior to cluster deployment and use them as a local
 # cache. Default is false.
@@ -356,10 +361,10 @@ prov_ip=172.22.0.3
 # deployments. The variables below can be used to extend those timeouts.
 
 # (Optional) Increase bootstrap process timeout by N iterations.
-#increase_bootstrap_timeout=2
+increase_bootstrap_timeout=2
 
 # (Optional) Increase install process timeout by N iterations.
-#increase_install_timeout=2
+increase_install_timeout=2
 
 ######################################
 # Vars regarding install-config.yaml #
@@ -392,7 +397,7 @@ ingressvip="{{ extcidrnet | next_nth_usable(4) }}"
 #masters_prov_nic=""
 # Network Type (OpenShiftSDN or OVNKubernetes). Playbook defaults to OVNKubernetes.
 # Uncomment below for OpenShiftSDN
-network_type="OpenShiftSDN"
+network_type="OVNKubernetes"
 # (Optional) A URL to override the default operating system image for the bootstrap node.
 # The URL must contain a sha256 hash of the image.
 # See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
@@ -403,7 +408,7 @@ network_type="OpenShiftSDN"
 # See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
 # Example https://mirror.example.com/images/metal.qcow2.gz?sha256=3b5a8...
 #clusterosimage=""
-#
+
 # Registry Host
 #   Define a host here to create or use a local copy of the installation registry
 #   Used for disconnected installation
@@ -527,7 +532,7 @@ Once the playbook reaches the task
 TASK [installer : Deploy OpenShift Cluster]
 ```
 
-the control is passed to the OpenShift installer and any failure in the deployment of OpenShift after that point is either due to hardware issues or installer issues itself. It is not a JetSki failure.
+The control is passed to the OpenShift installer and any failure in the deployment of OpenShift after that point is either due to hardware issues or installer issues itself. It is not a JetSki failure.
 
 Something that has worked out well in the past is to keep the consoles of all three of your master nodes open during deployment, so that you can observe if any one node is misbehaving when compared to the others. There are 3 boots total before the masters fully become operational and cluster operators start rolling out.
 
@@ -536,8 +541,3 @@ Something that has worked out well in the past is to keep the consoles of all th
 * One final reboot and the node should come up as master-0 or master-1 or master-2 at the prompt
 
 Deployments usually fail if the above three steps do not happen. Sometimes, a node might not boot to disk and be stuck in a PXE loop even when asked to boot to hard disk by the installer or it might be stuck at the OS selection menu when asked to boot to disk. These among several other issues have been seen with hardware in the past and it is worth keeping an eye on the console and intervening if needed for a successful deploy. This is beyond the scope of the playbook or for that matter even the installer.
-
-
-
-
-
