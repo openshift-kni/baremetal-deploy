@@ -13,7 +13,7 @@ ansible_ssh_key: "{{ ansible_user_dir }}/.ssh/id_rsa"
 # The version of the openshift-installer, undefined or empty results in the playbook failing with error message.
 # Values accepted: 'latest-4.3', 'latest-4.4', explicit version i.e. 4.3.0-0.nightly-2019-12-09-035405
 # For reference, https://openshift-release.svc.ci.openshift.org/
-version: "4.3.5"
+version: "latest-4.4"
 # Enter whether the build should use 'dev' (nightly builds) or 'ga' for Generally Available version of OpenShift
 # Empty value results in playbook failing with error message.
 build: "ga"
@@ -31,7 +31,7 @@ rebuild_provisioner: false
 # Number of workers desired, by default all hosts in your allocation except 1 provisioner and 3 masters are used workers
 # However that behaviour can be overrided by explicitly settign the desired number of workers here. For a masters only deploy,
 # set worker_count to 0
-worker_count: 1
+worker_count: 2
 alias:
 #lab specific vars, leave default
   lab_url: "http://quads11.alias.bos.scalelab.redhat.com"
