@@ -5,7 +5,7 @@
 [id="additional-install-config-parameters_{context}"]
 = Additional `install-config` parameters
 
-This topic describes the required parameters, the `hosts` parameter, 
+This topic describes the required parameters, the `hosts` parameter,
 and the `bmc` `address` parameter for the `install-config.yaml` file.
 
 .Required parameters
@@ -31,9 +31,66 @@ This setting has no default and must always be provided.
 endif::[]
 |===
 
+[cols="1,1,3", options="header"]
+.Optional Parameters
+|===
+|Parameters
+|Default
+|Description
+
+ifeval::[{release} > 4.3]
+|`provisioningDHCPExternal`
+| false
+|Defines if external DHCP will be used or the one configured by installer
+
+|`provisioningDHCPRange`
+| `172.22.0.10,172.22.0.100`
+|Defines the IP range to use for hosts on the provisioning network.
+
+|`provisioningNetworkCIDR`
+| `172.22.0.0/24`
+| The CIDR for the network to use for provisioning.
+endif::[]
+
+| `clusterProvisioningIP`
+| `172.22.0.3`
+| The IP within the cluster where the provisioning services run.
+
+| `bootstrapProvisioningIP`
+| `172.22.0.2`
+| The IP on the bootstrap VM where the provisioning services run while the
+control plane is being deployed.
+
+| `externalBridge`
+| `baremetal`
+| The name of the bridge of the hypervisor attached to the external network.
+
+| `provisioningBridge`
+| `provisioning`
+| The name of the bridge on the hypervisor attached to the provisioning network.
+
+| `defaultMachinePlatform`
+|
+| The default configuration used for machine pools without a platform
+configuration.
+
+| `bootstrapOSImage`
+|
+| A URL to override the default operating system image for the bootstrap node.
+The URL must contain a sha256 hash of the image.
+Example https://mirror.openshift.com/rhcos-<version>-qemu.qcow2.gz?sha256=abc...
+
+| `clusterOSImage`
+|
+| A URL to override the default operating system for cluster nodes.
+The URL must include a sha256 hash of the image.
+Example https://mirror.openshift.com/images/rhcos-<version>-openstack.qcow2.gz?sha256=abc...
+
+|===
+
 .Hosts
 
-The `hosts` parameter is a list of separate bare metal assets that 
+The `hosts` parameter is a list of separate bare metal assets that
 should be used to build the cluster.
 
 |===
@@ -44,7 +101,7 @@ should be used to build the cluster.
 | `bootMACAddress` |  | The MAC address of the NIC the host will use to boot on the provisioning network.
 |===
 
-The `bmc` parameter for each host is a set of values for accessing the 
+The `bmc` parameter for each host is a set of values for accessing the
 baseboard management controller in the host.
 
 |===
@@ -57,14 +114,14 @@ See BMC Addressing for details.
 
 == BMC addressing
 
-The `address` field for each `bmc` entry is a URL with details how to 
-connect to the {product-title} cluster nodes, including the type of 
+The `address` field for each `bmc` entry is a URL with details how to
+connect to the {product-title} cluster nodes, including the type of
 controller in the URL scheme and its location on the network.
 
 .IPMI
 
-IPMI hosts use `ipmi://<out-of-band-ip>:<port>` and defaults to port 
-`623` if not specified. Example output of using IPMI within your 
+IPMI hosts use `ipmi://<out-of-band-ip>:<port>` and defaults to port
+`623` if not specified. Example output of using IPMI within your
 `install-config.yaml` file.
 
 ----
@@ -83,9 +140,9 @@ ifeval::[{release} > 4.4]
 
 .RedFish
 
-For RedFish, use `redfish://` (or `redfish+http://` to disable TLS). 
-The hostname (or IP address) and the path to the system ID are both 
-required. Example output of using RedFish within your 
+For RedFish, use `redfish://` (or `redfish+http://` to disable TLS).
+The hostname (or IP address) and the path to the system ID are both
+required. Example output of using RedFish within your
 `install-config.yaml` file.
 
 ----
@@ -100,51 +157,51 @@ platform:
           password: <password>
 ----
 
-While it is recommended to have a certificate of authority for your 
-out of band management addresses, if using self-signed certificates 
-ensure to include an additional parameter of 
+While it is recommended to have a certificate of authority for your
+out of band management addresses, if using self-signed certificates
+ensure to include an additional parameter of
 `disableCertificateVerification: True`. Example output of using
-RedFish with `disableCertificateVerification: True` 
+RedFish with `disableCertificateVerification: True`
 within your `install-config.yaml` file.
 
 ----
-platform:                                                               
-  baremetal:                                                            
-    hosts:                                                              
-      - name: openshift-master-0                                        
-        role: master                                                    
-        bmc:                                                            
-          address: redfish://<out-of-band-ip>/redfish/v1/Systems/1      
-          username: <user>                                              
-          password: <password> 
-          disableCertificateVerification: True 
+platform:
+  baremetal:
+    hosts:
+      - name: openshift-master-0
+        role: master
+        bmc:
+          address: redfish://<out-of-band-ip>/redfish/v1/Systems/1
+          username: <user>
+          password: <password>
+          disableCertificateVerification: True
 ----
 
-NOTE: Currently RedFish is only supported on HPE hardware for IPI on 
-Bare metal deployments. We are working with other vendors to enable 
-RedFish capabilities across the board. 
+NOTE: Currently RedFish is only supported on HPE hardware for IPI on
+Bare metal deployments. We are working with other vendors to enable
+RedFish capabilities across the board.
 
 .RedFish Virtual Media
 
 For RedFish virtual media, use `redfish-virtualmedia://`
 
-Example output of using RedFish Virtual Media 
-within your `install-config.yaml` file.                         
+Example output of using RedFish Virtual Media
+within your `install-config.yaml` file.
 
 ----
-platform:                                                               
-  baremetal:                                                            
-    hosts:                                                              
-      - name: openshift-master-0                                        
-        role: master                                                    
-        bmc:                                                            
-          address: redfish-virtualmedia://<out-of-band-ip>/redfish/v1/Systems/1      
-          username: <user>                                              
-          password: <password>                                          
+platform:
+  baremetal:
+    hosts:
+      - name: openshift-master-0
+        role: master
+        bmc:
+          address: redfish-virtualmedia://<out-of-band-ip>/redfish/v1/Systems/1
+          username: <user>
+          password: <password>
 ----
 
-NOTE: Currently RedFish is only supported on HPE hardware for IPI on 
-Bare metal deployments. We are working with other vendors to enable 
-RedFish capabilities across the board. 
+NOTE: Currently RedFish is only supported on HPE hardware for IPI on
+Bare metal deployments. We are working with other vendors to enable
+RedFish capabilities across the board.
 
 endif::[]
