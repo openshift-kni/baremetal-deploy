@@ -58,10 +58,10 @@ prov_dhcp_range="172.22.0.10,172.22.0.254"
 # deployments. The variables below can be used to extend those timeouts.
 
 # (Optional) Increase bootstrap process timeout by N iterations.
-#increase_bootstrap_timeout=2
+increase_bootstrap_timeout=2
 
 # (Optional) Increase install process timeout by N iterations.
-#increase_install_timeout=2
+increase_install_timeout=2
 
 ######################################
 # Vars regarding install-config.yaml #
