@@ -1,0 +1,288 @@
+[all:vars]
+
+###############################################################################
+# Required configuration variables for RH Scale Shared Lab Node Prep          #
+###############################################################################
+
+## NOTE: You will need to complete both the variables in this section and in
+##       the IPI on Baremetal section below. A number of the variables in the
+##       lower section have been pre-filled with other variable logic to
+##       simplify the deployment in RH shared labs. The IPI on Baremetal
+##       section is inherited from the upstream Ansible-IPI automation, so it
+##       was preserved in order to limit merge conflicts in the future.
+
+# The real lab public NIC for the deployment node. This is the routable public
+# interface for $this node that is being used to install OCP4.
+lab_pub_nic="eno1"
+
+# The IPMI credentials for the cluster nodes. It is assumed here that these are
+# the same across all nodes. If that is not the case, you will need to adjust
+# these manually for each host in the [masters] and [workers] sections below.
+lab_ipmi_user="quads"
+lab_ipmi_password=""
+
+# List of lab public FQDNs for your master nodes. These are the hostnames as
+# assigned in your lab reservation and accessible via the Red Hat internal
+# networks. List format must be ["mfqdn1", "mfqdn2", "mfqdn3"]
+# REQUIRES EXACTLY THREE FQDNS
+master_fqdns=["mfqdn1", "mfqdn2", "mfqdn3"]
+
+# List of MAC addresses for your master nodes to connect to the provisioning
+# network. These should be for the interfaces designated as the "director"
+# NICs for your node types. List format must be ["mmac1", "mmac2", "mmac3"]
+# THE ORDER SHOULD MATCH THE master_fqdns LIST ABOVE
+# REQUIRES EXACTLY THREE MACS
+master_prov_macs=["mmac1", "mmac2", "mmac3"]
+
+# List of MAC addresses for your master nodes to connect to the baremetal 
+# network. These should be for private interfaces all connected to the same
+# VLAN network as designated for your node types.
+# List format must be ["mmac4", "mmac5", "mmac6"]
+# REQUIRES EXACTLY THREE MACS
+master_bm_macs=["mmac4", "mmac5", "mmac6"]
+
+## NOTE: Worker nodes are optional at deployment time. You can comment out the
+##       worker-rlated variables below, and if you do so, you will also need to
+##       comment out the entries under the [workers] section further down. The
+##       number of workers is flexible, however you need to ensure there is
+##       a corresponding entry in the [workers] section for each one defined
+##       in these variables.
+
+# List of lab public FQDNs for your worker nodes. These are the hostnames as
+# assigned in your lab reservation and accessible via the Red Hat internal
+# networks. List format must be ["wfqdn1", "wfqdn2"]
+# This list is optional but is by default is configured for 2 workers. There
+# must be corresponding entries below in the [workers] section for each worker
+# listed here.
+worker_fqdns=["wfqdn1", "wfqdn2"]
+
+# List of MAC addresses for your worker nodes to connect to the provisioning
+# network. These should be for the interfaces designated as the "director"
+# NICs for your node types. List format must be ["wmac1", "wmac2"]
+# This list is optional but is by default is configured for 2 workers. There
+# must be corresponding entries below in the [workers] section for each worker
+# listed here.
+# THE ORDER SHOULD MATCH THE worker_fqdns LIST ABOVE
+worker_prov_macs=["wmac1", "wmac2"]
+
+# List of MAC addresses for your worker nodes to connect to the baremetal 
+# network. These should be for private interfaces all connected to the same
+# VLAN network as designated for your node types.
+# List format must be ["wmac4", "wmac5"]
+# This list is optional but is by default is configured for 2 workers. There
+# must be corresponding entries in the
+# roles/shared-labs-prep/templates/ocp4-lab.dnsmasq.conf.j2 file for each
+# worker listed here.
+worker_bm_macs=["wmac3", "wmac4"]
+
+# List of cluster node NICs to disable. You should disable at least the real
+# lab public NIC on each cluster node to avoid DHCP competition and problems.
+# You may alternately list other interfaces you wish to disable. Note that by
+# default all NICs listed will be disabled on all master and worker nodes. Any
+# other needs may require further manual customization outside of this
+# inventory file. List format must be ["nic1", "nic2"]
+# These should be interface names as recognized by the OS.
+# REQUIRED AT LEAST ONE LIST ITEM
+disable_nics=["eno1", "eno2"]
+
+
+
+###############################################################################
+# Required configuration variables for IPI on Baremetal Installations         #
+###############################################################################
+
+# The provisioning NIC (NIC1) used on all baremetal nodes
+# NOTE: For the RH shared labs this is the "director" NIC
+prov_nic=ens3f1
+
+# The public NIC (NIC2) used on all baremetal nodes
+# NOTE: For the RH shared labs this is the "baremetal" NIC _NOT_ the real public NIC
+pub_nic=ens3f0
+
+# (Optional) Set the provisioning bridge name. Default value is 'provisioning'.
+#provisioning_bridge=provisioning
+
+# (Optional) Set the baremetal bridge name. Default value is 'baremetal'.
+#baremetal_bridge=baremetal
+
+# (Optional) Activation-key for proper setup of subscription-manager, empty value skips registration
+#activation_key=""
+
+# (Optional) Activation-key org_id for proper setup of subscription-manager, empty value skips registration
+#org_id=""
+
+# The directory used to store the cluster configuration files (install-config.yaml, pull-secret.txt, metal3-config.yaml)
+dir="{{ ansible_user_dir }}/clusterconfigs"
+
+# The version of the openshift-installer, undefined or empty results in the playbook failing with error message.
+# Values accepted: 'latest-4.3', 'latest-4.4', explicit version i.e. 4.3.0-0.nightly-2019-12-09-035405
+version="latest-4.4"
+
+# (Optional) Fully disconnected installs require manually downloading the release.txt file and hosting the file
+# on a webserver accessible to the provision host. The release.txt file can be downloaded at
+# https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/{{ version }}/release.txt (for DEV version)
+# https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/release.txt (for GA version)
+# Example of hosting the release.txt on your example.com webserver under the 'latest-4.3' version directory.
+# http://example.com:<port>/latest-4.3/release.txt
+# Provide the webserver URL as shown below if using fully disconnected
+#webserver_url=http://example.com:<port>
+
+# Enter whether the build should use 'dev' (nightly builds) or 'ga' for Generally Available version of OpenShift
+# Empty value results in playbook failing with error message.
+build="ga"
+
+# Provisioning IP address (default value)
+prov_ip=172.22.0.3
+
+# (Optional) Provisioning network configuration overrides (4.4+)
+prov_bootstrap_ip=172.22.0.2
+prov_dhcp_range="172.22.0.10,172.22.0.254"
+
+# (Optional) Enable playbook to pre-download RHCOS images prior to cluster deployment and use them as a local
+# cache. Default is false.
+#cache_enabled=True
+
+# (Optional) The port exposed on the caching webserver. Default is port 8080.
+#webserver_caching_port=8080
+
+# (Optional) Enable IPv6 addressing instead of IPv4 addressing on both provisioning and baremetal network
+ipv6_enabled=False
+
+# (Optional) When ipv6_enabled is set to True, but want IPv4 addressing on provisioning network
+# Default is false.
+#ipv4_provisioning=True
+
+# (Optional) When ipv6_enabled is set to True, but want IPv4 addressing on baremetal network
+#ipv4_baremetal=True
+
+# (Optional) A list of clock servers to be used in chrony by the masters and workers
+#clock_servers=["pool.ntp.org","clock.redhat.com"]
+
+# (Optional) Provide HTTP proxy settings
+#http_proxy=http://USERNAME:PASSWORD@proxy.example.com:8080
+
+# (Optional) Provide HTTPS proxy settings
+#https_proxy=https://USERNAME:PASSWORD@proxy.example.com:8080
+
+# (Optional) comma-separated list of hosts, IP Addresses, or IP ranges in CIDR format
+# excluded from proxying
+# NOTE: OpenShift does not accept '*' as a wildcard attached to a domain suffix
+# i.e. *.example.com
+# Use '.' as the wildcard for a domain suffix as shown in the example below.
+# i.e. .example.com
+#no_proxy_list="172.22.0.0/24,.example.com"
+
+# The default installer timeouts for the bootstrap and install processes may be too short for some baremetal
+# deployments. The variables below can be used to extend those timeouts.
+
+# (Optional) Increase bootstrap process timeout by N iterations.
+increase_bootstrap_timeout=2
+
+# (Optional) Increase install process timeout by N iterations.
+increase_install_timeout=2
+
+######################################
+# Vars regarding install-config.yaml #
+######################################
+
+# Base domain, i.e. example.com
+domain="myocp4.com"
+# Name of the cluster, i.e. openshift
+cluster="test"
+# Note: Under some conditions, it may be useful to randomize the cluster name. For instance,
+# when redeploying an existing environment this can help avoid VRID conflicts. You can
+# set the cluster_random boolean below to true to append a random number to you cluster name.
+cluster_random=true
+# The public CIDR address, i.e. 10.1.1.0/21
+extcidrnet="192.168.222.0/24"
+
+# NOTE: For the RH shared labs, the VIPs below are automated w/ variables
+#       based on the extcidrnet above.
+
+# An IP reserved on the baremetal network. 
+dnsvip="{{ extcidrnet | next_nth_usable(2) }}"
+# An IP reserved on the baremetal network for the API endpoint. 
+# (Optional) If not set, a DNS lookup verifies that api.<clustername>.<domain> provides an IP
+apivip="{{ extcidrnet | next_nth_usable(3) }}"
+# An IP reserved on the baremetal network for the Ingress endpoint.
+# (Optional) If not set, a DNS lookup verifies that *.apps.<clustername>.<domain> provides an IP
+ingressvip="{{ extcidrnet | next_nth_usable(4) }}"
+# The master hosts provisioning nic
+# (Optional) If not set, the prov_nic will be used
+#masters_prov_nic=""
+# Network Type (OpenShiftSDN or OVNKubernetes). Playbook defaults to OVNKubernetes.
+# Uncomment below for OpenShiftSDN
+network_type="OVNKubernetes"
+# (Optional) A URL to override the default operating system image for the bootstrap node.
+# The URL must contain a sha256 hash of the image.
+# See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
+#   Example https://mirror.example.com/images/qemu.qcow2.gz?sha256=a07bd...
+#bootstraposimage=""
+# (Optional) A URL to override the default operating system image for the cluster nodes.
+# The URL must contain a sha256 hash of the image.
+# See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
+# Example https://mirror.example.com/images/metal.qcow2.gz?sha256=3b5a8...
+#clusterosimage=""
+# A copy of your pullsecret from https://cloud.redhat.com/openshift/install/metal/user-provisioned
+pullsecret=""
+
+# Master nodes
+# The hardware_profile is used by the baremetal operator to match the hardware discovered on the host
+# See https://github.com/metal3-io/baremetal-operator/blob/master/docs/api.md#baremetalhost-status
+# ipmi_port is optional for each host. 623 is the common default used if omitted
+# poweroff is optional. True or ommited (by default) indicates the playbook will power off the node before deploying OCP
+#  otherwise set it to false
+#
+# NOTE: For the RH shared labs, the entries below for [masters] and [workers] have been
+#       configured to be automated with variables from the above entries.
+#
+[masters]
+master-0 name="master-0" role="master" ipmi_user="{{ lab_ipmi_user }}" ipmi_password="{{ lab_ipmi_password }}" ipmi_address="mgmt-{{ master_fqdns[0] }}" ipmi_port=623 provision_mac="{{ master_prov_macs[0] }}" hardware_profile="default" poweroff=true
+master-1 name="master-1" role="master" ipmi_user="{{ lab_ipmi_user }}" ipmi_password="{{ lab_ipmi_password }}" ipmi_address="mgmt-{{ master_fqdns[1] }}" ipmi_port=623 provision_mac="{{ master_prov_macs[1] }}" hardware_profile="default" poweroff=true
+master-2 name="master-2" role="master" ipmi_user="{{ lab_ipmi_user }}" ipmi_password="{{ lab_ipmi_password }}" ipmi_address="mgmt-{{ master_fqdns[2] }}" ipmi_port=623 provision_mac="{{ master_prov_macs[2] }}" hardware_profile="default" poweroff=true
+
+# Worker nodes
+# NOTE: For the RH shared labs, make sure there is one line below for each worker defined in the
+#       variables from the upper section (or 0 entries below if those variables are excluded -- just
+#       don't remove the [workers] section heading).
+[workers]
+worker-0 name="worker-0" role="worker" ipmi_user="{{ lab_ipmi_user }}" ipmi_password="{{ lab_ipmi_password }}" ipmi_address="mgmt-{{ worker_fqdns[0] }}" ipmi_port=623 provision_mac="{{ worker_prov_macs[0] }}" hardware_profile="unknown" poweroff=true
+worker-1 name="worker-1" role="worker" ipmi_user="{{ lab_ipmi_user }}" ipmi_password="{{ lab_ipmi_password }}" ipmi_address="mgmt-{{ worker_fqdns[1] }}" ipmi_port=623 provision_mac="{{ worker_prov_macs[1] }}" hardware_profile="unknown" poweroff=true
+
+# Provision Host
+[provisioner]
+<your provisioner host FQDN>
+
+# Registry Host
+#   Define a host here to create or use a local copy of the installation registry
+#   Used for disconnected installation
+# [registry_host]
+# registry.example.com
+
+# [registry_host:vars]
+# The following cert_* variables are needed to create the certificates
+#   when creating a disconnected registry. They are not needed to use
+#   an existing disconnected registry.
+# cert_country=US  # two letters country
+# cert_state=MyState
+# cert_locality=MyCity
+# cert_organization=MyCompany
+# cert_organizational_unit=MyDepartment
+
+# The port exposed on the disconnected registry host can be changed from
+# the default 5000 to something else by changing the following variable.
+# registry_port=5000
+
+# The directory the mirrored registry files are written to can be modified from teh default /opt/registry by changing the following variable.
+# registry_dir="/opt/registry"
+
+# The following two variables must be set to use an existing disconnected registry.
+#
+# Specify a file that contains extra auth tokens to include in the
+#   pull-secret if they are not already there.
+# disconnected_registry_auths_file=/path/to/registry-auths.json
+
+# Specify a file that contains the addition trust bundle and image
+#   content sources for the local registry. The contents of this file
+#   will be appended to the install-config.yml file.
+# disconnected_registry_mirrors_file=/path/to/install-config-appends.json

@@ -4,18 +4,6 @@
 # Required configuration variables for IPI on Baremetal Installations         #
 ###############################################################################
 
-# The provisioning NIC (NIC1) used on all baremetal nodes
-prov_nic=eno1
-
-# The public NIC (NIC2) used on all baremetal nodes
-pub_nic=eno2
-
-# (Optional) Set the provisioning bridge name. Default value is 'provisioning'.
-#provisioning_bridge=provisioning
-
-# (Optional) Set the baremetal bridge name. Default value is 'baremetal'.
-#baremetal_bridge=baremetal
-
 # (Optional) Activation-key for proper setup of subscription-manager, empty value skips registration
 #activation_key=""
 
@@ -24,23 +12,6 @@ pub_nic=eno2
 
 # The directory used to store the cluster configuration files (install-config.yaml, pull-secret.txt, metal3-config.yaml)
 dir="{{ ansible_user_dir }}/clusterconfigs"
-
-# The version of the openshift-installer, undefined or empty results in the playbook failing with error message.
-# Values accepted: 'latest-4.3', 'latest-4.4', explicit version i.e. 4.3.0-0.nightly-2019-12-09-035405
-version=""
-
-# (Optional) Fully disconnected installs require manually downloading the release.txt file and hosting the file
-# on a webserver accessible to the provision host. The release.txt file can be downloaded at
-# https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/{{ version }}/release.txt (for DEV version)
-# https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/release.txt (for GA version)
-# Example of hosting the release.txt on your example.com webserver under the 'latest-4.3' version directory.
-# http://example.com:<port>/latest-4.3/release.txt
-# Provide the webserver URL as shown below if using fully disconnected
-#webserver_url=http://example.com:<port>
-
-# Enter whether the build should use 'dev' (nightly builds) or 'ga' for Generally Available version of OpenShift
-# Empty value results in playbook failing with error message.
-build=""
 
 # Provisioning IP address (default value)
 prov_ip=172.22.0.3
@@ -93,25 +64,33 @@ prov_ip=172.22.0.3
 ######################################
 
 # Base domain, i.e. example.com
-domain=""
+domain="myocp4.com"
 # Name of the cluster, i.e. openshift
-cluster=""
+cluster="test"
+# Note: Under some conditions, it may be useful to randomize the cluster name. For instance,
+# when redeploying an existing environment this can help avoid VRID conflicts. You can
+# set the cluster_random boolean below to true to append a random number to you cluster name.
+cluster_random=true
 # The public CIDR address, i.e. 10.1.1.0/21
-extcidrnet=""
-# An IP reserved on the baremetal network.
-dnsvip=""
-# An IP reserved on the baremetal network for the API endpoint.
+extcidrnet="192.168.222.0/24"
+
+# NOTE: For the RH shared labs, the VIPs below are automated w/ variables
+#       based on the extcidrnet above.
+
+# An IP reserved on the baremetal network. 
+dnsvip="{{ extcidrnet | next_nth_usable(2) }}"
+# An IP reserved on the baremetal network for the API endpoint. 
 # (Optional) If not set, a DNS lookup verifies that api.<clustername>.<domain> provides an IP
-#apivip=""
+apivip="{{ extcidrnet | next_nth_usable(3) }}"
 # An IP reserved on the baremetal network for the Ingress endpoint.
 # (Optional) If not set, a DNS lookup verifies that *.apps.<clustername>.<domain> provides an IP
-#ingressvip=""
+ingressvip="{{ extcidrnet | next_nth_usable(4) }}"
 # The master hosts provisioning nic
 # (Optional) If not set, the prov_nic will be used
 #masters_prov_nic=""
 # Network Type (OpenShiftSDN or OVNKubernetes). Playbook defaults to OVNKubernetes.
 # Uncomment below for OpenShiftSDN
-#network_type="OpenShiftSDN"
+network_type="OVNKubernetes"
 # (Optional) A URL to override the default operating system image for the bootstrap node.
 # The URL must contain a sha256 hash of the image.
 # See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
@@ -122,34 +101,12 @@ dnsvip=""
 # See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
 # Example https://mirror.example.com/images/metal.qcow2.gz?sha256=3b5a8...
 #clusterosimage=""
-# A copy of your pullsecret from https://cloud.redhat.com/openshift/install/metal/user-provisioned
-pullsecret=""
-
-# Master nodes
-# The hardware_profile is used by the baremetal operator to match the hardware discovered on the host
-# See https://github.com/metal3-io/baremetal-operator/blob/master/docs/api.md#baremetalhost-status
-# ipmi_port is optional for each host. 623 is the common default used if omitted
-# poweroff is optional. True or ommited (by default) indicates the playbook will power off the node before deploying OCP
-#  otherwise set it to false
-[masters]
-master-0 name=master-0 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.1 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:58 hardware_profile=default poweroff=true
-master-1 name=master-1 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.2 ipmi_port=623 provision_mac=ec:f4:bb:da:32:88 hardware_profile=default poweroff=true
-master-2 name=master-2 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.3 ipmi_port=623 provision_mac=ec:f4:bb:da:0d:98 hardware_profile=default poweroff=true
-
-# Worker nodes
-[workers]
-worker-0 name=worker-0 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.4 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:18 hardware_profile=unknown poweroff=true
-worker-1 name=worker-1 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.5 ipmi_port=623 provision_mac=ec:f4:bb:da:32:28 hardware_profile=unknown poweroff=true
-
-# Provision Host
-[provisioner]
-provisioner.example.com
 
 # Registry Host
 #   Define a host here to create or use a local copy of the installation registry
 #   Used for disconnected installation
 # [registry_host]
-# registry.example.com
+# disconnected.example.com
 
 # [registry_host:vars]
 # The following cert_* variables are needed to create the certificates
@@ -172,9 +129,9 @@ provisioner.example.com
 #
 # Specify a file that contains extra auth tokens to include in the
 #   pull-secret if they are not already there.
-# disconnected_registry_auths_file=/path/to/registry-auths.json
+# disconnected_registry_auths_file=/home/kni/mirror_auth.json
 
 # Specify a file that contains the addition trust bundle and image
 #   content sources for the local registry. The contents of this file
 #   will be appended to the install-config.yml file.
-# disconnected_registry_mirrors_file=/path/to/install-config-appends.json
+# disconnected_registry_mirrors_file=/home/kni/ic-appends.yml
