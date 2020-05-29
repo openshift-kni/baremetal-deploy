@@ -5,12 +5,10 @@
 ###############################################################################
 
 # The provisioning NIC (NIC1) used on all baremetal nodes
-# NOTE: For the RH shared labs this is the "director" NIC
-prov_nic=ens3f1
+prov_nic=eno1
 
 # The public NIC (NIC2) used on all baremetal nodes
-# NOTE: For the RH shared labs this is the "baremetal" NIC _NOT_ the real public NIC
-pub_nic=ens3f0
+pub_nic=eno2
 
 # (Optional) Set the provisioning bridge name. Default value is 'provisioning'.
 #provisioning_bridge=provisioning
@@ -46,10 +44,6 @@ build=""
 
 # Provisioning IP address (default value)
 prov_ip=172.22.0.3
-
-# (Optional) Provisioning network configuration overrides (4.4+)
-#prov_bootstrap_ip=172.22.0.2
-#prov_dhcp_range="172.22.0.10,172.22.0.100"
 
 # (Optional) Enable playbook to pre-download RHCOS images prior to cluster deployment and use them as a local
 # cache. Default is false.
@@ -110,34 +104,25 @@ prov_ip=172.22.0.3
 ######################################
 
 # Base domain, i.e. example.com
-domain="myocp4.com"
+domain=""
 # Name of the cluster, i.e. openshift
-cluster="test"
-# Note: Under some conditions, it may be useful to randomize the cluster name. For instance,
-# when redeploying an existing environment this can help avoid VRID conflicts. You can
-# set the cluster_random boolean below to true to append a random number to you cluster name.
-cluster_random=true
+cluster=""
 # The public CIDR address, i.e. 10.1.1.0/21
-extcidrnet="192.168.222.0/24"
-
-# NOTE: For the RH shared labs, the VIPs below are automated w/ variables
-#       based on the extcidrnet above.
-
-# An IP reserved on the baremetal network. 
-# Deprecated in OpenShift 4.5 (https://github.com/openshift/installer/pull/3304)
-dnsvip="{{ extcidrnet | next_nth_usable(2) }}"
-# An IP reserved on the baremetal network for the API endpoint. 
+extcidrnet=""
+# An IP reserved on the baremetal network.
+dnsvip=""
+# An IP reserved on the baremetal network for the API endpoint.
 # (Optional) If not set, a DNS lookup verifies that api.<clustername>.<domain> provides an IP
-apivip="{{ extcidrnet | next_nth_usable(3) }}"
+#apivip=""
 # An IP reserved on the baremetal network for the Ingress endpoint.
 # (Optional) If not set, a DNS lookup verifies that *.apps.<clustername>.<domain> provides an IP
-ingressvip="{{ extcidrnet | next_nth_usable(4) }}"
+#ingressvip=""
 # The master hosts provisioning nic
 # (Optional) If not set, the prov_nic will be used
 #masters_prov_nic=""
 # Network Type (OpenShiftSDN or OVNKubernetes). Playbook defaults to OVNKubernetes.
 # Uncomment below for OpenShiftSDN
-network_type="OVNKubernetes"
+#network_type="OpenShiftSDN"
 # (Optional) A URL to override the default operating system image for the bootstrap node.
 # The URL must contain a sha256 hash of the image.
 # See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
@@ -177,9 +162,19 @@ pullsecret=""
 # root_device_hint="deviceName"
 # root_device_hint_value="/dev/sda"
 
+[masters]
+master-0 name=master-0 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.1 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:58 hardware_profile=default poweroff=true
+master-1 name=master-1 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.2 ipmi_port=623 provision_mac=ec:f4:bb:da:32:88 hardware_profile=default poweroff=true
+master-2 name=master-2 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.3 ipmi_port=623 provision_mac=ec:f4:bb:da:0d:98 hardware_profile=default poweroff=true
+
+# Worker nodes
+[workers]
+worker-0 name=worker-0 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.4 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:18 hardware_profile=unknown poweroff=true
+worker-1 name=worker-1 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.5 ipmi_port=623 provision_mac=ec:f4:bb:da:32:28 hardware_profile=unknown poweroff=true
+
 # Provision Host
 [provisioner]
-<your provisioner host FQDN>
+provisioner.example.com
 
 # Registry Host
 #   Define a host here to create or use a local copy of the installation registry

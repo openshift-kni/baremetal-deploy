@@ -1,0 +1,137 @@
+[all:vars]
+
+###############################################################################
+# Required configuration variables for IPI on Baremetal Installations         #
+###############################################################################
+
+# (Optional) Activation-key for proper setup of subscription-manager, empty value skips registration
+#activation_key=""
+
+# (Optional) Activation-key org_id for proper setup of subscription-manager, empty value skips registration
+#org_id=""
+
+# The directory used to store the cluster configuration files (install-config.yaml, pull-secret.txt, metal3-config.yaml)
+dir="{{ ansible_user_dir }}/clusterconfigs"
+
+# Provisioning IP address (default value)
+prov_ip=172.22.0.3
+
+# (Optional) Enable playbook to pre-download RHCOS images prior to cluster deployment and use them as a local
+# cache. Default is false.
+#cache_enabled=True
+
+# (Optional) The port exposed on the caching webserver. Default is port 8080.
+#webserver_caching_port=8080
+
+# (Optional) Enable IPv6 addressing instead of IPv4 addressing on both provisioning and baremetal network
+#ipv6_enabled=True
+
+# (Optional) When ipv6_enabled is set to True, but want IPv4 addressing on provisioning network
+# Default is false.
+#ipv4_provisioning=True
+
+# (Optional) When ipv6_enabled is set to True, but want IPv4 addressing on baremetal network
+#ipv4_baremetal=True
+
+# (Optional) A list of clock servers to be used in chrony by the masters and workers
+#clock_servers=["pool.ntp.org","clock.redhat.com"]
+
+# (Optional) Provide HTTP proxy settings
+#http_proxy=http://USERNAME:PASSWORD@proxy.example.com:8080
+
+# (Optional) Provide HTTPS proxy settings
+#https_proxy=https://USERNAME:PASSWORD@proxy.example.com:8080
+
+# (Optional) comma-separated list of hosts, IP Addresses, or IP ranges in CIDR format
+# excluded from proxying
+# NOTE: OpenShift does not accept '*' as a wildcard attached to a domain suffix
+# i.e. *.example.com
+# Use '.' as the wildcard for a domain suffix as shown in the example below.
+# i.e. .example.com
+#no_proxy_list="172.22.0.0/24,.example.com"
+
+# The default installer timeouts for the bootstrap and install processes may be too short for some baremetal
+# deployments. The variables below can be used to extend those timeouts.
+
+# (Optional) Increase bootstrap process timeout by N iterations.
+#increase_bootstrap_timeout=2
+
+# (Optional) Increase install process timeout by N iterations.
+#increase_install_timeout=2
+
+######################################
+# Vars regarding install-config.yaml #
+######################################
+
+# Base domain, i.e. example.com
+domain="myocp4.com"
+# Name of the cluster, i.e. openshift
+cluster="test"
+# Note: Under some conditions, it may be useful to randomize the cluster name. For instance,
+# when redeploying an existing environment this can help avoid VRID conflicts. You can
+# set the cluster_random boolean below to true to append a random number to you cluster name.
+cluster_random=true
+# The public CIDR address, i.e. 10.1.1.0/21
+extcidrnet="192.168.222.0/24"
+
+# NOTE: For the RH shared labs, the VIPs below are automated w/ variables
+#       based on the extcidrnet above.
+
+# An IP reserved on the baremetal network. 
+dnsvip="{{ extcidrnet | next_nth_usable(2) }}"
+# An IP reserved on the baremetal network for the API endpoint. 
+# (Optional) If not set, a DNS lookup verifies that api.<clustername>.<domain> provides an IP
+apivip="{{ extcidrnet | next_nth_usable(3) }}"
+# An IP reserved on the baremetal network for the Ingress endpoint.
+# (Optional) If not set, a DNS lookup verifies that *.apps.<clustername>.<domain> provides an IP
+ingressvip="{{ extcidrnet | next_nth_usable(4) }}"
+# The master hosts provisioning nic
+# (Optional) If not set, the prov_nic will be used
+#masters_prov_nic=""
+# Network Type (OpenShiftSDN or OVNKubernetes). Playbook defaults to OVNKubernetes.
+# Uncomment below for OpenShiftSDN
+network_type="OVNKubernetes"
+# (Optional) A URL to override the default operating system image for the bootstrap node.
+# The URL must contain a sha256 hash of the image.
+# See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
+#   Example https://mirror.example.com/images/qemu.qcow2.gz?sha256=a07bd...
+#bootstraposimage=""
+# (Optional) A URL to override the default operating system image for the cluster nodes.
+# The URL must contain a sha256 hash of the image.
+# See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
+# Example https://mirror.example.com/images/metal.qcow2.gz?sha256=3b5a8...
+#clusterosimage=""
+
+# Registry Host
+#   Define a host here to create or use a local copy of the installation registry
+#   Used for disconnected installation
+# [registry_host]
+# disconnected.example.com
+
+# [registry_host:vars]
+# The following cert_* variables are needed to create the certificates
+#   when creating a disconnected registry. They are not needed to use
+#   an existing disconnected registry.
+# cert_country=US  # two letters country
+# cert_state=MyState
+# cert_locality=MyCity
+# cert_organization=MyCompany
+# cert_organizational_unit=MyDepartment
+
+# The port exposed on the disconnected registry host can be changed from
+# the default 5000 to something else by changing the following variable.
+# registry_port=5000
+
+# The directory the mirrored registry files are written to can be modified from teh default /opt/registry by changing the following variable.
+# registry_dir="/opt/registry"
+
+# The following two variables must be set to use an existing disconnected registry.
+#
+# Specify a file that contains extra auth tokens to include in the
+#   pull-secret if they are not already there.
+# disconnected_registry_auths_file=/home/kni/mirror_auth.json
+
+# Specify a file that contains the addition trust bundle and image
+#   content sources for the local registry. The contents of this file
+#   will be appended to the install-config.yml file.
+# disconnected_registry_mirrors_file=/home/kni/ic-appends.yml
