@@ -87,7 +87,7 @@ The tree structure is shown below:
 ├── group_vars
 │   └── all.yml
 ├── inventory
-│   └── hosts.sample
+│   └── jetski.sample
 ├── playbook-jetski.yml
 └── roles
     ├── add-provisioner
@@ -295,7 +295,7 @@ Here's a sample al.yml for the ALIAS lab with the pull secret and password scrap
 
 ### Modifying the `ansible-ipi-install/inventory/hosts` file
 
-The bare minimum variables to get a successful install are listed in `ansible-ipi-install/group_vars/all.yml`. Typically, correctly filing `ansible-ipi-install/group_vars/all.yml` should suffice for the shared labs use case, but in cases where some advanced configuration is needed and to fully utilize the options supported by the installer and the [`upstream playbooks`]([https://github.com/openshift-kni/baremetal-deploy](https://github.com/openshift-kni/baremetal-deploy)), the `inventory/hosts` can be edited by the user. For example, the `SDN` for OpenShift can be set ising the `network_type` variable in the inventory. Some of the variables are explicitly left empty and **require** user input for the playbook to run. The sample is provided at `ansible-ipi-install/inventory/hosts.sample` and needs to be copied to `ansible-ipi-install/inventory/hosts` before running the playbook (edit it if needed).
+The bare minimum variables to get a successful install are listed in `ansible-ipi-install/group_vars/all.yml`. Typically, correctly filing `ansible-ipi-install/group_vars/all.yml` should suffice for the shared labs use case, but in cases where some advanced configuration is needed and to fully utilize the options supported by the installer and the [`upstream playbooks`]([https://github.com/openshift-kni/baremetal-deploy](https://github.com/openshift-kni/baremetal-deploy)), the `inventory/jetski.sample` can be edited and used as an inventory file. For example, the `SDN` for OpenShift can be set using the `network_type` variable in the inventory. The sample is provided at `ansible-ipi-install/inventory/jetski.sample` and needs to be copied to `ansible-ipi-install/inventory/hosts` before running the playbook (edit it if needed). While editing the jetski.sample file is optional, after copying it `inventory/hosts`, the file **needs** to be passed to the ansible playbook invocation command using `-i inventory/hosts`. This is because it contains some defaults used by the playbook.
 
 Below is a sample of the `ansible-ipi-install/inventory/hosts` file:
 
