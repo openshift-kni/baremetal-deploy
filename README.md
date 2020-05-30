@@ -64,7 +64,7 @@ For end-to-end automation and easy deployment, JetSki makes certain assumptions.
 
 ## Tour of the Ansible Playbook
 
-The `ansible-ipi-install`  directory consists of three main sub-directories in addition to the main playbook `playbook.yml` that is used to kick off the installation. They are:
+The `ansible-ipi-install`  directory consists of three main sub-directories in addition to the main playbook `playbook-jetski.yml` that is used to kick off the installation. They are:
 
 - `group_vars` - Contains the `all.yml` which holds the bare minimum variables needed for install
 - `inventory` - contains the file `hosts.sample` that has advanced variables for customized installation
@@ -88,7 +88,7 @@ The tree structure is shown below:
 │   └── all.yml
 ├── inventory
 │   └── hosts.sample
-├── playbook.yml
+├── playbook-jetski.yml
 └── roles
     ├── add-provisioner
     │   └── tasks
@@ -215,7 +215,7 @@ The tree structure is shown below:
 The TL;DR version is 
 
 ```sh
-$ ansible-playbook -i inventory/hosts playbook.yml
+$ ansible-playbook -i inventory/hosts playbook-jetski.yml
 ```
 
 However, for the playbook to successfully execute certain variables have to be set at a minimum in `ansible-ipi-install/group_vars/all.yml`.
@@ -444,11 +444,11 @@ network_type="OVNKubernetes"
 # disconnected_registry_mirrors_file=/home/kni/ic-appends.yml
 ```
 
-### The Ansible `playbook.yml`
+### The Ansible `playbook-jetski.yml`
 
 The Ansible playbook connects to your provision host and runs through the `node-prep` role and the `installer` role. No modification of these roles  is necessary. All modifications of variables may be done within the `ansible-ipi-install/group_vars/all.yml` and `ansible-ipi-install/inventory/hosts` files. Please note that if the same variable is defined in `ansible-ipi-install/group_vars/all.yml` and `ansible-ipi-install/inventory/hosts`, the value in `ansible-ipi-install/group_vars/all.yml` will take precedence. A sample file for inventory is located at `ansible-ipi-install/inventory/hosts.sample`
 
-Sample `playbook.yml`:
+Sample `playbook-jetski.yml`:
 
 ```yml
 ---
@@ -479,12 +479,12 @@ Sample `playbook.yml`:
 ```
 
 
-### Running the `playbook.yml`
+### Running the `playbook-jetski.yml`
 
-With the `playbook.yml` set and in-place, run the `playbook.yml`
+With the `playbook-jetski.yml` set and in-place, run the `playbook-jetski.yml`
 
 ```sh
-$ ansible-playbook -i inventory/hosts playbook.yml
+$ ansible-playbook -i inventory/hosts playbook-jetski.yml
 ```
 
 ## Verifying Installation

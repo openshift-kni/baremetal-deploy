@@ -1,7 +1,8 @@
 ---
-- name: IPI on Baremetal Installation Playbook
+- name: IPI on Baremetal Installation Playbook -- Red Hat Shared Labs Edition
   hosts: provisioner
   roles:
+  - shared-labs-prep
   - node-prep
   - installer
 
