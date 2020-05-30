@@ -54,7 +54,7 @@
         ansible_python_interpreter: "{{ python_interpreter }}"
       when: lab_name == "scale"
 
-    - name: update host to install new os (scale lab)
+    - name: update host to install new os (alias lab)
       shell: hammer -u {{ cloud_name }} -p {{ lab_ipmi_password }}  host update --name {{ provisioner_hostname }} --build 1 --operatingsystem '{{ os_install }}' --medium '{{ os_install }}' --partition-table 'ALIAS-Partition' --overwrite 1
       delegate_to: "{{ hammer_host }}"
       vars:
