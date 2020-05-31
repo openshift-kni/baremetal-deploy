@@ -6,7 +6,7 @@ ocpinv_file: "{{ playbook_dir }}/ocpinv.json"
 cloud_name: cloud00
 # Lab name, typically can be alias or scale
 lab_name: scale
-# Default lab password to your nodes so that keys can be added automatically for ansible to run
+# Default lab password to your nodes in the lab allocation so that keys can be added automatically for ansible to run
 ansible_ssh_pass: password
 # Location of the private key of the user running the ansible playbook, leave default
 ansible_ssh_key: "{{ ansible_user_dir }}/.ssh/id_rsa"
@@ -31,7 +31,7 @@ rebuild_provisioner: false
 # Number of workers desired, by default all hosts in your allocation except 1 provisioner and 3 masters are used workers
 # However that behaviour can be overrided by explicitly settign the desired number of workers here. For a masters only deploy,
 # set worker_count to 0
-worker_count: 2
+worker_count: 0
 alias:
 #lab specific vars, leave default
   lab_url: "http://quads11.alias.bos.scalelab.redhat.com"
