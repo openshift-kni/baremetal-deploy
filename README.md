@@ -460,7 +460,7 @@ network_type="OVNKubernetes"
 
 ### The Ansible `playbook-jetski.yml`
 
-The Ansible playbook connects to your provision host and runs through the `node-prep` role and the `installer` role. No modification of these roles  is necessary. All modifications of variables may be done within the `ansible-ipi-install/group_vars/all.yml` and `ansible-ipi-install/inventory/hosts` files. Please note that if the same variable is defined in `ansible-ipi-install/group_vars/all.yml` and `ansible-ipi-install/inventory/hosts`, the value in `ansible-ipi-install/group_vars/all.yml` will take precedence. A sample file for inventory is located at `ansible-ipi-install/inventory/hosts.sample`
+The Ansible playbook generates the list of hosts it is operating against automatically based on your lab allocation and runs through the `roles` to give you an OpenShift on baremetal install. No modification of these roles or the playboo is necessary. All modifications of variables may be done within the `ansible-ipi-install/group_vars/all.yml` and `ansible-ipi-install/inventory/hosts` files. Please note that if the same variable is defined in `ansible-ipi-install/group_vars/all.yml` and `ansible-ipi-install/inventory/hosts`, the value in `ansible-ipi-install/group_vars/all.yml` will take precedence. A sample file for inventory is located at `ansible-ipi-install/inventory/jetski.sample` which needs to be copied to `ansible-ipi-install/inventory/hosts` before running the playbook.
 
 Sample `playbook-jetski.yml`:
 
