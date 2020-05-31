@@ -297,15 +297,20 @@ Here's a sample al.yml for the ALIAS lab with the pull secret and password scrap
 
 The bare minimum variables to get a successful install are listed in `ansible-ipi-install/group_vars/all.yml`. Typically, correctly filing `ansible-ipi-install/group_vars/all.yml` should suffice for the shared labs use case, but in cases where some advanced configuration is needed and to fully utilize the options supported by the installer and the [`upstream playbooks`]([https://github.com/openshift-kni/baremetal-deploy](https://github.com/openshift-kni/baremetal-deploy)), the `inventory/jetski.sample` can be edited and used as an inventory file. For example, the `SDN` for OpenShift can be set using the `network_type` variable in the inventory. The sample is provided at `ansible-ipi-install/inventory/jetski.sample` and needs to be copied to `ansible-ipi-install/inventory/hosts` before running the playbook (edit it if needed). While editing the jetski.sample file is optional, after copying it `inventory/hosts`, the file **needs** to be passed to the ansible playbook invocation command using `-i inventory/hosts`. This is because it contains some defaults used by the playbook.
 
-Below is a sample of the `ansible-ipi-install/inventory/hosts` file:
+Below is a sample of what the `ansible-ipi-install/inventory/hosts` file should like based on `ansible-ipi-install/inventory/hosts/jetski.sample`:
 
 ```ini
-
 [all:vars]
 
 ###############################################################################
 # Required configuration variables for IPI on Baremetal Installations         #
 ###############################################################################
+
+# (Optional) Set the provisioning bridge name. Default value is 'provisioning'.
+#provisioning_bridge=provisioning
+
+# (Optional) Set the baremetal bridge name. Default value is 'baremetal'.
+#baremetal_bridge=baremetal
 
 # (Optional) Activation-key for proper setup of subscription-manager, empty value skips registration
 #activation_key=""
@@ -315,6 +320,15 @@ Below is a sample of the `ansible-ipi-install/inventory/hosts` file:
 
 # The directory used to store the cluster configuration files (install-config.yaml, pull-secret.txt, metal3-config.yaml)
 dir="{{ ansible_user_dir }}/clusterconfigs"
+
+# (Optional) Fully disconnected installs require manually downloading the release.txt file and hosting the file
+# on a webserver accessible to the provision host. The release.txt file can be downloaded at
+# https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/{{ version }}/release.txt (for DEV version)
+# https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/release.txt (for GA version)
+# Example of hosting the release.txt on your example.com webserver under the 'latest-4.3' version directory.
+# http://example.com:<port>/latest-4.3/release.txt
+# Provide the webserver URL as shown below if using fully disconnected
+#webserver_url=http://example.com:<port>
 
 # Provisioning IP address (default value)
 prov_ip=172.22.0.3
@@ -331,7 +345,7 @@ prov_dhcp_range="172.22.0.10,172.22.0.254"
 #webserver_caching_port=8080
 
 # (Optional) Enable IPv6 addressing instead of IPv4 addressing on both provisioning and baremetal network
-#ipv6_enabled=True
+ipv6_enabled=False
 
 # (Optional) When ipv6_enabled is set to True, but want IPv4 addressing on provisioning network
 # Default is false.
@@ -413,7 +427,7 @@ network_type="OVNKubernetes"
 #   Define a host here to create or use a local copy of the installation registry
 #   Used for disconnected installation
 # [registry_host]
-# disconnected.example.com
+# registry.example.com
 
 # [registry_host:vars]
 # The following cert_* variables are needed to create the certificates
@@ -436,12 +450,12 @@ network_type="OVNKubernetes"
 #
 # Specify a file that contains extra auth tokens to include in the
 #   pull-secret if they are not already there.
-# disconnected_registry_auths_file=/home/kni/mirror_auth.json
+# disconnected_registry_auths_file=/path/to/registry-auths.json
 
 # Specify a file that contains the addition trust bundle and image
 #   content sources for the local registry. The contents of this file
 #   will be appended to the install-config.yml file.
-# disconnected_registry_mirrors_file=/home/kni/ic-appends.yml
+# disconnected_registry_mirrors_file=/path/to/install-config-appends.json
 ```
 
 ### The Ansible `playbook-jetski.yml`
