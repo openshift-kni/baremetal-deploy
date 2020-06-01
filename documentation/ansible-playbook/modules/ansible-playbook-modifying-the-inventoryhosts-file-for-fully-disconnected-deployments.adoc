@@ -3,7 +3,7 @@
 = Modifying the `inventory/hosts` file for Fully Disconnected Deployments
 
 //FIXME link
-While there are many link:../../{release}/Deployment#ipi-install-configuration-files[options]
+While there are many link:Deployment#ipi-install-configuration-files[options]
 that may be set when deploying IPI on baremetal using the Ansible
 playbook. This portion will strictly focus on what are the
 requirements for including your existing webserver and registry node
