@@ -22,7 +22,7 @@
   set_fact:
     os_install: "{{ (rhel_version is version('8.1', '<') or rebuild_provisioner) | ternary('RHEL 8.1', false) }}"
 
-- name: Reboot if OS install needed
+- name: Perform OS install if needed
   block:
     - name: Install Podman
       yum:
@@ -36,30 +36,17 @@
         pull: yes
         force: yes
 
-    - include_tasks: 25_copykeys.yml
-      vars:
-        hostname: "{{ hammer_host }}"
-        ssh_user: "root"
-
-    - include_tasks: tasks/30_get_interpreter.yml
-      vars:
-        hostname: "{{ hammer_host }}"
-        user: "root"
+    - name: Build the hammercli image
+      shell: podman build --build-arg foreman_url={{ foreman_url }} -t hammercli .
+      args:
+        chdir: "{{ role_path}}/files/"
 
     - name: update host to install new os (scale lab)
-      shell: hammer -u {{ cloud_name }} -p {{ lab_ipmi_password }}  host update --name {{ provisioner_hostname }} --build 1 --operatingsystem '{{ os_install }}' --overwrite 1
-      delegate_to: "{{ hammer_host }}"
-      vars:
-        ansible_user: root
-        ansible_python_interpreter: "{{ python_interpreter }}"
+      shell: podman run hammercli hammer -u {{ cloud_name }} -p {{ lab_ipmi_password }}  host update --name {{ provisioner_hostname }} --build 1 --operatingsystem '{{ os_install }}' --overwrite 1
       when: lab_name == "scale"
 
     - name: update host to install new os (alias lab)
-      shell: hammer -u {{ cloud_name }} -p {{ lab_ipmi_password }}  host update --name {{ provisioner_hostname }} --build 1 --operatingsystem '{{ os_install }}' --medium '{{ os_install }}' --partition-table 'ALIAS-Partition' --overwrite 1
-      delegate_to: "{{ hammer_host }}"
-      vars:
-        ansible_user: root
-        ansible_python_interpreter: "{{ python_interpreter }}"
+      shell: podman run hammercli hammer -u {{ cloud_name }} -p {{ lab_ipmi_password }}  host update --name {{ provisioner_hostname }} --build 1 --operatingsystem '{{ os_install }}' --medium '{{ os_install }}' --partition-table 'ALIAS-Partition' --overwrite 1
       when: lab_name == "alias"
 
     - name: Set provisioner host to foreman boot order

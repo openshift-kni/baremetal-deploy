@@ -244,7 +244,7 @@ This is the most important file to modify for a successful install of OpenShift 
 * `version`
 * `build`
 * `pullsecret`
-* `hammer_host` (Optional, if you manually provisioned a clean RHEL 8.1 install on the first node   in your lab allocation, because this variable is to rebuild the provisioning host using foreman)
+* `foreman_url` (Used to rebuild provisioning host aka first host in your allocation with RHEL 8.1)
 
 Here's a sample:
 ```yml
@@ -256,32 +256,37 @@ ocpinv_file: "{{ playbook_dir }}/ocpinv.json"
 cloud_name: cloud00
 # Lab name, typically can be alias or scale
 lab_name: scale
-# Default lab password to your nodes so that keys can be added automatically for ansible to run
+# Default root password to your nodes in the lab allocation so that keys can be added automatically for ansible to run
 ansible_ssh_pass: password
 # Location of the private key of the user running the ansible playbook, leave default
 ansible_ssh_key: "{{ ansible_user_dir }}/.ssh/id_rsa"
 # The version of the openshift-installer, undefined or empty results in the playbook failing with error message.
 # Values accepted: 'latest-4.3', 'latest-4.4', explicit version i.e. 4.3.0-0.nightly-2019-12-09-035405
 # For reference, https://openshift-release.svc.ci.openshift.org/
-version: "latest-4.4"
+version: "4.4.4"
 # Enter whether the build should use 'dev' (nightly builds) or 'ga' for Generally Available version of OpenShift
 # Empty value results in playbook failing with error message.
 build: "ga"
 # Your pull secret, https://cloud.redhat.com/openshift/install
 pullsecret: ''
-# This variable serves two purposes, one: If the host being used as provisioner (automatically, the first host in your lab assignment) is not pre-installed with RHEL 8.1
-# the playbook logs into this host to make hammer cli calls to mark the host for a build with RHEL 8.1. Two: If you are redeploying on an allocation with a previously installed
-# OpenShift cluster, it might be better to start with a clean provisioning host, in that case also, the hammer_host variable is used to reprovision the system based on 
-# rebuild_provisioner variable below. If you do not have access to this type of host for reprovisioning/making hammer cli calls, it is recommended that you start with a RHEL 8.1
-# clean provisioning host (manually install RHEL 8.1 on the first host in your lab allocation), so that `hammer_host` is never needed
-hammer_host: hwstore.example.com
-# The automation automatically rebuilds provisioner node to rhel 8.1 if not already rhel 8.1 (see nammer_host variable)
+# This variable is used to point to the foreman server that is used to reimage nodes. This variables is useful in two cases
+# 1. When the first node in your allocation (provisioning host) is not having RHEL 8.1 OS, it is automatically rebuilt with 
+# RHEL 8.1 as the OCP installer expects the provisioning host to be RHEL 8.1. In some other cases, maybe when you have an 
+# existing cluster and are trying to reinstall etc, it might be better to start with a clean provisioning host, in which case this variable
+# is also used to reimage the provisioning host in spite of it having RHEL 8.1 on it. This variable changes depending on the lab you are
+# using as each lab has its own foreman server. This URL can be deduced from the lab allocation email you receive when your allocation is
+# ready. It will be under the paragraph "You can also view/manage your hosts via Foreman:" in the email. It is important to use an https
+# prefix even if url in the email has http. Also, the url in email might have the '/hosts' path appended, we can remove 'hosts' from url 
+# and have it be https://foreman.example.com for example. If you are having trouble figuring out this variable please look for the 
+# pastebins under the "Modifying the ansible-ipi-install/group_vars/all.yml file" section in README.md
+foreman_url: https://foreman.example.com/
+# The automation automatically rebuilds provisioner node to RHEL 8.1 if not already RHEL 8.1 (see foreman_url variable)
 # However you can also force a reprovsioning of the provisioner node for redeployment scenarios
 rebuild_provisioner: false
 # Number of workers desired, by default all hosts in your allocation except 1 provisioner and 3 masters are used workers
 # However that behaviour can be overrided by explicitly settign the desired number of workers here. For a masters only deploy,
 # set worker_count to 0
-worker_count: 2
+worker_count: 0
 alias:
 #lab specific vars, leave default
   lab_url: "http://quads11.alias.bos.scalelab.redhat.com"
@@ -290,8 +295,8 @@ scale:
   lab_url: "http://quads.rdu2.scalelab.redhat.com"
 ```
 
-Here's a sample all.yml for the scale lab with the pull secret and password scraped: http://pastebin.test.redhat.com/868904
-Here's a sample al.yml for the ALIAS lab with the pull secret and password scraped: http://pastebin.test.redhat.com/868905 
+Here's a sample all.yml for the scale lab with the pull secret and password scraped: http://pastebin.test.redhat.com/870274
+Here's a sample al.yml for the ALIAS lab with the pull secret and password scraped: http://pastebin.test.redhat.com/870273
 
 ### Modifying the `ansible-ipi-install/inventory/hosts` file
 
