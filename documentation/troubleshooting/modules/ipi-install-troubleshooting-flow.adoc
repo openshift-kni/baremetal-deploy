@@ -4,7 +4,7 @@
 
 Prior to troubleshooting your environment, it is critical to understand
 the overall flow of the IPI on BM installation. The diagrams below
-provide a troubleshooting flow providing a step-by-step breakdown of 
+provide a troubleshooting flow providing a step-by-step breakdown of
 where to start debugging your environment.
 
 image:flow1.png[Flow-Diagram-1]

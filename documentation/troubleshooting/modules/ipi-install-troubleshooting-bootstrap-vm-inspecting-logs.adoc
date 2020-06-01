@@ -46,7 +46,7 @@ With the ability to login to the bootstrap VM
 ----
 
 Issue the following `+journalctl+` commands to inspect the `+bootkube+`
-logs that shows all the containers launched during the deployment phase. 
+logs that shows all the containers launched during the deployment phase.
 
 Within the bootstrap VM,
 [source,bash]
@@ -56,7 +56,7 @@ Within the bootstrap VM,
 ----
 
 Verify all the pods(`+dnsmasq+`, `+mariadb+`, `+httpd+`, `+ironic+` pods
-etc) are in running state using `+sudo podman ps+` command 
+etc) are in running state using `+sudo podman ps+` command
 (displays the containers).
 
 If there are issues with the pods, check the logs of all the containers

@@ -20,7 +20,7 @@
 - name: Copy the metal3-config.yaml to {{ dir }}/openshift directory
   copy:
     src: "{{ dir }}/metal3-config.yaml"
-    dest: "{{ dir }}/openshift/99_metal3-config.yaml"
+    dest: "{{ dir }}/openshift/98_metal3-config.yaml"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'

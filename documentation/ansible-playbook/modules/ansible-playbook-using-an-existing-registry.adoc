@@ -2,7 +2,7 @@
 = Using an Existing Registry
 
 NOTE: If no existing registry is already existing for your fully disconnected
-environment, visit link:../../{release}/Deployment#ipi-install-creating-a-disconnected-registry_ipi-install-prerequisites[Creating a New Disconnected Registry] section.
+environment, visit link:Deployment#ipi-install-creating-a-disconnected-registry_ipi-install-prerequisites[Creating a New Disconnected Registry] section.
 
 When using an existing registry, two variables labeled
 `disconnected_registry_auths_file` and the `disconnected_registry_mirrors_file`
@@ -29,7 +29,7 @@ create the htpasswd file.
 
 Example:
 
-[user@registry ~]$ b64auth=$( echo -n '<username>:<passwd>' openssl base64 )
+[user@registry ~]$ b64auth=$( echo -n '<username>:<passwd>' | openssl base64 )
 {nbsp} +
 [user@registry ~]$ echo $b64auth
 

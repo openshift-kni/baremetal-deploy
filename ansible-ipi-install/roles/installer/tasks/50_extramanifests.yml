@@ -17,8 +17,8 @@
 
   - name: Inject chrony.conf in a machine-config object
     template:
-      src: 99-etc-chrony.conf.j2
-      dest: "{{ dir }}/openshift/99-{{ item }}-etc-chrony.conf.yaml"
+      src: etc-chrony.conf.j2
+      dest: "{{ dir }}/openshift/98-{{ item }}-etc-chrony.conf.yaml"
       owner: "{{ ansible_user }}"
       group: "{{ ansible_user }}"
     with_items:

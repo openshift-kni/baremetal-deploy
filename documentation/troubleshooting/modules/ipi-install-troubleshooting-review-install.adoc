@@ -16,7 +16,7 @@ master-2.example.com   Ready    master,worker   4h   v1.16.2
 
 Confirm all pods are successfully deployed. The following command
 removes any pods that are still running or have completed as part
-of the output. 
+of the output.
 
 [source,bash]
 ----
