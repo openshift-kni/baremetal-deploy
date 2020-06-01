@@ -1,0 +1,42 @@
+[id="ansible-playbook-failed-to-connect-to-bus-no-file-or-directory"]
+
+= Failed to connect to bus: No such file or directory
+
+The Ansible playbook creates two containers (when enabled) to 
+store a mirored registry and a caching webserver. 
+When these containers are created, the playbook also creates a
+`systemd` unit file to ensure these containers are restarted upon
+the reboot of the host serving them. 
+
+Since these are `systemd` user services, when logging into a
+system to attempt a command such as
+`systemctl --user status container-cache.service` for the
+webserver or `systemctl --user status container-registry.service`
+for the mirrored registry, you may get an error such as:
+
+----
+[kni@provisioner ~]$ systemctl --user status container-cache
+Failed to connect to bus: No such file or directory
+----
+
+What the following error is trying to address is that the 
+parameter, `DBUS_SESSIONBUS_ADDRESS`, is not set. 
+
+In order to set this variable, we can `export` as follows:
+
+----
+export DBUS_SESSIONBUS_ADDRESS="unix:path/run/user/$id/bus"
+----
+
+Once that has been set, if you re-attempt the `systemctl` command, you should
+see output as follows:
+
+----
+[kni@provisioner ~]$ systemctl --user status container-cache.service
+● container-cache.service - Podman container-cache.service
+   Loaded: loaded (/home/kni/.config/systemd/user/container-cache.service; enabled; vendor preset: enabled)
+   Active: active (running) since Mon 2020-06-01 19:52:04 UTC; 49min ago
+  Process: 36380 ExecStart=/usr/bin/podman start rhcos_image_cache (code=exited, status=0/SUCCESS)
+ Main PID: 36410 (conmon)
+----
+
