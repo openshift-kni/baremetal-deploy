@@ -5,7 +5,7 @@
 
 At times, there may be a need to create a disconnected registry due to
 limited connectivity to an environment or creating a central location to
-host images locally. Details can be found in link:../../{release}/Deployment#ipi-install-creating-a-disconnected-registry_ipi-install-prerequisites[Creating a disconnected registry]
+host images locally. Details can be found in link:Deployment#ipi-install-creating-a-disconnected-registry_ipi-install-prerequisites[Creating a disconnected registry]
 
 When attempting to mirror the registry and if you receive a 'User Not Authorized'
 error, this is due to not appending the new authentication to your already
