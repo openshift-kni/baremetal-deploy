@@ -202,5 +202,5 @@ of 623 will be used.
 //FIXME This link to use https://openshift-kni.github.io/baremetal-deploy/4.4/Deployment.html#ipi-install-configuration-files
 A detailed description of the `vars` under the section
 `Vars regarding install-config.yaml` may be reviewed within
-link:../../{release}/Deployment#ipi-install-configuration-files[Configuration Files] if unsure how to populate.
+link:Deployment#ipi-install-configuration-files[Configuration Files] if unsure how to populate.
 ====
