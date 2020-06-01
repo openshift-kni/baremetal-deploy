@@ -13,3 +13,4 @@ webserver_caching_port: "{{ webserver_caching_port_container }}"
 webserver_caching_port_container: 8080
 registry_creation: false
 url_passed: false
+httpd_cache_files: "{{ provision_cache_store }}httpd/"
