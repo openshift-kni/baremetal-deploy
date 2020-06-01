@@ -24,6 +24,8 @@ platform:
     dnsVIP: <dns-ip>
     provisioningNetworkInterface: <NIC1>
     provisioningNetworkCIDR: <CIDR> # i.e. fd00:1101::1/64
+    bootstrapOSImage: http://<Disconnected-Registry-fqdn>/rhcos-qemu-sha256
+    clusterOSImage: http://<Disconnected-Registry-fqdn>/rhcos-openstack-sha256 
     provisioningBridge: provisioning
     hosts:
       - name: openshift-master-0
