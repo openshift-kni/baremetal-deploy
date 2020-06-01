@@ -1,0 +1,45 @@
+:foreman:
+  # Enable/disable foreman commands
+  :enable_module: true
+
+  # Your foreman server address
+  :host: '{{ foreman_url }}'
+
+  # Credentials. You'll be asked for them interactively if you leave them blank here
+  # Possible values:
+
+  # Basic Auth:
+  #:default_auth_type: 'Basic_Auth'
+  :username: 'admin'
+  #:password: 'example'
+
+  # Oauth using the Password Grant Flow:
+  # This authentication method requires sessions to be enabled, uncomment the following
+  # lines to use this authentication method.
+  #:default_auth_type: 'Oauth_Password_Grant'
+  #:oidc_token_endpoint: https://keycloak.example.com/token
+  #:oidc_client_id: example-client-id
+
+  # Oauth using Authentication Code Flow(Two Factor):
+  # This authentication method requires sessions to be enabled, uncomment the following
+  # lines to use this authentication method.
+  #:default_auth_type: 'Oauth_Authentication_Code_Grant'
+  #:oidc_token_endpoint: https://keycloak.example.com/token
+  #:oidc_authorization_endpoint: https://keycloak.example.com/auth
+  #:oidc_client_id: example-client-id
+  #:oidc_redirect_uri: urn:ietf:wg:oauth:2.0:oob
+
+  # Enable using sessions
+  # When sessions are enabled, hammer ignores credentials stored in the config file
+  # and asks for them interactively at the begining of each session.
+  :use_sessions: false
+
+  # Check API documentation cache status on each request
+  #:refresh_cache: false
+
+  # API request timeout. Set to -1 for no timeout
+  #:request_timeout: 120 #seconds
+
+  # Follow API redirects. One of :never, :default, :always
+  # Value :default means RestClient default behaviour - follow only in GET and HEAD requests
+  #:follow_redirects: :never
