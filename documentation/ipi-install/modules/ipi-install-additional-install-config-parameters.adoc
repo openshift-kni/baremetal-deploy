@@ -5,8 +5,8 @@
 [id="additional-install-config-parameters_{context}"]
 = Additional `install-config` parameters
 
-This topic describes the required parameters, the `hosts` parameter, and the `bmc` `address` parameter
-for the `install-config.yaml` file.
+This topic describes the required parameters, the `hosts` parameter, 
+and the `bmc` `address` parameter for the `install-config.yaml` file.
 
 .Required parameters
 
@@ -31,7 +31,8 @@ This setting has no default and must always be provided.
 
 .Hosts
 
-The `hosts` parameter is a list of separate bare metal assets that should be used to build the cluster.
+The `hosts` parameter is a list of separate bare metal assets that 
+should be used to build the cluster.
 
 |===
 |Name |Default |Description
@@ -41,7 +42,8 @@ The `hosts` parameter is a list of separate bare metal assets that should be use
 | `bootMACAddress` |  | The MAC address of the NIC the host will use to boot on the provisioning network.
 |===
 
-The `bmc` parameter for each host is a set of values for accessing the baseboard management controller in the host.
+The `bmc` parameter for each host is a set of values for accessing the 
+baseboard management controller in the host.
 
 |===
 |Name |Default |Description
@@ -51,21 +53,96 @@ The `bmc` parameter for each host is a set of values for accessing the baseboard
 See BMC Addressing for details.
 |===
 
-.BMC addressing
+== BMC addressing
 
-Keep the following in mind when providing values for the `bmc` `address` field.
+The `address` field for each `bmc` entry is a URL with details how to 
+connect to the {product-title} cluster nodes, including the type of 
+controller in the URL scheme and its location on the network.
 
-* The `address` field for each `bmc` entry is a URL with details for connecting to the controller,
-including the type of controller in the URL scheme and its location on the network.
+.IPMI
 
-* IPMI hosts use `ipmi://<host>:<port>`. An unadorned `<host>:<port>` is also accepted.
-If the port is omitted, the default of 623 is used.
+IPMI hosts use `ipmi://<out-of-band-ip>:<port>` and defaults to port 
+`623` if not specified. Example output of using IPMI within your 
+`install-config.yaml` file.
 
-* Dell iDRAC hosts use `idrac://` (or `idrac+http://` to disable TLS).
+----
+platform:
+  baremetal:
+    hosts:
+      - name: openshift-master-0
+        role: master
+        bmc:
+          address: ipmi://<out-of-band-ip>
+          username: <user>
+          password: <password>
+----
 
-* Fujitsu iRMC hosts use `irmc://<host>:<port>`, where `<port>` is optional if using the default.
+ifeval::[{release} > 4.4]
 
-* For Redfish, use `redfish://` (or `redfish+http://` to disable TLS).
-The hostname (or IP address) and the path to the system ID are both required.
-For example, `redfish://myhost.example/redfish/v1/Systems/System.Embedded.1`
-or `redfish://myhost.example/redfish/v1/Systems/1`.
+.RedFish
+
+For RedFish, use `redfish://` (or `redfish+http://` to disable TLS). 
+The hostname (or IP address) and the path to the system ID are both 
+required. Example output of using RedFish within your 
+`install-config.yaml` file.
+
+----
+platform:
+  baremetal:
+    hosts:
+      - name: openshift-master-0
+        role: master
+        bmc:
+          address: redfish://<out-of-band-ip>/redfish/v1/Systems/1
+          username: <user>
+          password: <password>
+----
+
+While it is recommended to have a certificate of authority for your 
+out of band management addresses, if using self-signed certificates 
+ensure to include an additional parameter of 
+`disableCertificateVerification: True`. Example output of using
+RedFish with `disableCertificateVerification: True` 
+within your `install-config.yaml` file.
+
+----
+platform:                                                               
+  baremetal:                                                            
+    hosts:                                                              
+      - name: openshift-master-0                                        
+        role: master                                                    
+        bmc:                                                            
+          address: redfish://<out-of-band-ip>/redfish/v1/Systems/1      
+          username: <user>                                              
+          password: <password> 
+          disableCertificateVerification: True 
+----
+
+NOTE: Currently RedFish is only supported on HPE hardware for IPI on 
+Bare metal deployments. We are working with other vendors to enable 
+RedFish capabilities across the board. 
+
+.RedFish Virtual Media
+
+For RedFish virtual media, use `redfish-virtualmedia://`
+
+Example output of using RedFish Virtual Media 
+within your `install-config.yaml` file.                         
+
+----
+platform:                                                               
+  baremetal:                                                            
+    hosts:                                                              
+      - name: openshift-master-0                                        
+        role: master                                                    
+        bmc:                                                            
+          address: redfish-virtualmedia://<out-of-band-ip>/redfish/v1/Systems/1      
+          username: <user>                                              
+          password: <password>                                          
+----
+
+NOTE: Currently RedFish is only supported on HPE hardware for IPI on 
+Bare metal deployments. We are working with other vendors to enable 
+RedFish capabilities across the board. 
+
+endif::[]
