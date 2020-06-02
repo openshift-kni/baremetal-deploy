@@ -9,7 +9,7 @@
 +
 [source,bash]
 ----
-[kni@provisioner ~]$ sudo ./openshift-baremetal-install --dir ~/clusterconfigs create manifests
+[kni@provisioner ~]$ ./openshift-baremetal-install --dir ~/clusterconfigs create manifests
 ----
 +
 ----
