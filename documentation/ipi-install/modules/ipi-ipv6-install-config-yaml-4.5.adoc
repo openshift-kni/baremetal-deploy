@@ -6,7 +6,7 @@ apiVersion: v1
 baseDomain: <domain>
 networking:
   networkType: OVNKubernetes
-  machineCIDR: <IPv6-baremetal-public-cidr> #e.g:2620:52:0:1302::/64 
+  machineCIDR: <IPv6-baremetal-public-cidr> #e.g:2620:52:0:1302::/64
   clusterNetwork:
   - cidr: fd01::/48
     hostPrefix: 64
@@ -31,9 +31,8 @@ platform:
     bootstrapOSImage: "<rhcos-boostrap-image-cache-url>" #e.g: http://[2620:52:0:1307::1]/rhcos-44.81.202004250133-0-qemu.x86_64.qcow2.gz?sha256=7d884b46ee54fe87bbc3893bf2aa99af3b2d31f2e19ab5529c60636fbd0f1ce7
     clusterOSImage: "rhcos-node-image-cache-url>" #e.g: http://[2620:52:0:1307::1]/rhcos-44.81.202004250133-0-openstack.x86_64.qcow2.gz?sha256=370a5abf8486d2656b38eb596bf4b2103f8d3b1faaca8bfb2f086a16185c2d1b
     provisioningNetworkCIDR: <IPv6-provisioning-cidr> #e.g: 2620:52:0:1307::/64
-    dnsVIP: <dns-ip> #e.g: 2620:52:0:1302::4 
     apiVIP: <api-ip> #e.g: 2620:52:0:1302::3
-    ingressVIP: <wildcard-ip> #e.g: 2620:52:0:1302::2 
+    ingressVIP: <wildcard-ip> #e.g: 2620:52:0:1302::2
     hosts:
       - name: openshift-master-0
         role: master

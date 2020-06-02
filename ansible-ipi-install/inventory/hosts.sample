@@ -99,7 +99,8 @@ cluster=""
 # The public CIDR address, i.e. 10.1.1.0/21
 extcidrnet=""
 # An IP reserved on the baremetal network.
-dnsvip=""
+# Deprecated in OpenShift 4.5 (https://github.com/openshift/installer/pull/3304)
+#dnsvip=""
 # An IP reserved on the baremetal network for the API endpoint.
 # (Optional) If not set, a DNS lookup verifies that api.<clustername>.<domain> provides an IP
 #apivip=""

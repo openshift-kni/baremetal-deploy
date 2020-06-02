@@ -21,6 +21,7 @@ platform:
   baremetal:
     apiVIP: <api-ip>
     ingressVIP: <wildcard-ip>
+    dnsVIP: <dns-ip>
     provisioningNetworkInterface: <NIC1>
     provisioningNetworkCIDR: <CIDR> # i.e. fd00:1101::1/64
     provisioningBridge: provisioning
