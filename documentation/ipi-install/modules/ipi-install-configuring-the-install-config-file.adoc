@@ -9,11 +9,17 @@
 The `install-config.yaml` file requires some additional details.
 Most of the information is teaching the installer and the resulting cluster enough about the available hardware so that it is able to fully manage it.
 
-ifeval::[{release} > 4.3]
+ifeval::[{release} > 4.4]
 include::ipi-install-config-yaml.adoc[leveloffset=0]
+endif::[]
+
+ifeval::[{release} <= 4.4]
+ifeval::[{release} > 4.3]
+include::ipi-install-config-yaml-4.4.adoc[leveloffset=0]
 endif::[]
 ifeval::[{release} <= 4.3]
 include::ipi-install-config-yaml-4.3.adoc[leveloffset=0]
+endif::[]
 endif::[]
 
 . Create a directory to store cluster configs.
