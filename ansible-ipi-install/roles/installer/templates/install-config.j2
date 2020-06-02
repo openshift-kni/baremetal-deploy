@@ -30,9 +30,9 @@ platform:
   baremetal:
     apiVIP: {{ apivip }}
     ingressVIP: {{ ingressvip }}
-    {% if ((release_version[0]|int == 4) and (release_version[2]|int < 5)) %}
+{% if ((release_version[0]|int == 4) and (release_version[2]|int < 5)) %}
     dnsVIP: {{ dnsvip }}
-    {% endif %}
+{% endif %}
     provisioningBridge: {{ provisioning_bridge }}
 {% if baremetal_bridge != 'baremetal' %}
     externalBridge: {{ baremetal_bridge }}
