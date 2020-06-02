@@ -7,6 +7,9 @@ RELEASES="4.4 4.3"
 # Devel releases for static documents and devel docs
 DEVRELEASE="4.5"
 
+# STATIC Release
+STATICRELEASE="${DEVRELEASE}"
+
 # Versioned documents
 DOCS=(
     'Deployment'
@@ -54,7 +57,7 @@ for release in ${RELEASES}; do
 done
 
 # Build latest for static
-for release in ${DEVRELEASE}; do
+for release in ${STATICRELEASE}; do
     for doc in "${STATIC[@]}"; do
         build_for_release "${doc}" "${release}"
     done
@@ -73,7 +76,7 @@ mkdir -p ${TARGET}
 
 # Build HTML page for all generated docs
 
-# Empty file before starting
+# Empty file before starting for VERSIONED
 >${TARGET}/releases.yml
 for release in ${RELEASES}; do
     for doc in "${DOCS[@]}"; do
@@ -86,20 +89,7 @@ ${doc}-${release}:
     done
 done
 
-# Empty file before starting
->${TARGET}/static.yml
-for release in ${DEVRELEASE}; do
-    for doc in "${STATIC[@]}"; do
-        echo """
-${doc}-${release}:
-    name: ${doc}
-    release: ${release}
-    folder: ${release}/${doc}
-    """ >>${TARGET}/static.yml
-    done
-done
-
-# Empty file before starting
+# Empty file before starting for DEVEL preview
 >${TARGET}/devprev.yml
 for release in ${DEVRELEASE}; do
     for doc in "${DEV[@]}"; do
@@ -111,6 +101,22 @@ ${doc}-${release}:
     """ >>${TARGET}/devprev.yml
     done
 done
+
+# Empty file before starting for STATIC
+>${TARGET}/static.yml
+for release in ${STATICRELEASE}; do
+    for doc in "${STATIC[@]}"; do
+        echo """
+${doc}-${release}:
+    name: ${doc}
+    release: ${release}
+    folder: latest/${doc}
+    """ >>${TARGET}/static.yml
+    done
+done
+
+rm -f website/latest
+ln -s ${release} website/latest
 
 # TODO: CHECK why RC != 0 with no errors website (despite of gem)
 RC=0
