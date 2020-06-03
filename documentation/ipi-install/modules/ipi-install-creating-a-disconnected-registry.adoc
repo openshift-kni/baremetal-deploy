@@ -198,10 +198,12 @@ Replace `<username>` with the user name and `<passwd>` with the password.
 NOTE: Example output of the variables used to mirror the install images
 +
 ----
-UPSTREAM_STREAM=${RELEASE_IMAGE}
+UPSTREAM_REPO=${RELEASE_IMAGE}
 LOCAL_REG=<registry_FQDN>:<registry_port>
 LOCAL_REPO='ocp4/openshift4'
 ----
+
+(Recall that we set `RELEASE_IMAGE` and `VERSION` in xref:ipi-install-retrieving-openshift-installer.adoc[Retrieving OpenShift Installer])
 
 == Modify the `install-config.yaml` file to use the disconnected registry (optional)
 
