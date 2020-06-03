@@ -4,8 +4,7 @@ In this section of the document, extra information is provided that is outside o
 
 // Appendix
 ifdef::upstream[]
-
+include::ipi-install-upstream-troubleshooting.adoc[leveloffset=+1]
 include::ipi-install-upstream-dns.adoc[leveloffset=+1]
 include::ipi-install-upstream-dhcp.adoc[leveloffset=+1]
-
 endif::[]

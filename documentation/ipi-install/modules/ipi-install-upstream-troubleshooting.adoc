@@ -1,0 +1,4 @@
+[id="ipi-install-upstream-troubleshooting"]
+= Troubleshooting
+
+Troubleshooting the installation is out of scope of the Deployment Guide. For more details on troubleshooting deployment, refer to our  link:../latest/Troubleshooting[Troubleshooting guide].

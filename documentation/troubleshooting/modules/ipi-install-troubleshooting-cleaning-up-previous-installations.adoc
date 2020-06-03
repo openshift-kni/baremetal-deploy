@@ -1,17 +1,31 @@
 [id="ipi-install-troubleshooting-cleaning-up-previous-installations"]
 = Cleaning up previous installations
 
-If re-running the deployment, delete all the older bootstrap VMs
-including its volume as shown below. Failure to do so may cause over
-consumption of resources on the provisioner host.
+In the event there was a previous failed attempted of deployment, run the following steps in order to remove any old artifacts from the failed attempt.
 
-Clean up the older VMs and their volumes with the help of below script.
-
+. Ensure all bare metal nodes are powered off prior to installing the {product-title} cluster.
++
 [source,bash]
 ----
-BOOTSTRAP=$(virsh list --all | grep "$CLUSTER.*bootstrap" | tail -1 | awk '{print $2}')
-virsh destroy $BOOTSTRAP
-virsh undefine $BOOTSTRAP
-virsh vol-delete $BOOTSTRAP default
-virsh vol-delete $BOOTSTRAP.ign default
+[kni@provisioner ~]$ ipmitool -I lanplus -U <user> -P <password> -H <management-server-ip> power off
+----
+
+. Ensure that old bootstrap resources are removed, if any are left over from a previous deployment attempt.
++
+[source,bash]
+----
+for i in $(sudo virsh list | tail -n +3 | grep bootstrap | awk {'print $2'});
+do
+  sudo virsh destroy $i;
+  sudo virsh undefine $i;
+  sudo virsh vol-delete $i --pool default;
+  sudo virsh vol-delete $i.ign --pool default;
+done
+----
+
+. The folder `clusterconfigs` should remove the following files and directories to prevent Terraform from failing as it may reference older deployments if these files are still available.
++
+[source,bash]
+----
+[kni@provisioner ~]$ rm -rf ~/clusterconfigs/auth ~/clusterconfigs/terraform* ~/clusterconfigs/tls ~/clusterconfigs/metadata.json
 ----
