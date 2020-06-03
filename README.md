@@ -67,7 +67,7 @@ For end-to-end automation and easy deployment, JetSki makes certain assumptions.
 The `ansible-ipi-install`  directory consists of three main sub-directories in addition to the main playbook `playbook-jetski.yml` that is used to kick off the installation. They are:
 
 - `group_vars` - Contains the `all.yml` which holds the bare minimum variables needed for install
-- `inventory` - contains the file `hosts.sample` that has advanced variables for customized installation
+- `inventory` - contains the file `jetski/hosts` that has advanced variables for customized installation
 - `roles` - contains eight roles: `bootstrap`, `prepare-kni`, `add-provisioner`, `network-discovery`, `set-deployment-facts`, `shared-labs-prep`,`node-prep` and `installer`. `node-prep` handles all the prerequisites that the provisioner node requires prior to running the installer. The `installer` role handles extracting the installer, setting up the manifests, and running the Red Hat OpenShift installation.
 
 The purpose served by each role can be summarized as follows:
@@ -84,130 +84,141 @@ The tree structure is shown below:
 
 ```sh
 ├── ansible.cfg
+├── filter_plugins
+│   ├── deprecate_me.py
+│   └── warn_me.py
 ├── group_vars
-│   └── all.yml
+│   └── all.yml
 ├── inventory
-│   └── jetski.sample
+│   ├── jetski
+│   │   └── hosts
+│   ├── shared_labs
+│   │   └── hosts
+│   └── upstream
+│       └── hosts
+├── OWNERS
 ├── playbook-jetski.yml
+├── playbook-rh-shared-labs.yml
+├── playbook.yml
+├── prep_kni_user.yml
 └── roles
     ├── add-provisioner
-    │   └── tasks
-    │       └── main.yml
+    │   └── tasks
+    │       └── main.yml
     ├── bootstrap
-    │   ├── tasks
-    │   │   ├── 01_install_packages.yml
-    │   │   ├── 05_ssh_keys.yml
-    │   │   ├── 10_load_inv.yml
-    │   │   ├── 20_reprovision_nodes.yml
-    │   │   ├── 25_copykeys.yml
-    │   │   ├── 30_get_interpreter.yml
-    │   │   ├── 40_prepare_provisioning.yml
-    │   │   ├── 50_add_ocp_inventory.yml
-    │   │   ├── 55_add_ocp_masters.yml
-    │   │   ├── 60_add_ocp_workers.yml
-    │   │   └── main.yml
-    │   └── vars
-    │       └── main.yml
+    │   ├── files
+    │   │   ├── Dockerfile
+    │   │   └── foreman.yml.j2
+    │   ├── tasks
+    │   │   ├── 01_install_packages.yml
+    │   │   ├── 05_ssh_keys.yml
+    │   │   ├── 10_load_inv.yml
+    │   │   ├── 20_reprovision_nodes.yml
+    │   │   ├── 25_copykeys.yml
+    │   │   ├── 30_get_interpreter.yml
+    │   │   ├── 40_prepare_provisioning.yml
+    │   │   ├── 50_add_ocp_inventory.yml
+    │   │   ├── 55_add_ocp_masters.yml
+    │   │   ├── 60_add_ocp_workers.yml
+    │   │   └── main.yml
+    │   └── vars
+    │       └── main.yml
     ├── installer
-    │   ├── defaults
-    │   │   └── main.yml
-    │   ├── files
-    │   │   ├── customize_filesystem
-    │   │   │   ├── master
-    │   │   │   │   └── etc
-    │   │   │   │       └── sysconfig
-    │   │   │   │           └── network-scripts
-    │   │   │   │               └── ifcfg-enp3s0f0
-    │   │   │   └── worker -> master
-    │   │   ├── filetranspile-1.1.1.py
-    │   │   └── manifests
-    │   ├── handlers
-    │   │   └── main.yml
-    │   ├── library
-    │   │   └── podman_container.py
-    │   ├── meta
-    │   │   └── main.yml
-    │   ├── tasks
-    │   │   ├── 10_get_oc.yml
-    │   │   ├── 15_disconnected_registry_create.yml
-    │   │   ├── 15_disconnected_registry_existing.yml
-    │   │   ├── 20_extract_installer.yml
-    │   │   ├── 23_rhcos_image_paths.yml
-    │   │   ├── 24_rhcos_image_cache.yml
-    │   │   ├── 25_create-install-config.yml
-    │   │   ├── 30_create_metal3.yml
-    │   │   ├── 40_create_manifest.yml
-    │   │   ├── 50_extramanifests.yml
-    │   │   ├── 55_customize_filesystem.yml
-    │   │   ├── 59_cleanup_bootstrap.yml
-    │   │   ├── 60_deploy_ocp.yml
-    │   │   ├── 70_cleanup_sub_man_registeration.yml
-    │   │   └── main.yml
-    │   ├── templates
-    │   │   ├── 99-etc-chrony.conf.j2
-    │   │   ├── chrony.conf.j2
-    │   │   ├── install-config-appends.j2
-    │   │   ├── install-config.j2
-    │   │   └── metal3-config.j2
-    │   ├── tests
-    │   │   ├── inventory
-    │   │   └── test.yml
-    │   └── vars
-    │       └── main.yml
+    │   ├── defaults
+    │   │   └── main.yml
+    │   ├── files
+    │   │   ├── customize_filesystem
+    │   │   │   ├── master
+    │   │   │   └── worker -> master
+    │   │   ├── filetranspile-1.1.1.py
+    │   │   └── manifests
+    │   ├── handlers
+    │   │   └── main.yml
+    │   ├── library
+    │   │   └── podman_container.py
+    │   ├── meta
+    │   │   └── main.yml
+    │   ├── tasks
+    │   │   ├── 10_get_oc.yml
+    │   │   ├── 15_disconnected_registry_create.yml
+    │   │   ├── 15_disconnected_registry_existing.yml
+    │   │   ├── 20_extract_installer.yml
+    │   │   ├── 23_rhcos_image_paths.yml
+    │   │   ├── 24_rhcos_image_cache.yml
+    │   │   ├── 25_create-install-config.yml
+    │   │   ├── 30_create_metal3.yml
+    │   │   ├── 40_create_manifest.yml
+    │   │   ├── 50_extramanifests.yml
+    │   │   ├── 55_customize_filesystem.yml
+    │   │   ├── 59_cleanup_bootstrap.yml
+    │   │   ├── 60_deploy_ocp.yml
+    │   │   ├── 70_cleanup_sub_man_registeration.yml
+    │   │   └── main.yml
+    │   ├── templates
+    │   │   ├── chrony.conf.j2
+    │   │   ├── etc-chrony.conf.j2
+    │   │   ├── install-config-appends.j2
+    │   │   ├── install-config.j2
+    │   │   └── metal3-config.j2
+    │   ├── tests
+    │   │   ├── inventory
+    │   │   └── test.yml
+    │   └── vars
+    │       └── main.yml
     ├── network-discovery
-    │   └── tasks
-    │       └── main.yml
+    │   └── tasks
+    │       └── main.yml
     ├── node-prep
-    │   ├── defaults
-    │   │   └── main.yml
-    │   ├── handlers
-    │   │   └── main.yml
-    │   ├── library
-    │   │   └── nmcli.py
-    │   ├── meta
-    │   │   └── main.yml
-    │   ├── tasks
-    │   │   ├── 100_power_off_cluster_servers.yml
-    │   │   ├── 10_validation.yml
-    │   │   ├── 15_validation_disconnected_registry.yml
-    │   │   ├── 20_sub_man_register.yml
-    │   │   ├── 30_req_packages.yml
-    │   │   ├── 40_bridge.yml
-    │   │   ├── 50_modify_sudo_user.yml
-    │   │   ├── 60_enabled_services.yml
-    │   │   ├── 70_enabled_fw_services.yml
-    │   │   ├── 80_libvirt_pool.yml
-    │   │   ├── 90_create_config_install_dirs.yml
-    │   │   └── main.yml
-    │   ├── templates
-    │   │   └── dir.xml.j2
-    │   ├── tests
-    │   │   ├── inventory
-    │   │   └── test.yml
-    │   └── vars
-    │       └── main.yml
+    │   ├── defaults
+    │   │   └── main.yml
+    │   ├── handlers
+    │   │   └── main.yml
+    │   ├── library
+    │   │   └── nmcli.py
+    │   ├── meta
+    │   │   └── main.yml
+    │   ├── tasks
+    │   │   ├── 100_power_off_cluster_servers.yml
+    │   │   ├── 10_validation.yml
+    │   │   ├── 15_validation_disconnected_registry.yml
+    │   │   ├── 20_sub_man_register.yml
+    │   │   ├── 30_req_packages.yml
+    │   │   ├── 40_bridge.yml
+    │   │   ├── 45_networking_facts.yml
+    │   │   ├── 50_modify_sudo_user.yml
+    │   │   ├── 60_enabled_services.yml
+    │   │   ├── 70_enabled_fw_services.yml
+    │   │   ├── 80_libvirt_pool.yml
+    │   │   ├── 90_create_config_install_dirs.yml
+    │   │   └── main.yml
+    │   ├── templates
+    │   │   └── dir.xml.j2
+    │   ├── tests
+    │   │   ├── inventory
+    │   │   └── test.yml
+    │   └── vars
+    │       └── main.yml
     ├── prepare-kni
-    │   └── tasks
-    │       └── main.yml
+    │   └── tasks
+    │       └── main.yml
     ├── set-deployment-facts
-    │   └── tasks
-    │       └── main.yml
+    │   └── tasks
+    │       └── main.yml
     └── shared-labs-prep
         ├── defaults
-        │   └── main.yml
+        │   └── main.yml
         ├── library
-        │   └── nmcli.py -> ../../node-prep/library/nmcli.py
+        │   └── nmcli.py -> ../../node-prep/library/nmcli.py
         ├── tasks
-        │   └── main.yml
+        │   └── main.yml
         ├── templates
-        │   ├── ocp4-lab.dnsmasq.conf.j2
-        │   └── ocp4-lab.ifcfg-template.j2
+        │   ├── ocp4-lab.dnsmasq.conf.j2
+        │   └── ocp4-lab.ifcfg-template.j2
         ├── tests
-        │   ├── inventory
-        │   └── test.yml
+        │   ├── inventory
+        │   └── test.yml
         └── vars
             └── main.yml
-
 ```
 
 ## Running the Ansible Playbook
@@ -215,7 +226,7 @@ The tree structure is shown below:
 The TL;DR version is 
 
 ```sh
-$ ansible-playbook -i inventory/hosts playbook-jetski.yml
+$ ansible-playbook -i inventory/jetski/hosts playbook-jetski.yml
 ```
 
 However, for the playbook to successfully execute certain variables have to be set at a minimum in `ansible-ipi-install/group_vars/all.yml`.
@@ -298,11 +309,11 @@ scale:
 Here's a sample all.yml for the scale lab with the pull secret and password scraped: http://pastebin.test.redhat.com/870274
 Here's a sample al.yml for the ALIAS lab with the pull secret and password scraped: http://pastebin.test.redhat.com/870273
 
-### Modifying the `ansible-ipi-install/inventory/hosts` file
+### Modifying the `ansible-ipi-install/inventory/jetski/hosts` file
 
-The bare minimum variables to get a successful install are listed in `ansible-ipi-install/group_vars/all.yml`. Typically, correctly filing `ansible-ipi-install/group_vars/all.yml` should suffice for the shared labs use case, but in cases where some advanced configuration is needed and to fully utilize the options supported by the installer and the [`upstream playbooks`]([https://github.com/openshift-kni/baremetal-deploy](https://github.com/openshift-kni/baremetal-deploy)), the `inventory/jetski.sample` can be edited and used as an inventory file. For example, the `SDN` for OpenShift can be set using the `network_type` variable in the inventory. The sample is provided at `ansible-ipi-install/inventory/jetski.sample` and needs to be copied to `ansible-ipi-install/inventory/hosts` before running the playbook (edit it if needed). While editing the jetski.sample file is optional, after copying it `inventory/hosts`, the file **needs** to be passed to the ansible playbook invocation command using `-i inventory/hosts`. This is because it contains some defaults used by the playbook.
+The bare minimum variables to get a successful install are listed in `ansible-ipi-install/group_vars/all.yml`. Typically, correctly filling `ansible-ipi-install/group_vars/all.yml` should suffice for the shared labs use case, but in cases where some advanced configuration is needed and to fully utilize the options supported by the installer and the [`upstream playbooks`]([https://github.com/openshift-kni/baremetal-deploy](https://github.com/openshift-kni/baremetal-deploy)), the `ansible-ipi-install/inventory/jetski/hosts` can be edited and used as an inventory file. For example, the `SDN` for OpenShift can be set using the `network_type` variable in the inventory. While editing the hosts file is optional the file **needs** to be passed to the ansible playbook invocation command using `-i inventory/jetski/hosts`. This is because it contains some default variables required for the installation.
 
-Below is a sample of what the `ansible-ipi-install/inventory/hosts` file should like based on `ansible-ipi-install/inventory/hosts/jetski.sample`:
+Below is a sample of the `ansible-ipi-install/inventory/jetski/hosts`:
 
 ```ini
 [all:vars]
@@ -465,7 +476,7 @@ network_type="OVNKubernetes"
 
 ### The Ansible `playbook-jetski.yml`
 
-The Ansible playbook generates the list of hosts it is operating against automatically based on your lab allocation and runs through the `roles` to give you an OpenShift on baremetal install. No modification of these roles or the playboo is necessary. All modifications of variables may be done within the `ansible-ipi-install/group_vars/all.yml` and `ansible-ipi-install/inventory/hosts` files. Please note that if the same variable is defined in `ansible-ipi-install/group_vars/all.yml` and `ansible-ipi-install/inventory/hosts`, the value in `ansible-ipi-install/group_vars/all.yml` will take precedence. A sample file for inventory is located at `ansible-ipi-install/inventory/jetski.sample` which needs to be copied to `ansible-ipi-install/inventory/hosts` before running the playbook.
+The Ansible playbook generates the list of hosts it is operating against automatically based on your lab allocation and runs through the `roles` to give you an OpenShift on baremetal install. No modification of these roles or the playboo is necessary. All modifications of variables may be done within the `ansible-ipi-install/group_vars/all.yml` and `ansible-ipi-install/inventory/hosts` files. Please note that if the same variable is defined in `ansible-ipi-install/group_vars/all.yml` and `ansible-ipi-install/inventory/hosts`, the value in `ansible-ipi-install/group_vars/all.yml` will take precedence. A sample file for inventory is located at `ansible-ipi-install/inventory/jetski/hosts`.
 
 Sample `playbook-jetski.yml`:
 
@@ -541,7 +552,7 @@ Deployment of OCP 4.3 and 4.4 has been tested with the playbook.
 * Homogeneous hardware expected for masters and workers
 
 ## Additional Material/Advanced Usage
-For additional reading material and advanced usage of all the options provided by `ansible-ipi-install/inventory/hosts.sample` please refer to [https://github.com/openshift-kni/baremetal-deploy/tree/master/ansible-ipi-install](https://github.com/openshift-kni/baremetal-deploy/tree/master/ansible-ipi-install) and [upstream docs]([https://openshift-kni.github.io/baremetal-deploy/](https://openshift-kni.github.io/baremetal-deploy/)). The playbook provided in this repo contantly aims to support everything supported [upstream](https://github.com/openshift-kni/baremetal-deploy/tree/master/ansible-ipi-install) which is made possible by the modular architecture of using upstream roles as is without change and only having extra roles that run before the upstream roles.
+For additional reading material and advanced usage of all the options provided by `ansible-ipi-install/inventory/jetski/hosts` please refer to [https://github.com/openshift-kni/baremetal-deploy/tree/master/ansible-ipi-install](https://github.com/openshift-kni/baremetal-deploy/tree/master/ansible-ipi-install) and [upstream docs]([https://openshift-kni.github.io/baremetal-deploy/](https://openshift-kni.github.io/baremetal-deploy/)). The playbook provided in this repo contantly aims to support everything supported [upstream](https://github.com/openshift-kni/baremetal-deploy/tree/master/ansible-ipi-install) which is made possible by the modular architecture of using upstream roles as is without change and only having extra roles that run before the upstream roles.
 
 ## Troubleshooting
 
