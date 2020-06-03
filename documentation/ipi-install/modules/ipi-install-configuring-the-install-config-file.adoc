@@ -9,10 +9,13 @@
 The `install-config.yaml` file requires some additional details.
 Most of the information is teaching the installer and the resulting cluster enough about the available hardware so that it is able to fully manage it.
 
+. Configure `install-config.yaml`. Change the appropriate variables to match your environment, including `pullSecret` and `sshKey`.
++
+[source,yaml]
+----
 ifeval::[{release} > 4.4]
 include::ipi-install-config-yaml.adoc[leveloffset=0]
 endif::[]
-
 ifeval::[{release} <= 4.4]
 ifeval::[{release} > 4.3]
 include::ipi-install-config-yaml-4.4.adoc[leveloffset=0]
@@ -21,6 +24,7 @@ ifeval::[{release} <= 4.3]
 include::ipi-install-config-yaml-4.3.adoc[leveloffset=0]
 endif::[]
 endif::[]
+----
 
 . Create a directory to store cluster configs.
 +
@@ -28,24 +32,4 @@ endif::[]
 ----
 [kni@provisioner ~]$ mkdir ~/clusterconfigs
 [kni@provisioner ~]$ cp install-config.yaml ~/clusterconfigs
-----
-
-. Ensure all bare metal nodes are powered off prior to installing the {product-title} cluster.
-+
-[source,bash]
-----
-[kni@provisioner ~]$ ipmitool -I lanplus -U <user> -P <password> -H <management-server-ip> power off
-----
-
-. Ensure that old bootstrap resources are removed, if any are left over from a previous deployment attempt.
-+
-[source,bash]
-----
-for i in $(sudo virsh list | tail -n +3 | grep bootstrap | awk {'print $2'});
-do
-  sudo virsh destroy $i;
-  sudo virsh undefine $i;
-  sudo virsh vol-delete $i --pool default;
-  sudo virsh vol-delete $i.ign --pool default;
-done
 ----
