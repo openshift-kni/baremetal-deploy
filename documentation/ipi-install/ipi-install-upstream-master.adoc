@@ -84,7 +84,6 @@ include::modules/ipi-install-validation-checklist-for-installation.adoc[leveloff
 // Installing via OCP GA installer
 include::modules/ipi-install-deploying-the-cluster-via-the-openshift-installer.adoc[leveloffset=+1]
 
-
 // Backing up the cluster configuration
 ifndef::upstream[]
 include::modules/ipi-install-upstream-backing-up-the-cluster-configuration.adoc[leveloffset=+1]
