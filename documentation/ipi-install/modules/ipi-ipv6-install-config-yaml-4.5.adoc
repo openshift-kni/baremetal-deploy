@@ -1,7 +1,3 @@
-. Configure `install-config.yaml`. Change the appropriate variables to match your environment, including `pullSecret` and `sshKey`.
-+
-[source,yaml]
-----
 apiVersion: v1
 baseDomain: <domain>
 networking:
@@ -69,4 +65,3 @@ additionalTrustBundle: |
   <private-registry-CA>
 pullSecret: '<pull_secret>'
 sshKey: '<ssh_pub_key>'
-----
