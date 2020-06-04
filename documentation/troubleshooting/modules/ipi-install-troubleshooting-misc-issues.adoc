@@ -152,3 +152,52 @@ NOT* approve them, therewise you will face even more issues.
 # If you see Subject Name: localhost.localdomain remove the csr
 [kni@provisioner ~]$ oc delete csr <wrong_csr>
 ----
+
+== Routes don't reach endpoints on BM installations 
+
+During the installation process, it is possible to encounter a VRRP conflict if a previously used {product-title} node that was once part of a cluster deployment using a specific cluster name is still running but not part of current {product-title} cluster deployment using that same cluster name.
+
+For example, imagine a scenario were a deployment was done using the cluster name `openshift`, deploying 3 master nodes and 3 worker nodes. Once this install was complete, a future install was started using the same cluster name `openshift` but this redeployment only installed 3 master nodes, leaving the 3 worker nodes from a previous deployment in an `ON` state. This would cause a VRID conflict and VRRP errors.
+
+```sh
+[kni@provisioner ~]$ oc get route oauth-openshift 
+NAME              HOST/PORT                                  PATH            SERVICES          PORT       TERMINATION            WILDCARD
+oauth-openshift   oauth-openshift.apps.example.com                          oauth-openshift     6443      passthrough/Redirect     None
+```
+
+Check the service endpoint.
+
+```sh
+[kni@provisioner ~]$ oc get svc oauth-openshift 
+NAME              TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+oauth-openshift   ClusterIP   172.30.19.162   <none>        443/TCP   59m
+```
+
+Try to reach the service from the master node.
+
+```sh
+[core@master0 ~]$ curl -k https://172.30.19.162
+{
+  "kind": "Status",
+  "apiVersion": "v1",
+  "metadata": {
+  },
+  "status": "Failure",
+  "message": "forbidden: User \"system:anonymous\" cannot get path \"/\"",
+  "reason": "Forbidden",
+  "details": {
+  },
+  "code": 403
+```
+
+Also notice the errors from auth operator from provisioner node
+
+```sh
+[kni@provisioner ~]$ oc logs deployment/authentication-operator -n openshift-authentication-operator 
+Event(v1.ObjectReference{Kind:"Deployment", Namespace:"openshift-authentication-operator", Name:"authentication-operator", UID:"225c5bd5-b368-439b-9155-5fd3c0459d98", APIVersion:"apps/v1", ResourceVersion:"", FieldPath:""}): type: 'Normal' reason: 'OperatorStatusChanged' Status for clusteroperator/authentication changed: Degraded message changed from "IngressStateEndpointsDegraded: All 2 endpoints for oauth-server are reporting
+```
+
+.Solution
+
+* Ensure that the cluster name for every deployment is unique ensuring no conflict.
+* Turn off all the rogue nodes which are not part of the cluster deployment that are using the same cluster name. Otherwise, the authentication pod of your {product-title} cluster may never start successfully.
