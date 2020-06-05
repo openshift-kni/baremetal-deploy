@@ -14,6 +14,7 @@ Deployment Integration Team
 :toc:
 :toclevels: 5
 :sectnums:
+:sectlinks:
 :icons: font
 :product-title: OpenShift Container Platform
 :source-highlighter: pygments
