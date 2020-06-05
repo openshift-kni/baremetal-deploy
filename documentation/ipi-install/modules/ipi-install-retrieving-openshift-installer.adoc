@@ -2,6 +2,7 @@
 ifdef::upstream[]
 
 // Title to include both UPS and GA
+[id="retrieving-openshift-installer_{context}"]
 = Retrieving OpenShift Installer
 The following sections describe how to properly retrieve and extract the {product-title} for either upstream or downstream. Choose the appropriate Installer for your use case.
 
