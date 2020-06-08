@@ -1,7 +1,6 @@
-[id="ipi-install-troubleshooting-registry-issues"]
+[id="ipi-install-troubleshooting-registry-issues_{context}"]
 
-[[registry_issues]]
-= Registry Issues
+= Issues with creating the registry
 
 At times, there may be a need to create a disconnected registry due to
 limited connectivity to an environment or creating a central location to
