@@ -1,28 +1,25 @@
 [id="ipi-install-troubleshooting-install-config"]
-[[install_config]]
-= Install-config.yaml
 
-The `+install-config.yaml+` represents all the nodes that will be part
-of your OpenShift cluster and the necessary options consisting of but
-not limited to `+apiVersion+`, `+baseDomain+`, `+networking+`, `+VIPS+`,
-`+imageContentSources+` etc.
+= Troubleshooting `install-config.yaml`
 
-During the deployment of your OpenShift cluster, if errors occur early
-on due to the `+install-config.yaml+`, confirm the following
+The `install-config.yaml` configuration file represents all of the 
+nodes that are part of the OpenShift cluster. The file contains the 
+necessary options consisting of but not limited to `apiVersion`, 
+`baseDomain`, `imageContentSources` and virtual IP addresses. If 
+errors occur early in the deployment of the OpenShift cluster, the 
+errors are likely in the `install-config.yaml` configuration file.
 
-* Use the guidelines as mentioned in the
-https://www.redhat.com/sysadmin/yaml-tips[YAML-tips]
-* Verifying syntax is correct within your YAML using
-http://www.yamllint.com/[syntax-check]
-* Verify the RHCOS QEMU images are properly defined and accessible via
-the URL provided in the `+install-config.yaml+` via a command such as:
+.Procedure
+
+. Use the guidelines in https://www.redhat.com/sysadmin/yaml-tips[YAML-tips].
+. Verify the YAML syntax is correct using http://www.yamllint.com/[syntax-check].
+. Verify the RHCOS QEMU images are properly defined and accessible via
+the URL provided in the `install-config.yaml`. For example:
 +
 [source,bash]
 ----
-curl -s -o /dev/null -I -w "%{http_code}\n" http://webserver.example.com:8080/rhcos-44.81.202004250133-0-qemu.x86_64.qcow2.gz?sha256=7d884b46ee54fe87bbc3893bf2aa99af3b2d31f2e19ab5529c60636fbd0f1ce7
-
-200
+[kni@provisioner ~]$ curl -s -o /dev/null -I -w "%{http_code}\n" http://webserver.example.com:8080/rhcos-44.81.202004250133-0-qemu.x86_64.qcow2.gz?sha256=7d884b46ee54fe87bbc3893bf2aa99af3b2d31f2e19ab5529c60636fbd0f1ce7
 ----
 +
-The output of 200 ensures that we are geting a valid response from our webserver that is indeed storing our bootstrap VM image in the
-above example.
+If the output is `200`, there is a valid response from the webserver 
+storing the bootstrap VM image.

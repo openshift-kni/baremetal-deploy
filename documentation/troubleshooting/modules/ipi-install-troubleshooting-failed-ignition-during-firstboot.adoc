@@ -1,22 +1,22 @@
-[id="ipi-install-troubleshooting-failed-ignition-during-firstboot"]
+[id="ipi-install-troubleshooting-failed-ignition-during-firstboot_{context}"]
 
-[[failed-ignition-during-firstboot]]
 = Failed Ignition during Firstboot
 
-It can happen that during the Firstboot the Ignition configuration
-fails, in order to retry the configuration you can run the following
-steps:
+During the Firstboot, the Ignition configuration may fail.
 
-1. Connect to the node where the Ignition configuration failed
+.Procedure
+
+. Connect to the node where the Ignition configuration failed:
 +
 [source,bash]
 ----
 Failed Units: 1
   machine-config-daemon-firstboot.service
 ----
-2. Restart the `machine-config-daemon-firstboot` service
+
+. Restart the `machine-config-daemon-firstboot` service:
 +
 [source,bash]
 ----
-sudo systemctl restart machine-config-daemon-firstboot.service
+[core@worker-X ~]$ sudo systemctl restart machine-config-daemon-firstboot.service
 ----

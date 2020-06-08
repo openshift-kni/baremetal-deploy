@@ -1,9 +1,8 @@
-[id="ipi-install-troubleshooting-post-install-pod-errors"]
-[[post_install]]
-= Post install pod errors
+[id="ipi-install-troubleshooting-post-install-pod-errors_{context}"]
+= Post install pod errors (OpenShift 4.3 only)
 
-The following section describes how to handle metal3 pod errors
-during deployment. (only applies for 4.3)
+The following section describes how to handle `metal3` pod errors
+during deployment. (only applies for {product-title} 4.3)
 
 [source,bash]
 ----

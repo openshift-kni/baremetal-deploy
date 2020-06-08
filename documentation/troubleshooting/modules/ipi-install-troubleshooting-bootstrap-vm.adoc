@@ -1,36 +1,40 @@
-[id="ipi-install-troubleshooting-bootstrap-vm"]
+[id="ipi-install-troubleshooting-bootstrap-vm_{context}"]
 
-[[bootstrap_vm_issues]]
 = Bootstrap VM issues
 
-The bootstrap node is a virtual machine that is triggered by the
-OpenShift installer that handles the provisioning of the nodes that will
-be part of the OpenShift cluster.
+The OpenShift installer spawns a bootstrap node virtual machine, 
+which handles provisioning the OpenShift cluster nodes.
 
-Once the deployment is triggered (may take 10 to 15 minutes) we
-can see if the Bootstrap VM is operational. We can verify the bootstrap
-VM is operational via the `+virsh+` command.
+.Procedure
 
+. About 10 to 15 minutes after triggering the installer, check to ensure the bootstrap VM is operational using the `virsh` command:
++
 [source,bash]
 ----
 [kni@provisioner ~]$ sudo virsh list
- Id    Name                           State
-----------------------------------------------------
- 12    kni7-xf6fq-bootstrap           running
 ----
++
+----
+ Id    Name                           State
+ --------------------------------------------
+ 12    openshift-xf6fq-bootstrap      running
+----
+
 
 NOTE: The name of the bootstrap VM is always the clustername, followed
 by random set of characters and ending in the word bootstrap.
 
-If no bootstrap VM is running after waiting 10-15 minutes, it is
-important to troubleshoot as to why it was not created. Possible issues
-to verify are:
+If the bootstrap VM is not running after 10-15 minutes, troubleshoot 
+why it was not created. Possible issues include:
 
-* Verify `+libvirtd+` is running on the system
-
+. Verify `libvirtd` is running on the system:
++
 [source,bash]
 ----
 [kni@provisioner ~]$ systemctl status libvirtd
+----
++
+----
 ● libvirtd.service - Virtualization daemon
    Loaded: loaded (/usr/lib/systemd/system/libvirtd.service; enabled; vendor preset: enabled)
    Active: active (running) since Tue 2020-03-03 21:21:07 UTC; 3 weeks 5 days ago
@@ -42,17 +46,18 @@ to verify are:
    CGroup: /system.slice/libvirtd.service
            ├─ 9850 /usr/sbin/libvirtd
 ----
++
+If the bootstrap VM is operational, log into it.
 
-If the bootstrap VM is indeed operational, we want to verify if we can
-log into it.
-
-We can find the IP address of the bootstrap VM using the
-`+virsh console+` command as shown.
-
+. Use the `virsh console` command to find the IP address of the bootstrap VM:
++
 [source,bash]
 ----
-[kni@provisioner ~]$ sudo virsh console kni7-4q49b-bootstrap
-Connected to domain kni7-4q49b-bootstrap
+[kni@provisioner ~]$ sudo virsh console example.com
+----
++
+----
+Connected to domain example.com
 Escape character is ^]
 
 Red Hat Enterprise Linux CoreOS 43.81.202001142154.0 (Ootpa) 4.3
@@ -64,30 +69,29 @@ ens4: 172.22.0.2 fe80::1d05:e52e:be5d:263f
 localhost login:
 ----
 
-* Once the IP address has been obtained, we can attempt to login to the
-bootstrap VM using the `+ssh+` command.
-
+. Once you obtain the IP address, log in to the bootstrap VM using the `ssh` command:
++
 [NOTE]
 ====
-In the console output above, the IPv6 IP provided by `ens3` or the
-IPv4 IP provided by `ens4` can be used.
+In the console output of the previous step, the IPv6 IP provided 
+by `ens3` or the IPv4 IP provided by `ens4` can be used.
 ====
-
++
 [source,bash]
 ----
 [kni@provisioner ~]$ ssh core@172.22.0.2
 ----
 
-If attempting to log into the bootstrap VM and you are not successful,
-you’ve likely reached one of the following scenarios:
+If you are not successful logging in to the bootstrap VM, you have 
+likely encountered of the following scenarios:
 
-* Cannot reach the `+172.22.0.0/24+` network. This means you should
-verify your connectivity on the provisioning host specifically around
-the provisioning network bridge
-* Cannot reach the bootstrap VM via the public network. When attempting
-to SSH via baremetal network you should verify your connectivity on the
-provisioning host specifically around the baremetal network bridge.
-* `+Permission denied (publickey,password,keyboard-interactive)+`. When
-attempting to access the bootstrap VM an error of Permission denied
-might occur, verify that your SSH key for the user attempting to log
-into the VM is set within your `+install-config.yaml+` file.
+* You cannot reach the `172.22.0.0/24` network. Verify network connectivity on the `provisioner` host specifically around the `provisioning` network bridge.
+
+* You cannot reach the bootstrap VM via the public network. When attempting
+to SSH via `baremetal` network, verify connectivity on the
+`provisioner` host specifically around the `baremetal` network bridge.
+
+* You encountered `Permission denied (publickey,password,keyboard-interactive)`. When
+attempting to access the bootstrap VM a `Permission denied` error
+might occur. Verify that the SSH key for the user attempting to log
+into the VM is set within the `install-config.yaml` file.

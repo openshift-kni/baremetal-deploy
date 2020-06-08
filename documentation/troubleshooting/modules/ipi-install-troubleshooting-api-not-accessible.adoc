@@ -1,22 +1,32 @@
-[id="ipi-install-troubleshooting-api-not-accessible"]
+[id="ipi-install-troubleshooting-api-not-accessible_{context}"]
 
-[[api]]
 = API not accessible
 
-When the API is not accessible these issues often arise when the
-following is not properly addressed.
+When the cluster is running and clients cannot access the API, domain 
+name resolution issues may impede access to the API.
 
-* Incorrect name resolutions are set in the DNS server,
-make use of `+dig+` and `+nslookup+` commands.
-* `+SSH+` into the OpenShift cluster and make sure they are getting the
-FQDN and not just `+localhost.localdomain+`.
+.Procedure
 
-For example, if we wanted to verify the API VIP was properly set via
-`dig`, we could:
+. **Hostname Resolution:** Check the cluster nodes to ensure they have a fully qualified domain name, and not just `localhost.localdomain`. For example:
++
+----
+[kni@provisioner ~]$ hostname
+----
++
+If a hostname is not set, set the correct hostname. For example:
++
+----
+[kni@provisioner ~]$ hostnamectl set-hostname <hostname>
+----
 
+. **Incorrect Name Resolution:** Ensure that each node has the correct name resolution in the DNS server using `dig` and `nslookup`. For example:
++
 [source,bash]
 ----
-dig api.<cluster-name>.example.com
+[kni@provisioner ~]$ dig api.<cluster-name>.example.com
+----
++
+----
 ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el8 <<>> api.<cluster-name>.example.com
 ;; global options: +cmd
 ;; Got answer:
@@ -43,7 +53,7 @@ api.<cluster-name>.example.com. 10800 IN	A 10.19.13.86
 ;; WHEN: Tue May 19 20:30:59 UTC 2020
 ;; MSG SIZE  rcvd: 140
 ----
-
-This concludes that the appropriate IP for the
-api.<cluster-name>.example.com VIP was `10.19.13.86`.
++
+The output in the foregoing example indicates that the appropriate IP 
+address for the `api.<cluster-name>.example.com` VIP is `10.19.13.86`. 
 This IP address should reside on the `baremetal` network.
