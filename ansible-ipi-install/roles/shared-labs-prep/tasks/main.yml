@@ -77,17 +77,14 @@
     autoconnect: yes
     stp: off
     ip4_method: manual
-    ip4: 192.168.222.1/24
-    #Adding dns entries here seems broken
-    #dns4:
-    #  - 192.168.222.1
+    ip4: "{{ extcidrnet | next_nth_usable(1) }}/24"
     state: present
   become: yes
 
 #Moving the dns entry to this task because of above problem
 - name: Set Bridge DNS priority
   shell: |
-    nmcli con mod baremetal ipv4.dns 192.168.222.1 ipv4.dns-priority 10
+    nmcli con mod baremetal ipv4.dns {{ extcidrnet | next_nth_usable(1) }} ipv4.dns-priority 10
   become: yes
 
 - name: Create Bridge slave on {{ pub_nic }}
@@ -202,8 +199,8 @@
   iptables:
     table: nat
     chain: POSTROUTING
-    source: 192.168.222.0/24
-    destination: "!192.168.222.0/24"
+    source: "{{ extcidrnet }}"
+    destination: "!{{ extcidrnet }}"
     out_interface: "{{ lab_pub_nic }}"
     jump: MASQUERADE
   become: yes
