@@ -87,6 +87,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
+    validate_certs: no
   delegate_to: "{{ registry_creation | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
   tags: getoc
 

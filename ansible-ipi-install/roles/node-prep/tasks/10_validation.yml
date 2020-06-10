@@ -259,6 +259,7 @@
   uri:
     url: "{{ release_url }}/{{ version }}/release.txt"
     return_content: yes
+    validate_certs: no
   register: result
   failed_when: result.content|length == 0 or result.status >= 400
   delegate_to: "{{ (not dra_set and not drm_set and registry_host_exists) | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
@@ -284,6 +285,7 @@
   uri:
     url: "{{ release_url }}/{{ version }}/openshift-client-linux-{{ release_version }}.tar.gz"
     method: HEAD
+    validate_certs: no
   register: ocp_client_chk
   delegate_to: "{{ (not dra_set and not drm_set and registry_host_exists) | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
   tags: validation
