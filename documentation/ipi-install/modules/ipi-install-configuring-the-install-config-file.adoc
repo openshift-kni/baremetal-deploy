@@ -11,7 +11,7 @@ Most of the information is teaching the installer and the resulting cluster enou
 
 . Configure `install-config.yaml`. Change the appropriate variables to match your environment, including `pullSecret` and `sshKey`.
 +
-[source,yaml]
+[source,yaml, subs="verbatim,macros"]
 ----
 ifeval::[{release} > 4.4]
 include::ipi-install-config-yaml.adoc[]
@@ -25,6 +25,7 @@ include::ipi-install-config-yaml-4.3.adoc[]
 endif::[]
 endif::[]
 ----
+<1> Refer to the xref:bmcadressing[BMC adressing] for more options
 
 . Create a directory to store cluster configs.
 +

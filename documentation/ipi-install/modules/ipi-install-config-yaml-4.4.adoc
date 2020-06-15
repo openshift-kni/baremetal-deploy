@@ -1,66 +1,65 @@
 apiVersion: v1
-baseDomain: <domain>
+xref:basedomain[basedomain]: +<domain>+
 metadata:
-  name: <cluster-name>
+  xref:metadataname[name]: +<cluster-name>+
 networking:
-  machineCIDR: <public-cidr>
+  xref:machinecidr[machineCIDR]: +<public-cidr>+
   networkType: OVNKubernetes
 compute:
-- name: worker
-  replicas: 2
+- xref:workername[name]: worker
+  xref:computereplicas[replicas]: 2
 controlPlane:
-  name: master
-  replicas: 3
+  xref:controlplanename[name]: master
+  xref:controlplanereplicas[replicas]: 3
   platform:
     baremetal: {}
 platform:
   baremetal:
-    apiVIP: <api-ip>
-    ingressVIP: <wildcard-ip>
-    dnsVIP: <dns-ip>
-    provisioningNetworkInterface: <NIC1>
-    provisioningNetworkCIDR: <CIDR> # i.e. fd00:1101::1/64
-    provisioningBridge: provisioning
-    hosts:
-      - name: openshift-master-0
-        role: master
-        bmc:
+    xref:apivip[apiVIP]: +<api-ip>+
+    xref:ingressvip[ingressVIP]: +<wildcard-ip>+
+    xref:dnsVIP[dnsVIP]: +<dns-ip>+
+    xref:provisioningNetworkInterface[provisioningNetworkInterface]: +<NIC1>+
+    xref:provisioningNetworkCIDR[provisioningNetworkCIDR]: +<CIDR>+
+    xref:hoststable[hosts]:
+      - xref:name[name]: openshift-master-0
+        xref:role[role]: master
+        xref:bmcadressing[bmc]:
+          address: ipmi://+<out-of-band-ip>+ # <1>
+          username: +<user>+
+          password: +<password>+
+        xref:bootMACAddress[bootMACAddress]: +<NIC1-mac-address>+
+        xref:hardwareProfile[hardwareProfile]: default
+      - xref:name[name]: openshift-master-1
+        xref:role[role]: master
+        xref:bmcadressing[bmc]:
+          address: ipmi://+<out-of-band-ip>+
+          username: +<user>+
+          password: +<password>+
+        xref:bootMACAddress[bootMACAddress]: +<NIC1-mac-address>+
+        xref:hardwareProfile[hardwareProfile]: default
+      - xref:name[name]: openshift-master-2
+        xref:role[role]: master
+        xref:bmcadressing[bmc]:
           address: ipmi://<out-of-band-ip>
-          username: <user>
-          password: <password>
-        bootMACAddress: <NIC1-mac-address>
-        hardwareProfile: default
-      - name: openshift-master-1
-        role: master
-        bmc:
-          address: ipmi://<out-of-band-ip>
-          username: <user>
-          password: <password>
-        bootMACAddress: <NIC1-mac-address>
-        hardwareProfile: default
-      - name: openshift-master-2
-        role: master
-        bmc:
-          address: ipmi://<out-of-band-ip>
-          username: <user>
-          password: <password>
-        bootMACAddress: <NIC1-mac-address>
-        hardwareProfile: default
-      - name: openshift-worker-0
-        role: worker
-        bmc:
-          address: ipmi://<out-of-band-ip>
-          username: <user>
-          password: <password>
-        bootMACAddress: <NIC1-mac-address>
-        hardwareProfile: unknown
-      - name: openshift-worker-1
-        role: worker
-        bmc:
-          address: ipmi://<out-of-band-ip>
-          username: <user>
-          password: <password>
-        bootMACAddress: <NIC1-mac-address>
-        hardwareProfile: unknown
-pullSecret: '<pull_secret>'
-sshKey: '<ssh_pub_key>'
+          username: +<user>+
+          password: +<password>+
+        xref:bootMACAddress[bootMACAddress]: +<NIC1-mac-address>+
+        xref:hardwareProfile[hardwareProfile]: default
+      - xref:name[name]: openshift-worker-0
+        xref:role[role]: worker
+        xref:bmcadressing[bmc]:
+          address: ipmi://+<out-of-band-ip>+
+          username: +<user>+
+          password: +<password>+
+        xref:bootMACAddress[bootMACAddress]: +<NIC1-mac-address>+
+        xref:hardwareProfile[hardwareProfile]: unknown
+      - xref:name[name]: openshift-worker-1
+        xref:role[role]: worker
+        xref:bmcadressing[bmc]:
+          address: ipmi://+<out-of-band-ip>+
+          username: +<user>+
+          password: +<password>+
+        xref:bootMACAddress[bootMACAddress]: +<NIC1-mac-address>+
+        xref:hardwareProfile[hardwareProfile]: unknown
+pullSecret: '+<pull_secret>+'
+sshKey: '+<ssh_pub_key>+'
