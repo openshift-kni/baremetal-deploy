@@ -8,5 +8,5 @@ which will be under the install directory folder.
 
 [source,bash]
 ----
-[kni@provisioner ~]$ tail -f /path/to/install-dir/.openshift_install.log
+[kni@provisioner ~]$ tail -f ~/clusterconfigs/.openshift_install.log
 ----
