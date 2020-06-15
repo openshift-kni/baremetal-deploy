@@ -59,9 +59,3 @@ include::modules/ipi-install-troubleshooting-failed-ignition-during-firstboot.ad
 include::modules/ipi-install-troubleshooting-post-install-pod-errors.adoc[leveloffset=+2]
 include::modules/ipi-install-troubleshooting-ntp-out-of-sync.adoc[leveloffset=+2]
 include::modules/ipi-install-troubleshooting-reviewing-the-installation.adoc[leveloffset=+1]
-
-
-
-//include::modules/ipi-install-troubleshooting-following-the-installation.adoc[leveloffset=+1]
-
-
