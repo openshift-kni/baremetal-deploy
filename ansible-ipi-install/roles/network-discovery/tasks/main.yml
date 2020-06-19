@@ -10,11 +10,11 @@
 
 - name: Get the bm mac address on provisioner node
   set_fact:
-    bm_mac: "{{ hostvars['localhost']['ocpinv_content']['nodes'][0].mac[2] | lower }}"
+    bm_mac: "{{ hostvars[groups['orchestration'][0]]['ocpinv_content']['nodes'][0].mac[2] | lower }}"
 
 - name: Get the bm provisioning address on provisioner node
   set_fact:
-    prov_mac: "{{ hostvars['localhost']['ocpinv_content']['nodes'][0].mac[1] | lower }}"
+    prov_mac: "{{ hostvars[groups['orchestration'][0]]['ocpinv_content']['nodes'][0].mac[1] | lower }}"
 
 - name: Set the lab public nic
   set_fact: 

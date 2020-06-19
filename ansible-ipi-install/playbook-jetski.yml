@@ -1,6 +1,6 @@
 ---
 - name: IPI on Baremetal Installation Playbook -- Red Hat Shared Labs JetSki Edition
-  hosts: localhost
+  hosts: orchestration
   roles:
     - { role: bootstrap }
 
@@ -8,7 +8,7 @@
   roles:
     - { role: prepare-kni, ssh_path: /root/.ssh}
 
-- hosts: localhost
+- hosts: orchestration
   roles:
     - { role: add-provisioner }
 

@@ -1,6 +1,6 @@
 - name: set fact for inv file
   set_fact:
-    ocpinv_file: "{{ ocpinv_file|default('{{ playbook_dir }}/ocpinv.json', true) }}"
+    ocpinv_file: "{{ (inventory_hostname == 'localhost') |  ternary(playbook_dir +  '/ocpinv.json', ansible_user_dir + '/ocpinv.json') }}"
 
 - name: check ocpinv file available
   stat:
@@ -24,9 +24,14 @@
   when: not st.stat.exists | bool and lab_name == "scale"
 
 - name: read inv env file
+  slurp:
+    src: "{{ ocpinv_file }}"
+  register: invfile
+
+- name: set inventory facts
   set_fact:
-    ocpinv_content: "{{ lookup('file', '{{ ocpinv_file }}') | from_json }}"
-    ocp_node_inv_path: "{{ playbook_dir }}/ocpnodeinv.json"
+    ocpinv_content: "{{ invfile['content'] | b64decode | from_json }}"
+    ocp_node_inv_path: "{{ ansible_user_dir }}/ocpnodeinv.json"
 
 - name: set provisioning host and ocp cluster info
   block:
