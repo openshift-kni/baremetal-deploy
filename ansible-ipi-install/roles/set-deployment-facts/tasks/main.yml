@@ -1,8 +1,8 @@
 ---
-# Below task is to make sure all the vars as avaialble as hostvars on provisioner and not only localhost (for good measure)
+# Below task is to make sure all the vars as avaialble as hostvars on provisioner and not only localhost
 - name: set facts needed for OCP deployment on the provisioning host
   set_fact:
-     "{{ item }}": "{{ hostvars['localhost'][item] }}"
+     "{{ item }}": "{{ hostvars[groups['orchestration'][0]][item] }}"
   with_items:
     - master_fqdns
     - worker_fqdns
