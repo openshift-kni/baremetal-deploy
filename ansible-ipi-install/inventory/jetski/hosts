@@ -154,3 +154,7 @@ network_type="OVNKubernetes"
 #   content sources for the local registry. The contents of this file
 #   will be appended to the install-config.yml file.
 # disconnected_registry_mirrors_file=/path/to/install-config-appends.json
+
+[orchestration]
+localhost ansible_connection=local ansible_python_interpreter="{{ ansible_playbook_python }}"
+
