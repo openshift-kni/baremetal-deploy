@@ -42,7 +42,13 @@ firewall-cmd --add-service=dhcp --permanent
 firewall-cmd --reload
 ----
 
-. Here is an example of the `.dns` file.
+. Define DNS configuration file
+
++
+[discrete]
+=== IPv4
++
+Here is an example of the `.dns` file for IPv4.
 +
 ----
 domain-needed
@@ -71,6 +77,49 @@ dhcp-host=<NIC2-mac-address>,openshift-worker-0.openshift.example.com,<ip-of-ope
 dhcp-host=<NIC2-mac-address>,openshift-worker-1.openshift.example.com,<ip-of-openshift-worker-1>
 ----
 
+ifdef::watermark[]
+
++
+[discrete]
+=== IPv6
++
+Here is an example of the `.dns` file for IPv6.
++
+----
+
+strict-order
+bind-dynamic
+bogus-priv
+dhcp-authoritative
+dhcp-range=baremetal,<baremetal-IPv6-dhcp-range-start>,<baremetal-IPv6-dhcp-range-end>,<range-prefix>
+dhcp-option=baremetal,option6:dns-server,[<IPv6-DNS-Server>]
+
+resolv-file=/etc/resolv.conf.upstream
+except-interface=lo
+dhcp-lease-max=81
+log-dhcp
+
+domain=openshift.example.com,<baremetal-IPv6-cidr>,local
+
+# static host-records
+address=/apps.openshift.example.com/<wildcard-ingress-lb-ip>
+host-record=api.openshift.example.com,<api-ip>
+host-record=ns1.openshift.example.com,<dns-ip>
+host-record=openshift-master-0.openshift.example.com,<ip-of-openshift-master-0>
+host-record=openshift-master-1.openshift.example.com,<ip-of-openshift-master-1>
+host-record=openshift-master-2.openshift.example.com,<ip-of-openshift-master-1>
+# Registry
+host-record=registry.openshift.example.com,<ip-of-registry-server>
+
+#Static IPs for Masters
+dhcp-host=<baremetal-nic-duid>,openshift-master-0.openshift.example.com,<ip-of-openshift-master-0>
+dhcp-host=<baremetal-nic-duid>,openshift-master-1.openshift.example.com,<ip-of-openshift-master-1>
+dhcp-host=<baremetal-nic-duid>,openshift-master-2.openshift.example.com,<ip-of-openshift-master-2>
+----
+
+endif::[]
+
+
 . Create the `resolv.conf.upstream` file to provide DNS fowarding to an existing DNS server for resolution
 to the outside world.
 +
@@ -92,3 +141,7 @@ systemctl restart dnsmasq
 ----
 systemctl status dnsmasq
 ----
+
+
+
+include::modules/ipi-ipv6-install-upstream-creating-dhcp-reservations-using-dnsmasq.adoc[leveloffset=+1]
