@@ -1,29 +1,26 @@
+// Module included in the following assemblies:
+// //installing/installing_bare_metal_ipi/installing_bare_metal_ipi/ipi-install-troubleshooting.adoc
+
 [id="ipi-install-troubleshooting-bootstrap-vm-inspecting-logs_{context}"]
 = Inspecting logs
 
-When experiencing issues downloading or accessing the RHCOS images, 
-first verify that the URL is correct in the `install-config.yaml` 
-configuration file.
+When experiencing issues downloading or accessing the {op-system} images, first verify that the URL is correct in the `install-config.yaml` configuration file.
 
-.Example of internal webserver hosting RHCOS images
+.Example of internal webserver hosting {op-system} images
 [source,yaml]
 ----
 bootstrapOSImage: http://<ip:port>/rhcos-43.81.202001142154.0-qemu.x86_64.qcow2.gz?sha256=9d999f55ff1d44f7ed7c106508e5deecd04dc3c06095d34d36bf1cd127837e0c
 clusterOSImage: http://<ip:port>/rhcos-43.81.202001142154.0-openstack.x86_64.qcow2.gz?sha256=a1bda656fa0892f7b936fdc6b6a6086bddaed5dafacedcd7a1e811abb78fe3b0
 ----
 
-The `ipa-downloader` and `coreos-downloader` containers download 
-resources from a webserver or the external `https://quay.io` registry, 
-whichever is specified in the `install-config.yaml` configuration file.
-Verify the following two containers are up and running and inspect 
-their logs as needed:
+The `ipa-downloader` and `coreos-downloader` containers download resources from a webserver or the external link:https://quay.io[quay.io] registry, whichever is specified in the `install-config.yaml` configuration file. Verify the following two containers are up and running and inspect their logs as needed:
 
 * `ipa-downloader`
 * `coreos-downloader`
 
 .Procedure
 
-. Login to the bootstrap VM:
+. Log in to the bootstrap VM:
 +
 [source,bash]
 ----
@@ -56,14 +53,14 @@ If the bootstrap VM cannot access the URL to the images, use the `curl` command 
 [core@localhost ~]$ journalctl -b -f -u bootkube.service
 ----
 
-. Verify all the pods, including `dnsmasq`, `mariadb`, `httpd`, and `ironic`, are running:
+. Verify all the Pods, including `dnsmasq`, `mariadb`, `httpd`, and `ironic`, are running:
 +
 [source,bash]
 ----
 [core@localhost ~]$ sudo podman ps
 ----
 
-. If there are issues with the pods, check the logs of the containers with issues. To check the log of the `ironic-api`, execute the following:
+. If there are issues with the Pods, check the logs of the containers with issues. To check the log of the `ironic-api`, execute the following:
 +
 [source,bash]
 ----

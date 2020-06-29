@@ -1,3 +1,6 @@
+// Module included in the following assemblies:
+// //installing/installing_bare_metal_ipi/installing_bare_metal_ipi/ipi-install-troubleshooting.adoc
+
 [id="ipi-install-troubleshooting-reviewing-the-installation_{context}"]
 
 = Reviewing the installation
@@ -6,7 +9,7 @@ After installation, ensure the installer deployed the nodes and pods successfull
 
 .Procedure
 
-. When the OpenShift cluster nodes are installed appropriately,
+. When the {product-title} cluster nodes are installed appropriately,
 the following `Ready` state is seen within the `STATUS` column:
 +
 [source,bash]

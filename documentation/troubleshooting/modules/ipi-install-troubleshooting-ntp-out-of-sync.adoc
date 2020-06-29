@@ -1,11 +1,11 @@
+// Module included in the following assemblies:
+// //installing/installing_bare_metal_ipi/installing_bare_metal_ipi/ipi-install-troubleshooting.adoc
+
 [id="ipi-install-troubleshooting-ntp-out-of-sync_{context}"]
 
 = NTP out of sync
 
-The deployment of OpenShift clusters depends on NTP synchronized clocks
-among the cluster nodes. Without synchronized clocks, the deployment 
-may fail due to clock drift if the time difference is greater than two 
-seconds.
+The deployment of {product-title} clusters depends on NTP synchronized clocks among the cluster nodes. Without synchronized clocks, the deployment may fail due to clock drift if the time difference is greater than two seconds.
 
 .Procedure
 
@@ -151,9 +151,7 @@ System clock synchronized: yes
           RTC in local TZ: no
 ----
 +
-To setup clock synchronization prior to deployment, generate the 
-manifest files and add this file to the `openshift` directory. 
-For example:
+To setup clock synchronization prior to deployment, generate the manifest files and add this file to the `openshift` directory. For example:
 +
 [source,bash]
 ----

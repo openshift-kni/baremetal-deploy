@@ -1,8 +1,10 @@
+// Module included in the following assemblies:
+// //installing/installing_bare_metal_ipi/installing_bare_metal_ipi/ipi-install-troubleshooting.adoc
+
 [id="ipi-install-troubleshooting-cleaning-up-previous-installations_{context}"]
 = Cleaning up previous installations
 
-In the event of a previous failed deployment, remove the artifacts from
-the failed attempt before attempting to deploy OpenShift again.
+In the event of a previous failed deployment, remove the artifacts from the failed attempt before attempting to deploy {product-title} again.
 
 .Procedure
 
