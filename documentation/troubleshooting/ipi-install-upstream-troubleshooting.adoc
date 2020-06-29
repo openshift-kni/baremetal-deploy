@@ -18,12 +18,6 @@ Deployment Integration Team
 :product-title: OpenShift Container Platform
 :op-system-first: Red Hat Enterprise Linux CoreOS (RHCOS)
 :op-system: RHCOS
-:asb-name: OpenShift Ansible Broker
-:tsb-name: Template Service Broker
-:kebab: image:kebab.png[title="Options menu"]
-:rh-openstack-first: Red Hat OpenStack Platform (RHOSP)
-:rh-openstack: RHOSP
-:cloud-redhat-com: Red Hat OpenShift Cluster Manager
 :source-highlighter: pygments
 ifdef::watermark[]
 // :title-page-background-image: none
@@ -80,7 +74,15 @@ Prior to troubleshooting the installation environment, it is critical to underst
 
 image:flow1.png[Flow-Diagram-1]
 
-_Workflow 1 of 4_ illustrates a troubleshooting workflow when the `install-config.yaml` file has errors or the {op-system-first} images are inaccessible.  Troubleshooting suggestions can be found at xref:ipi-install-troubleshooting-install-config_{context}[Troubleshooting `install-config.yaml`].
+_Workflow 1 of 4_ illustrates a troubleshooting workflow when the `install-config.yaml` file has errors or the {op-system-first} images are inaccessible.  Troubleshooting suggestions can be found at
+ifeval::[{release} == 4.3]
+<<install_config,Troubleshooting `install-config.yaml`>> and xref:ipi-install-troubleshooting-post-installation-pod-errors_{context}[Post-installation Pod errors].
+endif::[]
+
+ifeval::[{release} != 4.3]
+<<install_config,Troubleshooting `install-config.yaml`>>.
+endif::[]
+
 
 image:flow2.png[Flow-Diagram-2]
 
@@ -97,6 +99,9 @@ xref:ipi-install-troubleshooting-api-not-accessible_{context}[ a non-accessible 
 
 
 include::modules/ipi-install-troubleshooting-install-config.adoc[leveloffset=+1]
+ifeval::[{release} == 4.3]
+include::modules/ipi-install-troubleshooting-post-installation-pod-errors.adoc[leveloffset=+1]
+endif::[]
 include::modules/ipi-install-troubleshooting-bootstrap-vm.adoc[leveloffset=+1]
 include::modules/ipi-install-troubleshooting-bootstrap-vm-cannot-boot.adoc[leveloffset=+2]
 include::modules/ipi-install-troubleshooting-bootstrap-vm-inspecting-logs.adoc[leveloffset=+2]
