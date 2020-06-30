@@ -514,7 +514,7 @@ Sample `playbook-jetski.yml`:
 With the `playbook-jetski.yml` set and in-place, run the `playbook-jetski.yml`
 
 ```sh
-$ ansible-playbook -i inventory/hosts playbook-jetski.yml
+$ ansible-playbook -i inventory/jetski/hosts playbook-jetski.yml
 ```
 
 ## Verifying Installation
