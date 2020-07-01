@@ -16,10 +16,15 @@ Deployment Integration Team
 :sectlinks:
 :icons: font
 :product-title: OpenShift Container Platform
+:op-system-first: Red Hat Enterprise Linux CoreOS (RHCOS)
+:op-system: RHCOS
 :source-highlighter: pygments
 ifdef::watermark[]
 // :title-page-background-image: none
 :page-background-image: image:watermark.png[]
+:context: ipi-install-troubleshooting
+
+toc::[]
 
 
 [IMPORTANT]
@@ -39,14 +44,64 @@ endif::[]
 link:Troubleshooting.pdf[Download] the PDF version of this document or visit https://openshift-kni.github.io/baremetal-deploy/
 ====
 
+While attempting to deploy Installer Provisioned Infrastructure (IPI) of OpenShift on Bare Metal (BM), you may run into a situation where you need to troubleshoot your environment. This document provides troubleshooting guidance and tips in solving common issues that may arise.
 
-While attempting to deploy Installer Provisioned Infrastructure (IPI) of
-OpenShift on Bare Metal (BM), you may run into a situation where you need
-to troubleshoot your environment. This document provides troubleshooting
-guidance and tips in solving common issues that may arise.
+== Troubleshooting the installer workflow
 
-include::modules/ipi-install-troubleshooting-flow.adoc[leveloffset=+1]
+Prior to troubleshooting the installation environment, it is critical to understand the overall flow of the IPI installation on bare metal. The diagrams below provide a troubleshooting flow with a step-by-step breakdown for the environment.
+
+image:flow1.png[Flow-Diagram-1]
+
+_Workflow 1 of 4_ illustrates a troubleshooting workflow when the `install-config.yaml` file has errors or the {op-system-first} images are inaccessible.  Troubleshooting suggestions can be found at xref:ipi-install-troubleshooting-install-config_{context}[Troubleshooting `install-config.yaml`].
+
+image:flow2.png[Flow-Diagram-2]
+
+_Workflow 2 of 4_ illustrates a troubleshooting workflow for xref:ipi-install-troubleshooting-bootstrap-vm_{context}[ bootstrap VM issues], xref:ipi-install-troubleshooting-bootstrap-vm-cannot-boot_{context}[ bootstrap VMs that cannot boot up the cluster nodes], and  xref:ipi-install-troubleshooting-bootstrap-vm-inspecting-logs_{context}[ inspecting logs].
+
+image:flow3.png[Flow-Diagram-3]
+
+_Workflow 3 of 4_ illustrates a troubleshooting workflow for xref:ipi-install-troubleshooting-cluster-nodes-will-not-pxe_{context}[ cluster nodes that will not PXE boot].
+
+image:flow4.png[Flow-Diagram-4]
+
+_Workflow 4 of 4_ illustrates a troubleshooting workflow from
+xref:ipi-install-troubleshooting-api-not-accessible_{context}[ a non-accessible API] to a xref:ipi-install-troubleshooting-reviewing-the-installation_{context}[validated installation].
+
+
+== Troubleshooting the installer workflow
+
+Prior to troubleshooting the installation environment, it is critical to understand the overall flow of the IPI installation on bare metal. The diagrams below provide a troubleshooting flow with a step-by-step breakdown for the environment.
+
+image:flow1.png[Flow-Diagram-1]
+
+_Workflow 1 of 4_ illustrates a troubleshooting workflow when the `install-config.yaml` file has errors or the {op-system-first} images are inaccessible.  Troubleshooting suggestions can be found at
+ifeval::[{release} == 4.3]
+<<install_config,Troubleshooting `install-config.yaml`>> and xref:ipi-install-troubleshooting-post-installation-pod-errors_{context}[Post-installation Pod errors].
+endif::[]
+
+ifeval::[{release} != 4.3]
+<<install_config,Troubleshooting `install-config.yaml`>>.
+endif::[]
+
+
+image:flow2.png[Flow-Diagram-2]
+
+_Workflow 2 of 4_ illustrates a troubleshooting workflow for xref:ipi-install-troubleshooting-bootstrap-vm_{context}[ bootstrap VM issues], xref:ipi-install-troubleshooting-bootstrap-vm-cannot-boot_{context}[ bootstrap VMs that cannot boot up the cluster nodes], and  xref:ipi-install-troubleshooting-bootstrap-vm-inspecting-logs_{context}[ inspecting logs].
+
+image:flow3.png[Flow-Diagram-3]
+
+_Workflow 3 of 4_ illustrates a troubleshooting workflow for xref:ipi-install-troubleshooting-cluster-nodes-will-not-pxe_{context}[ cluster nodes that will not PXE boot].
+
+image:flow4.png[Flow-Diagram-4]
+
+_Workflow 4 of 4_ illustrates a troubleshooting workflow from
+xref:ipi-install-troubleshooting-api-not-accessible_{context}[ a non-accessible API] to a xref:ipi-install-troubleshooting-reviewing-the-installation_{context}[validated installation].
+
+
 include::modules/ipi-install-troubleshooting-install-config.adoc[leveloffset=+1]
+ifeval::[{release} == 4.3]
+include::modules/ipi-install-troubleshooting-post-installation-pod-errors.adoc[leveloffset=+1]
+endif::[]
 include::modules/ipi-install-troubleshooting-bootstrap-vm.adoc[leveloffset=+1]
 include::modules/ipi-install-troubleshooting-bootstrap-vm-cannot-boot.adoc[leveloffset=+2]
 include::modules/ipi-install-troubleshooting-bootstrap-vm-inspecting-logs.adoc[leveloffset=+2]
@@ -56,6 +111,5 @@ include::modules/ipi-install-troubleshooting-cleaning-up-previous-installations.
 include::modules/ipi-install-troubleshooting-registry-issues.adoc[leveloffset=+1]
 include::modules/ipi-install-troubleshooting-misc-issues.adoc[leveloffset=+1]
 include::modules/ipi-install-troubleshooting-failed-ignition-during-firstboot.adoc[leveloffset=+2]
-include::modules/ipi-install-troubleshooting-post-install-pod-errors.adoc[leveloffset=+2]
 include::modules/ipi-install-troubleshooting-ntp-out-of-sync.adoc[leveloffset=+2]
 include::modules/ipi-install-troubleshooting-reviewing-the-installation.adoc[leveloffset=+1]

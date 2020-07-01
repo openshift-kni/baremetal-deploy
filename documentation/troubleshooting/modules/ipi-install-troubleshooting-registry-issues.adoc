@@ -1,28 +1,40 @@
+// Module included in the following assemblies:
+// //installing/installing_bare_metal_ipi/installing_bare_metal_ipi/ipi-install-troubleshooting.adoc
+
 [id="ipi-install-troubleshooting-registry-issues_{context}"]
 
 = Issues with creating the registry
 
-At times, there may be a need to create a disconnected registry due to
-limited connectivity to an environment or creating a central location to
-host images locally. Details can be found in link:Deployment#ipi-install-creating-a-disconnected-registry_ipi-install-prerequisites[Creating a disconnected registry]
+When creating a disconnected registry, you might encounter a "User Not Authorized" error when attempting to mirror the registry. This error might occur if you fail to append the new authentication to the existing `pull-secret.txt` file.
 
-When attempting to mirror the registry and if you receive a 'User Not Authorized'
-error, this is due to not appending the new authentication to your already
-existing pull-secret.txt file.
+.Procedure
 
+. Check to ensure authentication is successful:
++
 [source,bash]
 ----
-[kni@registry ~]$ oc adm -a ${LOCAL_SECRET_JSON} release mirror \
-     --from=${PRODUCT_REPO}/${PROJECT}/${RELEASE_NAME}:${OCP_RELEASE} \
-     --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} \
-     --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}
-
-User Not Authorized
+[user@registry ~]$ /usr/local/bin/oc adm release mirror \
+  -a pull-secret-update.json
+  --from=$UPSTREAM_REPO \
+  --to-release-image=$LOCAL_REG/$LOCAL_REPO:${VERSION} \
+  --to=$LOCAL_REG/$LOCAL_REPO
 ----
++
+[NOTE]
+====
+Example output of the variables used to mirror the install images:
+[source,bash]
+----
+UPSTREAM_REPO=${RELEASE_IMAGE}
+LOCAL_REG=<registry_FQDN>:<registry_port>
+LOCAL_REPO='ocp4/openshift4'
+----
+The values of `RELEASE_IMAGE` and `VERSION` were set during the **Retrieving OpenShift Installer** step of the **Setting up the environment for an OpenShift installation** section.
+====
 
-After the registry is mirrored, confirm that you can access this in your
-disconnected environment
-
+. After mirroring the registry, confirm that you can access it in your
+disconnected environment:
++
 [source,bash]
 ----
 [kni@provisioner ~]$ curl -k -u <user>:<password> https://registry.example.com:<registry-port>/v2/_catalog
