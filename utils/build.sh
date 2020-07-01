@@ -17,8 +17,8 @@ DOCS=(
 
 # Documents using latest
 STATIC=(
-    'Ansible Playbook Install'
     'Troubleshooting'
+    'Ansible Playbook Install'
     'Ansible Playbook Disconnected Install'
 )
 
@@ -87,6 +87,15 @@ ${doc}-${release}:
     folder: ${release}/${doc}
     """ >>${TARGET}/releases.yml
     done
+done
+
+# Empty file before starting for VERSIONED DOCS
+>${TARGET}/versioned.yml
+for doc in "${DOCS[@]}"; do
+    echo """
+${doc}:
+    name: ${doc}
+    """ >>${TARGET}/versioned.yml
 done
 
 # Empty file before starting for DEVEL preview
