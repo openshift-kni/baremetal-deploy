@@ -259,9 +259,6 @@ This is the most important file to modify for a successful install of OpenShift 
 
 Here's a sample:
 ```yml
-# This is the location on the jumphost (ansible controller) where the list 
-# of hosts your lab allocation will be downloaded to in json format. 
-# Leave default, for most cases
 ocpinv_file: "{{ playbook_dir }}/ocpinv.json"
 # Your allocation name/number in the shared labs
 cloud_name: cloud00
@@ -306,8 +303,10 @@ scale:
   lab_url: "http://quads.rdu2.scalelab.redhat.com"
 ```
 
-Here's a sample all.yml for the scale lab with the pull secret and password scraped: http://pastebin.test.redhat.com/870274
-Here's a sample al.yml for the ALIAS lab with the pull secret and password scraped: http://pastebin.test.redhat.com/870273
+Here's a sample all.yml for the scale lab with the pull secret and password scraped: http://pastebin.test.redhat.com/880712
+Here's a sample al.yml for the ALIAS lab with the pull secret and password scraped: http://pastebin.test.redhat.com/880713
+
+If you'r a part of the [redhat-performance](https://github.com/redhat-performance) GitHub organization, you can also access the samples here: https://github.com/redhat-performance/JetSki-Configs/tree/master/jetski
 
 ### Modifying the `ansible-ipi-install/inventory/jetski/hosts` file
 
@@ -553,6 +552,33 @@ Deployment of OCP 4.3 and 4.4 has been tested with the playbook.
 
 ## Additional Material/Advanced Usage
 For additional reading material and advanced usage of all the options provided by `ansible-ipi-install/inventory/jetski/hosts` please refer to [https://github.com/openshift-kni/baremetal-deploy/tree/master/ansible-ipi-install](https://github.com/openshift-kni/baremetal-deploy/tree/master/ansible-ipi-install) and [upstream docs]([https://openshift-kni.github.io/baremetal-deploy/](https://openshift-kni.github.io/baremetal-deploy/)). The playbook provided in this repo contantly aims to support everything supported [upstream](https://github.com/openshift-kni/baremetal-deploy/tree/master/ansible-ipi-install) which is made possible by the modular architecture of using upstream roles as is without change and only having extra roles that run before the upstream roles.
+
+### Changing Node roles/Excluding nodes in your allocation from the deployment
+
+By default, JetSki deploys a minimum of 3 masters and number of workers defined by `worker_count` in `ansible-ipi-install/group_vars/all.yml`. If `worker_count` is not defined, it deploys all the remaining nodes in your allocation (apart from the 1 provisioner host and 3 master nodes) as worker nodes. The nodes assigned to each role are also fixed in the sense that the first node in your allocation always becomes the provisioner host, the next 3 become the OpenShift masters and the remaining become workers. However, if you want to assign specific nodes to specific roles or keep a few nodes of your allocation out of the deployment, it can be achieved by changing the `ocpinv.json` file that is downloaded tothe `ansible-ipi-install` directory, when you are running the playbook from `localhost`. It's a little bit hackish, but here's what you would do
+
+Initially, kick off the JetSki playbook run and after running for a few seconds you would see these tasks
+
+```sh
+
+TASK [bootstrap : check ocpinv file available] ***********************************************************************************************************************************************************************************************
+Wednesday 01 July 2020  13:52:42 -0400 (0:00:00.199)       0:00:06.601 ******** 
+ok: [localhost]
+
+TASK [bootstrap : Download ocpninv.json] *****************************************************************************************************************************************************************************************************
+Wednesday 01 July 2020  13:52:42 -0400 (0:00:00.332)       0:00:06.933 ******** 
+skipping: [localhost]
+
+TASK [bootstrap : Download ocpinv.json] ******************************************************************************************************************************************************************************************************
+Wednesday 01 July 2020  13:52:42 -0400 (0:00:00.193)       0:00:07.127 ******** 
+changed: [localhost]
+```
+
+As soon as the `Download ocpinv.json` task completes successfully, you can exit out of the playbook by using `ctrl+c` and then manually edit the `ocpinv.json` file. The file is a JSON dictionary which has a list of dictionaries under the `nodes` key, each of which represents a node in your lab allocation. By changing the order of nodes/removing nodes from here you are able to assign nodes to a particular role/remove them from deployment. Be careful to ensure that it is still a valid JSON after your edits. For example, if I want to ensure that a specific node in my allocation becomes the provisioner, I would move the dictionary representing that node  to the first position in the `nodes` list, or if I wanted to ensure specific nodes become OpenShift masters, I would put them in the 2,3 and 4 positions in the list, or if I wanted to exclude a few nodes, I would totally remove them from the list of `nodes`. After these changes, for good measure `rm -f ocpnodeinv.json` in the `ansible-ipi-install` directory and re-kick the JetSki playbook and JetSki will consume the edited `ocpinv.json`.
+
+### Tips
+
+* Make sure to change the root password of your provisioner host after the deployment, since all the hosts in the lab have the same password by default and JetSki picks the nodes to install OpenShift on based on the `cloud_name` field in `ansible-ipi-install/group_vars/all.yml`, it would otherwise be trivial for someone to accidentally re-install over your already installed cluster by supplying the wrong `cloud_name` in `ansible-ipi-install/group_vars/all.yml`.
 
 ## Troubleshooting
 
