@@ -9,6 +9,12 @@ Before installing {product-title}, ensure the hardware environment meets the fol
 
 include::modules/ipi-install-node-requirements.adoc[leveloffset=+1]
 include::modules/ipi-install-network-requirements.adoc[leveloffset=+1]
+
+ifdef::watermark[]
+// Include IPv6 information only in DRAFT documentation
+include::modules/ipi-ipv6-install-network-requirements.adoc[leveloffset=+1]
+endif::[]
+
 include::modules/ipi-install-configuring-nodes.adoc[leveloffset=+1]
 include::modules/ipi-install-out-of-band-management.adoc[leveloffset=+1]
 include::modules/ipi-install-required-data-for-installation.adoc[leveloffset=+1]

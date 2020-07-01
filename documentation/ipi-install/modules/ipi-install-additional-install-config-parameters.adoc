@@ -36,6 +36,9 @@ networking:
 ----
 |
 |The public CIDR (Classless Inter-Domain Routing) of your external network, e.g. `10.0.0.0/24`
+ifdef::watermark[]
+or `2620:52:0:1302::/64`.
+endif::[]
 
 
 
@@ -132,6 +135,9 @@ endif::[]
 | `bootstrapProvisioningIP`
 | 2nd IP of `provisioningNetworkCIDR`
 | The IP on the bootstrap VM where the provisioning services run while the control plane is being deployed. Defaults to the 2nd IP of the provision subnet, e.g. `172.22.0.2`
+ifdef::watermark[]
+or `2620:52:0:1307::2`.
+endif::[]
 
 | `externalBridge`
 | `baremetal`
@@ -149,6 +155,10 @@ configuration.
 | `bootstrapOSImage`
 |
 | A URL to override the default operating system image for the bootstrap node. The URL must contain a sha256 hash of the image. Example https://mirror.openshift.com/rhcos-<version>-qemu.qcow2.gz?sha256=<uncompressed_sha256>
+ifdef::watermark[]
+or `http://[2620:52:0:1307::1]/rhcos-<version>-qemu.x86_64.qcow2.gz?sha256=<uncompressed_sha256>`.
+endif::[]
+
 
 | `clusterOSImage`
 |
