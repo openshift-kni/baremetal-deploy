@@ -1,6 +1,14 @@
+- name: Create temporary directory for inventory
+  tempfile:
+    state: directory
+  register: inventory_tempdir
+ 
 - name: set fact for inv file
   set_fact:
-    ocpinv_file: "{{ (inventory_hostname == 'localhost') |  ternary(playbook_dir +  '/ocpinv.json', ansible_user_dir + '/ocpinv.json') }}"
+    "{{ item.name }}": "{{ (inventory_hostname == 'localhost') |  ternary(playbook_dir +  '/' + item.path, inventory_tempdir.path + '/' + item.path) }}"
+  with_items:
+    - { name: ocpinv_file, path: ocpinv.json }
+    - { name: ocp_node_inv_path, path: ocpnodeinv.json }
 
 - name: check ocpinv file available
   stat:
@@ -28,10 +36,9 @@
     src: "{{ ocpinv_file }}"
   register: invfile
 
-- name: set inventory facts
+- name: set inventory fact
   set_fact:
     ocpinv_content: "{{ invfile['content'] | b64decode | from_json }}"
-    ocp_node_inv_path: "{{ ansible_user_dir }}/ocpnodeinv.json"
 
 - name: set provisioning host and ocp cluster info
   block:
