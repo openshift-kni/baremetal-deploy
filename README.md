@@ -547,8 +547,9 @@ worker-1.openshift.example.com               Ready    worker          19h   v1.1
 Deployment of OCP 4.3 and 4.4 has been tested with the playbook.
 
 ## Limitations
+* Designed for and tested only on Red Hat's Scale and ALIAS labs
 * Tested only on Dell Servers (adding support for Supermicros will require further minimal work)
-* Homogeneous hardware expected for masters and workers
+* Homogeneous hardware expected (Specifically for automated network-discovery, you need to have the same number/naming convention of NICs on your hardware. It doesn't matter if some nodes have an extra disk or GPU)
 
 ## Additional Material/Advanced Usage
 For additional reading material and advanced usage of all the options provided by `ansible-ipi-install/inventory/jetski/hosts` please refer to [https://github.com/openshift-kni/baremetal-deploy/tree/master/ansible-ipi-install](https://github.com/openshift-kni/baremetal-deploy/tree/master/ansible-ipi-install) and [upstream docs]([https://openshift-kni.github.io/baremetal-deploy/](https://openshift-kni.github.io/baremetal-deploy/)). The playbook provided in this repo contantly aims to support everything supported [upstream](https://github.com/openshift-kni/baremetal-deploy/tree/master/ansible-ipi-install) which is made possible by the modular architecture of using upstream roles as is without change and only having extra roles that run before the upstream roles.
