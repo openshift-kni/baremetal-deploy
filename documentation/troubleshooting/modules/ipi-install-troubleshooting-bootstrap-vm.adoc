@@ -1,9 +1,11 @@
+// Module included in the following assemblies:
+// //installing/installing_bare_metal_ipi/installing_bare_metal_ipi/ipi-install-troubleshooting.adoc
+
 [id="ipi-install-troubleshooting-bootstrap-vm_{context}"]
 
 = Bootstrap VM issues
 
-The OpenShift installer spawns a bootstrap node virtual machine, 
-which handles provisioning the OpenShift cluster nodes.
+The {product-title} installer spawns a bootstrap node virtual machine, which handles provisioning the {product-title} cluster nodes.
 
 .Procedure
 
@@ -21,11 +23,13 @@ which handles provisioning the OpenShift cluster nodes.
 ----
 
 
-NOTE: The name of the bootstrap VM is always the clustername, followed
-by random set of characters and ending in the word bootstrap.
+[NOTE]
+====
+The name of the bootstrap VM is always the cluster name followed
+by random set of characters and ending in the word "bootstrap."
+====
 
-If the bootstrap VM is not running after 10-15 minutes, troubleshoot 
-why it was not created. Possible issues include:
+If the bootstrap VM is not running after 10-15 minutes, troubleshoot why it was not created. Possible issues include:
 
 . Verify `libvirtd` is running on the system:
 +
@@ -73,8 +77,7 @@ localhost login:
 +
 [NOTE]
 ====
-In the console output of the previous step, the IPv6 IP provided 
-by `ens3` or the IPv4 IP provided by `ens4` can be used.
+In the console output of the previous step, the IPv6 IP provided by `ens3` or the IPv4 IP provided by `ens4` can be used.
 ====
 +
 [source,bash]
@@ -82,8 +85,7 @@ by `ens3` or the IPv4 IP provided by `ens4` can be used.
 [kni@provisioner ~]$ ssh core@172.22.0.2
 ----
 
-If you are not successful logging in to the bootstrap VM, you have 
-likely encountered of the following scenarios:
+If you are not successful logging in to the bootstrap VM, you have likely encountered of the following scenarios:
 
 * You cannot reach the `172.22.0.0/24` network. Verify network connectivity on the `provisioner` host specifically around the `provisioning` network bridge.
 

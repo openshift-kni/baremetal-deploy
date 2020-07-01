@@ -1,9 +1,11 @@
+// Module included in the following assemblies:
+// //installing/installing_bare_metal_ipi/installing_bare_metal_ipi/ipi-install-troubleshooting.adoc
+
 [id="ipi-install-troubleshooting-api-not-accessible_{context}"]
 
-= API not accessible
+= The API is not accessible
 
-When the cluster is running and clients cannot access the API, domain 
-name resolution issues may impede access to the API.
+When the cluster is running and clients cannot access the API, domain name resolution issues might impede access to the API.
 
 .Procedure
 
@@ -54,6 +56,4 @@ api.<cluster-name>.example.com. 10800 IN	A 10.19.13.86
 ;; MSG SIZE  rcvd: 140
 ----
 +
-The output in the foregoing example indicates that the appropriate IP 
-address for the `api.<cluster-name>.example.com` VIP is `10.19.13.86`. 
-This IP address should reside on the `baremetal` network.
+The output in the foregoing example indicates that the appropriate IP address for the `api.<cluster-name>.example.com` VIP is `10.19.13.86`. This IP address should reside on the `baremetal` network.
