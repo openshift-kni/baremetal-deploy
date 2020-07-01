@@ -1,0 +1,75 @@
+/*----- Menu Outline -----*/
+.menu-wrap {
+
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+  background: #a7898f;
+}
+
+.menu {
+
+  margin: 0px auto;
+}
+
+.menu li {
+  margin: 0px;
+  list-style: none;
+}
+
+.menu a {
+  transition: all linear 0.15s;
+  color: #919191;
+}
+
+.menu li:hover>a,
+.menu .current-item>a {
+  text-decoration: none;
+  color: #be5b70;
+}
+
+.menu .arrow {
+  font-size: 11px;
+}
+
+/*----- Top Level -----*/
+.menu>ul>li {
+  float: left;
+  position: relative;
+}
+
+.menu>ul>li>a {
+
+
+}
+
+.menu>ul>li:hover>a,
+.menu>ul>.current-item>a {
+  background: #ec9ca8;
+}
+
+/*----- Bottom Level -----*/
+.menu li:hover .sub-menu {
+  z-index: 1;
+  opacity: 1;
+}
+
+.sub-menu {
+  width: 160%;
+  padding: 0px 0px;
+  position: absolute;
+  top: 100%;
+  left: 0px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity linear 0.15s;
+  box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.2);
+  background: #d1ddfc;
+}
+
+.sub-menu li {
+  display: block;
+}
+
+.sub-menu li a {
+  padding: 10px 10px;
+  display: block;
+}
