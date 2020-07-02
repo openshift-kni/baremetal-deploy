@@ -2,10 +2,11 @@
   tempfile:
     state: directory
   register: inventory_tempdir
+  when: inventory_hostname != 'localhost'
  
 - name: set fact for inv file
   set_fact:
-    "{{ item.name }}": "{{ (inventory_hostname == 'localhost') |  ternary(playbook_dir +  '/' + item.path, inventory_tempdir.path + '/' + item.path) }}"
+    "{{ item.name }}": "{{ playbook_dir +  '/' + item.path if inventory_hostname == 'localhost' else inventory_tempdir.path + '/' + item.path }}"
   with_items:
     - { name: ocpinv_file, path: ocpinv.json }
     - { name: ocp_node_inv_path, path: ocpnodeinv.json }
