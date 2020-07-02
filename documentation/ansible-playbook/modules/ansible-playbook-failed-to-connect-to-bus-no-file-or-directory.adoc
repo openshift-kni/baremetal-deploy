@@ -2,11 +2,11 @@
 
 = Failed to connect to bus: No such file or directory
 
-The Ansible playbook creates two containers (when enabled) to 
-store a mirored registry and a caching webserver. 
+The Ansible playbook creates two containers (when enabled) to
+store a mirored registry and a caching webserver.
 When these containers are created, the playbook also creates a
 `systemd` unit file to ensure these containers are restarted upon
-the reboot of the host serving them. 
+the reboot of the host serving them.
 
 Since these are `systemd` user services, when logging into a
 system to attempt a command such as
@@ -19,8 +19,8 @@ for the mirrored registry, you may get an error such as:
 Failed to connect to bus: No such file or directory
 ----
 
-What the following error is trying to address is that the 
-parameter, `DBUS_SESSIONBUS_ADDRESS`, is not set. 
+What the following error is trying to address is that the
+parameter, `DBUS_SESSIONBUS_ADDRESS`, is not set.
 
 In order to set this variable, we can `export` as follows:
 
@@ -39,4 +39,3 @@ see output as follows:
   Process: 36380 ExecStart=/usr/bin/podman start rhcos_image_cache (code=exited, status=0/SUCCESS)
  Main PID: 36410 (conmon)
 ----
-

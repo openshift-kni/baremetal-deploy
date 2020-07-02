@@ -157,6 +157,9 @@
     status_code: [-1,200]
     timeout: 1
   register: check_url
+  until: check_url.status == 200
+  retries: 6 # 1 minute (10 * 6)
+  delay: 10 # Every 10 seconds
   tags:
   - validation
 
@@ -260,6 +263,9 @@
     url: "{{ release_url }}/{{ version }}/release.txt"
     return_content: yes
   register: result
+  until: result.status == 200
+  retries: 6 # 1 minute (10 * 6)
+  delay: 10 # Every 10 seconds
   failed_when: result.content|length == 0 or result.status >= 400
   delegate_to: "{{ (not dra_set and not drm_set and registry_host_exists) | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
   tags:
@@ -284,6 +290,9 @@
   uri:
     url: "{{ release_url }}/{{ version }}/openshift-client-linux-{{ release_version }}.tar.gz"
     method: HEAD
+  until: ocp_client_chk.status == 200
+  retries: 6 # 1 minute (10 * 6)
+  delay: 10 # Every 10 seconds
   register: ocp_client_chk
   delegate_to: "{{ (not dra_set and not drm_set and registry_host_exists) | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
   tags: validation

@@ -16,7 +16,7 @@ ifeval::[{release} < 4.5]
 endif::[]
 
 ifeval::[{release} > 4.4]
-- **Baseboard Management Controller:** The provisioner node must be able to access the baseboard management controller (BMC) of each {product-title} cluster node. You may use IPMI, RedFish, or a proprietary protocol. 
+- **Baseboard Management Controller:** The provisioner node must be able to access the baseboard management controller (BMC) of each {product-title} cluster node. You may use IPMI, RedFish, or a proprietary protocol.
 endif::[]
 
 - **Latest generation:** Nodes should be of the most recent generation. IPI installation relies on IPMI, which should be compatible across nodes. Additionally, RHEL 8 ships with the most recent drivers for RAID controllers. Ensure that the nodes are recent enough to https://catalog.redhat.com/hardware/servers/search?p=1&c_version=Red%20Hat%20Enterprise%20Linux%208&ch_architecture=x86_64[support RHEL 8] for the provisioning node and all the {product-title} nodes.
@@ -40,4 +40,3 @@ ifeval::[{release} > 4.3]
 
 - **Unified Extensible Firmware Interface (UEFI):** UEFI boot is required on all {product-title} nodes when using IPv6 addressing on the `provisioning` network. In addition, UEFI Device PXE Settings must be set to use the IPv6 protocol on the `provisioning` network NIC.
 endif::[]
-
