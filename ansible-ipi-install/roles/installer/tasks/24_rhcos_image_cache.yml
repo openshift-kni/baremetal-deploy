@@ -8,6 +8,9 @@
     url: https://www.redhat.com
     status_code: [-1,200]
     timeout: 1
+  until: the_url.status == 200
+  retries: 6 # 1 minute (10 * 6)
+  delay: 10 # Every 10 seconds
   register: the_url
   tags: cache
 
@@ -53,8 +56,8 @@
   tags: cache
 
 #SELinux when already has httpd_sys_content_t giving issues changing,thus leaving it the same
-#for the provision_cache_store to prevent issues. Also removing ":z" from podman_container for 
-#provision_cache_store in the later task.   
+#for the provision_cache_store to prevent issues. Also removing ":z" from podman_container for
+#provision_cache_store in the later task.
 - name: Create {{ provision_cache_store }} and {{ httpd_cache_files }} on host with online access
   file:
     path: "{{ item[0] }}"
@@ -177,7 +180,7 @@
     - name: Ensure user specific systemd instance are persistent
       command:  |
               /usr/bin/loginctl enable-linger {{ ansible_user }}
- 
+
     - name: Create systemd user directory
       file:
         path: "{{ ansible_user_dir }}/.config/systemd/user"
@@ -185,7 +188,7 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0775'
-    
+
     - name: Copy the systemd service file
       copy:
         content: |
@@ -204,26 +207,26 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0644'
-    
+
     - name: Reload systemd service
       systemd:
         daemon_reexec: yes
         scope: user
-      environment: 
+      environment:
         DBUS_SESSION_BUS_ADDRESS: "{{ ansible_env.DBUS_SESSION_BUS_ADDRESS|default('unix:path=/run/user/' +  ansible_effective_user_id|string + '/bus') }}"
     - name: Enable container-cache.service
       systemd:
         name: container-cache.service
         enabled: yes
         scope: user
-      environment: 
+      environment:
         DBUS_SESSION_BUS_ADDRESS: "{{ ansible_env.DBUS_SESSION_BUS_ADDRESS|default('unix:path=/run/user/' +  ansible_effective_user_id|string + '/bus') }}"
     - name: Start container-cache.service
       systemd:
         name: container-cache.service
         state: started
         scope: user
-      environment: 
+      environment:
         DBUS_SESSION_BUS_ADDRESS: "{{ ansible_env.DBUS_SESSION_BUS_ADDRESS|default('unix:path=/run/user/' +  ansible_effective_user_id|string + '/bus') }}"
   tags: cache
   delegate_to: "{{ url_passed | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
