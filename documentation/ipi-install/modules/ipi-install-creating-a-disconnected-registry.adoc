@@ -209,7 +209,7 @@ LOCAL_REG=<registry_FQDN>:<registry_port>
 LOCAL_REPO='ocp4/openshift4'
 ----
 
-The values of `RELEASE_IMAGE` and `VERSION` were set during 
+The values of `RELEASE_IMAGE` and `VERSION` were set during
 xref:retrieving-openshift-installer_{context}[Retrieving OpenShift Installer]
 ====
 

@@ -32,7 +32,7 @@ This step can also be run from the web console.
 [NOTE]
 ====
 The `ssh` connection may disconnect after executing this step. You will want to have some sort
-of out-of-band connection to your host (eg., a serial console, local keyboard, or dedicated 
+of out-of-band connection to your host (eg., a serial console, local keyboard, or dedicated
 management interface) in the event that something goes wrong while executing these commands.
 ====
 +

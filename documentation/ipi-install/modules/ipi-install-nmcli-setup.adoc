@@ -4,7 +4,7 @@
 ====
 The `provisioning` bridge can be setup using an IPv4 address or an IPv6 address.
 Either option is supported and the selection should be based upon your
-environmental requirements. 
+environmental requirements.
 ====
 +
 [source,bash]
