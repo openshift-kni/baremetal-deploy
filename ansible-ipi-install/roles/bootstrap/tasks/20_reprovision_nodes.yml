@@ -22,6 +22,10 @@
   set_fact:
     os_install: "{{ (rhel_version is version('8.1', '<') or rebuild_provisioner) | ternary('RHEL 8.1', false) }}"
 
+- name: Determine if containers should be used
+  set_fact:
+    run_in_container: "{{ lookup('env', 'DISABLE_PODMAN') != 'true' }}"
+
 - name: Perform OS install if needed
   block:
     - name: Install Podman
@@ -29,33 +33,62 @@
         name: podman
         state: present
       become: true
+      when: run_in_container
 
     - name: Get Badfish pod image
       podman_image:
         name: "{{ badfish_pod_image }}"
         pull: yes
         force: yes
+      when: run_in_container
 
     - name: Build the hammercli image
       shell: podman build --build-arg foreman_url={{ foreman_url }} -t hammercli .
       args:
         chdir: "{{ role_path}}/files/"
+      when: run_in_container
+
+    - name: update host to install new os (scale lab) in container
+      shell: podman run hammercli hammer -u {{ cloud_name }} -p {{ lab_ipmi_password }}  host update --name {{ provisioner_hostname }} --build 1 --operatingsystem '{{ os_install }}' --overwrite 1
+      when: lab_name == "scale" and run_in_container
+
+    - name: update host to install new os (alias lab) in container
+      shell: podman run hammercli hammer -u {{ cloud_name }} -p {{ lab_ipmi_password }}  host update --name {{ provisioner_hostname }} --build 1 --operatingsystem '{{ os_install }}' --medium '{{ os_install }}' --partition-table 'ALIAS-Partition' --overwrite 1
+      when: lab_name == "alias" and run_in_container
+
+    - name: setup hammercli if not in container
+      shell: |
+        hammer --fetch-ca-cert {{ foreman_url }}
+#        j2 /root/foreman.yml.j2 > /etc/hammer/cli.modules.d/foreman.yml
+      when: not run_in_container
 
     - name: update host to install new os (scale lab)
-      shell: podman run hammercli hammer -u {{ cloud_name }} -p {{ lab_ipmi_password }}  host update --name {{ provisioner_hostname }} --build 1 --operatingsystem '{{ os_install }}' --overwrite 1
-      when: lab_name == "scale"
+      shell: hammer -u {{ cloud_name }} -p {{ lab_ipmi_password }} -s {{ foreman_url }} host update --name {{ provisioner_hostname }} --build 1 --operatingsystem '{{ os_install }}' --overwrite 1
+      when: lab_name == "scale" and not run_in_container
 
     - name: update host to install new os (alias lab)
-      shell: podman run hammercli hammer -u {{ cloud_name }} -p {{ lab_ipmi_password }}  host update --name {{ provisioner_hostname }} --build 1 --operatingsystem '{{ os_install }}' --medium '{{ os_install }}' --partition-table 'ALIAS-Partition' --overwrite 1
-      when: lab_name == "alias"
+      shell: hammer -u {{ cloud_name }} -p {{ lab_ipmi_password }} -s {{ foreman_url }} host update --name {{ provisioner_hostname }} --build 1 --operatingsystem '{{ os_install }}' --medium '{{ os_install }}' --partition-table 'ALIAS-Partition' --overwrite 1
+      when: lab_name == "alias" and not run_in_container
+
+    - name: Set provisioner host to foreman boot order (in container)
+      shell: |
+        {{ badfish_cmd_container }}{{ provisioner_hostname }} -t foreman
+      when: run_in_container
+
+    - name: Set provisioner host to reboot (in container)
+      shell: |
+        {{ badfish_cmd_container }}{{ provisioner_hostname }} --power-cycle
+      when: run_in_container
 
     - name: Set provisioner host to foreman boot order
       shell: |
         {{ badfish_cmd }}{{ provisioner_hostname }} -t foreman
+      when: not run_in_container
 
     - name: Set provisioner host to reboot
       shell: |
         {{ badfish_cmd }}{{ provisioner_hostname }} --power-cycle
+      when: not run_in_container
 
     - name: wait for 420 seconds before checking for provisioner
       wait_for:
