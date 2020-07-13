@@ -10,6 +10,7 @@ _**Table of Contents**_
 - [Deployment Architecture](#deployment-architecture)
 - [Tour of the Ansible Playbook](#tour-of-the-ansible-playbook)
 - [Running the Ansible Playbook](#running-the-ansible-playbook)
+- [Containerized JetSki](#containerized-jetski)
 - [Versions Tested](#versions-tested)
 - [Limitations](#limitations)
 - [Additional Material/Advanced Usage](#additional-materialadvanced-usage)
@@ -543,6 +544,41 @@ master-2.openshift.example.com               Ready    master          19h   v1.1
 worker-0.openshift.example.com               Ready    worker          19h   v1.16.2
 worker-1.openshift.example.com               Ready    worker          19h   v1.16.2
 ```
+
+## Containerized JetSki
+
+
+### Building
+
+To run JetSki in a container, you need the image.
+
+You can build and run the image with podman. You only need podman installed.
+If you have Docker installed instead of Podman, you can create an alias that makes the podman command run Docker.
+
+The convenience script command to build it is:
+```sh
+./build-jetski-container.sh
+```
+
+If that does not work for you, you can build the image manually using the Dockerfile in the project root directory.
+
+Alternatively, if the container is on an image repository, you can pull it from there.
+
+
+### Configuration
+
+The run script mentioned below uses the local computer's copy of the file `ansible-ipi-install/group-vars/all.yml` and `ansible-ipi-install/inventory/jetski/hosts`
+You must configure that file as requested in the above section. [Containerized JetSki](#containerized-jetski)
+
+### Running
+
+The convenience script command run the image is:
+```sh
+./run-jetski-container.sh
+```
+
+You may manually run it with Docker or Podman, as long as you pass in the applicable configuration files.
+
 ## Versions Tested
 Deployment of OCP 4.3 and 4.4 has been tested with the playbook.
 
