@@ -2,8 +2,10 @@
 
 = Prerequisites
 
-* Best Practice Minimum Setup: 7 Physical servers (1 provision node, 1 registry nodefootnote:registry[If creating the mirrored registry, this system will require online access.], 3 master and 2 worker nodes)
-* Minimum Setup: 5 Physical servers (1 provision node, 1 registry nodefootnote:registry[], 3 master nodes)
+* Best Practice Minimum Setup: 6 Physical servers (1 provision node, 3 master and 2 worker nodes)
+* Best Practice Minimum Setup for disconnected environments: 7 Physical servers (1 provision node, 1 registry nodefootnote:registry[If creating the mirrored registry, this system will require online access. The registry node may be a virtual machine in order to reduce physical server footprint.], 3 master and 2 worker nodes)
+* Minimum Setup: 4 Physical servers (1 provision node, 3 master nodes)
+* Minimum Setup for disconnected environments: 5 Physical servers (1 provision node, 1 registry nodefootnote:registry[], 3 master nodes)
 * Each server needs 2 NICs pre-configured. NIC1 for the private network and NIC2 for the baremetal network. NIC interface names must be identical across all nodesfootnote:issue[https://github.com/openshift/installer/issues/2762]
 * It is recommended each server have a RAID-1 configured and initialized (though not enforced)
 * Each server must have IPMI configured
