@@ -49,7 +49,7 @@
 - name: Fail if a required install-config variable is undefined or empty.
   fail:
     msg: "A variable regarding install-config.yml is undefined or empty."
-  when: (domain is undefined) or (domain|length == 0) or (cluster is undefined) or (cluster|length == 0) or (extcidrnet is undefined) or (extcidrnet|length == 0) or (dnsvip is undefined) or (dnsvip|length == 0) or (pullsecret is undefined) or (pullsecret|length == 0)
+  when: (domain is undefined) or (domain|length == 0) or (cluster is undefined) or (cluster|length == 0) or (extcidrnet is undefined) or (extcidrnet|length == 0) or (pullsecret is undefined) or (pullsecret|length == 0)
   tags:
   - always
   - validation
@@ -329,6 +329,16 @@
   set_fact:
     masters_prov_nic: "{{ prov_nic }}"
   when: (masters_prov_nic is undefined) or (masters_prov_nic|length == 0)
+  tags:
+  - always
+  - validation
+
+- name: Fail if DNSVIP not set (OCP 4.4 or lower)
+  fail:
+    msg: "dnsvip variable is undefined or empty."
+  when: 
+  - ((release_version[0]|int == 4) and (release_version[2]|int < 5))
+  - ((dnsvip is undefined) or (dnsvip|length == 0))
   tags:
   - always
   - validation
