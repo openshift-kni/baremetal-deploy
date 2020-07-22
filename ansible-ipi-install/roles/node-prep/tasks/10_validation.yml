@@ -342,3 +342,32 @@
   tags:
   - always
   - validation
+
+- name: Verify if root hint is valid
+  fail:
+    msg: "The supplied root hint {{ root_device_hint }} is invalid. Valid responses: {{ roothint_list }}"
+  when: root_device_hint not in roothint_list
+  tags:
+  - always
+  - validation
+
+- name: Verify root hint value is supplied when root hint is set
+  fail:
+    msg: "Supplied root device hint but no root hint value."
+  when: root_device_hint|length and root_hint_value|length == 0
+  tags:
+  - always
+  - validation
+
+- name: root hint value is supplied but root device hint not set
+  fail:
+    msg: "Supplied root hint value but no root device hint."
+  when: root_device_hint|length == 0 and root_hint_value|length
+  tags:
+  - always
+  - validation
+- name: Get root hint and value
+  debug:
+    msg: "root_device_hint: {{ root_device_hint }} and root_hint_value: {{ root_hint_value }}"
+    verbosity: 2
+  tags: validation
