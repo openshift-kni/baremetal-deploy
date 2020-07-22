@@ -31,3 +31,14 @@ qtype: "{{ ((ipv6_enabled|bool and ipv4_baremetal|bool) or (not ipv6_enabled|boo
 drm_set: false
 dra_set: false
 registry_host_exists: false
+
+roothint_list:
+  - deviceName
+  - hctl
+  - model
+  - vendor
+  - serialNumber
+  - minSizeGigabytes
+  - wwn
+  - rotational
+  - ''
