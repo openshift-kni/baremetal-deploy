@@ -248,3 +248,21 @@
       become: yes
       with_items: "{{ disable_nics }}"
   delegate_to: localhost
+
+- name: Copy the approve_csr script from the local machine to the remote server
+  copy:
+    src: ./approve_csr.bash
+    dest: "{{ dir }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+  become: yes
+  when: worker_count != 0
+
+- name: Approve CSRs
+  poll: 0
+  async: 20000
+  shell: "bash {{ dir }}/approve_csr.bash {{ worker_count }}"
+  register: approve_csr_result
+  when: worker_count != 0
+  ignore_errors: yes
