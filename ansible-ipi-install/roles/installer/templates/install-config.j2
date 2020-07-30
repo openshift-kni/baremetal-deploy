@@ -60,14 +60,14 @@ platform:
           username: {{ hostvars[host]['ipmi_user'] }}
           password: {{ hostvars[host]['ipmi_password'] }}
         bootMACAddress: {{ hostvars[host]['provision_mac'] }}
-{% if ((release_version[0]|int == 4) and (release_version[2]|int < 5)) %}
+{% if ((release_version[0]|int == 4) and (release_version[2]|int < 6)) %}
 {% if 'hardware_profile' in hostvars[host] %}
         hardwareProfile: {{ hostvars[host]['hardware_profile'] }}
 {% else %}
         hardwareProfile: default
 {% endif %}
 {% endif %}
-{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 5)) and root_device_hint|length %}
+{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 6)) and root_device_hint|length %}
         rootDeviceHints:
           {{ root_device_hint }}: {{ root_hint_value }}
 {% endif %}
@@ -85,14 +85,14 @@ platform:
           username: {{ hostvars[host]['ipmi_user'] }}
           password: {{ hostvars[host]['ipmi_password'] }}
         bootMACAddress: {{ hostvars[host]['provision_mac'] }}
-{% if ((release_version[0]|int == 4) and (release_version[2]|int < 5)) %}
+{% if ((release_version[0]|int == 4) and (release_version[2]|int < 6)) %}
 {% if 'hardware_profile' in hostvars[host] %}
         hardwareProfile: {{ hostvars[host]['hardware_profile'] }}
 {% else %}
         hardwareProfile: unknown
 {% endif %}
 {% endif %}
-{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 5)) and root_device_hint|length %}
+{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 6)) and root_device_hint|length %}
         rootDeviceHints:
           {{ root_device_hint }}: {{ root_hint_value }}
 {% endif %}
