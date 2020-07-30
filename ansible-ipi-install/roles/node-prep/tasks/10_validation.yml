@@ -371,3 +371,58 @@
     msg: "root_device_hint: {{ root_device_hint }} and root_hint_value: {{ root_hint_value }}"
     verbosity: 2
   tags: validation
+
+- name: Get all the chassis results from all the hosts
+  redfish_info:
+    category: Chassis
+    command: GetChassisInventory
+    baseuri: "{{ hostvars[item]['ipmi_address'] }}"
+    username: "{{ hostvars[item]['ipmi_user'] }}"
+    password: "{{ hostvars[item]['ipmi_password'] }}"
+  register: chassis_result
+  with_items:
+  - "{{ groups.masters }}"
+  - "{{ groups.workers | default([]) }}"
+  ignore_errors: yes
+  tags: validation
+
+- name: Get all the firmware results from all the hosts
+  redfish_info:
+    category: Update
+    command: GetFirmwareInventory
+    baseuri: "{{ hostvars[item]['ipmi_address'] }}"
+    username: "{{ hostvars[item]['ipmi_user'] }}"
+    password: "{{ hostvars[item]['ipmi_password'] }}"
+  register: firmware_result
+  with_items:
+  - "{{ groups.masters }}"
+  - "{{ groups.workers | default([]) }}"
+  ignore_errors: yes
+  tags: validation
+
+- name: Add all the hosts that are Dell to a group with iDRAC firmware higher than 4.20.20.20
+  add_host:
+    groups: dell_hosts_redfish
+    hostname: "{{ chassis_result.results[item|int].item }}"
+  with_sequence: start=0 end="{{ numworkers|int + nummasters|int - 1 }}"
+  when:
+    - not chassis_result.results[{{ item }}].failed|bool
+    - not firmware_result.results[{{ item }}].failed|bool
+    - "'Dell' in chassis_result.results[{{ item }}].redfish_facts.chassis.entries[0].Manufacturer"
+    - firmware_result.results[{{ item }}].redfish_facts.firmware.entries | json_query(query) | max >= "4.20.20.20"
+  vars:
+    query: "[?Name=='Integrated Dell Remote Access Controller'].Version"
+  register: dell_host_redfish_result
+  tags: validation
+
+- name: Add all the hosts that are HP to a group
+  add_host:
+    groups: hp_hosts_redfish
+    hostname: "{{ chassis_result.results[item|int].item }}"
+  with_sequence: start=0 end="{{ numworkers|int + nummasters|int - 1 }}"
+  when:
+    - not chassis_result.results[{{ item }}].failed|bool
+    - not firmware_result.results[{{ item }}].failed|bool
+    - "'HPE' in chassis_result.results[{{ item }}].redfish_facts.chassis.entries[0].Manufacturer"
+  register: hp_host_redfish_result
+  tags: validation
