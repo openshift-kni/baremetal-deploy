@@ -132,6 +132,10 @@ pullsecret=""
 #root_device_hint="deviceName"
 #root_hint_value="/dev/sda"
 
+# (Optional) Disable BMC Certification Validation. When using self-signed certificates for your BMC, ensure to set to True.
+# Default value is False. 
+#disable_bmc_certificate_verification=True
+
 # Master nodes
 # The hardware_profile is used by the baremetal operator to match the hardware discovered on the host
 # See https://github.com/metal3-io/baremetal-operator/blob/master/docs/api.md#baremetalhost-status
