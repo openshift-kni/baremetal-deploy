@@ -141,7 +141,3 @@ systemctl restart dnsmasq
 ----
 systemctl status dnsmasq
 ----
-
-
-
-include::modules/ipi-ipv6-install-upstream-creating-dhcp-reservations-using-dnsmasq.adoc[leveloffset=+1]
