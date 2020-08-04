@@ -227,7 +227,6 @@
       file:
         path: "{{ fake_root }}"
         state: absent
-      become: yes
 
     - name: Set ifcfg path
       set_fact:
@@ -238,14 +237,12 @@
         path: "{{ ifcfg_path }}"
         state: directory
         mode: 0777
-      become: yes
 
     - name: Create ifcfg files to disable NICs
       template:
         src: ocp4-lab.ifcfg-template.j2
         dest: "{{ ifcfg_path }}/ifcfg-{{ item }}"
         mode: 0644
-      become: yes
       with_items: "{{ disable_nics }}"
   delegate_to: localhost
 
