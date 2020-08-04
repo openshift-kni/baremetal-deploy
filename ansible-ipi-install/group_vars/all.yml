@@ -33,6 +33,8 @@ rebuild_provisioner: false
 # However that behaviour can be overrided by explicitly settign the desired number of workers here. For a masters only deploy,
 # set worker_count to 0
 worker_count: 0
+# set to true to deploy with jumbo frames
+jumbo_mtu: false
 alias:
 #lab specific vars, leave default
   lab_url: "http://quads11.alias.bos.scalelab.redhat.com"
