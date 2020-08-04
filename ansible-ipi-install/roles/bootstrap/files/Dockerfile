@@ -1,4 +1,4 @@
-FROM centos:centos7
+FROM docker.io/centos:centos7
 ARG foreman_url=https://foreman.example.com
 RUN yum install -y epel-release \
     https://yum.theforeman.org/releases/2.1/el7/x86_64/foreman-release.rpm \
