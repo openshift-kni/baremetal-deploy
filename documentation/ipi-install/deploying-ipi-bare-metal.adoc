@@ -19,11 +19,29 @@ each one connected to a different network.
 During installation of IPI on baremetal, a bootstrap VM is created and connected to both the provisioning and
 baremetal network via those bridges. The role of the VM is to assist in the process of deploying an {product-title} cluster.
 
-image::71_OpenShift_Baremetal_IPI_Depoyment_0320_1.png[Deployment phase one]
+
+ifeval::[{release} >= 4.5]
+image::4.5-71_OpenShift_Baremetal_IPI_Depoyment_0320_1.png[Deployment phase one]
+endif::[]
+
+ifeval::[{release} < 4.5]
+image::4.4-71_OpenShift_Baremetal_IPI_Depoyment_0320_1.png[Deployment phase one]
+endif::[]
+
 
 When the installation of OpenShift control plane nodes, or master nodes, is complete and fully operational,
 the bootstrap VM is destroyed automatically and the appropriate VIPs are moved accordingly.
+
+ifeval::[{release} >= 4.5]
+The API VIPs move into the control plane nodes and the Ingress VIP services applications that
+reside within the worker nodes.
+
+image::4.5-71_OpenShift_Baremetal_IPI_Depoyment_0320_2.png[Deployment phase two]
+endif::[]
+
+ifeval::[{release} < 4.5]
 The API and DNS VIPs move into the control plane nodes and the Ingress VIP services applications that
 reside within the worker nodes.
 
-image::71_OpenShift_Baremetal_IPI_Depoyment_0320_2.png[Deployment phase two]
+image::4.4-71_OpenShift_Baremetal_IPI_Depoyment_0320_2.png[Deployment phase two]
+endif::[]
