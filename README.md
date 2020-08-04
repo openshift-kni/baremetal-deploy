@@ -260,7 +260,6 @@ This is the most important file to modify for a successful install of OpenShift 
 
 Here's a sample:
 ```yml
-ocpinv_file: "{{ playbook_dir }}/ocpinv.json"
 # Your allocation name/number in the shared labs
 cloud_name: cloud00
 # Lab name, typically can be alias or scale
@@ -296,6 +295,8 @@ rebuild_provisioner: false
 # However that behaviour can be overrided by explicitly settign the desired number of workers here. For a masters only deploy,
 # set worker_count to 0
 worker_count: 0
+# set to true to deploy with jumbo frames
+jumbo_mtu: false
 alias:
 #lab specific vars, leave default
   lab_url: "http://quads11.alias.bos.scalelab.redhat.com"
@@ -304,9 +305,9 @@ scale:
   lab_url: "http://quads.rdu2.scalelab.redhat.com"
 ```
 
-Here's a sample all.yml for the scale lab with the pull secret and password scraped: http://pastebin.test.redhat.com/880712
+Here's a sample all.yml for the scale lab with the pull secret and password scraped: http://pastebin.test.redhat.com/890421
 
-Here's a sample all.yml for the ALIAS lab with the pull secret and password scraped: http://pastebin.test.redhat.com/880713
+Here's a sample all.yml for the ALIAS lab with the pull secret and password scraped: http://pastebin.test.redhat.com/890420
 
 If you'r a part of the [redhat-performance](https://github.com/redhat-performance) GitHub organization, you can also access the samples here: https://github.com/redhat-performance/JetSki-Configs/tree/master/jetski
 

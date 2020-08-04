@@ -98,6 +98,14 @@
     state: present
   become: yes
 
+- name: Set MTU
+  nmcli:
+    conn_name: "{{ pub_nic }}"
+    type: ethernet
+    mtu: "{{ 9000 if jumbo_mtu else 1500 }}"
+    state: present
+  become: true
+
 - name: Reload baremetal bridge and slave interfaces
   shell: |
     /usr/bin/nmcli con reload {{ item }}; /usr/bin/nmcli con up {{ item }}

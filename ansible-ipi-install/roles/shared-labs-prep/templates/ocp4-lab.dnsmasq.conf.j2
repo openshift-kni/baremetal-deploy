@@ -7,6 +7,9 @@ expand-hosts
 except-interface=lo
 except-interface={{ lab_pub_nic }}
 interface=baremetal
+{% if jumbo_mtu %}
+dhcp-option=baremetal,26,9000
+{% endif %}
 dhcp-range={{ extcidrnet | next_nth_usable(10) }},{{ extcidrnet | ipaddr('last_usable') }}
 dhcp-no-override
 dhcp-authoritative
