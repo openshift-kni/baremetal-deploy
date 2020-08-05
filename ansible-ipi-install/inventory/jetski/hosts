@@ -121,6 +121,16 @@ network_type="OVNKubernetes"
 # Example https://mirror.example.com/images/metal.qcow2.gz?sha256=3b5a8...
 #clusterosimage=""
 
+# (Optional) OpenShift 4.6+, Set Root Device Hints to choose the proper device to install operating system on OpenShift nodes.
+# root device hint options include: ['deviceName','hctl','model','vendor','serialNumber','minSizeGigabytes','wwn','rotational']
+# Root Device Hint values are case sensitive.
+#root_device_hint="deviceName"
+#root_hint_value="/dev/sda"
+
+# (Optional) Disable BMC Certification Validation. When using self-signed certificates for your BMC, ensure to set to True.
+# Default value is False. 
+#disable_bmc_certificate_verification=True
+
 # Registry Host
 #   Define a host here to create or use a local copy of the installation registry
 #   Used for disconnected installation
