@@ -18,7 +18,7 @@ Deployment Integration Team
 :product-title: OpenShift Container Platform
 :op-system-first: Red Hat Enterprise Linux CoreOS (RHCOS)
 :op-system: RHCOS
-:source-highlighter: pygments
+:source-highlighter: rouge
 ifdef::watermark[]
 // :title-page-background-image: none
 :page-background-image: image:watermark.png[]

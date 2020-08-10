@@ -17,7 +17,7 @@ Deployment Integration Team
 :sectlinks:
 :icons: font
 :product-title: OpenShift Container Platform
-:source-highlighter: pygments
+:source-highlighter: rouge
 ifdef::watermark[]
 // :title-page-background-image: none
 :page-background-image: image:watermark.png[]
