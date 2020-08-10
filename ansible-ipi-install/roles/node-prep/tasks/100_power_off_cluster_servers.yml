@@ -19,5 +19,9 @@
         password: "{{ hostvars[item]['ipmi_password'] }}"
         port: "{{ hostvars[item]['ipmi_port'] | default(623) }}"
         state: off
+      register: power_off_hosts
+      until: power_off_hosts is not failed
+      retries: 10
+      delay: 5
       with_items: "{{ groups['poweroff_hosts'] }}"
   tags: powerservers
