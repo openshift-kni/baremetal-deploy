@@ -21,7 +21,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gems-
 
-    - uses: iranzo/gh-pages-jekyll-action@0.0.7
+    - uses: iranzo/gh-pages-jekyll-action@1.0
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         SOURCE_FOLDER: website
