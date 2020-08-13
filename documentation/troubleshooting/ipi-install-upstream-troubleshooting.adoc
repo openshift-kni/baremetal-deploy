@@ -54,11 +54,11 @@ image:flow1.png[Flow-Diagram-1]
 
 _Workflow 1 of 4_ illustrates a troubleshooting workflow when the `install-config.yaml` file has errors or the {op-system-first} images are inaccessible.  Troubleshooting suggestions can be found at
 ifeval::[{release} == 4.3]
-<<install_config,Troubleshooting `install-config.yaml`>> and xref:ipi-install-troubleshooting-post-installation-pod-errors_{context}[Post-installation Pod errors].
+xref:ipi-install-troubleshooting-install-config_{context}[Troubleshooting `install-config.yaml] and xref:ipi-install-troubleshooting-post-installation-pod-errors_{context}[Post-installation Pod errors].
 endif::[]
 
 ifeval::[{release} != 4.3]
-<<install_config,Troubleshooting `install-config.yaml`>>.
+xref:ipi-install-troubleshooting-install-config_{context}[Troubleshooting `install-config.yaml].
 endif::[]
 
 image:flow2.png[Flow-Diagram-2]
