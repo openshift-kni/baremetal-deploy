@@ -582,7 +582,7 @@ The convenience script command run the image is:
 You may manually run it with Docker or Podman, as long as you pass in the applicable configuration files.
 
 ## Versions Tested
-Deployment of OCP 4.3 and 4.4 has been tested with the playbook.
+Deployment of OCP 4.3, 4.4 and 4.5 has been tested with this playbook.
 
 ## Limitations
 * Designed for and tested only on Red Hat's Scale and ALIAS labs

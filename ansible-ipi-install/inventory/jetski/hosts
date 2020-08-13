@@ -53,7 +53,7 @@ ipv6_enabled=False
 #ipv4_baremetal=True
 
 # (Optional) A list of clock servers to be used in chrony by the masters and workers
-#clock_servers=["pool.ntp.org","clock.redhat.com"]
+clock_servers=["clock.redhat.com"]
 
 # (Optional) Provide HTTP proxy settings
 #http_proxy=http://USERNAME:PASSWORD@proxy.example.com:8080
