@@ -257,7 +257,7 @@
 - name: Copy the approve_csr script from the local machine to the remote server
   copy:
     src: ./approve_csr.bash
-    dest: "{{ dir }}"
+    dest: "/home/{{ ansible_user }}/"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: 0755
@@ -267,7 +267,11 @@
 - name: Approve CSRs
   poll: 0
   async: 20000
-  shell: "bash {{ dir }}/approve_csr.bash {{ worker_count }}"
+  shell: "bash /home/{{ ansible_user }}/approve_csr.bash {{ worker_count }}"
   register: approve_csr_result
   when: worker_count != 0
-  ignore_errors: yes
+
+- name: Approve CSRs Debug
+  debug:
+    var: approve_csr_result
+  when: worker_count != 0
