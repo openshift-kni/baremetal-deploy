@@ -7,6 +7,10 @@ then
     exit 1
 fi
 
+echo "Running script to approve CSRs"
+
+export KUBECONFIG=~/clusterconfigs/auth/kubeconfig 
+
 # Loop until the expected number of workers are ready
 until [ $(oc get nodes | grep "\bReady\s*worker" | wc -l) == $1 ]
 do
@@ -21,3 +25,5 @@ do
     fi
     sleep 5
 done
+
+echo "Done approving CSRs due to expected number of Ready workers being found"
