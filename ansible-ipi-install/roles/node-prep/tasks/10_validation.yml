@@ -413,6 +413,8 @@
   vars:
     query: "[?Name=='Integrated Dell Remote Access Controller'].Version"
   register: dell_host_redfish_result
+  retries: 6 # 1 minute (10 * 6)
+  delay: 10 # Every 10 seconds
   tags: validation
 
 - name: Add all the hosts that are HP to a group
@@ -425,4 +427,6 @@
     - not firmware_result.results[{{ item }}].failed|bool
     - "'HPE' in chassis_result.results[{{ item }}].redfish_facts.chassis.entries[0].Manufacturer"
   register: hp_host_redfish_result
+  retries: 6 # 1 minute (10 * 6)
+  delay: 10 # Every 10 seconds
   tags: validation
