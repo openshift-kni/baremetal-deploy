@@ -71,9 +71,11 @@ platform:
         hardwareProfile: default
 {% endif %}
 {% endif %}
-{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 6)) and root_device_hint|length %}
+{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 6)) %}
+{% if 'root_device_hint' in hostvars[host] and 'root_device_hint_value' in hostvars[host] and hostvars[host]['root_device_hint'] in roothint_list %}
         rootDeviceHints:
-          {{ root_device_hint }}: {{ root_hint_value }}
+          {{ hostvars[host]['root_device_hint'] }}: {{ hostvars[host]['root_device_hint_value'] }}
+{% endif %}
 {% endif %}
 {% endfor %}
 {% if groups['workers'] is defined %}
@@ -100,9 +102,11 @@ platform:
         hardwareProfile: unknown
 {% endif %}
 {% endif %}
-{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 6)) and root_device_hint|length %}
+{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 6)) %}
+{% if 'root_device_hint' in hostvars[host] and 'root_device_hint_value' in hostvars[host] %}
         rootDeviceHints:
-          {{ root_device_hint }}: {{ root_hint_value }}
+          {{ hostvars[host]['root_device_hint'] }}: {{ hostvars[host]['root_device_hint_value'] }}
+{% endif %}
 {% endif %}
 {% endfor %}
 {% endif %}

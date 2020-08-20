@@ -13,6 +13,4 @@ ipv4_provisioning: false
 provisioning_bridge: "provisioning"
 webserver_url: ""
 baremetal_bridge: "baremetal"
-root_device_hint: ""
-root_hint_value: ""
 disable_bmc_certificate_verification: false
