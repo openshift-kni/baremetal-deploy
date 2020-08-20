@@ -134,12 +134,6 @@ dnsvip=""
 # A copy of your pullsecret from https://cloud.redhat.com/openshift/install/metal/user-provisioned
 pullsecret=""
 
-# (Optional) OpenShift 4.6+, Set Root Device Hints to choose the proper device to install operating system on OpenShift nodes.
-# root device hint options include: ['deviceName','hctl','model','vendor','serialNumber','minSizeGigabytes','wwn','rotational']
-# Root Device Hint values are case sensitive.
-#root_device_hint="deviceName"
-#root_hint_value="/dev/sda"
-
 # (Optional) Disable BMC Certification Validation. When using self-signed certificates for your BMC, ensure to set to True.
 # Default value is False. 
 #disable_bmc_certificate_verification=True
@@ -150,6 +144,12 @@ pullsecret=""
 # ipmi_port is optional for each host. 623 is the common default used if omitted
 # poweroff is optional. True or ommited (by default) indicates the playbook will power off the node before deploying OCP
 #  otherwise set it to false
+# (Optional) OpenShift 4.6+, Set Root Device Hints to choose the proper device to install operating system on OpenShift nodes.
+# root device hint options include: ['deviceName','hctl','model','vendor','serialNumber','minSizeGigabytes','wwn','rotational']
+# Root Device Hint values are case sensitive.
+# root_device_hint="deviceName"
+# root_device_hint_value="/dev/sda"
+
 [masters]
 master-0 name=master-0 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.1 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:58 hardware_profile=default poweroff=true
 master-1 name=master-1 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.2 ipmi_port=623 provision_mac=ec:f4:bb:da:32:88 hardware_profile=default poweroff=true
