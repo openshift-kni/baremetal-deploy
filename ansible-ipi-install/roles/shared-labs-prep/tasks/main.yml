@@ -140,7 +140,7 @@
 
 - name: Clear redfish job queues
   shell:
-    chdir: "{{ badfish_tempdir.path }}/src/badfish"
+    chdir: "{{ badfish_tempdir.path }}"
     cmd: |
       source {{ badfish_venv }}/bin/activate
       {{ badfish_cmd }}{{ item }} --clear-jobs --force
@@ -156,7 +156,7 @@
 
 - name: Set nodes to director boot order
   shell:
-    chdir: "{{ badfish_tempdir.path }}/src/badfish"
+    chdir: "{{ badfish_tempdir.path }}"
     cmd: |
       source {{ badfish_venv }}/bin/activate
       {{ badfish_cmd }}{{ item }} -t director
