@@ -350,6 +350,9 @@
     username: "{{ hostvars[item]['ipmi_user'] }}"
     password: "{{ hostvars[item]['ipmi_password'] }}"
   register: chassis_result
+  until: chassis_result is succeeded
+  retries: 3
+  delay: 10
   with_items:
   - "{{ groups.masters }}"
   - "{{ groups.workers | default([]) }}"
