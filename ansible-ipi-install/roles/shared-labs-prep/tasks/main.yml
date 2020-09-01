@@ -154,6 +154,20 @@
   tags:
     - clearjobs
 
+- name: Wait for iDrac to be responsive (check via --check-boot)
+  shell:
+    chdir: "{{ badfish_tempdir.path }}"
+    cmd: |
+      source {{ badfish_venv }}/bin/activate
+      {{ badfish_cmd }}{{ item }} --check-boot
+  with_items:
+    - "{{ master_fqdns }}"
+    - "{{ worker_fqdns }}"
+  register: wait_for_idrac
+  until: wait_for_idrac is succeeded
+  retries: 20
+  delay: 30
+
 - name: Set nodes to director boot order
   shell:
     chdir: "{{ badfish_tempdir.path }}"
