@@ -138,20 +138,12 @@
   retries: 3
   delay: 30
 
-- name: Clear redfish job queues
-  shell:
-    chdir: "{{ badfish_tempdir.path }}"
-    cmd: |
-      source {{ badfish_venv }}/bin/activate
-      {{ badfish_cmd }}{{ item }} --clear-jobs --force
+
+- include_tasks: 10_redfish_queue.yml
   with_items:
     - "{{ master_fqdns }}"
     - "{{ worker_fqdns }}"
-  register: clear_jobs
-  until: clear_jobs is succeeded
-  retries: 3
-  delay: 30
-  tags:
+  tags:  
     - clearjobs
 
 - name: Wait for iDrac to be responsive (check via --check-boot)
