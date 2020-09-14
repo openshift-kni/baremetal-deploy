@@ -357,6 +357,7 @@
   - "{{ groups.masters }}"
   - "{{ groups.workers | default([]) }}"
   ignore_errors: yes
+  when: redfish_inspection|bool
   tags: validation
 
 - name: Get all the firmware results from all the hosts
@@ -371,37 +372,48 @@
   - "{{ groups.masters }}"
   - "{{ groups.workers | default([]) }}"
   ignore_errors: yes
+  when: redfish_inspection|bool
   tags: validation
 
-- name: Add all the hosts that are Dell to a group with iDRAC firmware higher than 4.20.20.20
-  add_host:
-    groups: dell_hosts_redfish
-    hostname: "{{ chassis_result.results[item|int].item }}"
-  with_sequence: start=0 end="{{ numworkers|int + nummasters|int - 1 }}"
-  when:
-    - not chassis_result.results[{{ item }}].failed|bool
-    - not firmware_result.results[{{ item }}].failed|bool
-    - "'Dell' in chassis_result.results[{{ item }}].redfish_facts.chassis.entries[0].Manufacturer"
-    - firmware_result.results[{{ item }}].redfish_facts.firmware.entries | json_query(query) | max >= "4.20.20.20"
-  vars:
-    query: "[?Name=='Integrated Dell Remote Access Controller'].Version"
-  register: dell_host_redfish_result
-  retries: 6 # 1 minute (10 * 6)
-  delay: 10 # Every 10 seconds
-  ignore_errors: yes
+- name: Adding hosts to to their dynamic Dell inventory group
+  block:
+  - name: Add all the hosts that are Dell to a group with iDRAC firmware higher than 4.20.20.20
+    add_host:
+      groups: dell_hosts_redfish
+      hostname: "{{ chassis_result.results[item|int].item }}"
+    with_sequence: start=0 end="{{ numworkers|int + nummasters|int - 1 }}"
+    when:
+      - not chassis_result.results[{{ item }}].failed|bool
+      - not firmware_result.results[{{ item }}].failed|bool
+      - "'Dell' in chassis_result.results[{{ item }}].redfish_facts.chassis.entries[0].Manufacturer"
+      - firmware_result.results[{{ item }}].redfish_facts.firmware.entries | json_query(query) | max >= "4.20.20.20"
+    vars:
+      query: "[?Name=='Integrated Dell Remote Access Controller'].Version"
+    register: dell_host_redfish_result
+    retries: 6 # 1 minute (10 * 6)
+    delay: 10 # Every 10 seconds
+  rescue:
+  - name: Attempt to add all hosts that are part of the Dell group failed
+    debug:
+      msg: 'Adding hosts to dynamic Dell group failed or redfish_inspection was set to false. All inventory systems will use IPMI.'
   tags: validation
 
-- name: Add all the hosts that are HP to a group
-  add_host:
-    groups: hp_hosts_redfish
-    hostname: "{{ chassis_result.results[item|int].item }}"
-  with_sequence: start=0 end="{{ numworkers|int + nummasters|int - 1 }}"
-  when:
-    - not chassis_result.results[{{ item }}].failed|bool
-    - not firmware_result.results[{{ item }}].failed|bool
-    - "'HPE' in chassis_result.results[{{ item }}].redfish_facts.chassis.entries[0].Manufacturer"
-  register: hp_host_redfish_result
-  retries: 6 # 1 minute (10 * 6)
-  delay: 10 # Every 10 seconds
-  ignore_errors: yes
+- name: Adding hosts to to their dynamic HP inventory group
+  block:
+  - name: Add all the hosts that are HP to a group
+    add_host:
+      groups: hp_hosts_redfish
+      hostname: "{{ chassis_result.results[item|int].item }}"
+    with_sequence: start=0 end="{{ numworkers|int + nummasters|int - 1 }}"
+    when:
+      - not chassis_result.results[{{ item }}].failed|bool
+      - not firmware_result.results[{{ item }}].failed|bool
+      - "'HPE' in chassis_result.results[{{ item }}].redfish_facts.chassis.entries[0].Manufacturer"
+    register: hp_host_redfish_result
+    retries: 6 # 1 minute (10 * 6)
+    delay: 10 # Every 10 seconds
+  rescue: 
+  - name: Attempt to add all hosts that are part of the HP group failed
+    debug:
+      msg: 'Adding hosts to dynamic HP group failed or redfish_inspection was set to false. All inventory systems will use IPMI.'
   tags: validation
