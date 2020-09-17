@@ -10,7 +10,7 @@ This step can also be run from the web console.
 
 [kni@provisioner ~]$ export PUB_CONN=<baremetal_nic_name>
 [kni@provisioner ~]$ export PROV_CONN=<prov_nic_name>
-[kni@provisioner ~]$ sudo nohup bash -c '
+[kni@provisioner ~]$ sudo nohup bash -c """
     nmcli con down "$PROV_CONN"
     nmcli con down "$PUB_CONN"
     nmcli con delete "$PROV_CONN"
@@ -25,8 +25,7 @@ This step can also be run from the web console.
     nmcli con down "$PUB_CONN";pkill dhclient;dhclient baremetal
     nmcli connection modify provisioning ipv4.addresses 172.22.0.1/24 ipv4.method manual
     nmcli con down provisioning
-    nmcli con up provisioning
-'
+    nmcli con up provisioning"""
 ----
 +
 [NOTE]
