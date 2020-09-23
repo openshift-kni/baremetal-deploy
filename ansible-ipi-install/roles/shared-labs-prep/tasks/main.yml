@@ -125,6 +125,8 @@
   until: power_on_masters is succeeded
   retries: 3
   delay: 30
+  tags:
+    - bootorder
 
 - name: Power on worker nodes
   ipmi_power:
@@ -137,14 +139,15 @@
   until: power_on_workers is succeeded
   retries: 3
   delay: 30
-
+  tags:
+    - bootorder
 
 - include_tasks: 10_redfish_queue.yml
   with_items:
     - "{{ master_fqdns }}"
     - "{{ worker_fqdns }}"
   tags:  
-    - clearjobs
+    - bootorder
 
 - name: Wait for iDrac to be responsive (check via --check-boot)
   shell:
@@ -159,6 +162,8 @@
   until: wait_for_idrac is succeeded
   retries: 20
   delay: 30
+  tags:
+    - bootorder
 
 - name: Set nodes to director boot order
   shell:
@@ -175,8 +180,6 @@
   delay: 60
   tags:
     - bootorder
-
-#TODO: Add wait for node reboot
 
 - name: Set SELinux permissive
   selinux:
