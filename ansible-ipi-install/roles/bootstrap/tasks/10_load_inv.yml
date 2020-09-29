@@ -16,30 +16,59 @@
       path: "{{ ocpinv_file }}"
   register: st
 
-- name: Download ocpninv.json
-  get_url:
-      url: "{{ alias.lab_url }}/cloud/{{ cloud_name }}_ocpinventory.json"
-      dest: "{{ ocpinv_file }}"
-      mode: '0644'
-      force: yes
-  when: not st.stat.exists | bool and lab_name == "alias"
+- name: Download ocpinv.json
+  block:
+    - uri:
+        url: "{{ alias.lab_url }}/cloud/{{ cloud_name }}_ocpinventory.json"
+        return_content: yes
+      register: response
+    
+    - set_fact:
+        ocpinv_content: "{{ response.json }}"
+  when: lab_name == "alias"
 
 - name: Download ocpinv.json
-  get_url:
-      url: "{{ scale.lab_url }}/cloud/{{ cloud_name }}_ocpinventory.json"
-      dest: "{{ ocpinv_file }}"
-      mode: '0644'
-      force: yes
-  when: not st.stat.exists | bool and lab_name == "scale"
+  block:
+    - uri:
+        url: "{{ scale.lab_url }}/cloud/{{ cloud_name }}_ocpinventory.json"
+        return_content: yes
+      register: response
+    
+    - set_fact:
+        ocpinv_content: "{{ response.json }}"
+  when: lab_name == "scale"
 
-- name: read inv env file
-  slurp:
-    src: "{{ ocpinv_file }}"
-  register: invfile
+- name: Checking for inventory conflicts
+  block:
+    - name: read inv env file
+      slurp:
+        src: "{{ ocpinv_file }}"
+      register: invfile
 
-- name: set inventory fact
-  set_fact:
-    ocpinv_content: "{{ invfile['content'] | b64decode | from_json }}"
+    - name: set User inventory fact
+      set_fact:
+        ocpinv_user_content: "{{ invfile['content'] | b64decode | from_json }}"
+
+    - name: Get node list
+      set_fact:
+          gold_inv: "{{ ocpinv_content | json_query('nodes[*].pm_addr')  }}"        # QUADS inventory
+          user_inv: "{{ ocpinv_user_content | json_query('nodes[*].pm_addr')  }}"   # Local user content
+
+    - name: verify
+      set_fact:
+          compare_inv: "{{ user_inv | difference(gold_inv) }}"
+
+    - name: Fail when there is an inventory conflicts
+      fail:
+        msg: Existing User inventory - ocpinv.json is not matching with QUADS inventory for {{ cloud_name }}, please remove existing ocpinv.json if deploying a new cloud. 
+      when: compare_inv | length != 0      
+  when: st.stat.exists
+
+- name: create ocpinv.json file
+  copy:
+    dest: "{{ ocpinv_file }}"
+    content: "{{ ocpinv_content | to_nice_json }}"
+  when: not st.stat.exists
 
 - name: set provisioning host and ocp cluster info
   block:
