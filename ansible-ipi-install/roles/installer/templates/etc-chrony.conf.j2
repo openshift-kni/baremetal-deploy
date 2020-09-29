@@ -11,7 +11,12 @@ spec:
       security:
         tls: {}
       timeouts: {}
+{% if ((release_version[0]|int == 4) and (release_version[2]|int > 5)) %}
+      version: 3.1.0
+{% endif %}
+{% if ((release_version[0]|int == 4) and (release_version[2]|int < 6)) %}
       version: 2.2.0
+{% endif %}
     networkd: {}
     passwd: {}
     storage:
