@@ -5,7 +5,28 @@
 
 toc::[]
 
-Before installing {product-title}, ensure the hardware environment meets the following requirements.
+Installing {product-title} with Installer Provisioned Infrastructure (IPI) requires:
+
+. One provisioner node with RHEL 8.1 installed.
+. Three Control Plane or master nodes.
+. At least two worker nodes.
+. Baseboard Management Controller (BMC) access to each node.
+ifeval::[{release} > 4.5]
+. At least one network:
+.. One *required* routable network
+.. One *optional* network for provisioning nodes; and,
+.. One *optional* management network.
+endif::[]
+ifeval::[{release} < 4.6]
+. At least those networks:
+.. One *required* routable network
+.. One *required* network for provisioning nodes; and,
+.. One *optional* management network.
+endif::[]
+
+Before installing {product-title} with IPI, ensure the hardware environment meets the following requirements.
+
+
 
 include::modules/ipi-install-node-requirements.adoc[leveloffset=+1]
 include::modules/ipi-install-network-requirements.adoc[leveloffset=+1]
