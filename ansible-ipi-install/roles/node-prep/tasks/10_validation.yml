@@ -327,7 +327,7 @@
 - name: Set Fact for provisioning nic
   set_fact:
     masters_prov_nic: "{{ prov_nic }}"
-  when: 
+  when:
     - (masters_prov_nic is undefined) or (masters_prov_nic|length == 0)
     - not enable_virtualmedia|bool
   tags:
@@ -337,7 +337,7 @@
 - name: Fail if DNSVIP not set (OCP 4.4 or lower)
   fail:
     msg: "dnsvip variable is undefined or empty."
-  when: 
+  when:
   - ((release_version[0]|int == 4) and (release_version[2]|int < 5))
   - ((dnsvip is undefined) or (dnsvip|length == 0))
   tags:
@@ -414,7 +414,7 @@
     register: hp_host_redfish_result
     retries: 6 # 1 minute (10 * 6)
     delay: 10 # Every 10 seconds
-  rescue: 
+  rescue:
   - name: Attempt to add all hosts that are part of the HP group failed
     debug:
       msg: 'Adding hosts to dynamic HP group failed or redfish_inspection was set to false. All inventory systems will use IPMI.'

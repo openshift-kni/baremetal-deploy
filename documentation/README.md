@@ -22,16 +22,13 @@ Remember that this still requires your environment to be able to execute `tools/
 For starting `gulp` environment:
 
 - Install `NodeJS` and `Yarn` using your system package manager
-- Install `gulp`
-  `yarn global add gulp-cli`
-- In the root of the repository, run
-  `yarn install`
-- Use Live Reload
-  `gulp`
+- Install `gulp` via: `yarn global add gulp-cli`
+- In the root of the repository, run `yarn install`
+- Use Live Reload `gulp`
 
 This will launch the browser and open the home page. Now when you edit the documentation files under `documentation/` and all opened tabs will automatically reload and reflect the change.
 
-Documentation will be rendered and refreshed dynamically at http://localhost:9001.
+Documentation will be rendered and refreshed dynamically at `http://localhost:9001`.
 
 # Website generation
 

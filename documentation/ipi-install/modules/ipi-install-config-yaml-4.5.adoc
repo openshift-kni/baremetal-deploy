@@ -17,7 +17,8 @@ platform:
   baremetal:
     xref:apivip[apiVIP]: +<api-ip>+
     xref:ingressvip[ingressVIP]: +<wildcard-ip>+
-    xref:dnsVIP[dnsVIP]: +<dns-ip>+
+    xref:provisioningNetworkInterface[provisioningNetworkInterface]: +<NIC1>+
+    xref:provisioningNetworkCIDR[provisioningNetworkCIDR]: +<CIDR>+
     xref:hoststable[hosts]:
       - xref:name[name]: openshift-master-0
         xref:role[role]: master

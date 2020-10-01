@@ -1,4 +1,4 @@
-// Module included in the following assemblies:
+
 // //installing/installing_bare_metal_ipi/installing_bare_metal_ipi/ipi-install-installation-workflow.adoc
 
 [id="ipi-install-troubleshooting-following-the-installation_{context}"]

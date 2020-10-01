@@ -1,4 +1,4 @@
-// Module included in the following assemblies:
+
 //
 // * list of assemblies where this module is included
 // ipi-install-prerequisites.adoc
@@ -77,8 +77,8 @@ dhcp-host=<NIC2-mac-address>,openshift-worker-0.openshift.example.com,<ip-of-ope
 dhcp-host=<NIC2-mac-address>,openshift-worker-1.openshift.example.com,<ip-of-openshift-worker-1>
 ----
 
-ifdef::watermark[]
-
+ifdef::upstream[]
+ifeval::[{release} >= 4.5]
 +
 [discrete]
 === IPv6
@@ -116,7 +116,7 @@ dhcp-host=<baremetal-nic-duid>,openshift-master-0.openshift.example.com,<ip-of-o
 dhcp-host=<baremetal-nic-duid>,openshift-master-1.openshift.example.com,<ip-of-openshift-master-1>
 dhcp-host=<baremetal-nic-duid>,openshift-master-2.openshift.example.com,<ip-of-openshift-master-2>
 ----
-
+endif::[]
 endif::[]
 
 

@@ -1,6 +1,5 @@
 [id="ipi-install-prerequisites"]
 = Prerequisites
-//include::modules/common-attributes.adoc[]
 :context: ipi-install-prerequisites
 
 toc::[]
@@ -8,7 +7,7 @@ toc::[]
 Installing {product-title} with Installer Provisioned Infrastructure (IPI) requires:
 
 . One provisioner node with RHEL 8.1 installed.
-. Three Control Plane or master nodes.
+. Three Control Plane nodes.
 . At least two worker nodes.
 . Baseboard Management Controller (BMC) access to each node.
 ifeval::[{release} > 4.5]
@@ -31,9 +30,11 @@ Before installing {product-title} with IPI, ensure the hardware environment meet
 include::modules/ipi-install-node-requirements.adoc[leveloffset=+1]
 include::modules/ipi-install-network-requirements.adoc[leveloffset=+1]
 
-ifdef::watermark[]
+ifdef::upstream[]
+ifeval::[{release} >= 4.5]
 // Include IPv6 information only in DRAFT documentation
 include::modules/ipi-ipv6-install-network-requirements.adoc[leveloffset=+1]
+endif::[]
 endif::[]
 
 include::modules/ipi-install-configuring-nodes.adoc[leveloffset=+1]
