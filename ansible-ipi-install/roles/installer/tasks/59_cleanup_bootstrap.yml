@@ -14,11 +14,21 @@
   become: yes
   tags: cleanup
 
+- name: Get list of all paused VMs
+  virt:
+    command: list_vms
+    state: paused
+  register: paused_vms
+  become: yes
+  tags: cleanup
+
 - name: Destroy old bootstrap VMs, if any
   virt:
     name: "{{ item }}"
     command: destroy
-  with_items: "{{ running_vms.list_vms }}"
+  with_items:
+    - "{{ running_vms.list_vms }}"
+    - "{{ paused_vms.list_vms }}"
   when: item is search("bootstrap")
   become: yes
   tags: cleanup
