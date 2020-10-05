@@ -15,3 +15,4 @@ webserver_url: ""
 baremetal_bridge: "baremetal"
 disable_bmc_certificate_verification: false
 redfish_inspection: true
+enable_virtualmedia: false

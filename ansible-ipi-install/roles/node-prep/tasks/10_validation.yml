@@ -327,7 +327,9 @@
 - name: Set Fact for provisioning nic
   set_fact:
     masters_prov_nic: "{{ prov_nic }}"
-  when: (masters_prov_nic is undefined) or (masters_prov_nic|length == 0)
+  when: 
+    - (masters_prov_nic is undefined) or (masters_prov_nic|length == 0)
+    - not enable_virtualmedia|bool
   tags:
   - always
   - validation
@@ -417,3 +419,23 @@
     debug:
       msg: 'Adding hosts to dynamic HP group failed or redfish_inspection was set to false. All inventory systems will use IPMI.'
   tags: validation
+
+- name: Fail when provisioningHostIP and bootstrapProvisioningIP are not set when virtualmedia option is enabled
+  fail:
+    msg: "provisioningHostIP must be set when enable_virtualmedia is set"
+  when:
+    - enable_virtualmedia|bool
+    - provisioningHostIP is undefined
+  tags:
+  - always
+  - validation
+
+- name: Fail when bootstrapProvisioningIP are not set when virtualmedia option is enabled
+  fail:
+    msg: "bootstrapProvisioningIP must be set when enable_virtualmedia is set"
+  when:
+    - enable_virtualmedia|bool
+    - bootstrapProvisioningIP is undefined
+  tags:
+  - always
+  - validation
