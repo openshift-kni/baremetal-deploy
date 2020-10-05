@@ -10,6 +10,13 @@
     state: latest
   become: yes
 
+- name: Install RDO Packages
+  yum:
+    name: "{{ rdo_packages }}"
+    state: latest
+    disable_gpg_check: yes
+  become: yes
+
 - name: Create temp directory for badfish
   tempfile:
     state: directory

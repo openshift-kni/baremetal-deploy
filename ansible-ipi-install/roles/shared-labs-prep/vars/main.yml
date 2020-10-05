@@ -11,6 +11,7 @@ yum_packages:
   - python3-yaml
   - python3-urllib3
   - python3-requests
+rdo_packages:
   - https://trunk.rdoproject.org/rhel8-master/deps/latest/Packages/python3-crypto-2.6.1-18.el8ost.x86_64.rpm
   - https://trunk.rdoproject.org/rhel8-master/deps/latest/Packages/python3-pyghmi-1.0.22-2.el8ost.noarch.rpm
   - sshpass
