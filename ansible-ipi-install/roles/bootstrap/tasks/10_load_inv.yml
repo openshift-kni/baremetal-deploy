@@ -70,6 +70,17 @@
     content: "{{ ocpinv_content | to_nice_json }}"
   when: not st.stat.exists
 
+- name: Create final inventory used for deployment
+  block:
+    - name: read inv env file
+      slurp:
+        src: "{{ ocpinv_file }}"
+      register: finalinv
+
+    - name: set inventory fact
+      set_fact:
+        ocpinv_content: "{{ finalinv['content'] | b64decode | from_json }}"
+
 - name: set provisioning host and ocp cluster info
   block:
     - name: set provisioner hostname
