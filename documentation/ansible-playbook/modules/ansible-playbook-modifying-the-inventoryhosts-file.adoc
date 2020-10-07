@@ -142,6 +142,13 @@ pullsecret=""
 # Default value is False. 
 #disable_bmc_certificate_verification=True
 
+# (Optional) Enable RedFish VirtualMedia/iDRAC VirtualMedia
+#enable_virtualmedia=True
+
+# (Required when enable_virtualmedia is set to True) Set an available IP address from the baremetal net for these two variables
+#provisioningHostIP=<baremetal_net_IP1>
+#bootstrapProvisioningIP=<baremetal_net_IP2>
+
 # Master nodes
 # The hardware_profile is used by the baremetal operator to match the hardware discovered on the host
 # See https://github.com/metal3-io/baremetal-operator/blob/master/docs/api.md#baremetalhost-status

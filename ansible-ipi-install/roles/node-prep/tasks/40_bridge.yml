@@ -5,23 +5,29 @@
       shell: |
         nmcli device show {{ prov_nic }} | grep GENERAL.CONNECTION | awk '{sub(/[^ ]+[ ]+/,"")}1'
       register: prov_con_name
+      when: 
+      - not enable_virtualmedia|bool
 
     - name: Get the public connection name
       shell: |
         nmcli device show {{ pub_nic }} | grep GENERAL.CONNECTION | awk '{sub(/[^ ]+[ ]+/,"")}1'
       register: pub_con_name
 
-    - name: Disconnect "{{ provisioning_bridge }}" connection
+    - name: Disconnect provisioning bridge connection
       command: |
         nmcli dev dis "{{ provisioning_bridge }}"
       ignore_errors: yes
+      when: 
+      - not enable_virtualmedia|bool
 
     - name: Delete {{ prov_con_name.stdout }} due to modify nmcli bug
       nmcli:
         conn_name: "{{ prov_con_name.stdout }}"
         type: ethernet
         state: absent
-      when: prov_con_name.stdout != '--'
+      when: 
+      - not enable_virtualmedia|bool
+      - prov_con_name.stdout != '--'
 
     - name: Delete {{ prov_nic }} due to modify nmcli bug
       nmcli:
@@ -31,14 +37,18 @@
       with_items:
         - "{{ prov_nic }}"
         - "System {{ prov_nic }}"
-      when: prov_con_name.stdout == '--'
+      when: 
+      - not enable_virtualmedia|bool
+      - prov_con_name.stdout != '--'
 
-    - name: Delete "{{ provisioning_bridge }}" bridge if it exists
+    - name: Delete provisioning bridge if it exists
       nmcli:
         conn_name: "{{ provisioning_bridge }}"
         state: absent
+      when: 
+      - not enable_virtualmedia|bool
 
-    - name: Create Bridge labeled "{{ provisioning_bridge }}" ipv4
+    - name: Create Bridge labeled provisioning bridge ipv4
       nmcli:
         conn_name: "{{ provisioning_bridge }}"
         type: bridge
@@ -49,11 +59,12 @@
         stp: off
         ip4: 172.22.0.1/24
         state: present
-      when: (not ipv6_enabled|bool) or
-            ((release_version[0]|int == 4) and (release_version[2]|int == 3)) or
-            (ipv4_provisioning|bool)
+      when: (not enable_virtualmedia) or
+            ((not ipv6_enabled|bool) and (not enable_virtualmedia)) or
+            ((release_version[0]|int == 4) and (release_version[2]|int == 3) and ((not enable_virtualmedia))) or
+            ((ipv4_provisioning|bool) and (not enable_virtualmedia))
 
-    - name: Create Bridge slave on {{ prov_nic }} ipv4
+    - name: Create Bridge slave on provisioning nic ipv4
       nmcli:
         conn_name: "{{ prov_nic }}"
         type: bridge-slave
@@ -62,11 +73,12 @@
         master: "{{ provisioning_bridge }}"
         autoconnect: yes
         state: present
-      when: (not ipv6_enabled|bool) or
-            ((release_version[0]|int == 4) and (release_version[2]|int == 3)) or
-            (ipv4_provisioning|bool)
+      when: (not enable_virtualmedia) or
+            ((not ipv6_enabled|bool) and (not enable_virtualmedia)) or
+            ((release_version[0]|int == 4) and (release_version[2]|int == 3) and ((not enable_virtualmedia))) or
+            ((ipv4_provisioning|bool) and (not enable_virtualmedia))
 
-    - name: Create Bridge labeled "{{ provisioning_bridge }}" ipv6
+    - name: Create Bridge labeled provisioning bridge ipv6
       nmcli:
         conn_name: "{{ provisioning_bridge }}"
         type: bridge
@@ -78,12 +90,13 @@
         ip4_method: disabled
         ip6_method: manual
       when:
+        - not enable_virtualmedia|bool
         - ipv6_enabled|bool
         - release_version[0]|int == 4 and release_version[2]|int > 3 or
           release_version[0]|int > 4
         - not ipv4_provisioning|bool
 
-    - name: Create Bridge slave on {{ prov_nic }} ipv6
+    - name: Create Bridge slave on provisioning nic ipv6
       nmcli:
         conn_name: "{{ prov_nic }}"
         type: bridge-slave
@@ -93,6 +106,7 @@
         autoconnect: yes
         state: present
       when:
+        - not enable_virtualmedia|bool
         - ipv6_enabled|bool
         - release_version[0]|int == 4 and release_version[2]|int > 3 or
           release_version[0]|int > 4
@@ -137,7 +151,15 @@
       with_items:
         - "{{ baremetal_bridge }}"
         - "{{ pub_nic }}"
+
+    - name: Reload provisioning bridge and slave interfaces
+      shell: |
+        /usr/bin/nmcli con reload {{ item }}; /usr/bin/nmcli con up {{ item }}
+      with_items:
         - "{{ provisioning_bridge }}"
         - "{{ prov_nic }}"
+      when:
+        - not enable_virtualmedia|bool
   become: yes
   tags: network
+
