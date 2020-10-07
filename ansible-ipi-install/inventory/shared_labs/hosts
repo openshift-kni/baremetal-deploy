@@ -181,6 +181,10 @@ increase_bootstrap_timeout=2
 # (Optional) Increase install process timeout by N iterations.
 increase_install_timeout=2
 
+# (Optional) Disable RedFish inspection to intelligently choose between IPMI or RedFish protocol.
+# By default this feature is enabled and set to true. Uncomment below to disable and use IPMI.
+redfish_inspection=false
+
 ######################################
 # Vars regarding install-config.yaml #
 ######################################
