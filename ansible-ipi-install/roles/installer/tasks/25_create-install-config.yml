@@ -27,6 +27,20 @@
   when:
   - pullsecret is defined
   - pullsecret != ""
+  - not enable_virtualmedia|bool
+  tags: installconfig
+
+- name: Generate virtualmedia install-config.yaml
+  template:
+    src: install-config-virtualmedia.j2
+    dest: "{{ dir }}/install-config.yaml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+  when:
+  - pullsecret is defined
+  - pullsecret != ""
+  - enable_virtualmedia|bool
   tags: installconfig
 
 - name: Make a backup of the install-config.yaml file

@@ -37,7 +37,8 @@
     ip: "{{ ansible_facts[provisioning_bridge]['ipv4']['address'] }}/{{ ansible_facts[provisioning_bridge]['ipv4']['netmask'] }}"
   when: (not ipv6_enabled|bool) or
         ((release_version[0]|int == 4) and (release_version[2]|int == 3)) or
-        (ipv4_provisioning|bool)
+        (ipv4_provisioning|bool) or
+        (not enable_redfish_virtualmedia|bool and not enable_idrac_virtualmedia|bool)
   tags:
   - network_facts
 
@@ -51,6 +52,8 @@
     - release_version[0]|int == 4 and release_version[2]|int > 3 or
       release_version[0]|int > 4
     - not ipv4_provisioning|bool
+    - not enable_redfish_virtualmedia|bool
+    - not enable_idrac_virtualmedia|bool
   tags:
   - network_facts
 
