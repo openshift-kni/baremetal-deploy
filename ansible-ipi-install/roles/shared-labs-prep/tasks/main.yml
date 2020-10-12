@@ -35,6 +35,13 @@
 - name: Create badfish venv
   command: python3 -m venv {{ badfish_venv }} creates={{ badfish_venv }}
 
+- name: Update pip
+  pip:
+    name: pip
+    state: latest
+    virtualenv_command: /usr/bin/python3 -m venv
+    virtualenv: "{{ badfish_venv }}"
+
 - name: Install badfish requirements
   pip:
     requirements: "{{ badfish_tempdir.path}}/requirements.txt"
