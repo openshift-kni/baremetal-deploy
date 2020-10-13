@@ -1,0 +1,119 @@
+apiVersion: v1
+baseDomain: {{ domain }}
+{%if (http_proxy|length or https_proxy|length) %}
+proxy:
+  httpProxy: {{ http_proxy }}
+  httpsProxy: {{ https_proxy }}
+  noProxy: {{ (no_proxy_list|length) | ternary(no_proxy_list + ',' + provisioning_subnet, provisioning_subnet) }}
+{% endif %}
+metadata:
+  name: {{ cluster }}
+networking:
+  machineCIDR: {{ extcidrnet }}
+  networkType: {{ network_type }}
+{% if ipv6_enabled|bool and not ipv4_baremetal|bool %}
+  clusterNetwork:
+  - cidr: fd01::/48
+    hostPrefix: 64
+  serviceNetwork:
+  - fd02::/112
+{% endif %}
+compute:
+- name: worker
+  replicas: {{ numworkers }}
+controlPlane:
+  name: master
+  replicas: {{ nummasters }}
+  platform:
+    baremetal: {}
+platform:
+  baremetal:
+    apiVIP: {{ apivip }}
+    ingressVIP: {{ ingressvip }}
+{% if ((release_version[0]|int == 4) and (release_version[2]|int < 5)) %}
+    dnsVIP: {{ dnsvip }}
+{% endif %}
+{% if baremetal_bridge != 'baremetal' %}
+    externalBridge: {{ baremetal_bridge }}
+{% endif %}
+    provisioningNetwork: "Disabled"
+    provisioningHostIP: {{ provisioningHostIP }}
+    bootstrapProvisioningIP: {{ bootstrapProvisioningIP }}
+{% if bootstraposimage is defined and bootstraposimage|length %}
+    bootstrapOSImage: {{ bootstraposimage }}
+{% endif %}
+{% if clusterosimage is defined and clusterosimage|length %}
+    clusterOSImage: {{ clusterosimage }}
+{% endif %}
+    hosts:
+{% for host in groups['masters'] %}
+      - name: {{ hostvars[host]['inventory_hostname'] }}
+        role: {{ hostvars[host]['role'] }}
+        bmc:
+{% if groups['dell_hosts_redfish'] is defined and host in groups['dell_hosts_redfish'] and ((release_version[0]|int > 4) or ((release_version[0]|int == 4) and (release_version[2]|int >= 6))) and enable_virtualmedia|bool %}
+          address: idrac-virtualmedia://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/System.Embedded.1
+          disableCertificateVerification: {{ disable_bmc_certificate_verification }}
+{% elif groups['hp_hosts_redfish'] is defined and host in groups['hp_hosts_redfish'] and ((release_version[0]|int > 4) or ((release_version[0]|int == 4) and (release_version[2]|int >= 6))) and enable_virtualmedia|bool %}
+          address: redfish-virtualmedia://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/1
+          disableCertificateVerification: {{ disable_bmc_certificate_verification }}
+{% elif ansible_system_vendor == 'Dell Inc.' %}
+          address: idrac-virtualmedia://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/System.Embedded.1
+          disableCertificateVerification: {{ disable_bmc_certificate_verification }}
+{% else %}
+          address: redfish-virtualmedia://{{ hostvars[host]['ipmi_address']|ipwrap }}:{{ hostvars[host]['ipmi_port']|default(623) }}
+          disableCertificateVerification: {{ disable_bmc_certificate_verification }}
+{% endif %}
+          username: {{ hostvars[host]['ipmi_user'] }}
+          password: {{ hostvars[host]['ipmi_password'] }}
+        bootMACAddress: {{ hostvars[host]['provision_mac'] }}
+{% if ((release_version[0]|int == 4) and (release_version[2]|int < 6)) %}
+{% if 'hardware_profile' in hostvars[host] %}
+        hardwareProfile: {{ hostvars[host]['hardware_profile'] }}
+{% else %}
+        hardwareProfile: default
+{% endif %}
+{% endif %}
+{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 6)) %}
+{% if 'root_device_hint' in hostvars[host] and 'root_device_hint_value' in hostvars[host] and hostvars[host]['root_device_hint'] in roothint_list %}
+        rootDeviceHints:
+          {{ hostvars[host]['root_device_hint'] }}: {{ hostvars[host]['root_device_hint_value'] }}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% if groups['workers'] is defined %}
+{% for host in groups['workers'] %}
+      - name: {{ hostvars[host]['inventory_hostname'] }}
+        role: {{ hostvars[host]['role'] }}
+        bmc:
+{% if groups['dell_hosts_redfish'] is defined and host in groups['dell_hosts_redfish'] %}
+          address: redfish://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/System.Embedded.1
+          disableCertificateVerification: {{ disable_bmc_certificate_verification }}
+{% elif groups['hp_hosts_redfish'] is defined and host in groups['hp_hosts_redfish'] %}
+          address: redfish://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/1
+          disableCertificateVerification: {{ disable_bmc_certificate_verification }}
+{% else %}
+          address: ipmi://{{ hostvars[host]['ipmi_address']|ipwrap }}:{{ hostvars[host]['ipmi_port']|default(623) }}
+{% endif %}
+          username: {{ hostvars[host]['ipmi_user'] }}
+          password: {{ hostvars[host]['ipmi_password'] }}
+        bootMACAddress: {{ hostvars[host]['provision_mac'] }}
+{% if ((release_version[0]|int == 4) and (release_version[2]|int < 6)) %}
+{% if 'hardware_profile' in hostvars[host] %}
+        hardwareProfile: {{ hostvars[host]['hardware_profile'] }}
+{% else %}
+        hardwareProfile: unknown
+{% endif %}
+{% endif %}
+{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 6)) %}
+{% if 'root_device_hint' in hostvars[host] and 'root_device_hint_value' in hostvars[host] %}
+        rootDeviceHints:
+          {{ hostvars[host]['root_device_hint'] }}: {{ hostvars[host]['root_device_hint_value'] }}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}
+pullSecret: '{{ pullsecret }}'
+sshKey: '{{ key }}'
+{% if install_config_appends is defined and install_config_appends|length %}
+{{ install_config_appends }}
+{% endif %}
