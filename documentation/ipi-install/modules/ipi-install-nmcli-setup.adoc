@@ -1,38 +1,54 @@
-. Configure network bridges for both `provisioning` and `baremetal` networks.
+. Configure networking.
 +
 [NOTE]
 ====
-The `provisioning` bridge can be setup using an IPv4 address or an IPv6 address.
-Either option is supported and the selection should be based upon your
-environmental requirements.
+This step can also be run from the web console.
 ====
+ifndef::upstream[]
 +
-[source,bash]
+[source,terminal]
 ----
-
 [kni@provisioner ~]$ export PUB_CONN=<baremetal_nic_name>
 [kni@provisioner ~]$ export PROV_CONN=<prov_nic_name>
 [kni@provisioner ~]$ sudo nohup bash -c """
+    nmcli con down "$PROV_CONN"
     nmcli con down "$PUB_CONN"
+    nmcli con delete "$PROV_CONN"
     nmcli con delete "$PUB_CONN"
     # RHEL 8.1 appends the word "System" in front of the connection, delete in case it exists
     nmcli con down "System $PUB_CONN"
     nmcli con delete "System $PUB_CONN"
+    nmcli connection add ifname provisioning type bridge con-name provisioning
+    nmcli con add type bridge-slave ifname "$PROV_CONN" master provisioning
     nmcli connection add ifname baremetal type bridge con-name baremetal
     nmcli con add type bridge-slave ifname "$PUB_CONN" master baremetal
-    nmcli con down baremetal
-    nmcli con up baremetal
-"""
+    nmcli con down "$PUB_CONN";pkill dhclient;dhclient baremetal
+    nmcli connection modify provisioning ipv6.addresses fd00:1101::1/64 ipv6.method manual
+    nmcli con down provisioning
+    nmcli con up provisioning"""
+
 ----
 +
 [NOTE]
 ====
-The `ssh` connection may disconnect after executing this step. You will want to have some sort
-of out-of-band connection to your host (eg., a serial console, local keyboard, or dedicated
-management interface) in the event that something goes wrong while executing these commands.
+The `ssh` connection might disconnect after executing this step.
+
+ifeval::[{release} >= 4.5]
+The IPv6 address can be any address as long as it is not routable via the `baremetal` network.
+
+Ensure that UEFI is enabled and UEFI PXE settings are set to the IPv6 protocol when using IPv6 addressing.
+endif::[]
+
+ifeval::[{release} < 4.5]
+NOTE: The IPv4 address may be any address as long as it is not routable via the `baremetal` network.
+endif::[]
 ====
+endif::[]
+
+ifdef::upstream[]
 +
 .Provisioning Network (IPv4 address)
+[source,terminal]
 ----
 [kni@provisioner ~]$ sudo nohup bash -c """
     nmcli con down "$PROV_CONN"
@@ -47,9 +63,16 @@ management interface) in the event that something goes wrong while executing the
     nmcli con up provisioning"""
 ----
 +
-NOTE: The IPv4 address may be any address as long as it is not routable via the `baremetal` network.
+[NOTE]
+====
+The `ssh` connection might disconnect after executing this step.
+
+The IPv4 address may be any address as long as it is not routable via the `baremetal` network.
+====
+
 +
 .Provisioning Network (IPv6 address)
+[source,terminal]
 ----
 [kni@provisioner ~]$ sudo nohup bash -c """
     nmcli con down "$PROV_CONN"
@@ -64,10 +87,15 @@ NOTE: The IPv4 address may be any address as long as it is not routable via the 
     nmcli con up provisioning"""
 ----
 +
-NOTE: The IPv6 address may be any address as long as it is not routable via the `baremetal` network.
+[NOTE]
+====
+The `ssh` connection might disconnect after executing this step.
+
+The IPv6 address may be any address as long as it is not routable via the `baremetal` network.
+====
 +
 [WARNING]
 ====
 Ensure that UEFI is enabled and UEFI PXE settings are set to the IPv6 protocol when using IPv6 addressing.
 ====
-+
+endif::[]

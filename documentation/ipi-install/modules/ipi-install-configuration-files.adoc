@@ -1,5 +1,8 @@
 [id="ipi-install-configuration-files"]
 = Configuration Files
+:context: ipi-install-configuration-files
+:release: 4.6
+
 In this section of the document, we'll be covering the set-up of the different configuration files
 
 
@@ -9,5 +12,11 @@ ifeval::[{release} <= 4.3]
 include::ipi-install-configuring-the-metal3-config-file.adoc[leveloffset=+1]
 endif::[]
 
+ifeval::[{release} >= 4.6]
+include::ipi-install-modifying-install-config-for-no-provisioning-network.adoc[leveloffset=+1]
+endif::[]
+
 include::ipi-install-additional-install-config-parameters.adoc[leveloffset=+1]
+include::ipi-install-bmc-addressing.adoc[leveloffset=+1]
+include::ipi-install-root-device-hints.adoc[leveloffset=+1]
 include::ipi-install-creating-the-openshift-manifests.adoc[leveloffset=+1]

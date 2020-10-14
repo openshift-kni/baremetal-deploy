@@ -7,10 +7,11 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = """
 ---
 module: virt
 short_description: Manages virtual machines supported by libvirt
@@ -60,9 +61,9 @@ author:
     - Ansible Core Team
     - Michael DeHaan
     - Seth Vidal (@skvidal)
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = """
 # a playbook task line:
 - community.libvirt.virt:
     name: alpha
@@ -109,9 +110,9 @@ EXAMPLES = '''
     command: list_vms
     state: running
   register: running_vms
-'''
+"""
 
-RETURN = '''
+RETURN = """
 # for list_vms command
 list_vms:
     description: The list of vms defined on the remote system
@@ -127,7 +128,7 @@ status:
     type: str
     sample: "success"
     returned: success
-'''
+"""
 
 import traceback
 
@@ -150,19 +151,31 @@ VIRT_SUCCESS = 0
 VIRT_UNAVAILABLE = 2
 
 ALL_COMMANDS = []
-VM_COMMANDS = ['create', 'define', 'destroy', 'get_xml', 'pause', 'shutdown', 'status', 'start', 'stop', 'undefine', 'unpause']
-HOST_COMMANDS = ['freemem', 'info', 'list_vms', 'nodeinfo', 'virttype']
+VM_COMMANDS = [
+    "create",
+    "define",
+    "destroy",
+    "get_xml",
+    "pause",
+    "shutdown",
+    "status",
+    "start",
+    "stop",
+    "undefine",
+    "unpause",
+]
+HOST_COMMANDS = ["freemem", "info", "list_vms", "nodeinfo", "virttype"]
 ALL_COMMANDS.extend(VM_COMMANDS)
 ALL_COMMANDS.extend(HOST_COMMANDS)
 
 VIRT_STATE_NAME_MAP = {
-    0: 'running',
-    1: 'running',
-    2: 'running',
-    3: 'paused',
-    4: 'shutdown',
-    5: 'shutdown',
-    6: 'crashed',
+    0: "running",
+    1: "running",
+    2: "running",
+    3: "paused",
+    4: "shutdown",
+    5: "shutdown",
+    6: "crashed",
 }
 
 
@@ -171,7 +184,6 @@ class VMNotFound(Exception):
 
 
 class LibvirtConnection(object):
-
     def __init__(self, uri, module):
 
         self.module = module
@@ -182,7 +194,11 @@ class LibvirtConnection(object):
         if "xen" in stdout:
             conn = libvirt.open(None)
         elif "esx" in uri:
-            auth = [[libvirt.VIR_CRED_AUTHNAME, libvirt.VIR_CRED_NOECHOPROMPT], [], None]
+            auth = [
+                [libvirt.VIR_CRED_AUTHNAME, libvirt.VIR_CRED_NOECHOPROMPT],
+                [],
+                None,
+            ]
             conn = libvirt.openAuth(uri, auth)
         else:
             conn = libvirt.open(uri)
@@ -287,7 +303,6 @@ class LibvirtConnection(object):
 
 
 class Virt(object):
-
     def __init__(self, uri, module):
         self.module = module
         self.uri = uri
@@ -340,7 +355,7 @@ class Virt(object):
             numanodes=str(data[4]),
             sockets=str(data[5]),
             cpucores=str(data[6]),
-            cputhreads=str(data[7])
+            cputhreads=str(data[7]),
         )
         return info
 
@@ -459,30 +474,30 @@ class Virt(object):
 
 def core(module):
 
-    state = module.params.get('state', None)
-    autostart = module.params.get('autostart', None)
-    guest = module.params.get('name', None)
-    command = module.params.get('command', None)
-    uri = module.params.get('uri', None)
-    xml = module.params.get('xml', None)
+    state = module.params.get("state", None)
+    autostart = module.params.get("autostart", None)
+    guest = module.params.get("name", None)
+    command = module.params.get("command", None)
+    uri = module.params.get("uri", None)
+    xml = module.params.get("xml", None)
 
     v = Virt(uri, module)
     res = dict()
 
-    if state and command == 'list_vms':
+    if state and command == "list_vms":
         res = v.list_vms(state=state)
         if not isinstance(res, dict):
             res = {command: res}
         return VIRT_SUCCESS, res
 
-    if autostart is not None and command != 'define':
+    if autostart is not None and command != "define":
         if not guest:
             module.fail_json(msg="autostart requires 1 argument: name")
         try:
             v.get_vm(guest)
         except VMNotFound:
             module.fail_json(msg="domain %s not found" % guest)
-        res['changed'] = v.autostart(guest, autostart)
+        res["changed"] = v.autostart(guest, autostart)
         if not command and not state:
             return VIRT_SUCCESS, res
 
@@ -490,25 +505,25 @@ def core(module):
         if not guest:
             module.fail_json(msg="state change requires a guest specified")
 
-        if state == 'running':
-            if v.status(guest) == 'paused':
-                res['changed'] = True
-                res['msg'] = v.unpause(guest)
-            elif v.status(guest) != 'running':
-                res['changed'] = True
-                res['msg'] = v.start(guest)
-        elif state == 'shutdown':
-            if v.status(guest) != 'shutdown':
-                res['changed'] = True
-                res['msg'] = v.shutdown(guest)
-        elif state == 'destroyed':
-            if v.status(guest) != 'shutdown':
-                res['changed'] = True
-                res['msg'] = v.destroy(guest)
-        elif state == 'paused':
-            if v.status(guest) == 'running':
-                res['changed'] = True
-                res['msg'] = v.pause(guest)
+        if state == "running":
+            if v.status(guest) == "paused":
+                res["changed"] = True
+                res["msg"] = v.unpause(guest)
+            elif v.status(guest) != "running":
+                res["changed"] = True
+                res["msg"] = v.start(guest)
+        elif state == "shutdown":
+            if v.status(guest) != "shutdown":
+                res["changed"] = True
+                res["msg"] = v.shutdown(guest)
+        elif state == "destroyed":
+            if v.status(guest) != "shutdown":
+                res["changed"] = True
+                res["msg"] = v.destroy(guest)
+        elif state == "paused":
+            if v.status(guest) == "running":
+                res["changed"] = True
+                res["msg"] = v.pause(guest)
         else:
             module.fail_json(msg="unexpected state")
 
@@ -516,13 +531,13 @@ def core(module):
 
     if command:
         if command in VM_COMMANDS:
-            if command == 'define':
+            if command == "define":
                 if not xml:
                     module.fail_json(msg="define requires xml argument")
                 if guest:
                     # there might be a mismatch between quest 'name' in the module and in the xml
                     module.warn("'xml' is given - ignoring 'name'")
-                found_name = re.search('<name>(.*)</name>', xml).groups()
+                found_name = re.search("<name>(.*)</name>", xml).groups()
                 if found_name:
                     domain_name = found_name[0]
                 else:
@@ -545,14 +560,14 @@ def core(module):
                     if existing_domain:
                         # if we are here, then libvirt redefined existing domain as the doc promised
                         if existing_domain.XMLDesc() != domain.XMLDesc():
-                            res = {'changed': True, 'change_reason': 'config changed'}
+                            res = {"changed": True, "change_reason": "config changed"}
                     else:
-                        res = {'changed': True, 'created': domain.name()}
+                        res = {"changed": True, "created": domain.name()}
                 except libvirtError as e:
                     if e.get_error_code() != 9:  # 9 means 'domain already exists' error
-                        module.fail_json(msg='libvirtError: %s' % e.message)
+                        module.fail_json(msg="libvirtError: %s" % e.message)
                 if autostart is not None and v.autostart(domain_name, autostart):
-                    res = {'changed': True, 'change_reason': 'autostart'}
+                    res = {"changed": True, "change_reason": "autostart"}
 
             elif not guest:
                 module.fail_json(msg="%s requires 1 argument: guest" % command)
@@ -578,17 +593,21 @@ def core(module):
 def main():
     module = AnsibleModule(
         argument_spec=dict(
-            name=dict(type='str', aliases=['guest']),
-            state=dict(type='str', choices=['destroyed', 'paused', 'running', 'shutdown']),
-            autostart=dict(type='bool'),
-            command=dict(type='str', choices=ALL_COMMANDS),
-            uri=dict(type='str', default='qemu:///system'),
-            xml=dict(type='str'),
+            name=dict(type="str", aliases=["guest"]),
+            state=dict(
+                type="str", choices=["destroyed", "paused", "running", "shutdown"]
+            ),
+            autostart=dict(type="bool"),
+            command=dict(type="str", choices=ALL_COMMANDS),
+            uri=dict(type="str", default="qemu:///system"),
+            xml=dict(type="str"),
         ),
     )
 
     if not HAS_VIRT:
-        module.fail_json(msg='The `libvirt` module is not importable. Check the requirements.')
+        module.fail_json(
+            msg="The `libvirt` module is not importable. Check the requirements."
+        )
 
     rc = VIRT_SUCCESS
     try:
@@ -602,5 +621,5 @@ def main():
         module.exit_json(**result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

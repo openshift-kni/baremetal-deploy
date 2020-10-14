@@ -1,4 +1,4 @@
-// Module included in the following assemblies:
+
 //
 // * installing/installing_bare_metal_ipi/ipi-install-prerequisites.adoc
 
@@ -7,8 +7,20 @@
 
 Prior to the installation of the {product-title} cluster, gather the following information from all cluster nodes:
 
-* Out-of-band management IP and credentials
+* Out-of-band management IP
 ** Examples
 *** Dell (iDRAC) IP
 *** HP (iLO) IP
+
+ifeval::[{release} >= 4.6]
+.When using the `provisioning` network
+endif::[]
+
 * NIC1 (`provisioning`) MAC address
+* NIC2 (`baremetal`) MAC address
+
+ifeval::[{release} >= 4.6]
+.When omitting the `provisioning` network
+endif::[]
+
+* NICx (`baremetal`) MAC address

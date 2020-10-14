@@ -1,4 +1,4 @@
-// Module included in the following assemblies:
+
 //
 // * installing/installing_bare_metal_ipi/ipi-install-installation-workflow.adoc
 
@@ -13,19 +13,24 @@ Most of the information is teaching the installer and the resulting cluster enou
 +
 [source,yaml, subs="verbatim,macros"]
 ----
-ifeval::[{release} > 4.4]
+ifeval::[{release} > 4.5]
 include::ipi-install-config-yaml.adoc[]
 endif::[]
-ifeval::[{release} <= 4.4]
-ifeval::[{release} > 4.3]
+ifeval::[{release} == 4.5]
+include::ipi-install-config-yaml-4.5.adoc[]
+endif::[]
+ifeval::[{release} == 4.4]
 include::ipi-install-config-yaml-4.4.adoc[]
 endif::[]
 ifeval::[{release} <= 4.3]
 include::ipi-install-config-yaml-4.3.adoc[]
 endif::[]
-endif::[]
 ----
-<1> Refer to the xref:bmcadressing[BMC adressing] for more options
+
+ifdef::upstream[]
++
+<1> Refer to the xref:bmcaddressing[BMC adressing] for more options
+endif::[]
 
 . Create a directory to store cluster configs.
 +
