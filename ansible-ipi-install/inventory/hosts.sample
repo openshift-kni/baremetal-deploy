@@ -131,7 +131,7 @@ extcidrnet=""
 pullsecret=""
 
 # (Optional) Disable BMC Certification Validation. When using self-signed certificates for your BMC, ensure to set to True.
-# Default value is False. 
+# Default value is False.
 #disable_bmc_certificate_verification=True
 
 # (Optional) Enable RedFish VirtualMedia/iDRAC VirtualMedia

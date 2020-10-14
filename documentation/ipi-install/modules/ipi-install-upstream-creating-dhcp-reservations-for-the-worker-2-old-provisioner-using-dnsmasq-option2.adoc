@@ -1,4 +1,4 @@
-// Module included in the following assemblies:
+
 //
 // * list of assemblies where this module is included
 // ipi-install-installation-workflow.adoc

@@ -1,4 +1,4 @@
-// Module included in the following assemblies:
+
 //
 // * installing/installing_bare_metal_ipi/ipi-install-installation-workflow.adoc
 
@@ -13,10 +13,10 @@ ifndef::upstream[]
 endif::[]
 
 
-The latest-4.x can be used to deploy the latest Generally
-Available version of {product-title}:
+Use the `latest-4.x` version of the installer to deploy the latest generally
+available version of {product-title}:
 
-[source,bash]
+[source,terminal]
 [subs="attributes"]
 ----
 [kni@provisioner ~]$ export VERSION=latest-{release}

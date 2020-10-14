@@ -10,6 +10,7 @@ Deployment Integration Team
 :prewrap!:
 :context: ipi-install-troubleshooting
 //Upstream attribute
+:upstream:
 :playbook:
 :toc:
 :toclevels: 5

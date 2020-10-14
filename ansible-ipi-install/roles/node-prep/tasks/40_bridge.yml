@@ -5,7 +5,7 @@
       shell: |
         nmcli device show {{ prov_nic }} | grep GENERAL.CONNECTION | awk '{sub(/[^ ]+[ ]+/,"")}1'
       register: prov_con_name
-      when: 
+      when:
       - not enable_virtualmedia|bool
 
     - name: Get the public connection name
@@ -17,7 +17,7 @@
       command: |
         nmcli dev dis "{{ provisioning_bridge }}"
       ignore_errors: yes
-      when: 
+      when:
       - not enable_virtualmedia|bool
 
     - name: Delete {{ prov_con_name.stdout }} due to modify nmcli bug
@@ -25,7 +25,7 @@
         conn_name: "{{ prov_con_name.stdout }}"
         type: ethernet
         state: absent
-      when: 
+      when:
       - not enable_virtualmedia|bool
       - prov_con_name.stdout != '--'
 
@@ -37,7 +37,7 @@
       with_items:
         - "{{ prov_nic }}"
         - "System {{ prov_nic }}"
-      when: 
+      when:
       - not enable_virtualmedia|bool
       - prov_con_name.stdout != '--'
 
@@ -45,7 +45,7 @@
       nmcli:
         conn_name: "{{ provisioning_bridge }}"
         state: absent
-      when: 
+      when:
       - not enable_virtualmedia|bool
 
     - name: Create Bridge labeled provisioning bridge ipv4
@@ -162,4 +162,3 @@
         - not enable_virtualmedia|bool
   become: yes
   tags: network
-

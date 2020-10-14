@@ -54,7 +54,7 @@ After an environment has been prepared according to the documented prerequisites
 ifdef::upstream[]
 // include::ipi-install-upstream-installation-workflow.adoc[leveloffset=+1]
 
-include::modules/ipi-install-upstream-installing-rhel-on-the-provision-node.adoc[leveloffset=+1]
+include::modules/ipi-install-installing-rhel-on-the-provisioner-node.adoc[leveloffset=+1]
 endif::[]
 
 // Preparing the provision node for OCP

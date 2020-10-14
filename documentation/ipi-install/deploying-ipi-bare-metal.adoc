@@ -3,7 +3,7 @@
 //include::modules/common-attributes.adoc[]
 :context: ipi-install
 
-ifndef::upstream[]
+ifdef::watermark[]
 [IMPORTANT]
 ====
 The Bare Metal IPI images and code described in this document are for *Developer Preview*

@@ -1,4 +1,4 @@
-// Module included in the following assemblies:
+
 //
 // * installing/installing_bare_metal_ipi/ipi-install-installation-workflow.adoc
 
@@ -7,11 +7,12 @@
 
 . Create the {product-title} manifests.
 +
-[source,bash]
+[source,terminal]
 ----
-[kni@provisioner ~]$ ./openshift-baremetal-install --dir ~/clusterconfigs create manifests
+[kni@provisioner ~]$ sudo ./openshift-baremetal-install --dir ~/clusterconfigs create manifests
 ----
 +
+[source,terminal]
 ----
 INFO Consuming Install Config from target directory
 WARNING Making control-plane schedulable by setting MastersSchedulable to true for Scheduler cluster settings
@@ -21,8 +22,8 @@ WARNING Discarding the Openshift Manifest that was provided in the target direct
 ifeval::[{release} <= 4.3]
 . Copy the `metal3-config.yaml` file to the `clusterconfigs/openshift` directory.
 +
-[source,bash]
+[source,terminal]
 ----
-# cp ~/metal3-config.yaml clusterconfigs/openshift/99_metal3-config.yaml
+[kni@provisioner ~]$ sudo cp ~/metal3-config.yaml clusterconfigs/openshift/99_metal3-config.yaml
 ----
 endif::[]

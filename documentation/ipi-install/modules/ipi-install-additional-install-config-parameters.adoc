@@ -1,23 +1,21 @@
-// Module included in the following assemblies:
+
 //
 // * installing/installing_bare_metal_ipi/ipi-install-installation-workflow.adoc
 
 [id="additional-install-config-parameters_{context}"]
 = Additional `install-config` parameters
 
-This topic describes the required parameters, the `hosts` parameter,
-and the `bmc` `address` parameter for the `install-config.yaml` file.
+See the following tables for the required parameters, the `hosts` parameter,
+and the `bmc` parameter for the `install-config.yaml` file.
 
 .Required parameters
 |===
 |Parameters |Default |Description
 
 
-
-
 | [[basedomain]] `baseDomain`
 |
-| The domain name for your cluster, e.g. `example.com`
+| The domain name for the cluster. For example, `example.com`.
 
 
 a|[[metadataname]]
@@ -26,7 +24,7 @@ metadata:
     name:
 ----
 |
-|The name to be given to your {product-title} cluster. e.g. `openshift`
+|The name to be given to the {product-title} cluster. For example, `openshift`.
 
 
 a|[[machinecidr]]
@@ -35,11 +33,13 @@ networking:
     machineCIDR:
 ----
 |
-|The public CIDR (Classless Inter-Domain Routing) of your external network, e.g. `10.0.0.0/24`
-ifdef::watermark[]
+|The public CIDR (Classless Inter-Domain Routing) of the external network. For example, `10.0.0.0/24`
+
+ifdef::upstream[]
+ifeval::[{release} >= 4.5]
 or `2620:52:0:1302::/64`.
 endif::[]
-
+endif::[]
 
 
 a|[[workername]]
@@ -48,7 +48,7 @@ compute:
   - name: worker
 ----
 |
-|The {product-title} cluster requires a name be provided for compute nodes even if no compute nodes are to be used.
+|The {product-title} cluster requires a name be provided for worker (compute) nodes even if there are zero nodes.
 
 
 a|[[computereplicas]]
@@ -57,8 +57,7 @@ compute:
     replicas: 2
 ----
 |
-|Replicas sets the number of compute nodes that are to be included as part of your {product-title} cluster.
-
+|Replicas sets the number of worker (compute) nodes in the {product-title} cluster.
 
 
 a|[[controlplanename]]
@@ -67,7 +66,7 @@ controlPlane:
     name: master
 ----
 |
-|The {product-title} cluster requires a name be provided for control plane (master) nodes.
+|The {product-title} cluster requires a name for control plane (master) nodes.
 
 
 a|[[controlplanereplicas]]
@@ -76,39 +75,38 @@ controlPlane:
     replicas: 3
 ----
 |
-|Replicas sets the number of control plane (master) nodes that are to be included as part of your {product-title} cluster.
-
+|Replicas sets the number of control plane (master) nodes included as part of the {product-title} cluster.
 
 ifeval::[{release} >= 4.4]
+
+ifeval::[{release} <= 4.6]
 a| [[provisioningNetworkInterface]]`provisioningNetworkInterface` |  | The name of the network interface on control plane nodes connected to the
 provisioning network. ({product-title} 4.4 only)
 endif::[]
 
-| `hosts`
-|
-| Details about bare metal hosts to use to build the cluster.
+endif::[]
 
 
 | `defaultMachinePlatform` | | The default configuration used for machine pools without a platform configuration.
 
 | [[apivip]]`apiVIP` | `api.<clustername.clusterdomain>` | The VIP to use for internal API communication.
 
+This setting must either be provided or pre-configured in the DNS so that the
+default name resolves correctly.
 
-This setting must either be provided or pre-configured in DNS so that the
-default name resolve correctly.
-
-| `disableCertificateVerification` | `False` | This parameter is needed when we use `redfish` or `redfish-virtualmedia` to manage BMC addresses. The value should be `True` if you are using self-signed certificate for BMC addresses.
+| `disableCertificateVerification` | `False` | `redfish` and `redfish-virtualmedia` need this parameter set to `True` when using a self-signed certificate for BMC addresses.
 
 | [[ingressvip]]`ingressVIP` | `test.apps.<clustername.clusterdomain>` | The VIP to use for ingress traffic.
 
 ifeval::[{release} < 4.5]
-This setting must either be provided or pre-configured in DNS so that the
-default name resolve correctly.
+Provide this setting or pre-configure it in the DNS so that the default name resolves correctly.
 |[[dnsVIP]]`dnsVIP` | | The VIP to use for internal DNS communication.
 
 This setting has no default and must always be provided.
 endif::[]
+
 |===
+
 
 [cols="1,1,3", options="header"]
 .Optional Parameters
@@ -117,30 +115,38 @@ endif::[]
 |Default
 |Description
 
+
 ifeval::[{release} > 4.3]
+ifeval::[{release} < 4.6]
 |`provisioningDHCPExternal`
 | false
-|Defines if external DHCP will be used or the one configured by installer
+|Defines if the installer uses an external DHCP or the provisioner node DHCP.
 
 |`provisioningDHCPRange`
-| `172.22.0.10,172.22.0.100`
-|Defines the IP range to use for hosts on the provisioning network.
+|`172.22.0.10,172.22.0.100`
+|Defines the IP range for nodes on the `provisioning` network.
 
-a| [[provisioningNetworkCIDR]] `provisioningNetworkCIDR`
-| `172.22.0.0/24`
-| The CIDR for the network to use for provisioning. This option is required when using IPv6 addressing on the provision network.
+a|`provisioningNetworkCIDR`
+|`172.22.0.0/24`
+|The CIDR for the network to use for provisioning. This option is required when not using the default address range on the `provisioning` network.
+endif::[]
 endif::[]
 
-| `clusterProvisioningIP`
-| 3rd IP of `provisioningNetworkCIDR`
-| The IP within the cluster where the provisioning services run. Defaults to the 3rd IP of the provision subnet, e.g. `172.22.0.3`
+|`clusterProvisioningIP`
+|The third IP address of the `provisioningNetworkCIDR`
+|The IP within the cluster where the provisioning services run. Defaults to the 3rd IP of the `provisioning` subnet. For example, `172.22.0.3`.
 
-| `bootstrapProvisioningIP`
-| 2nd IP of `provisioningNetworkCIDR`
-| The IP on the bootstrap VM where the provisioning services run while the control plane is being deployed. Defaults to the 2nd IP of the provision subnet, e.g. `172.22.0.2`
-ifdef::watermark[]
+|`bootstrapProvisioningIP`
+|The second IP address of the `provisioningNetworkCIDR`
+|The IP on the bootstrap VM where the provisioning services run while the the installer is deploying the control plane (master) nodes. Defaults to the 2nd IP of the `provisioning` subnet. For example, `172.22.0.2`
+
+ifdef::upstream[]
+ifeval::[{release} >= 4.5]
 or `2620:52:0:1307::2`.
 endif::[]
+endif::[]
+
+ When using no `provisioning` network, set this value to an IP address that is available on the `baremetal` network.
 
 | `externalBridge`
 | `baremetal`
@@ -148,145 +154,61 @@ endif::[]
 
 | `provisioningBridge`
 | `provisioning`
-| The name of the `provisioning` bridge on the `provision` host attached to the provisioning network.
+| The name of the `provisioning` bridge on the `provisioner` host attached to the `provisioning` network.
 
 | `defaultMachinePlatform`
 |
-| The default configuration used for machine pools without a platform
-configuration.
+| The default configuration used for machine pools without a platform configuration.
 
 | `bootstrapOSImage`
 |
-| A URL to override the default operating system image for the bootstrap node. The URL must contain a sha256 hash of the image. Example https://mirror.openshift.com/rhcos-<version>-qemu.qcow2.gz?sha256=<uncompressed_sha256>
-ifdef::watermark[]
-or `http://[2620:52:0:1307::1]/rhcos-<version>-qemu.x86_64.qcow2.gz?sha256=<uncompressed_sha256>`.
-endif::[]
+| A URL to override the default operating system image for the bootstrap node. The URL must contain a SHA-256 hash of the image. For example:
+`https://mirror.openshift.com/rhcos-<version>-qemu.qcow2.gz?sha256=<uncompressed_sha256>`
 
+ifdef::upstream[]
+ifeval::[{release} >= 4.5]
+ or `http://[2620:52:0:1307::1]/rhcos-<version>-qemu.x86_64.qcow2.gz?sha256=<uncompressed_sha256>`.
+endif::[]
+endif::[]
 
 | `clusterOSImage`
 |
-| A URL to override the default operating system for cluster nodes. The URL must include a sha256 hash of the image. Example https://mirror.openshift.com/images/rhcos-<version>-openstack.qcow2.gz?sha256=<compressed_sha256>
+| A URL to override the default operating system for cluster nodes. The URL must include a SHA-256 hash of the image. For example,  https://mirror.openshift.com/images/rhcos-<version>-openstack.qcow2.gz?sha256=<compressed_sha256>.
+
+
+| `provisioningNetwork`
+|
+| Set this parameter to `Disabled` to disable the requirement for a `provisioning` network.
+
+| `provisioningHostingIp`
+|
+| Set this parameter to an available IP address on the `baremetal` network when the `provisioningNetwork` configuration setting is set to `Disabled`.
 
 |===
 
 [id="hoststable"]
 .Hosts
 
-The `hosts` parameter is a list of separate bare metal assets that
-should be used to build the cluster.
+The `hosts` parameter is a list of separate bare metal assets used to build the cluster.
 
 |===
 |Name |Default |Description
 | [[name]]`name` |  | The name of the BareMetalHost resource to associate with the details. e.g. `openshift-master-0`
-| [[role]]`role` |  | Either `master` or `worker`.
-| `bmc` | | Connection details for the baseboard management controller. xref:bmcadressing[See below for details.]
-| [[bootMACAddress]]`bootMACAddress` |  | The MAC address of the NIC the host will use to boot on the provisioning network.
-| [[hardwareProfile]]`hardwareProfile` | `default`|This parameter exposes the device name that the installer attempts to deploy the {product-title} for the master and worker nodes. The value defaults to `default` for masters and `unknown` for workers. The list of profiles includes: `default`, `libvirt`, `dell`, `dell-raid`, `openstack`. The `default` parameter attempts to install on `/dev/sda` of your cluster node.
+| [[role]]`role` |  | The role of the bare metal node. Either `master` or `worker`.
+| `bmc` | | Connection details for the baseboard management controller. See the xref:bmcaddressing[BMC addressing section] for details.
+| [[bootMACAddress]]`bootMACAddress` |  | The MAC address of the NIC the host will use to boot on the `provisioning`  network.
+ifeval::[{release} < 4.5]
+| [[hardwareProfile]]`hardwareProfile` | `default`|This parameter exposes the device name that the installer attempts to deploy the {product-title} cluster for the control plane and worker nodes. The value defaults to `default` for control plane nodes and `unknown` for worker nodes. The list of profiles includes: `default`, `libvirt`, `dell`, `dell-raid`, and `openstack`. The `default` parameter attempts to install on `/dev/sda` of the {product-title} cluster nodes.
+endif::[]
 |===
 
 The `bmc` parameter for each host is a set of values for accessing the
 baseboard management controller in the host.
 
+
 |===
 |Name |Default |Description
 | `username` |  | The username for authenticating to the BMC.
 | `password` |  | The password associated with `username`.
-| `address` | | The URL for communicating with the BMC controller, based on the provider being used. xref:bmcadressing[See below for details.]
-See BMC Addressing for details.
+| `address` | | The URL for communicating with the BMC controller, based on the provider being used. See the xref:bmcaddressing[BMC addressing section] for details.
 |===
-
-[id="bmcadressing"]
-== BMC addressing
-
-The `address` field for each `bmc` entry is a URL with details how to
-connect to the {product-title} cluster nodes, including the type of
-controller in the URL scheme and its location on the network.
-
-.IPMI
-
-IPMI hosts use `ipmi://<out-of-band-ip>:<port>` and defaults to port
-`623` if not specified. Example output of using IPMI within your
-`install-config.yaml` file.
-
-----
-platform:
-  baremetal:
-    hosts:
-      - name: openshift-master-0
-        role: master
-        bmc:
-          address: ipmi://<out-of-band-ip>
-          username: <user>
-          password: <password>
-----
-
-ifeval::[{release} > 4.4]
-
-.RedFish
-
-For RedFish, use `redfish://` (or `redfish+http://` to disable TLS).
-The hostname (or IP address) and the path to the system ID are both
-required. Example output of using RedFish within your
-`install-config.yaml` file.
-
-----
-platform:
-  baremetal:
-    hosts:
-      - name: openshift-master-0
-        role: master
-        bmc:
-          address: redfish://<out-of-band-ip>/redfish/v1/Systems/1
-          username: <user>
-          password: <password>
-----
-
-While it is recommended to have a certificate of authority for your
-out of band management addresses, if using self-signed certificates
-ensure to include an additional parameter of
-`disableCertificateVerification: True`. Example output of using
-RedFish with `disableCertificateVerification: True`
-within your `install-config.yaml` file.
-
-----
-platform:
-  baremetal:
-    hosts:
-      - name: openshift-master-0
-        role: master
-        bmc:
-          address: redfish://<out-of-band-ip>/redfish/v1/Systems/1
-          username: <user>
-          password: <password>
-          disableCertificateVerification: True
-----
-
-NOTE: Currently RedFish is only supported on HPE hardware and
-Dell with iDRAC firmware version `4.20.20.20` or higher for IPI on 
-Bare metal deployments. We are working with other vendors to enable 
-RedFish capabilities across the board. 
-
-.RedFish Virtual Media
-
-For RedFish virtual media, use `redfish-virtualmedia://`
-
-Example output of using RedFish Virtual Media
-within your `install-config.yaml` file.
-
-----
-platform:
-  baremetal:
-    hosts:
-      - name: openshift-master-0
-        role: master
-        bmc:
-          address: redfish-virtualmedia://<out-of-band-ip>/redfish/v1/Systems/1
-          username: <user>
-          password: <password>
-----
-
-NOTE: Currently RedFish is only supported on HPE hardware for IPI on
-Bare metal deployments. We are working with other vendors to enable
-RedFish capabilities across the board.
-
-endif::[]

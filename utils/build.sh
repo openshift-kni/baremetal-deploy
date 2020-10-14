@@ -2,10 +2,10 @@
 # Builds documentation for each release in both HTML and PDF versions
 
 # Space separated version list to build
-RELEASES="4.5 4.4 4.3"
+RELEASES="4.6 4.5 4.4 4.3"
 
 # Devel releases for static documents and devel docs
-DEVRELEASE="4.6"
+DEVRELEASE="4.7"
 
 # STATIC Release
 STATICRELEASE="${DEVRELEASE}"
@@ -13,11 +13,11 @@ STATICRELEASE="${DEVRELEASE}"
 # Versioned documents
 DOCS=(
     'Deployment'
+    'Troubleshooting'
 )
 
 # Documents using latest
 STATIC=(
-    'Troubleshooting'
     'Ansible Playbook Install'
     'Ansible Playbook Disconnected Install'
 )

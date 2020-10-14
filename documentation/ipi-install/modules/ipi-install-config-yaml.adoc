@@ -17,12 +17,11 @@ platform:
   baremetal:
     xref:apivip[apiVIP]: +<api-ip>+
     xref:ingressvip[ingressVIP]: +<wildcard-ip>+
-    xref:provisioningNetworkInterface[provisioningNetworkInterface]: +<NIC1>+
     xref:provisioningNetworkCIDR[provisioningNetworkCIDR]: +<CIDR>+
     xref:hoststable[hosts]:
       - xref:name[name]: openshift-master-0
         xref:role[role]: master
-        xref:bmcadressing[bmc]:
+        xref:bmcaddressing[bmc]:
           address: ipmi://+<out-of-band-ip>+ # <1>
           username: +<user>+
           password: +<password>+
@@ -30,7 +29,7 @@ platform:
         xref:hardwareProfile[hardwareProfile]: default
       - xref:name[name]: openshift-master-1
         xref:role[role]: master
-        xref:bmcadressing[bmc]:
+        xref:bmcaddressing[bmc]:
           address: ipmi://+<out-of-band-ip>+
           username: +<user>+
           password: +<password>+
@@ -38,7 +37,7 @@ platform:
         xref:hardwareProfile[hardwareProfile]: default
       - xref:name[name]: openshift-master-2
         xref:role[role]: master
-        xref:bmcadressing[bmc]:
+        xref:bmcaddressing[bmc]:
           address: ipmi://<out-of-band-ip>
           username: +<user>+
           password: +<password>+
@@ -46,7 +45,7 @@ platform:
         xref:hardwareProfile[hardwareProfile]: default
       - xref:name[name]: openshift-worker-0
         xref:role[role]: worker
-        xref:bmcadressing[bmc]:
+        xref:bmcaddressing[bmc]:
           address: ipmi://+<out-of-band-ip>+
           username: +<user>+
           password: +<password>+
@@ -54,7 +53,7 @@ platform:
         xref:hardwareProfile[hardwareProfile]: unknown
       - xref:name[name]: openshift-worker-1
         xref:role[role]: worker
-        xref:bmcadressing[bmc]:
+        xref:bmcaddressing[bmc]:
           address: ipmi://+<out-of-band-ip>+
           username: +<user>+
           password: +<password>+
