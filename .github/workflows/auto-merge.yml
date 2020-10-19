@@ -1,0 +1,15 @@
+name: auto-merge dependabot
+
+on:
+  pull_request:
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.3.3
+      - uses: ahmadnassri/action-dependabot-auto-merge@v2
+        if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
+        with:
+          target: minor
+          github-token: "${{ secrets.GHA }}"
