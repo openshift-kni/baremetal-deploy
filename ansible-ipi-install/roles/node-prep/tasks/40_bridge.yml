@@ -59,8 +59,7 @@
         stp: off
         ip4: 172.22.0.1/24
         state: present
-      when: (not enable_virtualmedia) or
-            ((not ipv6_enabled|bool) and (not enable_virtualmedia)) or
+      when: ((not ipv6_enabled|bool) and (not enable_virtualmedia)) or
             ((release_version[0]|int == 4) and (release_version[2]|int == 3) and ((not enable_virtualmedia))) or
             ((ipv4_provisioning|bool) and (not enable_virtualmedia))
 
@@ -73,8 +72,7 @@
         master: "{{ provisioning_bridge }}"
         autoconnect: yes
         state: present
-      when: (not enable_virtualmedia) or
-            ((not ipv6_enabled|bool) and (not enable_virtualmedia)) or
+      when: ((not ipv6_enabled|bool) and (not enable_virtualmedia)) or
             ((release_version[0]|int == 4) and (release_version[2]|int == 3) and ((not enable_virtualmedia))) or
             ((ipv4_provisioning|bool) and (not enable_virtualmedia))
 
