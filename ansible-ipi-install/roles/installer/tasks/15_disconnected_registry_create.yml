@@ -412,7 +412,7 @@
 
 - name: Set fact to pull oc installer from disconnected registry
   set_fact:
-    disconnected_installer: "{{ local_registry }}/{{ local_repo }}:{{ release_version}}"
+    disconnected_installer: "{{ local_registry }}/{{ local_repo }}:{{ release_version }}"
   tags:
   - create_registry
 
