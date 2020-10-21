@@ -184,6 +184,20 @@ endif::[]
 |
 | Set this parameter to an available IP address on the `baremetal` network when the `provisioningNetwork` configuration setting is set to `Disabled`.
 
+ifeval::[{release} > 4.4]
+| `httpProxy`
+|
+| Set this parameter to the appropriate http proxy used within your environment.
+
+| `httpsProxy`
+|
+| Set this parameter to the appropriate https proxy used within your environment.
+
+| `noProxy`
+|
+| Set this parameter to the appropriate list of exclusions for proxy usage within your environment.
+endif::[]
+
 |===
 
 [id="hoststable"]
