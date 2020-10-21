@@ -17,7 +17,7 @@ ifeval::[{release} > 4.5]
 .. One *optional* management network.
 endif::[]
 ifeval::[{release} < 4.6]
-. At least those networks:
+. At least two networks:
 .. One *required* routable network
 .. One *required* network for provisioning nodes; and,
 .. One *optional* management network.
