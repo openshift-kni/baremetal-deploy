@@ -10,7 +10,7 @@
   set_fact:
     extcidrnet: "{{ ip | ipaddr('network') }}/{{ ip | ipaddr('prefix') }}"
   vars:
-    ip: "{{ ansible_default_ipv4.address }}/{{ansible_default_ipv4.netmask }}"
+    ip: "{{ ansible_default_ipv4.address }}/{{ ansible_default_ipv4.netmask }}"
   when:
     - (extcidrnet is not defined or extcidrnet|length < 1)
     - not ipv6_enabled|bool or
@@ -46,7 +46,7 @@
   set_fact:
     provisioning_subnet: "{{ ip | ipaddr('network') }}/{{ ip | ipaddr('prefix') }}"
   vars:
-    ip: "{{ ansible_facts[provisioning_bridge]['ipv6'][0]['address'] }}/{{ansible_facts[provisioning_bridge]['ipv6'][0]['prefix'] }}"
+    ip: "{{ ansible_facts[provisioning_bridge]['ipv6'][0]['address'] }}/{{ ansible_facts[provisioning_bridge]['ipv6'][0]['prefix'] }}"
   when:
     - ipv6_enabled|bool
     - release_version[0]|int == 4 and release_version[2]|int > 3 or
