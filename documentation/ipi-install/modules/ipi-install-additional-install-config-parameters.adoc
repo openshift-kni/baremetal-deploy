@@ -1,4 +1,4 @@
-
+// Module included in the following assemblies:
 //
 // * installing/installing_bare_metal_ipi/ipi-install-installation-workflow.adoc
 
@@ -48,7 +48,7 @@ compute:
   - name: worker
 ----
 |
-|The {product-title} cluster requires a name be provided for worker (compute) nodes even if there are zero nodes.
+|The {product-title} cluster requires a name be provided for worker (or compute) nodes even if there are zero nodes.
 
 
 a|[[computereplicas]]
@@ -57,7 +57,7 @@ compute:
     replicas: 2
 ----
 |
-|Replicas sets the number of worker (compute) nodes in the {product-title} cluster.
+|Replicas sets the number of worker (or compute) nodes in the {product-title} cluster.
 
 
 a|[[controlplanename]]
@@ -94,7 +94,7 @@ endif::[]
 This setting must either be provided or pre-configured in the DNS so that the
 default name resolves correctly.
 
-| `disableCertificateVerification` | `False` | `redfish` and `redfish-virtualmedia` need this parameter set to `True` when using a self-signed certificate for BMC addresses.
+| `disableCertificateVerification` | `False` | `redfish` and `redfish-virtualmedia` need this parameter to manage BMC addresses. The value should be `True` when using a self-signed certificate for BMC addresses.
 
 | [[ingressvip]]`ingressVIP` | `test.apps.<clustername.clusterdomain>` | The VIP to use for ingress traffic.
 
@@ -128,7 +128,7 @@ ifeval::[{release} < 4.6]
 
 a|`provisioningNetworkCIDR`
 |`172.22.0.0/24`
-|The CIDR for the network to use for provisioning. This option is required when not using the default address range on the `provisioning` network.
+|The CIDR for the network to use for provisioning. This option is required when using IPv6 addressing on the `provisioning` network.
 endif::[]
 endif::[]
 
@@ -193,22 +193,26 @@ The `hosts` parameter is a list of separate bare metal assets used to build the 
 
 |===
 |Name |Default |Description
-| [[name]]`name` |  | The name of the BareMetalHost resource to associate with the details. e.g. `openshift-master-0`
-| [[role]]`role` |  | The role of the bare metal node. Either `master` or `worker`.
-| `bmc` | | Connection details for the baseboard management controller. See the xref:bmcaddressing[BMC addressing section] for details.
-| [[bootMACAddress]]`bootMACAddress` |  | The MAC address of the NIC the host will use to boot on the `provisioning`  network.
-ifeval::[{release} < 4.5]
-| [[hardwareProfile]]`hardwareProfile` | `default`|This parameter exposes the device name that the installer attempts to deploy the {product-title} cluster for the control plane and worker nodes. The value defaults to `default` for control plane nodes and `unknown` for worker nodes. The list of profiles includes: `default`, `libvirt`, `dell`, `dell-raid`, and `openstack`. The `default` parameter attempts to install on `/dev/sda` of the {product-title} cluster nodes.
-endif::[]
-|===
-
-The `bmc` parameter for each host is a set of values for accessing the
-baseboard management controller in the host.
+| [[name]]`name`
+|
+| The name of the `BareMetalHost` resource to associate with the details. For example, `openshift-master-0`.
 
 
-|===
-|Name |Default |Description
-| `username` |  | The username for authenticating to the BMC.
-| `password` |  | The password associated with `username`.
-| `address` | | The URL for communicating with the BMC controller, based on the provider being used. See the xref:bmcaddressing[BMC addressing section] for details.
+| [[role]]`role`
+|
+| The role of the bare metal node. Either `master` or `worker`.
+
+
+| `bmc`
+|
+| Connection details for the baseboard management controller. See the xref:bmcaddressing[BMC addressing section] for additional details.
+
+
+| [[bootMACAddress]]`bootMACAddress`
+|
+| The MAC address of the NIC the host will use to boot on the `provisioning`  network.
+
+| [[hardwareProfile]]`hardwareProfile`
+| `default`
+| This parameter exposes the device name that the installer attempts to deploy the {product-title} cluster for the control plane and worker nodes. The value defaults to `default` for control plane nodes and `unknown` for worker nodes. The list of profiles includes: `default`, `libvirt`, `dell`, `dell-raid`, and `openstack`. The `default` parameter attempts to install on `/dev/sda` of the {product-title} cluster nodes.
 |===
