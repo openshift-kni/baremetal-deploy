@@ -11,7 +11,7 @@
 
     - name: Open port {{ webserver_caching_port }}/tcp, zone public, for cache for firewalld
       firewalld:
-        port: "{{ webserver_caching_port}}/tcp"
+        port: "{{ webserver_caching_port }}/tcp"
         permanent: yes
         state: enabled
         zone: "public"

@@ -92,7 +92,7 @@
 
 - name: Verify DNS records for Wildcard (Ingress) VIP
   set_fact:
-    ingressvip: "{{ lookup('dig', 'foo.apps.{{ cluster |quote }}.{{ domain | quote }}.', '{{ qtype }}' )}}"
+    ingressvip: "{{ lookup('dig', 'foo.apps.{{ cluster |quote }}.{{ domain | quote }}.', '{{ qtype }}' ) }}"
   when: ((ingressvip is undefined) or (ingressvip|length == 0))
   tags:
   - always
@@ -100,7 +100,7 @@
 
 - name: Verify DNS records for API VIP
   set_fact:
-    apivip: "{{ lookup('dig', 'api.{{ cluster |quote }}.{{ domain | quote }}.', '{{ qtype }}' )}}"
+    apivip: "{{ lookup('dig', 'api.{{ cluster |quote }}.{{ domain | quote }}.', '{{ qtype }}' ) }}"
   when: ((apivip is undefined) or (apivip|length == 0))
   tags:
   - always
