@@ -72,6 +72,9 @@ platform:
 {% endif %}
 {% endif %}
 {% if ((release_version[0]|int == 4) and (release_version[2]|int >= 6)) %}
+{% if bootmode is defined and bootmode == 'legacy' %}
+        bootMode: legacy
+{% endif %}
 {% if 'root_device_hint' in hostvars[host] and 'root_device_hint_value' in hostvars[host] and hostvars[host]['root_device_hint'] in roothint_list %}
         rootDeviceHints:
           {{ hostvars[host]['root_device_hint'] }}: {{ hostvars[host]['root_device_hint_value'] }}
@@ -103,6 +106,9 @@ platform:
 {% endif %}
 {% endif %}
 {% if ((release_version[0]|int == 4) and (release_version[2]|int >= 6)) %}
+{% if bootmode is defined and bootmode == 'legacy' %}
+        bootMode: legacy
+{% endif %}
 {% if 'root_device_hint' in hostvars[host] and 'root_device_hint_value' in hostvars[host] %}
         rootDeviceHints:
           {{ hostvars[host]['root_device_hint'] }}: {{ hostvars[host]['root_device_hint_value'] }}
