@@ -141,6 +141,9 @@ pullsecret=""
 #provisioningHostIP=<baremetal_net_IP1>
 #bootstrapProvisioningIP=<baremetal_net_IP2>
 
+# (Optional) Change the boot mode of the OpenShift cluster nodes to legacy mode (BIOS). Default is UEFI. 
+#bootmode=legacy
+
 # Master nodes
 # The hardware_profile is used by the baremetal operator to match the hardware discovered on the host
 # See https://github.com/metal3-io/baremetal-operator/blob/master/docs/api.md#baremetalhost-status
