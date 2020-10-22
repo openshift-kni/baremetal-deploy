@@ -3,9 +3,9 @@
 
 .SLAAC Addressing
 
-If you don't plan to use SLAAC footnote:[Stateless Address AutoConfiguration] addresses on your OpenShift node, then it should be disabled for `baremetal` networks, that means that if your network equipment is configured to send SLAAC addresses when replying to Route Advertisements that behavior should be changed, so it only sends the route and not the SLAAC address.
+If you do not plan to use SLAAC footnote:[Stateless Address AutoConfiguration] addresses on your {product-title} node, then it should be disabled for `baremetal` networks, that means that if your network equipment is configured to send SLAAC addresses when replying to Route Advertisements that behavior should be changed, so it only sends the route and not the SLAAC address.
 
-You can install `ndptool` on your system in order to check what your RAs look like:
+Install `ndptool` on your system in order to check what your RAs look like:
 
 [source,shell]
 ----
@@ -34,20 +34,20 @@ The `ndptool monitor` should report `Managed address configuration: yes`.
 
 .Network Ranges and Configurations
 
-Different `baremetal` and `provisioning` networks are required for each environment, each environment will have a different IPv6 range for each one of those networks.
+Different `baremetal` and `provisioning` networks are required for each environment; each environment will have a different IPv6 range for each one of those networks.
 
 In our configuration we used subinterfaces attached to two different physical interfaces, VLAN tagging was done at O.S. level (this required switch ports configured with `trunk` mode).
 
 Our different IPv6 networks were all routable but usually, the only routable networks are the `baremetal` ones.
 
-Keep in mind that `provisioning` networks cannot be in the same broadcast domain, since there will be services such as DHCP running.
+Keep in mind that `provisioning` networks cannot be in the same broadcast domain, since services such as DHCP are running.
 
 [IMPORTANT]
-.Route Advertisemnt
+.Route Advertisement
 ====
 Route Advertisement must be enabled for both networks `baremetal` and `provisioning`.
 ====
 
 .Route Advertisements
 
-As mentioned previously, both the `baremetal` and the `provisioning` networks need to have Route Advertisement enabled. For the `baremetal` network,  `radvd` daemon was used, while the `provisioning` network has RA enabled in the Metal³ dnsmasq, so no configuration is needed.
+As mentioned previously, both the `baremetal` and the `provisioning` networks must have Route Advertisement enabled. For the `baremetal` network, the `radvd` daemon was used, while the `provisioning` network has RA enabled in the Metal³ dnsmasq, so no configuration is needed.

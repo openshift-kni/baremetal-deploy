@@ -1,4 +1,4 @@
-
+// Module included in the following assemblies:
 //
 // * installing/installing_bare_metal_ipi/ipi-install-installation-workflow.adoc
 
@@ -122,7 +122,18 @@ platform:
 
 .RedFish Virtual Media for Dell
 
-For RedFish Virtual Media on Dell servers, use `idrac-virtualmedia://` in the `address` setting. The following example demonstrates using iDRAC Virtual Media within the  `install-config.yaml` file.
+For RedFish Virtual Media on Dell servers, use `idrac-virtualmedia://` in the `address` setting.
+
+ifeval::[{release} >= 4.6]
+ifeval::[{release} < 4.7]
+[NOTE]
+====
+RedFish Virtual Media on Dell servers has a known issue in {product-title} 4.6, which will be resolved in the 4.6.1 point release.
+====
+endif::[]
+endif::[]
+
+The following example demonstrates using iDRAC Virtual Media within the  `install-config.yaml` file.
 
 [source,yaml]
 ----
@@ -140,7 +151,7 @@ platform:
 
 [NOTE]
 ====
-`idrac-virtualmedia` requires iDRAC firmware version 4.20.20.20 or higher for IPI on Bare metal deployments and from {product-title} version greater or equal to `4.6.1`.
+`idrac-virtualmedia` requires iDRAC firmware version 4.20.20.20 or higher.
 
 Ensure the {product-title} cluster nodes have AutoAttach Enabled through the iDRAC console. The menu path is: **Configuration->Virtual Media->Attach Mode->AutoAttach**.
 ====
