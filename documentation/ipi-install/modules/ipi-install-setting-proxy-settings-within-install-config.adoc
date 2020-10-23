@@ -1,0 +1,35 @@
+// This is included in the following assemblies:
+//
+// ipi-install-configuration-files.adoc
+
+[id='ipi-install-setting-proxy-settings-within-install-config_{context}']
+
+= Setting proxy settings within the  `install-config.yaml` file (optional)
+
+To deploy an {product-title} cluster using a proxy, make the following changes to the `install-config.yaml` file.
+
+[source,yaml]
+----
+apiVersion: v1
+baseDomain: <domain>
+proxy:
+  httpProxy: http://USERNAME:PASSWORD@proxy.example.com:PORT
+  httpsProxy: https://USERNAME:PASSWORD@proxy.example.com:PORT
+  noProxy: <WILDCARD_OF_DOMAIN>,<PROVISIONING_NETWORK/CIDR>,<BMC_ADDRESS_RANGE/CIDR>
+----
+
+An example of `noProxy` with values for clarity.
+
+[source,yaml]
+----
+noProxy: .example.com,172.22.0.0/24,10.10.0.0/24
+----
+
+With a proxy enabled, ensure to set the appropriate values of your proxy in the corresponding key/value pair.
+
+Key considerations:
+
+* If you don't have an HTTPS Proxy, change the value from `https://` to `http://` for `httpsProxy`.
+* If using a provisioning network, ensure to include it in your `noProxy` setting, otherwise the installer will fail.
+* Ensure to set all your proxy settings as environment variables within the provision host, e.g. `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`
+

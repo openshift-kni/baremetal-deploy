@@ -12,6 +12,10 @@ ifeval::[{release} <= 4.3]
 include::ipi-install-configuring-the-metal3-config-file.adoc[leveloffset=+1]
 endif::[]
 
+ifeval::[{release} >= 4.4]
+include::ipi-install-setting-proxy-settings-within-install-config.adoc[leveloffset=+1]
+endif::[]
+
 ifeval::[{release} >= 4.6]
 include::ipi-install-modifying-install-config-for-no-provisioning-network.adoc[leveloffset=+1]
 endif::[]
