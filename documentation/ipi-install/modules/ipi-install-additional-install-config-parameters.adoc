@@ -121,6 +121,8 @@ ifeval::[{release} < 4.6]
 |`provisioningDHCPExternal`
 | false
 |Defines if the installer uses an external DHCP or the provisioner node DHCP.
+endif::[]
+endif::[]
 
 |`provisioningDHCPRange`
 |`172.22.0.10,172.22.0.100`
@@ -129,8 +131,6 @@ ifeval::[{release} < 4.6]
 a|`provisioningNetworkCIDR`
 |`172.22.0.0/24`
 |The CIDR for the network to use for provisioning. This option is required when not using the default address range on the `provisioning` network.
-endif::[]
-endif::[]
 
 |`clusterProvisioningIP`
 |The third IP address of the `provisioningNetworkCIDR`
@@ -178,7 +178,14 @@ endif::[]
 
 | `provisioningNetwork`
 |
-| Set this parameter to `Disabled` to disable the requirement for a `provisioning` network.
+| Set this parameter to `Disabled` to disable the requirement for a `provisioning` network. User may only do virtual media based provisioning, or bring up the cluster using assisted installation. If using power management, BMC's must be accessible from the machine networks. User must provide 2 IP's on the external network that are used for the provisioning services.
+
+ifeval::[{release} >= 4.6]
+Set this parameter to `managed` (default) to fully manage the provisioning network, including DHCP, TFTP, etc
+
+Set this parameter to `unmanaged` to still enable the provisioning network but take care of manual configuration of DHCP. Virtual Media provisioning is recommended but PXE is still available if required.
+
+endif::[]
 
 | `provisioningHostingIp`
 |
