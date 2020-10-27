@@ -37,8 +37,7 @@
     ip: "{{ ansible_facts[provisioning_bridge]['ipv4']['address'] }}/{{ ansible_facts[provisioning_bridge]['ipv4']['netmask'] }}"
   when: (not enable_virtualmedia) and
         ((ipv4_provisioning|bool) or (not ipv6_enabled|bool) or
-        ((release_version[0]|int == 4) and (release_version[2]|int == 3))) or
-        (( enable_redfish_virtualmedia is defined and enable_idrac_virtualmedia is defined) and (not enable_redfish_virtualmedia|bool and not enable_idrac_virtualmedia|bool))
+        ((release_version[0]|int == 4) and (release_version[2]|int == 3)))
   tags:
   - network_facts
 
@@ -47,13 +46,13 @@
     provisioning_subnet: "{{ ip | ipaddr('network') }}/{{ ip | ipaddr('prefix') }}"
   vars:
     ip: "{{ ansible_facts[provisioning_bridge]['ipv6'][0]['address'] }}/{{ ansible_facts[provisioning_bridge]['ipv6'][0]['prefix'] }}"
+  when: not enable_virtualmedia|bool and ipv6_enabled|bool and not ipv4_provisioning_bool
   when:
+    - not enable_virtualmedia|bool
     - ipv6_enabled|bool
+    - not ipv4_provisioning|bool
     - release_version[0]|int == 4 and release_version[2]|int > 3 or
       release_version[0]|int > 4
-    - not ipv4_provisioning|bool
-    - (enable_redfish_virtualmedia is defined and  not enable_redfish_virtualmedia|bool) or  not enable_redfish_virtualmedia is defined
-    - (enable_idrac_virtualmedia is defined and not enable_idrac_virtualmedia|bool) or not enable_idrac_virtualmedia is defined
   tags:
   - network_facts
 
@@ -66,5 +65,6 @@
 - debug:
     msg: "provisioning subnet {{ provisioning_subnet }}"
     verbosity: 2
+  when: provisioning_subnet is defined
   tags:
   - network_facts
