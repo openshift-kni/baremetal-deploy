@@ -59,10 +59,9 @@
         stp: off
         ip4: 172.22.0.1/24
         state: present
-      when: (not enable_virtualmedia) or
-            ((not ipv6_enabled|bool) and (not enable_virtualmedia)) or
-            ((release_version[0]|int == 4) and (release_version[2]|int == 3) and ((not enable_virtualmedia))) or
-            ((ipv4_provisioning|bool) and (not enable_virtualmedia))
+      when: (not enable_virtualmedia) and
+            ((ipv4_provisioning|bool) or (not ipv6_enabled|bool) or
+            ((release_version[0]|int == 4) and (release_version[2]|int == 3)))
 
     - name: Create Bridge slave on provisioning nic ipv4
       nmcli:
@@ -73,10 +72,9 @@
         master: "{{ provisioning_bridge }}"
         autoconnect: yes
         state: present
-      when: (not enable_virtualmedia) or
-            ((not ipv6_enabled|bool) and (not enable_virtualmedia)) or
-            ((release_version[0]|int == 4) and (release_version[2]|int == 3) and ((not enable_virtualmedia))) or
-            ((ipv4_provisioning|bool) and (not enable_virtualmedia))
+      when: (not enable_virtualmedia) and
+            ((ipv4_provisioning|bool) or (not ipv6_enabled|bool) or
+            ((release_version[0]|int == 4) and (release_version[2]|int == 3)))
 
     - name: Create Bridge labeled provisioning bridge ipv6
       nmcli:
