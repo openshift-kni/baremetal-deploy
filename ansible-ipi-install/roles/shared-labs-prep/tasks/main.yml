@@ -61,6 +61,14 @@
     state: absent
   become: yes
 
+- name: Delete virbr0 to avoid conflicts with BM network
+  nmcli:
+    conn_name: virbr0
+    type: ethernet
+    state: absent
+  become: yes
+  when: "'virbr0' in ansible_interfaces and ansible_virbr0 is defined and ansible_virbr0.active"
+
 - name: Get baremetal bridge slave devices
   shell: |
     bridge link | grep baremetal | grep -v vnet | awk '{print $2}' | awk -F: '{print $1}' | uniq
@@ -91,7 +99,7 @@
     autoconnect: yes
     stp: off
     ip4_method: manual
-    ip4: "{{ extcidrnet | next_nth_usable(1) }}/24"
+    ip4: "{{ extcidrnet | next_nth_usable(1) }}/{{ extcidrnet | ipaddr('prefix') }}"
     state: present
   become: yes
 
