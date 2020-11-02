@@ -57,7 +57,7 @@
         ip4_method: manual
         ip6_method: disabled
         stp: off
-        ip4: 172.22.0.1/24
+        ip4: 172.22.0.1/21
         state: present
       when: (not enable_virtualmedia) and
             ((ipv4_provisioning|bool) or (not ipv6_enabled|bool) or
