@@ -46,7 +46,6 @@
     provisioning_subnet: "{{ ip | ipaddr('network') }}/{{ ip | ipaddr('prefix') }}"
   vars:
     ip: "{{ ansible_facts[provisioning_bridge]['ipv6'][0]['address'] }}/{{ ansible_facts[provisioning_bridge]['ipv6'][0]['prefix'] }}"
-  when: not enable_virtualmedia|bool and ipv6_enabled|bool and not ipv4_provisioning_bool
   when:
     - not enable_virtualmedia|bool
     - ipv6_enabled|bool
