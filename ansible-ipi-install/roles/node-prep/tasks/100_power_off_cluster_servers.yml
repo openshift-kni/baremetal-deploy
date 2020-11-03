@@ -24,4 +24,5 @@
       retries: 10
       delay: 5
       with_items: "{{ groups['poweroff_hosts'] }}"
+      when: groups['poweroff_hosts'] is defined
   tags: powerservers
