@@ -1,0 +1,43 @@
+alias:
+  lab_url: "http://quads11.alias.bos.scalelab.redhat.com"
+  machine_types:
+    dell:
+      740xd: 
+        pub_nic: eno3
+    supermicro:
+      6029r:
+        pub_nic: eno1
+      6048p:
+        pub_nic: enp5s0f0
+       
+scale:
+  lab_url: "http://quads.rdu2.scalelab.redhat.com"
+  machine_types:
+    supermicro:
+      1029p:
+        pub_nic: eno1
+      1029u:
+        pub_nic: eno1
+      6048r:
+        pub_nic: eno1
+      5039ms:
+        pub_nic: enp2s0f0
+      6049p:
+        pub_nic: ens5f0
+      6018r:
+        pub_nic: eno1
+    dell:
+      r620:
+        pub_nic: eno3
+      r630:
+        pub_nic: enp3s0f0
+      r730xd:
+        pub_nic: em3
+      r720xd:
+        pub_nic: em3
+      r930:
+        pub_nic: em3
+      fc640:
+        pub_nic: eno1
+      r640:
+        pub_nic: eno1

@@ -1,5 +1,5 @@
 - name: install packages
   package:
-    name: [ python3-dns, python3-netaddr]
+    name: [ python3-dns, python3-netaddr, ipmitool]
   become: true
 

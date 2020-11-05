@@ -94,6 +94,18 @@
               {% set a=ocpinv_content.pop('nodes') %}
               {{ ocpinv_content | combine({'nodes': a|difference([a[0]])}, recursive=True) }}
 
+- block:
+    - name: set provisioner_type
+      set_fact:
+        provisioner_type: "{{ (lab_name == 'scale') | ternary(provisioner_hostname.split('.')[0].split('-')[3], provisioner_hostname.split('.')[0].split('-')[2]) }}"
+ 
+    - name: set povisioner_vendor
+      set_fact:
+        provisioner_vendor: "{{ (provisioner_type in lab_vars['machine_types']['supermicro']) | ternary('supermicro', 'dell') }}"
+  vars:
+    lab_vars: "{{ (lab_name == 'scale') | ternary(scale, alias) }}"
+  when: lab_name in ['scale', 'alias']
+
 - name: dump deploying master nodes to a file
   copy:
     dest: "/tmp/metadata.txt"
@@ -170,6 +182,83 @@
     worker_fqdns: "{{ worker_fqdns|default([]) + [ item |  replace('mgmt-','') | replace('-drac', '') ] }}"
   with_items:
     - "{{ worker_mgmts }}"
+
+- name: Set master and worker node types/vendors
+  block:
+    - name: Set worker node types
+      set_fact:
+        worker_types: "{{ worker_types | default([]) + [ (lab_name == 'scale') | ternary(item.split('.')[0].split('-')[3], item.split('.')[0].split('-')[2]) ] }}"
+      with_items:
+        - "{{ worker_fqdns }}"
+
+    - name: Set worker node vendors
+      set_fact:
+        worker_vendors: "{{ worker_vendors|default([]) + [(item in lab_vars['machine_types']['supermicro']) | ternary('supermicro', 'dell')] }}"
+      with_items:
+        - "{{ worker_types }}"
+
+    - name: Set worker node dells
+      set_fact:
+        dell_workers: "{{ dell_workers | default([]) + [ item ] }}"
+      with_items:
+        - "{{ worker_fqdns }}"
+      when: 
+        - ( item.split('.')[0].split('-')[2] in lab_vars['machine_types']['dell'] ) or 
+          ( item.split('.')[0].split('-')[3] in lab_vars['machine_types']['dell'] )
+
+    - name: Set worker node supermicros
+      set_fact:
+        supermicro_workers: "{{ supermicro_workers | default([]) + [ item ] }}"
+      with_items:
+        - "{{ worker_fqdns }}"
+      when:
+        - ( item.split('.')[0].split('-')[2] in lab_vars['machine_types']['supermicro'] ) or
+          ( item.split('.')[0].split('-')[3] in lab_vars['machine_types']['supermicro'] )
+
+    - name: Set master node types
+      set_fact:
+        master_types: "{{ master_types | default([]) + [ (lab_name == 'scale') | ternary(item.split('.')[0].split('-')[3], item.split('.')[0].split('-')[2]) ] }}"
+      with_items:
+        - "{{ master_fqdns }}"
+
+    - name: Set master node dells
+      set_fact:
+        dell_masters: "{{ dell_masters | default([]) + [ item ] }}"
+      with_items:
+        - "{{ master_fqdns }}"
+      when:
+        - ( item.split('.')[0].split('-')[2] in lab_vars['machine_types']['dell'] ) or
+          ( item.split('.')[0].split('-')[3] in lab_vars['machine_types']['dell'] )
+
+    - name: Set master node supermicros
+      set_fact:
+        supermicro_masters: "{{ supermicro_masters | default([]) + [ item ] }}"
+      with_items:
+        - "{{ master_fqdns }}"
+      when:
+        - ( item.split('.')[0].split('-')[2] in lab_vars['machine_types']['supermicro'] ) or
+          ( item.split('.')[0].split('-')[3] in lab_vars['machine_types']['supermicro'] )
+
+    - name: Set Dell nodes
+      set_fact:
+        dell_nodes: "{{ dell_masters | default([]) + dell_workers | default([])  }}"
+
+    - name: Set Supermicro nodes
+      set_fact:
+        supermicro_nodes: "{{ supermicro_masters | default([]) + supermicro_workers | default([])  }}"
+  vars:
+    lab_vars: "{{ (lab_name == 'scale') | ternary(scale, alias) }}"
+  when: lab_name in ['scale', 'alias']
+
+- name: Fail when masters are non homogenuous or don't match provisioner
+  fail:
+    msg: "Homogenuous nodes which match provisioner node are needed for masters"
+  when: master_types | unique | length > 1 or master_types | unique != [provisioner_type]
+
+- name: Fail when worker nodes have R620s and R630s
+  fail:
+    msg: "Not a supported configuration for workers"
+  when: "'r620' in worker_types and 'r630' in worker_types"
 
 - name: set fact for ocp nodes mgmt
   set_fact:

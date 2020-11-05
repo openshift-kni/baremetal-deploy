@@ -41,6 +41,22 @@
   with_items:
     - "{{ ansible_eligible_interfaces }}"
 
-- name: set disabled nics to lab_pub_nic
+- name: Set lab_pub_nics for master
   set_fact:
-    disable_nics: "{{ [lab_pub_nic] }}"
+    lab_pub_nics: "{{ [lab_pub_nic] }}"
+
+- name: Setting public nics for all workers
+  block:
+    - set_fact:
+        lab_pub_nics:  "{{ lab_pub_nics + [ lab_vars['machine_types'][item.0][item.1]['pub_nic'] ]  }}"
+      with_together: 
+        - "{{ worker_vendors }}"
+        - "{{ worker_types }}"
+  vars:
+    lab_vars: "{{ (lab_name == 'scale') | ternary(scale, alias) }}"
+  when: lab_name in ['scale', 'alias']
+
+- name: set disabled nics to lab_pub_nics
+  set_fact:
+    disable_nics: "{{ lab_pub_nics | unique }}"
+

@@ -9,6 +9,7 @@ RUN yum -y install epel-release --nodocs
 RUN yum --enablerepo=epel -y install sshpass
 RUN yum -y install openssh-clients --nodocs
 RUN yum -y install git --nodocs
+RUN yum -y install ipmitool --nodocs
 RUN pip3 install jmespath
 
 # Hammercli

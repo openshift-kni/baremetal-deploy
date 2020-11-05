@@ -14,8 +14,8 @@
 
 - hosts: provisioner
   roles:
-    - { role: network-discovery }
     - { role: set-deployment-facts }
+    - { role: network-discovery }
     - { role: shared-labs-prep }
     - { role: node-prep }
     - { role: installer }

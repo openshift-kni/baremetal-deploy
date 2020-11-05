@@ -6,6 +6,10 @@
   with_items:
     - master_fqdns
     - worker_fqdns
+    - worker_types
+    - worker_vendors
+    - dell_nodes
+    - supermicro_nodes
     - master_bm_macs
     - master_prov_macs
     - worker_bm_macs
