@@ -1,0 +1,38 @@
+- include_tasks: 01_dns_update.yml
+
+- name: Create directory
+  file:
+    state: directory
+    path: "{{ scaling_dir }}/"
+
+- name: scale worker index
+  set_fact: 
+    scale_worker_index: "{{ current_worker_count | int }}"
+
+- debug:
+    msg: Scaling worker starts from - "{{ scale_worker_index }}" to "{{ worker_count }}"
+
+- name: Copy the approve_csr script from the local machine to the remote server
+  copy:
+    src: ./approve_csr.bash
+    dest: "/home/{{ ansible_user }}/"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+  become: yes
+  
+- name: Approve CSRs
+  poll: 0
+  async: 20000
+  shell: "bash /home/{{ ansible_user }}/approve_csr.bash {{ worker_count }}"
+  register: approve_csr_result
+
+- name: Approve CSRs Debug
+  debug:
+    var: approve_csr_result
+
+- include_tasks: 10_bmc_secrets.yml
+
+- include_tasks: 20_create_bmh.yml
+
+- include_tasks: 30_scale_machinesets.yml

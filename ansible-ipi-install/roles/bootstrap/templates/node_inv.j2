@@ -1,0 +1,15 @@
+{
+  "nodes": [
+{% for key in ocp_node_content| json_query(query) -%}
+      {
+         "ext_ip": "{{ extcidrnet | next_nth_usable(loop.index0 + 10 + ip_nth|default(0)|int) }}",
+         "host_name": {% if node == 'worker' %}"worker{{ '%03d' % (loop.index0 + wrkr_index|default(0)|int) }}"{% else %}"master-{{ loop.index0 }}"{% endif %},
+         "bm_mac": "{{ key.mac[2] }}",
+         "prov_mac": "{{ key.mac[1] }}",
+         "pm_addr": "{{ key.pm_addr }}",
+         "pm_password": "{{ key.pm_password }}",
+         "pm_user": "{{ key.pm_user }}"
+      }{{ "," if not loop.last }}
+{%- endfor %}
+      ]
+}

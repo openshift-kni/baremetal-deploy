@@ -12,3 +12,4 @@
     - worker_prov_macs
     - lab_ipmi_user
     - lab_ipmi_password
+    - ocp_deploying_node_content

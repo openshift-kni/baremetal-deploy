@@ -1,0 +1,100 @@
+---
+- name: Create temp directory for badfish
+  tempfile:
+    state: directory
+  register: badfish_tempdir
+
+- name: Get Badfish master branch
+  git:
+    repo: https://github.com/redhat-performance/badfish.git
+    dest: "{{ badfish_tempdir.path }}"
+    force: yes
+
+- name: Set badfish venv
+  set_fact:
+    badfish_venv: "{{ badfish_tempdir.path}}/.venv"
+
+- name: Create badfish venv
+  command: python3 -m venv {{ badfish_venv }} creates={{ badfish_venv }}
+
+- name: Update pip
+  pip:
+    name: pip
+    state: latest
+    virtualenv_command: /usr/bin/python3 -m venv
+    virtualenv: "{{ badfish_venv }}"
+    
+- name: Install badfish requirements
+  pip:
+    requirements: "{{ badfish_tempdir.path}}/requirements.txt"
+    virtualenv_command: /usr/bin/python3 -m venv
+    virtualenv: "{{ badfish_venv }}"
+
+- name: Clean network interfaces created by lab automation
+  shell: |
+    /root/clean-interfaces.sh --nuke
+  become: true
+  ignore_errors: true
+
+- name: Power on new worker nodes
+  ipmi_power:
+    name: "mgmt-{{ item }}"
+    user: "{{ lab_ipmi_user }}"
+    password: "{{ lab_ipmi_password }}"
+    state: on
+  with_items: "{{ worker_fqdns }}"
+  register: power_on_workers
+  until: power_on_workers is succeeded
+  retries: 3
+  delay: 30
+
+
+- include_role:
+    name: shared-labs-prep
+    tasks_from: 10_redfish_queue.yml
+  with_items:
+    - "{{ worker_fqdns }}"
+  tags:
+    - bootorder
+
+- name: Wait for iDrac to be responsive (check via --check-boot)
+  shell:
+    chdir: "{{ badfish_tempdir.path }}"
+    cmd: |
+      source {{ badfish_venv }}/bin/activate
+      {{ badfish_cmd }}{{ item }} --check-boot
+  with_items:
+    - "{{ worker_fqdns }}"
+  register: wait_for_idrac
+  until: wait_for_idrac is succeeded
+  retries: 20
+  delay: 30
+  tags:
+    - bootorder
+
+- name: Set nodes to director boot order
+  shell:
+    chdir: "{{ badfish_tempdir.path }}"
+    cmd: |
+      source {{ badfish_venv }}/bin/activate
+      {{ badfish_cmd }}{{ item }} -t director
+  with_items:
+    - "{{ worker_fqdns }}"
+  register: boot_order
+  until: boot_order is succeeded
+  retries: 3
+  delay: 60
+  tags:
+    - bootorder
+
+- name: Power off new worker nodes
+  ipmi_power:
+    name: "mgmt-{{ item }}"
+    user: "{{ lab_ipmi_user }}"
+    password: "{{ lab_ipmi_password }}"
+    state: off
+  with_items: "{{ worker_fqdns }}"
+  register: power_off_workers
+  until: power_off_workers is succeeded
+  retries: 3
+  delay: 30

@@ -12,8 +12,8 @@ _**Table of Contents**_
 - [Running the Ansible Playbook](#running-the-ansible-playbook)
 - [Containerized JetSki](#containerized-jetski)
 - [Versions Tested](#versions-tested)
-- [Limitations](#limitations)
 - [Contributing](#contributing)
+- [Limitations](#limitations)
 - [Additional Material/Advanced Usage](#additional-materialadvanced-usage)
 - [Troubleshooting](#troubleshooting)
 <!-- /TOC -->
@@ -60,6 +60,7 @@ The servers used for the OpenShift deployment itself are recommended to satisfy 
 * Prepares the the provisioner node for subsequent run of the installer
 * Tightly integrated with lab automation, uses some metadata provided by the Lab Wiki along with automated network discovery for dynamic inventory generation
 * Modular architecture, inherits roles from [upstream](https://github.com/openshift-kni/baremetal-deploy) without changing them, only adding roles that run before them, to setup the inventory and required parameters for the success of those roles
+* Supports scaling up of a cluster(deployed using JetSki)
 
 ##  Deployment Architecture
 For end-to-end automation and easy deployment, JetSki makes certain assumptions. The first node in your lab allocation is deployed as the provisioner host and the next 3 nodes are deployed as masters. The rest of the nodes are deployed as workers depending on how many workers were requested by user (by default all remaining nodes are deployed as workers unless otherwise specified by `worker_count` variable in `ansible-ipi-install/group_vars/all.yml`). `dnsmasq` is also setup on the provisioner to provide `DNS` and `DHCP` for the baremetal interfaces of the OpenShift nodes.
@@ -70,7 +71,7 @@ The `ansible-ipi-install`  directory consists of three main sub-directories in a
 
 - `group_vars` - Contains the `all.yml` which holds the bare minimum variables needed for install
 - `inventory` - contains the file `jetski/hosts` that has advanced variables for customized installation
-- `roles` - contains eight roles: `bootstrap`, `prepare-kni`, `add-provisioner`, `network-discovery`, `set-deployment-facts`, `shared-labs-prep`,`node-prep` and `installer`. `node-prep` handles all the prerequisites that the provisioner node requires prior to running the installer. The `installer` role handles extracting the installer, setting up the manifests, and running the Red Hat OpenShift installation.
+- `roles` - contains 11 roles: `bootstrap`, `prepare-kni`, `add-provisioner`, `network-discovery`, `set-deployment-facts`, `shared-labs-prep`,`node-prep` `installer`, `scale-bootstrap`, `scale-node-prep` and `scale-worker`. `node-prep` handles all the prerequisites that the provisioner node requires prior to running the installer. The `installer` role handles extracting the installer, setting up the manifests, and running the Red Hat OpenShift installation.
 
 The purpose served by each role can be summarized as follows:
 * `bootstrap` - This role does a **lot** of heavy lifting for seamless deployment in the shared labs. On a high level, this role is responsible for installing needed packages on the `jumphost`, obtaining the list of nodes in your lab allocation dynamically, setting some variables required in inventory as ansible facts (like list of master nodes, worker nodes, mgmt interfaces), copying keys of the `jumphost` to the provisioner, rebuilding the provisioner if needed and finally adding the master and worker nodes to the in-memory dynamic inventory of ansible. This role runs on the `jumphost` aka `localhost`.
@@ -81,6 +82,11 @@ The purpose served by each role can be summarized as follows:
 * `shared-labs-prep` - Creates the BM bridge, powers on nodes, sets boot order etc. This role runs on the provisioner host.
 * `node-prep` - Prepares the provisioner node for the OpenShift Installer by installing needed packages, creating necessary directories etc. This role runs on the provisioner host.
 * `installer` - Actually drives the OpenShift Installer. This role runs on the provisioner host.
+
+Scale Up worker roles
+* `scale-bootstrap` - This role is similar to **boostrap**, but runs only during scale up worker playbook execution, it is responsible for gathering inventory details from the local file `ocpdeployednodeinv.json` and `ocpnondeployednodeinv.json`. It validates the input `worker_count` with the available non deployed nodes.
+* `scale-node-prep` - This role is similar to **shared-labs-prep**, runs only during scale up worker playbook execution, it is responsible for setting up the boot order on the new worker nodes.
+* `scale-worker` - This is the main role which does all openshift operations, it creates BMC scecret, BMH objects for new host and scale worker machinesets. 
 
 The tree structure is shown below:
 
@@ -101,6 +107,7 @@ The tree structure is shown below:
 ├── OWNERS
 ├── playbook-jetski.yml
 ├── playbook-rh-shared-labs.yml
+├── playbook-jetski-scaleup.yml
 ├── playbook.yml
 ├── prep_kni_user.yml
 └── roles
@@ -123,6 +130,8 @@ The tree structure is shown below:
     │   │   ├── 55_add_ocp_masters.yml
     │   │   ├── 60_add_ocp_workers.yml
     │   │   └── main.yml
+    │   ├── templates
+    │   │   └── node_inv.j2
     │   └── vars
     │       └── main.yml
     ├── installer
@@ -159,8 +168,10 @@ The tree structure is shown below:
     │   ├── templates
     │   │   ├── chrony.conf.j2
     │   │   ├── etc-chrony.conf.j2
+    │   │   ├── httpd_conf.j2
     │   │   ├── install-config-appends.j2
     │   │   ├── install-config.j2
+    │   │   ├── magic.j2
     │   │   └── metal3-config.j2
     │   ├── tests
     │   │   ├── inventory
@@ -203,6 +214,23 @@ The tree structure is shown below:
     ├── prepare-kni
     │   └── tasks
     │       └── main.yml
+    ├── scale-bootstrap
+    │   └── tasks
+    │       └── main.yml
+    ├── scale-node-prep
+    │   ├── tasks
+    │   │   └── main.yml
+    │   └── vars
+    │       └── main.yml
+    ├── scale-worker
+    │   ├── defaults
+    │   │   └── main.yml
+    │   └── tasks
+    │       ├── 01_dns_update.yml
+    │       ├── 10_bmc_secrets.yml
+    │       ├── 20_create_bmh.yml
+    │       ├── 30_scale_machinesets.yml
+    │       └── main.yml
     ├── set-deployment-facts
     │   └── tasks
     │       └── main.yml
@@ -212,6 +240,7 @@ The tree structure is shown below:
         ├── library
         │   └── nmcli.py -> ../../node-prep/library/nmcli.py
         ├── tasks
+        │   ├── 10_redfish_queue.yml
         │   └── main.yml
         ├── templates
         │   ├── ocp4-lab.dnsmasq.conf.j2
@@ -295,6 +324,9 @@ rebuild_provisioner: false
 # Number of workers desired, by default all hosts in your allocation except 1 provisioner and 3 masters are used workers
 # However that behaviour can be overrided by explicitly settign the desired number of workers here. For a masters only deploy,
 # set worker_count to 0
+# Update this variable to scale up your existing cluster, provided lab allocation is sufficient to scale up to this count. 
+# If not mentioned for a scale up execution, it includes all node available in the inventory `ocpnondeployednodeinv.json`
+# If mentioned, this value should be final worker count and cannot be less than existing worker_count.
 worker_count: 0
 # set to true to deploy with jumbo frames
 jumbo_mtu: false
@@ -509,6 +541,27 @@ Sample `playbook-jetski.yml`:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ https_proxy }}"
     no_proxy: "{{ no_proxy_list }}"
+
+- name: Finishing IPI on Baremetal Installation 
+  hosts: orchestration
+  tasks: 
+    - name: create ocpdeployednodeinv.json file
+      copy:
+        dest: "{{ ocp_deployed_node_inv_path }}"
+        content: "{{ ocp_deploying_node_content | to_nice_json }}"
+      when: ocp_deploying_node_content.nodes | length > 0   
+
+    - name: create ocpnondeployednodeinv.json file
+      copy:
+        dest: "{{ ocp_nondeployed_node_inv_path }}"
+        content: "{{ nondeploying_worker_nodes_content | to_nice_json }}"
+      when: nondeploying_worker_nodes_content.nodes | length > 0
+
+    - name: Delete ocpnondeployednodeinv.json file
+      file:
+        dest: "{{ ocp_nondeployed_node_inv_path }}"
+        state: absent
+      when: nondeploying_worker_nodes_content.nodes | length == 0    
 ```
 
 
@@ -522,7 +575,7 @@ $ ansible-playbook -i inventory/jetski/hosts playbook-jetski.yml
 
 ## Verifying Installation
 
-Once the playbook has successfully completed, verify that your environment is up and running.
+Once the playbook has successfully completed, verify that your environment is up and running. Please keep `ocpdeployednodeinv.json` and `ocpnondeployednodeinv.json` files in `ansible-ipi-install` incase if you want to scale up workers later.
 
 1. Log into the provisioner node (typically the first node in you lab assignment)
 
@@ -537,6 +590,95 @@ export KUBECONFIG=~/clusterconfigs/auth/kubeconfig
 ```
 
 3. Verify the nodes in the OpenShift cluster
+
+```sh
+[kni@provioner~]$ oc get nodes
+NAME                                         STATUS   ROLES           AGE   VERSION
+master-0.openshift.example.com               Ready    master          19h   v1.16.2
+master-1.openshift.example.com               Ready    master          19h   v1.16.2
+master-2.openshift.example.com               Ready    master          19h   v1.16.2
+worker-0.openshift.example.com               Ready    worker          19h   v1.16.2
+```
+### The Ansible `playbook-jetski-scaleup.yml`
+
+This playbook scales up worker nodes to the desired `worker_count` mentioned in `ansible-ipi-install/group_vars/all.yml` make sure to update the worker_count before execution. It must be executed from the same ansible jump host (ansible machine which is used to deploy the fresh cluster using `playbook-jetski.yml`) and from the same directory because it refers to `ocpdeployednodeinv.json` and `ocpnondeployednodeinv.json`(originally created by `playbook-jetski.yml`) present inside `ansible-ipi-install`directory. 
+
+Sample `playbook-jetski-scaleup.yml`:
+
+```yml
+---
+- name: IPI on Baremetal Installation Playbook -- Red Hat Shared Labs JetSki Edition
+  hosts: orchestration
+  roles:
+    - { role: scale-bootstrap }
+    - { role: add-provisioner }
+
+- hosts: provisioner
+  tasks:
+    - name: set facts needed for OCP deployment on the provisioning host
+      set_fact:
+        "{{ item }}": "{{ hostvars[groups['orchestration'][0]][item] }}"
+      with_items:
+        - worker_fqdns
+        - lab_ipmi_user
+        - lab_ipmi_password
+        - scale_worker_node
+        - worker_count
+        - current_worker_count
+
+- hosts: provisioner
+  roles:
+    #    - { role: scale-node-prep }
+    - { role: scale-worker }
+
+- name: Finishing IPI on Baremetal Installation 
+  hosts: orchestration
+  tasks: 
+    - name: create ocpdeployednodeinv.json file
+      copy:
+        dest: "{{ ocp_deployed_node_inv_path }}"
+        content: "{{ ocp_deploying_node_content | to_nice_json }}"
+      when: ocp_deploying_node_content.nodes | length > 0   
+
+    - name: create ocpnondeployednodeinv.json file
+      copy:
+        dest: "{{ ocp_nondeployed_node_inv_path }}"
+        content: "{{ nondeploying_worker_nodes_content | to_nice_json }}"
+      when: nondeploying_worker_nodes_content.nodes | length > 0
+
+    - name: Delete ocpnondeployednodeinv.json file
+      file:
+        dest: "{{ ocp_nondeployed_node_inv_path }}"
+        state: absent
+      when: nondeploying_worker_nodes_content.nodes | length == 0        
+```
+
+
+### Running the `playbook-jetski.yml`
+
+With the `playbook-jetski-scaleup.yml` set and in-place, run the `playbook-jetski-scaleup.yml`
+
+```sh
+$ ansible-playbook -i inventory/jetski/hosts playbook-jetski-scaleup.yml
+```
+
+## Verifying Installation
+
+Once the playbook has successfully completed, verify that your environment is up and running. 
+
+1. Log into the provisioner node (typically the first node in you lab assignment)
+
+```sh
+ssh kni@provisioner.example.com
+```
+
+2. Export the `kubeconfig` file located in the `~/clusterconfigs/auth` directory
+
+```sh
+export KUBECONFIG=~/clusterconfigs/auth/kubeconfig
+```
+
+3. Verify the new worker nodes in the OpenShift cluster
 
 ```sh
 [kni@provioner~]$ oc get nodes
@@ -617,7 +759,33 @@ Wednesday 01 July 2020  13:52:42 -0400 (0:00:00.193)       0:00:07.127 ********
 changed: [localhost]
 ```
 
-As soon as the `Download ocpinv.json` task completes successfully, you can exit out of the playbook by using `ctrl+c` and then manually edit the `ocpinv.json` file. The file is a JSON dictionary which has a list of dictionaries under the `nodes` key, each of which represents a node in your lab allocation. By changing the order of nodes/removing nodes from here you are able to assign nodes to a particular role/remove them from deployment. Be careful to ensure that it is still a valid JSON after your edits. For example, if I want to ensure that a specific node in my allocation becomes the provisioner, I would move the dictionary representing that node  to the first position in the `nodes` list, or if I wanted to ensure specific nodes become OpenShift masters, I would put them in the 2,3 and 4 positions in the list, or if I wanted to exclude a few nodes, I would totally remove them from the list of `nodes`. After these changes, for good measure `rm -f ocpnodeinv.json` in the `ansible-ipi-install` directory and re-kick the JetSki playbook and JetSki will consume the edited `ocpinv.json`.
+As soon as the `Download ocpinv.json` task completes successfully, you can exit out of the playbook by using `ctrl+c` and then manually edit the `ocpinv.json` file. The file is a JSON dictionary which has a list of dictionaries under the `nodes` key, each of which represents a node in your lab allocation. By changing the order of nodes/removing nodes from here you are able to assign nodes to a particular role/remove them from deployment. Be careful to ensure that it is still a valid JSON after your edits. For example, if I want to ensure that a specific node in my allocation becomes the provisioner, I would move the dictionary representing that node  to the first position in the `nodes` list, or if I wanted to ensure specific nodes become OpenShift masters, I would put them in the 2,3 and 4 positions in the list, or if I wanted to exclude a few nodes, I would totally remove them from the list of `nodes`. After these changes, JetSki will consume the edited `ocpinv.json` instead of quads inventory order on every execution.
+
+### Rerunning a failed scaleup worker job
+
+In case of any failure during a scaleup play, make sure you remove all faulty nodes as well as other nodes which are not `provisioned` yet in the cluster and re-run the script from ansible node. 
+
+Scaling down from 2 to 1,
+
+```sh
+oc get nodes
+oc adm cordon <node_name>
+oc adm drain <node_name> --force=true
+
+oc get machinesets -n openshift-machine-api
+oc scale --replicas=1 machineset <machineset> -n openshift-machine-api
+
+# Check active worker nodes, it would have been reduced to 1
+oc get nodes  
+oc get machinesets
+
+oc delete bmh <host_name> -n openshift-machine-api 
+```
+
+Wait till you the see the cluster back to normal state with reduced worker node, then re-run the playbook. 
+
+This approach will not work if you want to rebuild a node after a successful playbook execution, because after a successful execution `ocpnondeployednodeinv.json` will be update to latest or removed. 
+Re-run might use the update inventory.
 
 ### Tips
 

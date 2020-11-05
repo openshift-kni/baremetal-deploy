@@ -1,0 +1,111 @@
+- name: Create temporary directory for inventory
+  tempfile:
+    state: directory
+  register: inventory_tempdir
+  when: inventory_hostname != 'localhost'
+ 
+- name: set fact for inv file
+  set_fact:
+    "{{ item.name }}": "{{ playbook_dir +  '/' + item.path if inventory_hostname == 'localhost' else inventory_tempdir.path + '/' + item.path }}"
+  with_items:
+    - { name: ocpinv_file, path: ocpinv.json }
+    - { name: ocp_deployed_node_inv_path, path: ocpdeployednodeinv.json }
+    - { name: ocp_nondeployed_node_inv_path, path: ocpnondeployednodeinv.json }
+
+- name: check  ocp_deployed_node_inv_path file available
+  stat:
+      path: "{{ ocp_deployed_node_inv_path }}"
+  register: deploy_node
+
+- name: check ocp_nondeployed_node_inv_path file available
+  stat:
+      path: "{{ ocp_nondeployed_node_inv_path }}"
+  register: nondeploy_node
+
+- name: Fail when required JSON files are missing
+  fail:
+    msg: Input JSON - file is missing or No available nodes to scale
+  when: ( not deploy_node.stat.exists ) or ( not nondeploy_node.stat.exists )
+
+- name: read inv env file
+  slurp:
+    src: "{{ ocpinv_file }}"
+  register: invfile
+
+- name: read non deployed node file
+  slurp:
+    src: "{{ ocp_nondeployed_node_inv_path }}"
+  register: nondeploy_inv
+
+- name: set inventory fact
+  set_fact:
+    ocp_nondeployed_node_content: "{{ nondeploy_inv['content'] | b64decode | from_json }}"
+
+- name: read non deployed node file
+  slurp:
+    src: "{{ ocp_deployed_node_inv_path }}"
+  register: deploy_inv
+
+- name: set inventory fact
+  set_fact:
+    ocp_deployed_node_content: "{{ deploy_inv['content'] | b64decode | from_json }}"
+
+- name: Set default deployed worker count
+  set_fact:
+    deployed_worker_fqdns: []
+
+- name: Set already deployed worker count
+  set_fact:
+    deployed_worker_fqdns: "{{ deployed_worker_fqdns | default([]) + [ item.pm_addr ] }}"
+  when: "'worker' in item.host_name"
+  loop: "{{ ocp_deployed_node_content.nodes }}"
+  
+- name: Existing worker count
+  set_fact:
+    current_worker_count: "{{ deployed_worker_fqdns | length }}"
+
+- name: set inventory fact
+  set_fact:
+    ocpinv_content: "{{ invfile['content'] | b64decode | from_json }}"
+
+- name: set provisioner hostname
+  set_fact:
+    provisioner_hostname: "{{ ocpinv_content.nodes[0].pm_addr | replace('mgmt-','') | replace('-drac', '') }}"
+    lab_ipmi_user:  "{{ ocpinv_content.nodes[0].pm_user }}"
+    lab_ipmi_password:  "{{ ocpinv_content.nodes[0].pm_password }}"
+
+- name: Set scale worker count
+  set_fact:
+    worker_count: "{{ ocp_nondeployed_node_content.nodes | length + current_worker_count | int }}"
+  when: worker_count is not defined 
+
+- name: Set scale worker index
+  set_fact:
+    scale_worker_index: "{{ worker_count | int - current_worker_count | int}}"
+
+- name: set scale_worker_node
+  set_fact:
+    scale_worker_node: "{{ ocp_nondeployed_node_content | combine({'nodes': ocp_nondeployed_node_content|json_query(query)}, recursive=True) }}"
+  vars:
+    query: nodes[0:{{scale_worker_index}}]
+
+# Make sure required number of workers are available (useful when user passes wrong worker_count value)
+- name: Fail when required number of worker nodes cannot be scaled
+  fail:
+    msg: Required number of nodes are not available to scale workers
+  when: ( ( scale_worker_node.nodes | length + current_worker_count | int ) != worker_count | int ) or
+        ( worker_count | int <= current_worker_count | int )    # If scale request is lesser than or equal current count
+
+- name: Set worker FQDNs
+  set_fact:
+    worker_fqdns: "{{ worker_fqdns | default([]) + [ item.pm_addr |  replace('mgmt-','') | replace('-drac', '') ] }}"
+  with_items:
+    - "{{ scale_worker_node.nodes }}"
+
+- name: set ocp_nondeplopyed_node_content
+  set_fact:
+    ocp_deploying_node_content: "{{ ocp_deployed_node_content | combine({'nodes': ocp_deployed_node_content.nodes|union(scale_worker_node.nodes)}, recursive=True) }}"    
+
+- name: set ocp_nondeplopyed_node_content
+  set_fact:
+    nondeploying_worker_nodes_content: "{{ ocp_nondeployed_node_content | combine({'nodes': ocp_nondeployed_node_content.nodes|difference(scale_worker_node.nodes)}, recursive=True) }}"

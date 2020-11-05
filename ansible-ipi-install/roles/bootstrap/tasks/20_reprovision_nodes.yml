@@ -20,7 +20,7 @@
 
 - name: set os_install
   set_fact:
-    os_install: "{{ (rhel_version is version('8.1', '<') or rebuild_provisioner) | ternary('RHEL 8.1', false) }}"
+    os_install: "{{ (rebuild_provisioner or rhel_version is version('8.1', '<')) | ternary('RHEL 8.1', false) }}"
 
 - name: Determine if containers should be used
   set_fact:
@@ -71,8 +71,27 @@
       when: lab_name == "alias" and not run_in_container
 
     - name: Set provisioner host to foreman boot order (in container)
-      shell: |
-        {{ badfish_cmd_container }}{{ provisioner_hostname }} -t foreman
+      block:
+        - name: Try badfish to set Foreman style interface order
+          shell: |
+            {{ badfish_cmd_container }}{{ provisioner_hostname }} -t foreman
+      rescue:
+        # RACRESET is required if Badfish failed due to Redfish internal error
+        - name: Rescue - Reset iDRAC
+          shell: |
+            sshpass -p "{{ lab_ipmi_password }}" ssh -o StrictHostKeyChecking=no {{ lab_ipmi_user }}@mgmt-{{ provisioner_hostname }} "racadm racreset soft -f"
+
+        - name: Wait for iDrac to be responsive (check via --check-boot)
+          shell: |
+              {{ badfish_cmd_container }}{{ provisioner_hostname }} --check-boot
+          register: wait_for_prov_idrac
+          until: wait_for_prov_idrac is succeeded
+          retries: 20
+          delay: 30
+
+        - name: Badfish rescue to set Foreman style interface order
+          shell: |
+            {{ badfish_cmd_container }}{{ provisioner_hostname }} -t foreman
       when: run_in_container
 
     - name: Set provisioner host to reboot (in container)
@@ -81,8 +100,27 @@
       when: run_in_container
 
     - name: Set provisioner host to foreman boot order
-      shell: |
-        {{ badfish_cmd }}{{ provisioner_hostname }} -t foreman
+      block:
+        - name: Try badfish to set Foreman style interface order
+          shell: |
+            {{ badfish_cmd }}{{ provisioner_hostname }} -t foreman
+      rescue:
+        # RACRESET is required if Badfish failed due to Redfish internal error
+        - name: Rescue - Reset iDRAC
+          shell: |
+            sshpass -p "{{ lab_ipmi_password }}" ssh -o StrictHostKeyChecking=no {{ lab_ipmi_user }}@mgmt-{{ provisioner_hostname }} "racadm racreset soft -f"
+
+        - name: Wait for iDrac to be responsive (check via --check-boot)
+          shell: |
+              {{ badfish_cmd }}{{ provisioner_hostname }} --check-boot
+          register: wait_for_prov_idrac
+          until: wait_for_prov_idrac is succeeded
+          retries: 20
+          delay: 30
+
+        - name: Badfish rescue to set Foreman style interface order
+          shell: |
+            {{ badfish_cmd }}{{ provisioner_hostname }} -t foreman
       when: not run_in_container
 
     - name: Set provisioner host to reboot

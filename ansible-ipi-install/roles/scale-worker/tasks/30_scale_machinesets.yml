@@ -1,0 +1,39 @@
+- name: Register machineset name
+  environment:
+    KUBECONFIG: "{{ kubeconfig_file }}"
+  shell: |
+    oc -n openshift-machine-api get machineset  | awk '/worker/ {print $1}'
+  register: worker_machineset
+  failed_when: worker_machineset.stdout == ''
+
+- name: Scale machineset - {{ worker_machineset.stdout }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_file }}"
+  shell: |
+    oc -n openshift-machine-api scale --replicas={{ worker_count }} machineset {{ worker_machineset.stdout }}
+
+- name: wait for 20 minutes before checking for Machinesets 
+  wait_for:
+    timeout: 1200
+
+- name: Wait for machineset to be available
+  environment:
+    KUBECONFIG: "{{ kubeconfig_file }}"
+  shell: |
+    oc -n openshift-machine-api get machineset/{{ worker_machineset.stdout }} --template={{'{{'}}.status.availableReplicas{{'}}'}}
+  register: mcp_machineset_ready
+  retries: 30
+  delay: 60
+  until: mcp_machineset_ready.stdout == "{{ worker_count }}"
+  changed_when: mcp_machineset_ready.stdout == "{{ worker_count }}"
+  
+- name: Wait for machineset to be ready
+  environment:
+    KUBECONFIG: "{{ kubeconfig_file }}"
+  shell: |
+    oc -n openshift-machine-api get machineset/{{ worker_machineset.stdout }} --template={{'{{'}}.status.readyReplicas{{'}}'}}
+  register: mcp_machineset_ready
+  retries: 30
+  delay: 60
+  until: mcp_machineset_ready.stdout == "{{ worker_count }}"
+  changed_when: mcp_machineset_ready.stdout == "{{ worker_count }}"

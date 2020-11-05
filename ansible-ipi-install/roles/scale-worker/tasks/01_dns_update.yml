@@ -1,0 +1,15 @@
+- name: Configure dnsmasq for baremetal
+  lineinfile:
+    line: "dhcp-host={{ item.bm_mac }},{{ item.ext_ip }},{{ item.host_name }}"
+    path: /etc/dnsmasq.d/ocp4-lab.conf
+    insertafter: '^dhcp-host' 
+    state: present
+  become: yes
+  loop: "{{ scale_worker_node.nodes }}"
+
+- name: Enable and start dnsmasq service
+  systemd:
+    name: dnsmasq
+    state: restarted
+    enabled: yes
+  become: yes

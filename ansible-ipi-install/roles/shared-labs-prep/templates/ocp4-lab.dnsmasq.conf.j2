@@ -13,11 +13,8 @@ dhcp-option=baremetal,26,9000
 dhcp-range={{ extcidrnet | next_nth_usable(10) }},{{ extcidrnet | ipaddr('last_usable') }}
 dhcp-no-override
 dhcp-authoritative
-{% for mac in master_bm_macs %}
-dhcp-host={{ mac }},{{ extcidrnet | next_nth_usable(loop.index0 + 10) }},master-{{ loop.index0 }}
-{% endfor %}
-{% for mac in worker_bm_macs %}
-dhcp-host={{ mac }},{{ extcidrnet | next_nth_usable(loop.index0 + 10 + (master_bm_macs | length)) }},worker{{ '%03d' % loop.index0 }}
+{% for node in ocp_deploying_node_content.nodes %}
+dhcp-host={{ node.bm_mac }},{{ node.ext_ip }},{{ node.host_name }}
 {% endfor %}
 address=/ns1.{{ cluster }}.{{ domain }}/{{ dnsvip }}
 address=/api.{{ cluster }}.{{ domain }}/{{ apivip }}

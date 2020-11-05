@@ -1,0 +1,19 @@
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: worker-{{ ansible_loop.index0 + scale_worker_index | int }}
+  namespace: openshift-machine-api
+spec:
+  online: true
+  bmc:
+    address: "ipmi://{{ item.pm_addr }}:623"
+    credentialsName: "worker-{{ ansible_loop.index0 + scale_worker_index | int }}-bmc-secret"
+  hardwareProfile: unknown
+  bootMACAddress: "{{ item.prov_mac }}"
+{% if bootmode is defined and bootmode == 'legacy' %}
+  bootMode: legacy
+{% endif %}  
+  userData:
+    name: worker-user-data
+    namespace: openshift-machine-api
