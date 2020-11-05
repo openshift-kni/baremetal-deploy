@@ -24,6 +24,7 @@ STATIC=(
 
 DEV=(
     'Deployment'
+    'Troubleshooting'
 )
 
 # Get latest version for 'static' documents
