@@ -9,7 +9,7 @@
          "pm_addr": "{{ key.pm_addr }}",
          "pm_password": "{{ key.pm_password }}",
          "pm_user": "{{ key.pm_user }}"
-      }{{ "," if not loop.last }}
+      }{{ "," if not loop.last else "" }}
 {%- endfor %}
       ]
 }
