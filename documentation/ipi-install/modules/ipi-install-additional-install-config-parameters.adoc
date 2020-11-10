@@ -17,6 +17,14 @@ and the `bmc` parameter for the `install-config.yaml` file.
 |
 | The domain name for the cluster. For example, `example.com`.
 
+| [[sshkey]] `sshKey`
+|
+| The public portion of the default SSH key for the core user in Red Hat Enterprise Linux CoreOS (RHCOS).
+
+| [[pullsecret]] `pullSecret`
+|
+| The pull secret that you obtained when preparing the `provisioner` node.
+
 
 a|[[metadataname]]
 ----
