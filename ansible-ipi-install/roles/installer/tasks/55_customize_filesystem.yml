@@ -1,7 +1,11 @@
 ---
-- name: Verify if {{ role_path }}/files/customize_filesystem/master/worker is empty
+- name: Check if override path is defined for customize_filesystem
+  set_fact:
+    custom_path: "{{ customize_node_filesystems | default( role_path + '/files/customize_filesystem' ) }}"
+
+- name: Verify if {{ custom_path }}/master/worker is empty
   find:
-    paths: "{{ role_path }}/files/customize_filesystem/{{ item }}"
+    paths: "{{ custom_path }}/{{ item }}"
     recurse: yes
     follow: yes
   register: filesFound
@@ -29,7 +33,7 @@
 
   - name: Copy customize_filesystem to tempdir
     copy:
-      src: "{{ role_path }}/files/customize_filesystem"
+      src: "{{ custom_path }}"
       dest: "{{ tempdir }}"
       force: yes
 
