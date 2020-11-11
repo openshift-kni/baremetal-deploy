@@ -82,6 +82,11 @@ increase_install_timeout=2
 # By default this feature is enabled and set to true. Uncomment below to disable and use IPMI.
 redfish_inspection=false
 
+# (Optional) Enable OVN hybirdOverlayConfig, it configures an additional overlay network for peers that are not using OVN.
+# This variable is valid only if network_type=OVNKubernetes
+# By default this is disabled and set to false. Set ovn_hybird_plugin to true to use BigIP ingress in a cluster.
+ovn_hybird_plugin=true
+
 ######################################
 # Vars regarding install-config.yaml #
 ######################################

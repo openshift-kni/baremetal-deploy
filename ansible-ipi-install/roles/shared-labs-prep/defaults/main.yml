@@ -2,3 +2,4 @@
 # defaults file for shared-labs-ocp4-prep
 worker_fqdns: []
 worker_bm_macs: []
+ovn_hybird_plugin: false

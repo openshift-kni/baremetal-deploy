@@ -285,6 +285,31 @@
       with_items: "{{ disable_nics }}"
   delegate_to: localhost
 
+- name: Create Manifest folder
+  block:
+    - name: Set manifest directory path
+      set_fact:
+        manifest_path: "{{ playbook_dir }}/roles/installer/files/manifests/"
+      
+    - name: Clean up any existing manifest content
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_fileglob:
+        - "{{ manifest_path }}*"
+
+    - name: Copy files to manifest path
+      copy:
+        src: "{{ item }}"
+        dest: "{{ manifest_path }}/{{ item }}"
+        mode: 0644
+      with_items: 
+        - "99_openshift-cluster-network.yaml"
+      when:
+        - network_type == "OVNKubernetes" 
+        - ovn_hybird_plugin | bool     
+  delegate_to: localhost
+
 - name: Copy the approve_csr script from the local machine to the remote server
   copy:
     src: ./approve_csr.bash
