@@ -107,7 +107,7 @@ endif::[]
 +
 [source,terminal]
 ----
-[kni@provisioner ~]$ sudo nmcli con show
+[kni@provisioner ~]$ nmcli con show
 ----
 +
 [source,terminal]
