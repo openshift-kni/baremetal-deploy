@@ -19,11 +19,11 @@ and the `bmc` parameter for the `install-config.yaml` file.
 
 | [[sshkey]] `sshKey`
 |
-| The public portion of the default SSH key for the core user in Red Hat Enterprise Linux CoreOS (RHCOS).
+| The `sshKey` configuration setting contains the key in the `~/.ssh/id_rsa.pub` file required to access the control plane nodes and worker nodes. Typically, this key is from the `provisioner` node.
 
 | [[pullsecret]] `pullSecret`
 |
-| The pull secret that you obtained when preparing the `provisioner` node.
+| The `pullSecret` configuration setting contains a copy of the pull secret downloaded from the link:https://cloud.redhat.com/openshift/install/metal/user-provisioned[Install OpenShift on Bare Metal] page when preparing the provisioner node.
 
 
 a|[[metadataname]]
