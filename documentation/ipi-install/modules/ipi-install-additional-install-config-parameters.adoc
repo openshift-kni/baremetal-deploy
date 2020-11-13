@@ -17,6 +17,14 @@ and the `bmc` parameter for the `install-config.yaml` file.
 |
 | The domain name for the cluster. For example, `example.com`.
 
+| [[sshkey]] `sshKey`
+|
+| The `sshKey` configuration setting contains the key in the `~/.ssh/id_rsa.pub` file required to access the control plane nodes and worker nodes. Typically, this key is from the `provisioner` node.
+
+| [[pullsecret]] `pullSecret`
+|
+| The `pullSecret` configuration setting contains a copy of the pull secret downloaded from the link:https://cloud.redhat.com/openshift/install/metal/user-provisioned[Install OpenShift on Bare Metal] page when preparing the provisioner node.
+
 
 a|[[metadataname]]
 ----
