@@ -1,10 +1,9 @@
 // This is included in the following assemblies:
 //
 // ipi-install-configuration-files.adoc
-
 [id='ipi-install-setting-proxy-settings-within-install-config_{context}']
 
-= Setting proxy settings within the  `install-config.yaml` file (optional)
+= Setting proxy settings within the `install-config.yaml` file (optional)
 
 To deploy an {product-title} cluster using a proxy, make the following changes to the `install-config.yaml` file.
 
@@ -18,18 +17,17 @@ proxy:
   noProxy: <WILDCARD_OF_DOMAIN>,<PROVISIONING_NETWORK/CIDR>,<BMC_ADDRESS_RANGE/CIDR>
 ----
 
-An example of `noProxy` with values for clarity.
+See below for an example of `noProxy` with values.
 
 [source,yaml]
 ----
 noProxy: .example.com,172.22.0.0/24,10.10.0.0/24
 ----
 
-With a proxy enabled, ensure to set the appropriate values of your proxy in the corresponding key/value pair.
+With a proxy enabled, set the appropriate values of the proxy in the corresponding key/value pair.
 
 Key considerations:
 
-* If you don't have an HTTPS Proxy, change the value from `https://` to `http://` for `httpsProxy`.
-* If using a provisioning network, ensure to include it in your `noProxy` setting, otherwise the installer will fail.
-* Ensure to set all your proxy settings as environment variables within the provision host, e.g. `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`
-
+* If the proxy doesn't have an HTTPS proxy, change the value of `httpsProxy` from `https://` to `http://`.
+* If using a provisioning network, include it in the `noProxy` setting, otherwise the installer will fail.
+* Set all of the proxy settings as environment variables within the provisioner node. For example, `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`.
