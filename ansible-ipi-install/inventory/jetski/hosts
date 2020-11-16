@@ -82,6 +82,13 @@ increase_install_timeout=2
 # By default this feature is enabled and set to true. Uncomment below to disable and use IPMI.
 redfish_inspection=false
 
+# (Optional) Modify files on the node filesystems, you can augment the "fake" roots for the 
+# control plane and worker nodes.
+# If defined, playbook will look for files in control plane and worker subdirectories.
+# Otherwise, it will look in {{ role_path }}/files/customize_filesystem (default)
+# For more information on modifying node filesystems visit: https://bit.ly/36tD30f
+#customize_node_filesystems="/path/to/customized/filesystems"
+
 # (Optional) Enable OVN hybirdOverlayConfig, it configures an additional overlay network for peers that are not using OVN.
 # This variable is valid only if network_type=OVNKubernetes
 # By default this is disabled and set to false. Set ovn_hybird_plugin to true to use BigIP ingress in a cluster.
