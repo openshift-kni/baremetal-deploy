@@ -87,7 +87,7 @@ controlPlane:
 ifeval::[{release} >= 4.4]
 ifeval::[{release} <= 4.6]
 a| [[provisioningNetworkInterface]]`provisioningNetworkInterface` |  | The name of the network interface on control plane nodes connected to the
-provisioning network. ({product-title} 4.4 only)
+provisioning network.
 endif::[]
 endif::[]
 
