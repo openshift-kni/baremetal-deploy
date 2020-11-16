@@ -3,7 +3,6 @@
 // * installing/installing_bare_metal_ipi/ipi-install-installation-workflow.adoc
 
 [id="ipi-install-bmc-addressing_{context}"]
-[[bmcaddressing]]
 
 = BMC addressing
 
