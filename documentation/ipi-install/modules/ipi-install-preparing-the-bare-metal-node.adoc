@@ -117,12 +117,3 @@ Where `<num>` is the worker node number.
 NAME                 STATUS   PROVISIONING STATUS   CONSUMER   BMC                 HARDWARE PROFILE   ONLINE   ERROR
 openshift-worker-<num>   OK       ready                            ipmi://<out-of-band-ip>   unknown            true
 ----
-
-. Check the status of the bare metal node.
-+
-[source,bash]
-----
-[kni@openshift-master-0 ~]$ oc -n openshift-machine-api get bmh openshift-worker-<num>
-----
-+
-Where `<num>` is the worker node number. The status should change to `ready`.

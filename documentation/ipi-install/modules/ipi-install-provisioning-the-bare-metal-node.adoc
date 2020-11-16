@@ -62,7 +62,7 @@ NAME                 STATUS   PROVISIONING STATUS   CONSUMER                  BM
 openshift-worker-<num>   OK       provisioning          openshift-worker-<num>-65tjz   ipmi://<out-of-band-ip>   unknown            true
 ----
 +
-The `provisioning` status remains until the {product-title} cluster provisions the node. This may take 30 minutes or more. Once complete, the status will change to `provisioned`.
+The `provisioning` status remains until the {product-title} cluster provisions the node. This can take 30 minutes or more. Once complete, the status will change to `provisioned`.
 +
 [source,bash]
 ----
