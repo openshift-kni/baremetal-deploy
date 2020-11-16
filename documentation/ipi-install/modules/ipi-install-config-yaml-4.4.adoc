@@ -7,7 +7,7 @@ networking:
   networkType: OVNKubernetes
 compute:
 - xref:workername[name]: worker
-  xref:computereplicas[replicas]: 2
+  xref:computereplicas[replicas]: 2 <1>
 controlPlane:
   xref:controlplanename[name]: master
   xref:controlplanereplicas[replicas]: 3
@@ -24,7 +24,7 @@ platform:
       - xref:name[name]: openshift-master-0
         xref:role[role]: master
         xref:bmcaddressing[bmc]:
-          address: ipmi://+<out-of-band-ip>+ # <1>
+          address: ipmi://+<out-of-band-ip>+ # <2>
           username: +<user>+
           password: +<password>+
         xref:bootMACAddress[bootMACAddress]: +<NIC1-mac-address>+
