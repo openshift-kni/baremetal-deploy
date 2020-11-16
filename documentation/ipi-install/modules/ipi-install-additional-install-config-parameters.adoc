@@ -42,13 +42,12 @@ networking:
 ----
 |
 |The public CIDR (Classless Inter-Domain Routing) of the external network. For example, `10.0.0.0/24`
-
 ifdef::upstream[]
 ifeval::[{release} >= 4.5]
-or `2620:52:0:1302::/64`.
+or `2620:52:0:1302::/64`
 endif::[]
 endif::[]
-
+.
 
 a|[[workername]]
 ----
@@ -86,12 +85,10 @@ controlPlane:
 |Replicas sets the number of control plane (master) nodes included as part of the {product-title} cluster.
 
 ifeval::[{release} >= 4.4]
-
 ifeval::[{release} <= 4.6]
 a| [[provisioningNetworkInterface]]`provisioningNetworkInterface` |  | The name of the network interface on control plane nodes connected to the
 provisioning network. ({product-title} 4.4 only)
 endif::[]
-
 endif::[]
 
 
@@ -141,18 +138,18 @@ a|`provisioningNetworkCIDR`
 |The CIDR for the network to use for provisioning. This option is required when not using the default address range on the `provisioning` network.
 
 |`clusterProvisioningIP`
-|The third IP address of the `provisioningNetworkCIDR`
+|The third IP address of the `provisioningNetworkCIDR`.
 |The IP within the cluster where the provisioning services run. Defaults to the 3rd IP of the `provisioning` subnet. For example, `172.22.0.3`.
 
 |`bootstrapProvisioningIP`
-|The second IP address of the `provisioningNetworkCIDR`
+|The second IP address of the `provisioningNetworkCIDR`.
 |The IP on the bootstrap VM where the provisioning services run while the the installer is deploying the control plane (master) nodes. Defaults to the 2nd IP of the `provisioning` subnet. For example, `172.22.0.2`
-
 ifdef::upstream[]
 ifeval::[{release} >= 4.5]
-or `2620:52:0:1307::2`.
+or `2620:52:0:1307::2`
 endif::[]
 endif::[]
+.
 
  When using no `provisioning` network, set this value to an IP address that is available on the `baremetal` network.
 
@@ -175,9 +172,10 @@ endif::[]
 
 ifdef::upstream[]
 ifeval::[{release} >= 4.5]
- or `http://[2620:52:0:1307::1]/rhcos-<version>-qemu.x86_64.qcow2.gz?sha256=<uncompressed_sha256>`.
+ or `http://[2620:52:0:1307::1]/rhcos-<version>-qemu.x86_64.qcow2.gz?sha256=<uncompressed_sha256>`
 endif::[]
 endif::[]
+.
 
 | `clusterOSImage`
 |
@@ -187,12 +185,10 @@ endif::[]
 | `provisioningNetwork`
 |
 | Set this parameter to `Disabled` to disable the requirement for a `provisioning` network. User may only do virtual media based provisioning, or bring up the cluster using assisted installation. If using power management, BMC's must be accessible from the machine networks. User must provide 2 IP's on the external network that are used for the provisioning services.
-
 ifeval::[{release} >= 4.6]
-Set this parameter to `managed` (default) to fully manage the provisioning network, including DHCP, TFTP, etc
+Set this parameter to `managed` (default) to fully manage the provisioning network, including DHCP, TFTP, etc.
 
 Set this parameter to `unmanaged` to still enable the provisioning network but take care of manual configuration of DHCP. Virtual Media provisioning is recommended but PXE is still available if required.
-
 endif::[]
 
 | `provisioningHostingIp`
@@ -202,11 +198,11 @@ endif::[]
 ifeval::[{release} > 4.4]
 | `httpProxy`
 |
-| Set this parameter to the appropriate http proxy used within your environment.
+| Set this parameter to the appropriate HTTP proxy used within your environment.
 
 | `httpsProxy`
 |
-| Set this parameter to the appropriate https proxy used within your environment.
+| Set this parameter to the appropriate HTTPS proxy used within your environment.
 
 | `noProxy`
 |
