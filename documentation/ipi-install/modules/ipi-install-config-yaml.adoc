@@ -60,5 +60,5 @@ platform:
           password: +<password>+
         xref:bootMACAddress[bootMACAddress]: +<NIC1-mac-address>+
         xref:hardwareProfile[hardwareProfile]: unknown
-pullSecret: '+<pull_secret>+'
-sshKey: '+<ssh_pub_key>+'
+xref:pullsecret[pullSecret]: '+<pull_secret>+'
+xref:sshkey[sshKey]: '+<ssh_pub_key>+'
