@@ -169,17 +169,16 @@ endif::[]
 |
 | A URL to override the default operating system image for the bootstrap node. The URL must contain a SHA-256 hash of the image. For example:
 `https://mirror.openshift.com/rhcos-<version>-qemu.qcow2.gz?sha256=<uncompressed_sha256>`
-
 ifdef::upstream[]
 ifeval::[{release} >= 4.5]
- or `http://[2620:52:0:1307::1]/rhcos-<version>-qemu.x86_64.qcow2.gz?sha256=<uncompressed_sha256>`
+or `http://[2620:52:0:1307::1]/rhcos-<version>-qemu.x86_64.qcow2.gz?sha256=<uncompressed_sha256>`
 endif::[]
 endif::[]
 .
 
 | `clusterOSImage`
 |
-| A URL to override the default operating system for cluster nodes. The URL must include a SHA-256 hash of the image. For example,  https://mirror.openshift.com/images/rhcos-<version>-openstack.qcow2.gz?sha256=<compressed_sha256>.
+| A URL to override the default operating system for cluster nodes. The URL must include a SHA-256 hash of the image. For example, `https://mirror.openshift.com/images/rhcos-<version>-openstack.qcow2.gz?sha256=<compressed_sha256>`.
 
 
 | `provisioningNetwork`
@@ -230,7 +229,7 @@ The `hosts` parameter is a list of separate bare metal assets used to build the 
 
 | `bmc`
 |
-| Connection details for the baseboard management controller. See the xref:bmcaddressing[BMC addressing section] for additional details.
+| Connection details for the baseboard management controller. See the xref:ipi-install-bmc-addressing_{context}[BMC addressing section] for additional details.
 
 
 | [[bootMACAddress]]`bootMACAddress`
