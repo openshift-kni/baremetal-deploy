@@ -48,45 +48,51 @@
   retries: 3
   delay: 30
 
+- name: Dell Boot Order tasks (Dell)
+  block:
+    - include_role:
+        name: shared-labs-prep
+        tasks_from: 10_redfish_queue.yml
+      with_items:
+        - "{{ dell_nodes }}"
 
-- include_role:
-    name: shared-labs-prep
-    tasks_from: 10_redfish_queue.yml
-  with_items:
-    - "{{ worker_fqdns }}"
+    - name: Wait for iDrac to be responsive (check via --check-boot for Dell) 
+      shell:
+        chdir: "{{ badfish_tempdir.path }}"
+        cmd: |
+          source {{ badfish_venv }}/bin/activate
+          {{ badfish_cmd }}{{ item }} --check-boot
+      with_items:
+        - "{{ dell_nodes }}"
+      register: wait_for_idrac
+      until: wait_for_idrac is succeeded
+      retries: 20
+      delay: 30
+
+    - name: Set nodes to director boot order (Dell)
+      shell:
+        chdir: "{{ badfish_tempdir.path }}"
+        cmd: |
+          source {{ badfish_venv }}/bin/activate
+          {{ badfish_cmd }}{{ item }} -t director
+      with_items:
+        - "{{ dell_nodes }}"
+      register: boot_order
+      until: boot_order is succeeded
+      retries: 3
+      delay: 60
+  when: dell_nodes | length > 0
   tags:
     - bootorder
 
-- name: Wait for iDrac to be responsive (check via --check-boot)
-  shell:
-    chdir: "{{ badfish_tempdir.path }}"
-    cmd: |
-      source {{ badfish_venv }}/bin/activate
-      {{ badfish_cmd }}{{ item }} --check-boot
+- name: Supermicro Boot order to PXE
+  shell: ipmitool -I lanplus -H mgmt-{{ item }} -U {{ lab_ipmi_user }} -P {{ lab_ipmi_password }} chassis bootdev pxe options=persistent
   with_items:
-    - "{{ worker_fqdns }}"
-  register: wait_for_idrac
-  until: wait_for_idrac is succeeded
-  retries: 20
-  delay: 30
+    - "{{ supermicro_nodes }}"
+  when: supermicro_nodes | length > 0
   tags:
     - bootorder
-
-- name: Set nodes to director boot order
-  shell:
-    chdir: "{{ badfish_tempdir.path }}"
-    cmd: |
-      source {{ badfish_venv }}/bin/activate
-      {{ badfish_cmd }}{{ item }} -t director
-  with_items:
-    - "{{ worker_fqdns }}"
-  register: boot_order
-  until: boot_order is succeeded
-  retries: 3
-  delay: 60
-  tags:
-    - bootorder
-
+      
 - name: Power off new worker nodes
   ipmi_power:
     name: "mgmt-{{ item }}"

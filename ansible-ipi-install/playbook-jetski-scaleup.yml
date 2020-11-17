@@ -17,7 +17,9 @@
         - scale_worker_node
         - worker_count
         - current_worker_count
-
+        - dell_nodes
+        - supermicro_nodes
+        
 - hosts: provisioner
   roles:
     - { role: scale-node-prep }

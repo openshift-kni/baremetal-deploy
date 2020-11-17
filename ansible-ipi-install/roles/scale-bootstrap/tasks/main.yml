@@ -102,6 +102,29 @@
   with_items:
     - "{{ scale_worker_node.nodes }}"
 
+- name: Set worker nodes
+  block:
+    - name: Set worker node dells
+      set_fact:
+        dell_nodes: "{{ dell_workers | default([]) + [ item ] }}"
+      with_items:
+        - "{{ worker_fqdns }}"
+      when: 
+        - ( item.split('.')[0].split('-')[2] in lab_vars['machine_types']['dell'] ) or 
+          ( item.split('.')[0].split('-')[3] in lab_vars['machine_types']['dell'] )
+
+    - name: Set worker node supermicros
+      set_fact:
+        supermicro_nodes: "{{ supermicro_workers | default([]) + [ item ] }}"
+      with_items:
+        - "{{ worker_fqdns }}"
+      when:
+        - ( item.split('.')[0].split('-')[2] in lab_vars['machine_types']['supermicro'] ) or
+          ( item.split('.')[0].split('-')[3] in lab_vars['machine_types']['supermicro'] )
+  vars:
+    lab_vars: "{{ (lab_name == 'scale') | ternary(scale, alias) }}"
+  when: lab_name in ['scale', 'alias']
+  
 - name: set ocp_nondeplopyed_node_content
   set_fact:
     ocp_deploying_node_content: "{{ ocp_deployed_node_content | combine({'nodes': ocp_deployed_node_content.nodes|union(scale_worker_node.nodes)}, recursive=True) }}"    

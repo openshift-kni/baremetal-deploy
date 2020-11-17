@@ -183,6 +183,23 @@
   with_items:
     - "{{ worker_mgmts }}"
 
+- name: set fact for non deploying worker mgmt
+  set_fact:
+    non_deploy_worker_mgmts: "{{ ocp_node_content| json_query(query)}}"
+  vars:
+    query: nodes[{{worker_index}}:].pm_addr
+
+# Needed in case where worker_mgmts is empty list, in that case worker_fdns fact is not set and there is a failure in set-deployment-facts role
+- name: Set fact for empty non_deploy_worker_fqdns
+  set_fact:
+    non_deploy_worker_fqdns: []
+
+- name: Set non_deploy_worker FQDNs
+  set_fact:
+    non_deploy_worker_fqdns: "{{ non_deploy_worker_fqdns|default([]) + [ item |  replace('mgmt-','') | replace('-drac', '') ] }}"
+  with_items:
+    - "{{ non_deploy_worker_mgmts }}"
+
 - name: Set master and worker node types/vendors
   block:
     - name: Set worker node types
@@ -190,6 +207,7 @@
         worker_types: "{{ worker_types | default([]) + [ (lab_name == 'scale') | ternary(item.split('.')[0].split('-')[3], item.split('.')[0].split('-')[2]) ] }}"
       with_items:
         - "{{ worker_fqdns }}"
+        - "{{ non_deploy_worker_fqdns }}"
 
     - name: Set worker node vendors
       set_fact:
