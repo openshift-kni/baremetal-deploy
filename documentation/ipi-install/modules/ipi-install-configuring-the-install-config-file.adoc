@@ -11,7 +11,7 @@ Most of the information is teaching the installer and the resulting cluster enou
 
 . Configure `install-config.yaml`. Change the appropriate variables to match the environment, including `pullSecret` and `sshKey`.
 +
-[source,yaml, subs="verbatim,macros"]
+[source,yaml, subs="verbatim,macros,attributes"]
 ifdef::backend-pdf[[listing]]
 ----
 ifeval::[{release} > 4.5]

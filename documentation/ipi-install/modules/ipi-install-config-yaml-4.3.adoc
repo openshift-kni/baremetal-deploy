@@ -21,7 +21,7 @@ platform:
     xref:hoststable[hosts]:
       - xref:name[name]: openshift-master-0
         xref:role[role]: master
-        xref:bmcaddressing[bmc]:
+        xref:ipi-install-bmc-addressing_{context}[bmc]:
           address: ipmi://+<out-of-band-ip>+ # <2>
           username: +<user>+
           password: +<password>+
@@ -29,7 +29,7 @@ platform:
         xref:hardwareProfile[hardwareProfile]: default
       - xref:name[name]: openshift-master-1
         xref:role[role]: master
-        xref:bmcaddressing[bmc]:
+        xref:ipi-install-bmc-addressing_{context}[bmc]:
           address: ipmi://+<out-of-band-ip>+
           username: +<user>+
           password: +<password>+
@@ -37,7 +37,7 @@ platform:
         xref:hardwareProfile[hardwareProfile]: default
       - xref:name[name]: openshift-master-2
         xref:role[role]: master
-        xref:bmcaddressing[bmc]:
+        xref:ipi-install-bmc-addressing_{context}[bmc]:
           address: ipmi://<out-of-band-ip>
           username: +<user>+
           password: +<password>+
@@ -45,7 +45,7 @@ platform:
         xref:hardwareProfile[hardwareProfile]: default
       - xref:name[name]: openshift-worker-0
         xref:role[role]: worker
-        xref:bmcaddressing[bmc]:
+        xref:ipi-install-bmc-addressing_{context}[bmc]:
           address: ipmi://+<out-of-band-ip>+
           username: +<user>+
           password: +<password>+
@@ -53,7 +53,7 @@ platform:
         xref:hardwareProfile[hardwareProfile]: unknown
       - xref:name[name]: openshift-worker-1
         xref:role[role]: worker
-        xref:bmcaddressing[bmc]:
+        xref:ipi-install-bmc-addressing_{context}[bmc]:
           address: ipmi://+<out-of-band-ip>+
           username: +<user>+
           password: +<password>+
