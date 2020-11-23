@@ -143,7 +143,7 @@ a|`provisioningNetworkCIDR`
 
 |`bootstrapProvisioningIP`
 |The second IP address of the `provisioningNetworkCIDR`.
-|The IP on the bootstrap VM where the provisioning services run while the the installer is deploying the control plane (master) nodes. Defaults to the 2nd IP of the `provisioning` subnet. For example, `172.22.0.2`
+|The IP on the bootstrap VM where the provisioning services run while the the installer is deploying the control plane (master) nodes. Defaults to the second IP of the `provisioning` subnet. For example, `172.22.0.2`
 ifdef::upstream[]
 ifeval::[{release} >= 4.5]
 or `2620:52:0:1307::2`
@@ -171,21 +171,21 @@ endif::[]
 `https://mirror.openshift.com/rhcos-<version>-qemu.qcow2.gz?sha256=<uncompressed_sha256>`
 ifdef::upstream[]
 ifeval::[{release} >= 4.5]
-or `http://[2620:52:0:1307::1]/rhcos-<version>-qemu.x86_64.qcow2.gz?sha256=<uncompressed_sha256>`
+ or  `http://[2620:52:0:1307::1]/rhcos-<version>-qemu.x86_64.qcow2.gz?sha256=<uncompressed_sha256>`
 endif::[]
 endif::[]
 .
 
 | `clusterOSImage`
 |
-| A URL to override the default operating system for cluster nodes. The URL must include a SHA-256 hash of the image. For example, `https://mirror.openshift.com/images/rhcos-<version>-openstack.qcow2.gz?sha256=<compressed_sha256>`.
+| A URL to override the default operating system for cluster nodes. The URL must include a SHA-256 hash of the image. For example,  `https://mirror.openshift.com/images/rhcos-<version>-openstack.qcow2.gz?sha256=<compressed_sha256>`.
 
 
 | `provisioningNetwork`
 |
-| Set this parameter to `Disabled` to disable the requirement for a `provisioning` network. User may only do virtual media based provisioning, or bring up the cluster using assisted installation. If using power management, BMC's must be accessible from the machine networks. User must provide 2 IP's on the external network that are used for the provisioning services.
+| Set this parameter to `Disabled` to disable the requirement for a `provisioning` network. User may only do virtual media based provisioning, or bring up the cluster using assisted installation. If using power management, BMC's must be accessible from the machine networks. User must provide two IP addresses on the external network that are used for the provisioning services.
 ifeval::[{release} >= 4.6]
-Set this parameter to `managed` (default) to fully manage the provisioning network, including DHCP, TFTP, etc.
+Set this parameter to `managed`, which is the default, to fully manage the provisioning network, including DHCP, TFTP, and so on.
 
 Set this parameter to `unmanaged` to still enable the provisioning network but take care of manual configuration of DHCP. Virtual Media provisioning is recommended but PXE is still available if required.
 endif::[]
@@ -229,7 +229,7 @@ The `hosts` parameter is a list of separate bare metal assets used to build the 
 
 | `bmc`
 |
-| Connection details for the baseboard management controller. See the xref:ipi-install-bmc-addressing_{context}[BMC addressing section] for additional details.
+| Connection details for the baseboard management controller. See the BMC addressing section for additional details.
 
 
 | [[bootMACAddress]]`bootMACAddress`
