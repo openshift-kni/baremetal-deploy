@@ -110,6 +110,8 @@ include::modules/ipi-install-upstream-dns-records-for-the-worker.adoc[leveloffse
 include::modules/ipi-install-upstream-dhcp-for-the-worker.adoc[leveloffset=+3]
 include::modules/ipi-install-upstream-deploying-the-provisioner-node-as-a-worker-node-using-metal3.adoc[leveloffset=+3]
 
+include::ipi-install-expanding-the-cluster.adoc[leveloffset=+2]
+
 endif::[]
 
 
