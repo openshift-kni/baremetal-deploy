@@ -21,8 +21,9 @@ The installer for installer-provisioned {product-title} clusters validates the h
 [NOTE]
 ====
 Refer to your hardware documentation or contact your vendor for information on updating your firmware.
-====
 
+For Dell servers, ensure the {product-title} cluster nodes have AutoAttach Enabled through the iDRAC console. The menu path is: **Configuration->Virtual Media->Attach Mode->AutoAttach**.
+====
 
 [IMPORTANT]
 ====
