@@ -118,6 +118,11 @@ platform:
           password: <password>
 ----
 
+[NOTE]
+====
+Deploying with RedFish Virtual Media involves meeting minimum firmware requirements. See *Firmware requirements for installing with virtual media* in the *Prerequisites* section for details.
+====
+
 
 .RedFish Virtual Media for Dell
 
@@ -147,10 +152,7 @@ platform:
           password: <password>
 ----
 
-
 [NOTE]
 ====
-`idrac-virtualmedia` requires iDRAC firmware version 4.20.20.20 or higher.
-
-Ensure the {product-title} cluster nodes have AutoAttach Enabled through the iDRAC console. The menu path is: **Configuration->Virtual Media->Attach Mode->AutoAttach**.
+Deploying with RedFish Virtual Media involves meeting minimum firmware requirements. See *Firmware requirements for installing with virtual media* in the *Prerequisites* section for details.
 ====
