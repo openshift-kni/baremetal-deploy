@@ -28,6 +28,6 @@ With a proxy enabled, set the appropriate values of the proxy in the correspondi
 
 Key considerations:
 
-* If the proxy doesn't have an HTTPS proxy, change the value of `httpsProxy` from `https://` to `http://`.
+* If the proxy does not have an HTTPS proxy, change the value of `httpsProxy` from `https://` to `http://`.
 * If using a provisioning network, include it in the `noProxy` setting, otherwise the installer will fail.
 * Set all of the proxy settings as environment variables within the provisioner node. For example, `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`.
