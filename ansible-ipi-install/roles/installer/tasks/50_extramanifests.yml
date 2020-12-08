@@ -1,4 +1,8 @@
 ---
+- name: Check if override path is defined for extramanifests
+  set_fact:
+    extramanifests_path: "{{ customize_extramanifests_path | default( 'roles/installer/files/manifests/*' ) }}"
+
 - name: Add Manifests from files dir
   copy:
     src: "{{ item }}"
@@ -6,7 +10,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
   with_fileglob:
-    - roles/installer/files/manifests/*
+    - "{{ extramanifests_path }}"
   tags: extramanifests
 
 - name: Manage chrony configuration
