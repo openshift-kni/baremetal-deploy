@@ -99,6 +99,11 @@ prov_ip=172.22.0.3
 # For more information on modifying node filesystems visit: https://bit.ly/36tD30f
 #customize_node_filesystems="/path/to/customized/filesystems"
 
+# (Optional) Modify the path to add external manifests to the deployed nodes.
+# If defined, the playbook will copy manifests from the user provided directory.
+# Otherwise, files will be copied from the default location 'roles/installer/files/manifests/*'
+#customize_extramanifests_path="/path/to/extra/manifests
+
 ######################################
 # Vars regarding install-config.yaml #
 ######################################
