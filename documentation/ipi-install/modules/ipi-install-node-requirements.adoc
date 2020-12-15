@@ -37,5 +37,5 @@ ifeval::[{release} > 4.3]
 endif::[]
 
 ifeval::[{release} > 4.6]
-- **SecureBoot:** Many production scenarios require nodes with SecureBoot enabled to verify the node only boots with trusted software, such as UEFI firmware drivers, EFI applications and the operating system. Installer-provisioned installation with SecureBoot requires UEFI enabled. Red Hat supports SecureBoot **only** when installer-provisioned installation uses Red Fish Virtual Media. Red Hat **does not** support SecureBoot with self-generated keys.
+- **SecureBoot:** Many production scenarios require nodes with SecureBoot enabled to verify the node only boots with trusted software, such as UEFI firmware drivers, EFI applications and the operating system. To deploy a {product-title} cluster with SecureBoot, you must enable UEFI boot mode and SecureBoot on each control plane node and each worker node. Red Hat supports SecureBoot **only** when installer-provisioned installation uses Red Fish Virtual Media. Red Hat **does not** support SecureBoot with self-generated keys.
 endif::[]
