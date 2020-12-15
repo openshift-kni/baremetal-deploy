@@ -154,3 +154,20 @@ platform:
 
 Ensure the {product-title} cluster nodes have AutoAttach Enabled through the iDRAC console. The menu path is: **Configuration->Virtual Media->Attach Mode->AutoAttach**.
 ====
+
+.iRMC for Fujitsu
+
+Fujitsu nodes can use `irmc://<out-of-band-ip>` and defaults to port `623`. The following example demonstrates an iRMC configuration within the `install-config.yaml` file.
+
+[source,yaml]
+----
+platform:
+  baremetal:
+    hosts:
+      - name: openshift-master-0
+        role: master
+        bmc:
+          address: irmc://<out-of-band-ip>
+          username: <user>
+          password: <password>
+----
