@@ -65,11 +65,11 @@ ifeval::[{release} > 4.6]
 
 SecureBoot prevents a node from booting unless it verifies the node is using only trusted software, such as UEFI firmware drivers, EFI applications and the operating system. Red Hat only supports SecureBoot when deploying with RedFish Virtual Media.
 
-To enable SecureBoot, refer to the hardware guide for the node. You must perform the following:
+To enable SecureBoot, refer to the hardware guide for the node. To enable SecureBoot, execute the following:
 
-. Enable booting with UEFI. SecureBoot requires UEFI enabled.
-. Enable SecureBoot. Nodes usually disable SecureBoot by default.
-. Configure the key.
+. Boot the node and enter the BIOS menu.
+. Set the node's boot mode to UEFI Enabled.
+. Enable SecureBoot.
 +
 [IMPORTANT]
 ====
