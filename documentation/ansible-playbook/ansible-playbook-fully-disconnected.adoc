@@ -19,6 +19,7 @@ Deployment Integration Team
 :toclevels: 5
 :sectnums:
 :sectlinks:
+:docinfo: shared
 :icons: font
 :product-title: OpenShift Container Platform
 :source-highlighter: rouge
