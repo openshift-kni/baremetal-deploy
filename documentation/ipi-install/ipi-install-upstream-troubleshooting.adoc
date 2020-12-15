@@ -6,6 +6,9 @@ Deployment Integration Team
 :experimental:
 :toc-title:
 :imagesdir: images
+:title: Troubleshooting Guide for IPI Installation
+:description: Troubleshooting hints for debugging failures during IPI installation
+:keywords: troubleshooting, OpenShift, baremetal, installation
 :prewrap!:
 :context: ipi-install-troubleshooting
 //Upstream attribute

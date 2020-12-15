@@ -5,6 +5,9 @@ Deployment Integration Team
 :email: https://github.com/openshift-kni/baremetal-deploy
 :experimental:
 :toc-title:
+:title: Deploying Installer Provisioned Infrastructure (IPI) of OpenShift on Bare Metal - {release}
+:description: Installation guide for deploying OpenShift on bare metal
+:keywords: OpenShift, baremetal, installation, ipi, Installer provisioned insfrastructure
 :imagesdir: images
 :prewrap!:
 :context: ipi-install-installation-workflow
