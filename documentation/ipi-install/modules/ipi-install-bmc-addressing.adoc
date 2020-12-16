@@ -118,6 +118,24 @@ platform:
           password: <password>
 ----
 
+While it is recommended to have a certificate of authority for the
+out-of-band management addresses, you must include `disableCertificateVerification: True` in the `bmc` configuration if using self-signed certificates. The following example demonstrates a RedFish configuration using the `disableCertificateVerification: True` configuration parameter within the `install-config.yaml` file.
+
+[source,yaml]
+----
+platform:
+  baremetal:
+    hosts:
+      - name: openshift-master-0
+        role: master
+        bmc:
+          address: redfish-virtualmedia://<out-of-band-ip>/redfish/v1/Systems/1
+          username: <user>
+          password: <password>
+          disableCertificateVerification: True
+----
+
+
 [NOTE]
 ====
 Deploying with RedFish Virtual Media involves meeting minimum firmware requirements. See *Firmware requirements for installing with virtual media* in the *Prerequisites* section for details.
@@ -151,6 +169,24 @@ platform:
           username: <user>
           password: <password>
 ----
+
+While it is recommended to have a certificate of authority for the
+out-of-band management addresses, you must include `disableCertificateVerification: True` in the `bmc` configuration if using self-signed certificates. The following example demonstrates a RedFish configuration using the `disableCertificateVerification: True` configuration parameter within the `install-config.yaml` file.
+
+[source,yaml]
+----
+platform:
+  baremetal:
+    hosts:
+      - name: openshift-master-0
+        role: master
+        bmc:
+          address: idrac-virtualmedia://<out-of-band-ip>/redfish/v1/Systems/System.Embedded.1
+          username: <user>
+          password: <password>
+          disableCertificateVerification: True
+----
+
 
 [NOTE]
 ====
