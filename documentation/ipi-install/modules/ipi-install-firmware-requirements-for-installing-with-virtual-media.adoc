@@ -9,8 +9,8 @@ The installer for installer-provisioned {product-title} clusters validates the h
 [frame="topbot", options="header"]
 |====
 |Hardware| Model | Management | Minimum Firmware Version
-.2+| HP | 10th Generation | iLO5 | v1.9
-| 9th Generation | iLO4 | v1.8
+.2+| HP | 10th Generation | iLO5 | N/A
+| 9th Generation | iLO4 | N/A
 
 .2+| Dell | 14th Generation | iDRAC 9 | v4.20.20.20+
 
@@ -20,7 +20,7 @@ The installer for installer-provisioned {product-title} clusters validates the h
 
 [NOTE]
 ====
-Refer to your hardware documentation or contact your vendor for information on updating your firmware.
+Refer to the hardware documentation for the nodes or contact the hardware vendor for information on updating the firmware.
 
 For Dell servers, ensure the {product-title} cluster nodes have AutoAttach Enabled through the iDRAC console. The menu path is: **Configuration->Virtual Media->Attach Mode->AutoAttach**.
 ====
