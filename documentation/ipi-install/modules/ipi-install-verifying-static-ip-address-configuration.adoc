@@ -1,0 +1,9 @@
+// This is included in the following assemblies:
+//
+// ipi-install-installation-workflow.adoc
+
+[id='verifying-static-ip-address-configuration_{context}']
+
+= Verifying static IP address configuration
+
+If the DHCP reservations specify infinite leases, the installer re-configures the NICs to use static IP addresses rather than DHCP. Verify that the network configuration is working properly. You can check the network interface configuration on each node. You can also turn off the DHCP server and reboot the {product-title} nodes and ensure that the network configuration works properly.
