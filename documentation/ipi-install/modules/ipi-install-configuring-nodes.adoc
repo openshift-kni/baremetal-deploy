@@ -59,3 +59,20 @@ The installation process requires one NIC:
 NICx is a routable network (`baremetal`) that is used for the installation of the {product-title} cluster, and routable to the internet.
 
 endif::[]
+
+ifeval::[{release} > 4.6]
+.Configuring nodes for SecureBoot
+
+SecureBoot prevents a node from booting unless it verifies the node is using only trusted software, such as UEFI firmware drivers, EFI applications and the operating system. Red Hat only supports SecureBoot when deploying with RedFish Virtual Media.
+
+To enable SecureBoot, refer to the hardware guide for the node. To enable SecureBoot, execute the following:
+
+. Boot the node and enter the BIOS menu.
+. Set the node's boot mode to UEFI Enabled.
+. Enable SecureBoot.
++
+[IMPORTANT]
+====
+Red Hat does not support SecureBoot with self-generated keys.
+====
+endif::[]
