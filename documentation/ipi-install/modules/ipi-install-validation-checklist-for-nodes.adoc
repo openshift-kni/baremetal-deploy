@@ -2,12 +2,14 @@
 //
 // * installing/installing_bare_metal_ipi/ipi-install-prerequisites.adoc
 
-
 [id="validation-checklist-for-nodes_{context}"]
 = Validation checklist for nodes
 
 .When using the `provisioning` network
 
+ifeval::[{release}>4.6]
+* [ ] DHCP reservations use infinite leases to deploy the cluster with static IP addresses. (optional)
+endif::[]
 * [ ] NIC1 VLAN is configured for the `provisioning` network.
 * [ ] NIC2 VLAN is configured for the `baremetal` network.
 * [ ] NIC1 is PXE-enabled on the provisioner, Control Plane (master), and worker nodes.
@@ -19,6 +21,9 @@
 
 .When omitting the `provisioning` network
 
+ifeval::[{release}>4.6]
+* [ ] DHCP reservations use infinite leases to deploy the cluster with static IP addresses. (optional)
+endif::[]
 * [ ] NICx VLAN is configured for the `baremetal` network.
 * [ ] Control plane and worker nodes are configured.
 * [ ] All nodes accessible via out-of-band management.
