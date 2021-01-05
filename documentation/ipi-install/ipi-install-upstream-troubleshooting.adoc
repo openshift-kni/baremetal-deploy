@@ -6,6 +6,9 @@ Deployment Integration Team
 :experimental:
 :toc-title:
 :imagesdir: images
+:title: Troubleshooting Guide for IPI Installation
+:description: Troubleshooting hints for debugging failures during IPI installation
+:keywords: troubleshooting, OpenShift, baremetal, installation
 :prewrap!:
 :context: ipi-install-troubleshooting
 //Upstream attribute
@@ -14,6 +17,7 @@ Deployment Integration Team
 :toclevels: 5
 :sectnums:
 :sectlinks:
+:docinfo: shared
 :icons: font
 :product-title: OpenShift Container Platform
 :op-system-first: Red Hat Enterprise Linux CoreOS (RHCOS)

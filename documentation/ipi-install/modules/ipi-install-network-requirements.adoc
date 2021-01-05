@@ -70,6 +70,13 @@ endif::[]
 . One IP address for each Control Plane (Master) node.
 . One IP address for each worker node, if applicable.
 
+ifeval::[{release}>4.6]
+[IMPORTANT]
+.Reserving IP addresses so they become static IP addresses
+====
+Some administrators prefer to use static IP addresses so that each node's IP address remains constant in the absence of a DHCP server. To use static IP addresses in the {product-title} cluster, **reserve the IP addresses with an infinite lease**. During deployment, the installer will reconfigure the NICs from DHCP assigned addresses to static IP addresses. NICs with DHCP leases that are not infinite will remain configured to use DHCP.
+====
+endif::[]
 
 The following table provides an exemplary embodiment of hostnames for each node in the {product-title} cluster.
 

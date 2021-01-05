@@ -26,3 +26,7 @@ include::modules/ipi-install-validation-checklist-for-installation.adoc[leveloff
 include::modules/ipi-install-deploying-the-cluster-via-the-openshift-installer.adoc[leveloffset=+1]
 
 include::modules/ipi-install-following-the-installation.adoc[leveloffset=+1]
+
+ifeval::[{release}>4.6]
+include::modules/ipi-install-verifying-static-ip-address-configuration.adoc[leveloffset=+1]
+endif::[]
