@@ -1,4 +1,4 @@
-// Module included in the following assemblies:
+Secure Boot// Module included in the following assemblies:
 //
 // * installing/installing_bare_metal_ipi/ipi-install-prerequisites.adoc
 
@@ -37,5 +37,5 @@ ifeval::[{release} > 4.3]
 endif::[]
 
 ifeval::[{release} > 4.6]
-- **SecureBoot:** Many production scenarios require nodes with SecureBoot enabled to verify the node only boots with trusted software, such as UEFI firmware drivers, EFI applications and the operating system. To deploy a {product-title} cluster with SecureBoot, you must enable UEFI boot mode and SecureBoot on each control plane node and each worker node. Red Hat supports SecureBoot **only** when installer-provisioned installation uses Red Fish Virtual Media. Red Hat **does not** support SecureBoot with self-generated keys.
+- **Secure Boot:** Many production scenarios require nodes with Secure Boot enabled to verify the node only boots with trusted software, such as UEFI firmware drivers, EFI applications and the operating system. To deploy a {product-title} cluster with Secure Boot, you must enable UEFI boot mode and Secure Boot on each control plane node and each worker node. Red Hat supports Secure Boot **only** when installer-provisioned installation uses Red Fish Virtual Media. Red Hat **does not** support Secure Boot with self-generated keys.
 endif::[]
