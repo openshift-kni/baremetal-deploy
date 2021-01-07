@@ -1,0 +1,135 @@
+[id="ansible-playbook-create-bonded-interfaces-using-script.adoc"]
+
+= Create bonded interfaces
+
+If you need to create a bonded provisioning/baremetal interface, the ifcfg files
+can be placed under the "fake" roots for the masters and workers under the
+`roles/installer/files/customize_filesystem/{master,worker}` directories as shown in the above section 4.7
+
+This can also be done by creating a script /usr/local/bin/create-ifcfg-files.sh under 
+`roles/installer/files/customize_filesystem/{master,worker}`
+and setting variable create_bond_service="true" to create ifcfg files.
+This file will be included in the ignition config and run as a part of bond.service.
+
+Creation of bonded interfaces using a script has the following flexibility and advantages:
+
+1. The interfaces can be created using one file instead of adding multiple files.
+
+2. This approach will be useful to set DHCP_CLIENT_ID.
+   If we need to set DHCP_CLIENT_ID to help the bonds get a static lease regardless of the MAC Address assigned to it, we could set it to mac address for the interface dynamically.
+   This in conjuction with setting IPV4_DHCP_TIMEOUT to 2147483647 will prevent the bond from getting destroyed if it doesn't get a DHCP lease. 
+   The default value is 45 seconds, however, the value of 2147483647 is equivalent to infinity, meaning the bonding will not be destroyed in case there's no DHCP in the network. 
+   This works as the lease duration is handled by the server,not by the client.
+
+[NOTE]
+====
+Please make sure that the filepath and filename is /usr/local/bin/create-ifcfg-files.sh
+====
+
+An example for creating bonded interfaces bond0 and bond1
+in active backup mode with a vlan interface(VLAN ID 20) on top of bond0 is show below:
+
+[source,bash]
+----
+#!/bin/bash
+IFNAME1="eno1"
+IFNAME2="eno2"
+IFNAME3="eno3"
+IFNAME4="eno4"
+IFNAME5="eno5"
+IFNAME6="eno6"
+VLAN_ID="20"
+
+# bond1 creation
+cat <<EOF > /etc/sysconfig/network-scripts/ifcfg-bond1
+BONDING_OPTS=mode=active-backup
+TYPE=Bond
+BONDING_MASTER=yes
+PROXY_METHOD=none
+ONBOOT=yes
+BOOTPROTO=dhcp
+DHCP_CLIENT_ID=$(ip link show dev ${IFNAME1} | awk '/link/ {print $2}')
+IPV4_DHCP_TIMEOUT=2147483647
+NAME=bond1
+DEVICE=bond1
+ONBOOT=yes
+EOF
+
+# bond1 members creation
+cat <<EOF > /etc/sysconfig/network-scripts/ifcfg-${IFNAME2}
+TYPE=Ethernet
+DEVICE=${IFNAME2}
+BOOTPROTO=none
+ONBOOT=yes
+MASTER=bond1
+SLAVE=yes
+EOF
+
+cat <<EOF > /etc/sysconfig/network-scripts/ifcfg-${IFNAME3}
+TYPE=Ethernet
+DEVICE=${IFNAME3}
+BOOTPROTO=none
+ONBOOT=yes
+MASTER=bond1
+SLAVE=yes
+EOF
+
+# bond0 creation
+cat <<EOF > /etc/sysconfig/network-scripts/ifcfg-bond0
+DEVICE=bond0
+BONDING_OPTS=mode=active-backup
+TYPE=Bond
+BOOTPROTO=dhcp
+DHCP_CLIENT_ID=$(ip link show dev ${IFNAME4} | awk '/link/ {print $2}')
+IPV4_DHCP_TIMEOUT=2147483647
+BONDING_MASTER=yes
+NAME=bond0
+DEVICE=bond0
+ONBOOT=yes
+EOF
+
+# bond0 members creation
+cat <<EOF > /etc/sysconfig/network-scripts/ifcfg-${IFNAME5}
+TYPE=Ethernet
+DEVICE=${IFNAME5}
+ONBOOT=yes
+MASTER=bond0
+SLAVE=yes
+BOOTPROTO=none
+EOF
+
+cat <<EOF > /etc/sysconfig/network-scripts/ifcfg-${IFNAME6}
+TYPE=Ethernet
+DEVICE=${IFNAME6}
+ONBOOT=yes
+BOOTPROTO=none
+MASTER=bond0
+SLAVE=yes
+EOF
+
+# Vlan interface creation for bond0
+cat <<EOF > /etc/sysconfig/network-scripts/ifcfg-bond0.${VLAN_ID}
+VLAN=yes
+TYPE=Vlan
+PHYSDEV=bond0
+NM_BOND_VLAN_ENABLED=yes
+VLAN_ID=${VLAN_ID}
+BOOTPROTO=dhcp
+NAME=bond0.20
+DEVICE=bond0.20
+ONBOOT=yes
+EOF
+----
+
+[NOTE]
+====
+If the bonded interfaces are created for lacp mode, the switch needs to 
+be configured accordingly.
+====
+
+[NOTE]
+====
+If the master provisioning interfaces are bonded, please make sure that 
+the variable masters_prov_nic is set to the appropriate bond interface. 
+Example: masters_prov_nic=bond0 
+====

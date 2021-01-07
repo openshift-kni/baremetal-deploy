@@ -150,6 +150,10 @@ dnsvip=""
 # A copy of your pullsecret from https://cloud.redhat.com/openshift/install/metal/user-provisioned
 pullsecret=""
 
+# (Optional) Create a bond.service.
+# This creates bond.service which calls roles/installer/files/customize_filesystem/{master,worker}/usr/local/bin/create-ifcfg-files.sh
+# create_bond_service="true"
+ 
 # (Optional) Disable BMC Certification Validation. When using self-signed certificates for your BMC, ensure to set to True.
 # Default value is False.
 #disable_bmc_certificate_verification=True

@@ -57,6 +57,14 @@
       - "worker"
     become: true
 
+  - name: Add bond.service to the ignition config
+    shell: |
+      sed -i -z 's|"systemd": {}|"systemd": {"units": [{"name": "bond.service","enabled": true,"contents": "[Unit]\\nDescription=Configure BOND\\nAfter=ignition-firstboot-complete.service\\nBefore=nodeip-configuration.service kubelet.service\\n\\n[Service]\\nType=oneshot\\nExecStart=/bin/sh /usr/local/bin/create-ifcfg-files.sh\\n\\n[Install]\\nWantedBy=multi-user.target"}]}|g' {{ dir }}/{{ item }}.ign
+    with_items:
+      - "master"
+      - "worker"
+    when: create_bond_service is defined and create_bond_service == "true"
+
   - name: Create backup of ignition config files
     copy:
       src: "{{ dir }}/{{ item }}.ign"
