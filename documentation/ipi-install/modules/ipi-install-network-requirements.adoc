@@ -104,6 +104,7 @@ For assistance in configuring the DHCP server, check xref:ipi-install-upstream-a
 - xref:creating-dhcp-reservations-using-dnsmasq-option2_{context}[Creating DHCP reservations with dnsmasq (Option 2)]
 endif::[]
 
+ifeval::[{release} == 4.6]
 .Additional requirements with no provisioning network
 
 All installer-provisioned installations require a `baremetal` network. The `baremetal` network is a routable network used for external network access to the outside world. In addition to the IP address supplied to the {product-title} cluster node, installations without a `provisioning` network require the following:
@@ -118,3 +119,4 @@ All installer-provisioned installations require a `baremetal` network. The `bare
 ====
 Configuring additional IP addresses for `bootstrapProvisioningIP` and `provisioningHostIP` is not required when using a `provisioning` network.
 ====
+endif::[]

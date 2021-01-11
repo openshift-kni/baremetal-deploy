@@ -1,7 +1,7 @@
 [id="ipi-install-configuration-files"]
 = Configuration Files
 :context: ipi-install-configuration-files
-:release: 4.6
+//:release: 4.6
 
 In this section of the document, we will be covering the set-up of the different configuration files
 
