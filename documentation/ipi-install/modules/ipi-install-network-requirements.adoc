@@ -119,13 +119,16 @@ All installer-provisioned installations require a `baremetal` network. The `bare
 Configuring additional IP addresses for `bootstrapProvisioningIP` and `provisioningHostIP` is not required when using a `provisioning` network.
 ====
 
-.State-driven network configuration requirements
 
-{product-title} supports additional post-installation state-driven network configuration on the secondary network interfaces of cluster nodes using `nmstate`. For example, system administrators might configure a secondary network interface on cluster nodes after installation for a storage network.
+ifeval::[{release} > 4.6]
+.State-driven network configuration requirements (Technology Preview)
+
+{product-title} supports additional post-installation state-driven network configuration on the secondary network interfaces of cluster nodes using `kubernetes-nmstate`. For example, system administrators might configure a secondary network interface on cluster nodes after installation for a storage network.
 
 [NOTE]
 ====
 Configuration must occur before scheduling pods.
 ====
 
-State-driven network configuration requires installing `nmstate`, and also requires NetworkManager running on the cluster nodes.
+State-driven network configuration requires installing `kubernetes-nmstate`, and also requires NetworkManager running on the cluster nodes. See **Post-installation configuration** for additional details.
+endif::[]
