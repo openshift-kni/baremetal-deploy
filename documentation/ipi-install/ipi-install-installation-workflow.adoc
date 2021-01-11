@@ -15,7 +15,13 @@ include::modules/ipi-install-extracting-the-openshift-installer.adoc[leveloffset
 
 include::modules/ipi-install-creating-an-rhcos-images-cache.adoc[leveloffset=+1]
 
+ifdef::upstream[]
+include::ipi-install-configuration-files.adoc[leveloffset=+1]
+endif::[]
+
+ifndef::upstream[]
 include::installing/installing_bare_metal_ipi/ipi-install-configuration-files.adoc[leveloffset=+1]
+endif::[]
 
 include::modules/ipi-install-creating-a-disconnected-registry.adoc[leveloffset=+1]
 
