@@ -29,3 +29,7 @@ endif::[]
 * [ ] All nodes accessible via out-of-band management.
 * [ ] A separate management network has been created. (optional)
 * [ ] Required data for installation.
+
+.Summary
+
+After an environment has been prepared according to the documented prerequisites, the installation process is the same as other installer-provisioned platforms.
