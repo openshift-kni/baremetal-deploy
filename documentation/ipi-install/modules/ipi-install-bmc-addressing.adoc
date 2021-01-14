@@ -96,7 +96,7 @@ platform:
 
 [NOTE]
 ====
-Currently RedFish is only supported on Dell with iDRAC firmware version `4.20.20.20` or higher for IPI on Bare metal deployments.
+Currently RedFish is only supported on Dell with iDRAC firmware versions `4.20.20.20` through `04.39.00.00` for IPI on Bare metal deployments. There is a known issue with version `04.40.00.00`.
 ====
 
 
