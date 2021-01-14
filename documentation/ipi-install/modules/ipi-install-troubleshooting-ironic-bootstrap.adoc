@@ -1,0 +1,113 @@
+// Module included in the following assemblies:
+// //installing/installing_bare_metal_ipi/installing_bare_metal_ipi/ipi-install-troubleshooting.adoc
+
+[id="ipi-install-troubleshooting-ironic-bootstrap_{context}"]
+
+= Ironic Bootstrap issues
+
+The {product-title} installer spawns a bootstrap node virtual machine, which handles provisioning the {product-title} cluster nodes. The cluster nodes are powered on, introspected and finally provisioned using Ironic.
+
+Sometimes you might need to connect to the Ironic service running on the bootstrap node virtual machine to troubleshoot issues related to Ironic.
+
+.Procedure
+
+. About 10 to 15 minutes after triggering the installer, check to ensure the bootstrap VM is operational using the `virsh` command:
++
+[source,terminal]
+----
+[kni@provisioner ~]$ sudo virsh list
+----
++
+[source,terminal]
+----
+ Id    Name                           State
+ --------------------------------------------
+ 12    openshift-xf6fq-bootstrap      running
+----
+. Use the `virsh console` command to find the IP address of the bootstrap VM:
++
+[source,terminal]
+----
+[kni@provisioner ~]$ sudo virsh console openshift-xf6fq-bootstrap
+----
++
+[source,terminal]
+----
+Connected to domain openshift-xf6fq-bootstrap
+Escape character is ^]
+
+Red Hat Enterprise Linux CoreOS 43.81.202001142154.0 (Ootpa) 4.3
+SSH host key: SHA256:BRWJktXZgQQRY5zjuAV0IKZ4WM7i4TiUyMVanqu9Pqg (ED25519)
+SSH host key: SHA256:7+iKGA7VtG5szmk2jB5gl/5EZ+SNcJ3a2g23o0lnIio (ECDSA)
+SSH host key: SHA256:DH5VWhvhvagOTaLsYiVNse9ca+ZSW/30OOMed8rIGOc (RSA)
+ens3:  fd35:919d:4042:2:c7ed:9a9f:a9ec:7
+ens4: 172.22.0.2 fe80::1d05:e52e:be5d:263f
+localhost login:
+----
+
+. Once you obtain the IP address, log in to the bootstrap VM using the `ssh` command:
++
+[NOTE]
+====
+In the console output of the previous step, the IPv6 IP provided by `ens3` or the IPv4 IP provided by `ens4` can be used.
+====
++
+[source,terminal]
+----
+[kni@provisioner ~]$ ssh core@172.22.0.2
+----
+
+. Make sure Ironic containers are running:
++
+[source,terminal]
+----
+[core@localhost ~]$ sudo podman ps | grep ironic
+90251a35d1e2  quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a5603d959546a8293deaee66332da4fa3cb96bcd04c26967070c247085ca7203                        2 minutes ago  Up 2 minutes ago         ironic-api
+168e712c9996  quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:c6af62509b3d66effe8e16c81e42e75e124ccb5770f82efb010ecc3ebadc48b8                        2 minutes ago  Up 2 minutes ago         ironic-inspector
+025f8247bfb0  quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a5603d959546a8293deaee66332da4fa3cb96bcd04c26967070c247085ca7203                        2 minutes ago  Up 2 minutes ago         ironic-conductor
+----
++
+. Get the value for the `bootstrapProvisioningIp` property from your `install-config.yaml`.
+. Create a clouds.yaml file:
++
+[source,yaml]
+----
+clouds:
+  metal3-bootstrap:
+    auth_type: none
+    baremetal_endpoint_override: http://<bootstrapProvisioningIp>:6385
+    baremetal_introspection_endpoint_override: http://<bootstrapProvisioningIp>:5050
+----
++
+[NOTE]
+====
+Make sure in the file above you change <bootstrapProvisioningIp> with the value from your install-config.yaml file.
+====
+. Run the ironic-client on the bootstrap VM using podman:
++
+[source,terminal]
+----
+[core@localhost ~]$ podman run -ti --rm --entrypoint /bin/bash -v /path/to/clouds.yaml:/clouds.yaml -e OS_CLOUD=metal3-bootstrap quay.io/metal3-io/ironic-client
+----
++
+. Once you're in the container, run the following command to see the status of the nodes on Ironic:
++
+[source,terminal]
+----
+[root@1facad6bccff /]# openstack baremetal node list
+----
++
+
+The expected states for the nodes are `clean-wait` -> `available` -> `deploying` -> `wait call-back` -> `active`.
+
+* clean-wait: The IPA (Ironic Python Agent) will clean the node main disk and write RHCOS to it. After that will report the node status back to Ironic.
+* available: The node has been introspected and it's ready to be provisioned.
+* deploying: The node is being provisioned with RHCOS + the required Ignition configs.
+* wait call-back: The node is deployed and Ironic is waiting for the node to finish everything before marking the node as active.
+* active: The node is fully provisioned from an Ironic perspective.
+
+If you are not getting any output, you have likely encountered of the following scenarios:
+
+* You cannot reach the `bootstrapProvisioningIp` from the bootstrap VM.
+* The Ironic conductor was not able to power on and configure the nodes to boot with the IPA image.
+* The machine running the `openshift-install` binary cannot access the `bootstrapProvisioningIp` on port `6385`.
