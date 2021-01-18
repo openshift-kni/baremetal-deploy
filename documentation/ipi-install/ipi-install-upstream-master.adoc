@@ -108,14 +108,15 @@ endif::[]
 ifdef::upstream[]
 include::modules/ipi-install-upstream-day2.adoc[leveloffset=+1]
 include::modules/ipi-install-upstream-backing-up-the-cluster-configuration.adoc[leveloffset=+2]
-include::modules/ipi-install-upstream-preparing-the-provisioner-node-to-be-deployed-as-a-worker-node.adoc[leveloffset=+2]
-include::modules/ipi-install-upstream-adding-a-worker-node-to-an-existing-cluster.adoc[leveloffset=+2]
-
-include::modules/ipi-install-upstream-dns-records-for-the-worker.adoc[leveloffset=+3]
-include::modules/ipi-install-upstream-dhcp-for-the-worker.adoc[leveloffset=+3]
-include::modules/ipi-install-upstream-deploying-the-provisioner-node-as-a-worker-node-using-metal3.adoc[leveloffset=+3]
-
 include::ipi-install-expanding-the-cluster.adoc[leveloffset=+2]
+include::modules/ipi-install-upstream-preparing-the-provisioner-node-to-be-deployed-as-a-worker-node.adoc[leveloffset=+3]
+include::modules/ipi-install-upstream-adding-a-worker-node-to-an-existing-cluster.adoc[leveloffset=+3]
+
+include::modules/ipi-install-upstream-dns-records-for-the-worker.adoc[leveloffset=+4]
+include::modules/ipi-install-upstream-dhcp-for-the-worker.adoc[leveloffset=+4]
+include::modules/ipi-install-upstream-deploying-the-provisioner-node-as-a-worker-node-using-metal3.adoc[leveloffset=+4]
+
+
 
 endif::[]
 
