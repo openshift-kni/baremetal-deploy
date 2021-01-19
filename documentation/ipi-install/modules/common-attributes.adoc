@@ -1,7 +1,10 @@
+ifndef::upstream[]
 {product-author}
 {product-version}
-:data-uri:
 :icons:
+:kebab: image:kebab.png[title="Options menu"]
+endif::[]
+:data-uri:
 :experimental:
 :toc: macro
 :toc-title:
@@ -11,7 +14,6 @@
 :op-system: RHCOS
 :asb-name: OpenShift Ansible Broker
 :tsb-name: Template Service Broker
-:kebab: image:kebab.png[title="Options menu"]
 :rh-openstack-first: Red Hat OpenStack Platform (RHOSP)
 :rh-openstack: RHOSP
 :cloud-redhat-com: Red Hat OpenShift Cluster Manager
