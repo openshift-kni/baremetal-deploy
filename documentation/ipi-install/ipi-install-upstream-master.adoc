@@ -47,61 +47,19 @@ link:Deployment.pdf[Download] the PDF version of this document or visit https://
 
 
 // Deploying IPI Baremetal
-include::deploying-ipi-bare-metal.adoc[leveloffset=+1]
+include::ipi-install-overview.adoc[leveloffset=+1]
 
 // Prerequisites
 include::ipi-install-prerequisites.adoc[leveloffset=+1]
 
-After an environment has been prepared according to the documented prerequisites, the installation process is the same as other IPI-based platforms.
-
-// Installing RHEL on the provision node
-ifdef::upstream[]
-// include::ipi-install-upstream-installation-workflow.adoc[leveloffset=+1]
-
-include::modules/ipi-install-installing-rhel-on-the-provisioner-node.adoc[leveloffset=+1]
-endif::[]
-
-// Preparing the provision node for OCP
-include::modules/ipi-install-preparing-the-provisioner-node-for-openshift-install.adoc[leveloffset=+1]
-
-// Retrieving OpenShift Installer
-include::modules/ipi-install-retrieving-openshift-installer.adoc[leveloffset=+1]
-
-// RHCOS image cache
-include::modules/ipi-install-creating-an-rhcos-images-cache.adoc[leveloffset=+1]
-
-
-// Configuring the files
-include::modules/ipi-install-configuration-files.adoc[leveloffset=+1]
-
-
-// Creating a disconnected registry
-include::modules/ipi-install-creating-a-disconnected-registry.adoc[leveloffset=+1]
-
-
-// Deploying routers on worker nodes
-ifdef::upstream[]
-include::modules/ipi-install-upstream-deploying-routers-on-worker-nodes.adoc[leveloffset=+1]
-endif::[]
-
-// Validation checklist
-include::modules/ipi-install-validation-checklist-for-installation.adoc[leveloffset=+1]
-
-
-// Installing via OCP GA installer
-include::modules/ipi-install-deploying-the-cluster-via-the-openshift-installer.adoc[leveloffset=+1]
-
-// Following the installation
-include::modules/ipi-install-following-the-installation.adoc[leveloffset=+1]
-
-
+// Installation Workflow
+include::ipi-install-installation-workflow.adoc[leveloffset=+1]
 
 
 // Backing up the cluster configuration
 ifndef::upstream[]
 include::modules/ipi-install-upstream-backing-up-the-cluster-configuration.adoc[leveloffset=+1]
 endif::[]
-
 
 // Day 2 Operations
 

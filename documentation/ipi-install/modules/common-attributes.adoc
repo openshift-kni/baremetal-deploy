@@ -15,3 +15,5 @@
 :rh-openstack-first: Red Hat OpenStack Platform (RHOSP)
 :rh-openstack: RHOSP
 :cloud-redhat-com: Red Hat OpenShift Cluster Manager
+:op-system-base: RHEL
+:op-system-base-full: Red Hat Enterprise Linux (RHEL)
