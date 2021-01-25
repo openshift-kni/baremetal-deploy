@@ -193,7 +193,7 @@ platform:
 Deploying with RedFish Virtual Media involves meeting minimum firmware requirements. See *Firmware requirements for installing with virtual media* in the *Prerequisites* section for details.
 ====
 
-ifeval::[{release}> 4.6]
+ifeval::[{release}> 4.7]
 .iRMC for Fujitsu
 
 Fujitsu nodes can use `irmc://<out-of-band-ip>` and defaults to port `623`. The following example demonstrates an iRMC configuration within the `install-config.yaml` file.
