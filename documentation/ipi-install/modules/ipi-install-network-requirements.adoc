@@ -5,7 +5,7 @@
 [id='network-requirements_{context}']
 = Network requirements
 
-Installer-provisioned installation of {product-title} involves several network requirements by default. First, installer-provisioned installation involves a non-routable `provisioning` network for provisioning the OS on each bare metal node and a routable `baremetal` network. Since installer-provisioned installation deploys `ironic-dnsmasq`, the networks should have no other DHCP servers running on the same broadcast domain. Network administrators must reserve IP addresses for each node in the {product-title} cluster.
+Installer-provisioned installation of {product-title} involves several network requirements by default. First, installer-provisioned installation involves a non-routable `provisioning` network for provisioning the operating system on each bare metal node and a routable `baremetal` network. Since installer-provisioned installation deploys `ironic-dnsmasq`, the networks should have no other DHCP servers running on the same broadcast domain. Network administrators must reserve IP addresses for each node in the {product-title} cluster.
 
 .Network Time Protocol (NTP)
 
@@ -60,10 +60,10 @@ ifeval::[{release} <= 4.5]
 . Three virtual IP addresses
 endif::[]
 +
-- 1 IP address for the API endpoint
-- 1 IP address for the wildcard ingress endpoint
+- One IP address for the API endpoint
+- One IP address for the wildcard ingress endpoint
 ifeval::[{release} <= 4.5]
-- 1 IP address for the name server
+- One IP address for the name server
 endif::[]
 
 . One IP Address for the provisioner node.
@@ -78,7 +78,7 @@ Some administrators prefer to use static IP addresses so that each node's IP add
 ====
 endif::[]
 
-The following table provides an exemplary embodiment of fully-qualified domain names. The API and Nameserver addresses begin with canonical name extensions. The hostnames of the control plane and worker nodes are exemplary, so you may use any host naming convention you prefer. 
+The following table provides an exemplary embodiment of fully-qualified domain names. The API and Nameserver addresses begin with canonical name extensions. The hostnames of the control plane and worker nodes are exemplary, so you may use any host naming convention you prefer.
 
 [width="100%", cols="3,5e,2e", frame="topbot",options="header"]
 |=====
