@@ -12,7 +12,7 @@ ifeval::[{release}>4.6]
 [IMPORTANT]
 .Reserving IP addresses so they become static IP addresses
 ====
-Some administrators prefer to use static IP addresses so that each node's IP address remains constant in the absence of a DHCP server. To use static IP addresses in the {product-title} cluster, **reserve the IP addresses in the DHCP server with an infinite lease**. After the installer provisions the node successfully, the dispatcher script will check the node's network configuration. If the dispatcher script finds that the network configuration contains a DHCP infinite lease, it will recreate the connection as a static IP connection using the IP address from the DHCP infinite lease. NICs without DHCP infinite leases will remain unmodified.
+Some administrators prefer to use static IP addresses so that each node's IP address remains constant in the absence of a DHCP server. To use static IP addresses in the {product-title} cluster, *reserve the IP addresses in the DHCP server with an infinite lease*. After the installer provisions the node successfully, the dispatcher script will check the node's network configuration. If the dispatcher script finds that the network configuration contains a DHCP infinite lease, it will recreate the connection as a static IP connection using the IP address from the DHCP infinite lease. NICs without DHCP infinite leases will remain unmodified.
 ====
 endif::[]
 
@@ -34,7 +34,7 @@ Preparing the bare metal node requires executing the following procedure from th
 
 . Power off the bare metal node via the baseboard management controller and ensure it is off.
 
-. Retrieve the username and password of the bare metal node's baseboard management controller. Then, create `base64` strings from the username and password. In the following example, the username is `root` and the password is `calvin`.
+. Retrieve the user name and password of the bare metal node's baseboard management controller. Then, create `base64` strings from the user name and password. In the following example, the user name is `root` and the password is `calvin`.
 +
 [source,bash]
 ----
@@ -77,7 +77,7 @@ spec:
     credentialsName: openshift-worker-<num>-bmc-secret
 ----
 +
-Replace `<num>` for the worker number of bare metal node in the two `name` fields and `credentialsName` field. Replace `<base64-of-uid>` with the `base64` string of the username. Replace `<base64-of-pwd>` with the `base64` string of the password. Replace `<NIC1-mac-address>` with the MAC address of the bare metal node's first NIC.
+Replace `<num>` for the worker number of the bare metal node in the two `name` fields and the `credentialsName` field. Replace `<base64-of-uid>` with the `base64` string of the user name. Replace `<base64-of-pwd>` with the `base64` string of the password. Replace `<NIC1-mac-address>` with the MAC address of the bare metal node's first NIC.
 +
 Refer to the BMC addressing section for additional BMC configuration options. Replace `<protocol>` with the BMC protocol, such as IPMI, RedFish, or others.
 Replace `<bmc-ip>` with the IP address of the bare metal node's baseboard management controller.

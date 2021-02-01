@@ -139,11 +139,11 @@ a|`provisioningNetworkCIDR`
 
 |`clusterProvisioningIP`
 |The third IP address of the `provisioningNetworkCIDR`.
-|The IP within the cluster where the provisioning services run. Defaults to the 3rd IP of the `provisioning` subnet. For example, `172.22.0.3`.
+|The IP address within the cluster where the provisioning services run. Defaults to the third IP address of the `provisioning` subnet. For example, `172.22.0.3`.
 
 |`bootstrapProvisioningIP`
 |The second IP address of the `provisioningNetworkCIDR`.
-|The IP on the bootstrap VM where the provisioning services run while the the installer is deploying the control plane (master) nodes. Defaults to the second IP of the `provisioning` subnet. For example, `172.22.0.2`
+|The IP address on the bootstrap VM where the provisioning services run while the installer is deploying the control plane (master) nodes. Defaults to the second IP address of the `provisioning` subnet. For example, `172.22.0.2`
 ifeval::[{release} >= 4.5]
 or `2620:52:0:1307::2`
 endif::[]
