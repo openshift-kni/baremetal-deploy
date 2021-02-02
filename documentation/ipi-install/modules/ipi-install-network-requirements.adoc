@@ -49,7 +49,7 @@ For assistance in configuring the DNS server, check xref:ipi-install-upstream-ap
 endif::[]
 
 
-.Reserving IP Addresses for Nodes with the DHCP Server
+.Reserving IP addresses for nodes with the DHCP server
 
 For the `baremetal` network, a network administrator must reserve a number of IP addresses, including:
 
@@ -66,23 +66,23 @@ ifeval::[{release} <= 4.5]
 - One IP address for the name server
 endif::[]
 
-. One IP Address for the provisioner node.
-. One IP address for each Control Plane (Master) node.
+. One IP address for the provisioner node.
+. One IP address for each control plane (master) node.
 . One IP address for each worker node, if applicable.
 
 ifeval::[{release}>4.6]
 [IMPORTANT]
 .Reserving IP addresses so they become static IP addresses
 ====
-Some administrators prefer to use static IP addresses so that each node's IP address remains constant in the absence of a DHCP server. To use static IP addresses in the {product-title} cluster, **reserve the IP addresses with an infinite lease**. During deployment, the installer will reconfigure the NICs from DHCP assigned addresses to static IP addresses. NICs with DHCP leases that are not infinite will remain configured to use DHCP.
+Some administrators prefer to use static IP addresses so that each node's IP address remains constant in the absence of a DHCP server. To use static IP addresses in the {product-title} cluster, *reserve the IP addresses with an infinite lease*. During deployment, the installer will reconfigure the NICs from DHCP assigned addresses to static IP addresses. NICs with DHCP leases that are not infinite will remain configured to use DHCP.
 ====
 endif::[]
 
-The following table provides an exemplary embodiment of fully-qualified domain names. The API and Nameserver addresses begin with canonical name extensions. The hostnames of the control plane and worker nodes are exemplary, so you may use any host naming convention you prefer.
+The following table provides an exemplary embodiment of fully qualified domain names. The API and Nameserver addresses begin with canonical name extensions. The host names of the control plane and worker nodes are exemplary, so you can use any host naming convention you prefer.
 
 [width="100%", cols="3,5e,2e", frame="topbot",options="header"]
 |=====
-| Usage | Hostname | IP
+| Usage | Host Name | IP
 | API | api.<cluster-name>.<domain> | <ip>
 | Ingress LB (apps) |  *.apps.<cluster-name>.<domain>  | <ip>
 ifeval::[{release} <= 4.5]
@@ -131,5 +131,5 @@ ifeval::[{release} > 4.6]
 Configuration must occur before scheduling pods.
 ====
 
-State-driven network configuration requires installing `kubernetes-nmstate`, and also requires NetworkManager running on the cluster nodes. See **OpenShift Virtualization > Kubernetes NMState (Tech Preview)** for additional details.
+State-driven network configuration requires installing `kubernetes-nmstate`, and also requires Network Manager running on the cluster nodes. See *OpenShift Virtualization > Kubernetes NMState (Tech Preview)* for additional details.
 endif::[]
