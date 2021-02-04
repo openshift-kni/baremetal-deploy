@@ -348,7 +348,7 @@
   redfish_info:
     category: Chassis
     command: GetChassisInventory
-    baseuri: "{{ hostvars[item]['ipmi_address'] }}"
+    baseuri: "{{ hostvars[item]['ipmi_address']|ipwrap }}"
     username: "{{ hostvars[item]['ipmi_user'] }}"
     password: "{{ hostvars[item]['ipmi_password'] }}"
   register: chassis_result
@@ -366,7 +366,7 @@
   redfish_info:
     category: Update
     command: GetFirmwareInventory
-    baseuri: "{{ hostvars[item]['ipmi_address'] }}"
+    baseuri: "{{ hostvars[item]['ipmi_address']|ipwrap }}"
     username: "{{ hostvars[item]['ipmi_user'] }}"
     password: "{{ hostvars[item]['ipmi_password'] }}"
   register: firmware_result
