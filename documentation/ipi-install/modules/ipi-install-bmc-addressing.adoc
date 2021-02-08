@@ -96,7 +96,7 @@ platform:
 
 [NOTE]
 ====
-Currently RedFish is only supported on Dell with iDRAC firmware versions `4.20.20.20` through `04.39.00.00` for IPI on Bare metal deployments. There is a known issue with version `04.40.00.00`.
+Currently RedFish is only supported on Dell with iDRAC firmware versions `4.20.20.20` through `04.40.00.00` for IPI on Bare metal deployments. There is a known issue with version `04.40.00.00`. With iDRAC 9 firmware version 04.40.00.00, the Virtual Console Plugin defaults to `eHTML5`, which causes problems with the *InsertVirtualMedia* workflow. Set the Plugin to `HTML5` to avoid this issue.
 ====
 
 
