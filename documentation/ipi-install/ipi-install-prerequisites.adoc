@@ -1,15 +1,15 @@
 [id="ipi-install-prerequisites"]
 = Prerequisites
-//include::modules/common-attributes.adoc[]
+include::modules/common-attributes.adoc[]
 :context: ipi-install-prerequisites
-//:release: 4.6
+:release: 4.7
 
 toc::[]
 
 Installer-provisioned installation of {product-title} requires:
 
-. One provisioner node with {op-system-base-full} 8.1 installed.
-. Three Control Plane nodes.
+. One provisioner node with {op-system-base-full} 8.x installed.
+. Three control plane nodes.
 . Baseboard Management Controller (BMC) access to each node.
 ifeval::[{release} > 4.5]
 . At least one network:
@@ -23,7 +23,6 @@ ifeval::[{release} < 4.6]
 .. One *required* network for provisioning nodes; and,
 .. One *optional* management network.
 endif::[]
-
 
 Before starting an installer-provisioned installation of {product-title}, ensure the hardware environment meets the following requirements.
 
