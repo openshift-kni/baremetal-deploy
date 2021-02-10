@@ -1,4 +1,4 @@
-
+// Module included in the following assemblies:
 //
 // install/installing_bare_metal_ipi/ipi-install-installation-workflow.adoc
 
@@ -9,9 +9,9 @@ In some cases, you might want to install an {product-title} cluster using a loca
 
 A local, or mirrored, copy of the registry requires the following:
 
-* A xref:ipi-install-creating-a-disconnected-registry_{context}-generating-certificate[certificate] for the registry node. This can be a self-signed certificate.
-* A xref:ipi-install-creating-a-disconnected-registry_{context}-webserver[webserver] - this will be served by a container on a system.
-* An updated xref:ipi-install-creating-a-disconnected-registry_{context}-pull-secret[pull secret] that contains the certificate and local repository information.
+* A certificate for the registry node. This can be a self-signed certificate.
+* A web server that a container on a system will serve.
+* An updated pull secret that contains the certificate and local repository information.
 
 [NOTE]
 ====
@@ -47,7 +47,6 @@ Make the following changes to the registry node.
 [user@registry ~]$ sudo mkdir -p /opt/registry/{auth,certs,data}
 ----
 
-[id="ipi-install-creating-a-disconnected-registry_{context}-generating-certificate"]
 == Generating the self-signed certificate (optional)
 
 Generate a self-signed certificate for the registry node and put it in the `/opt/registry/certs` directory.
@@ -87,7 +86,6 @@ NOTE: When replacing `<Common Name>`, ensure it only contains two letters. For e
 [user@registry ~]$ sudo update-ca-trust extract
 ----
 
-[id="ipi-install-creating-a-disconnected-registry_{context}-webserver"]
 == Creating the registry podman container (optional)
 
 The registry container uses the `/opt/registry` directory for certificates, authentication files, and to store its data files.
@@ -130,7 +128,6 @@ Replace `<user>` with the user name and `<passwd>` with the password.
 [user@registry ~]$ podman start ocpdiscon-registry
 ----
 
-[id="ipi-install-creating-a-disconnected-registry_{context}-pull-secret"]
 == Copy and update the pull-secret (optional)
 
 Copy the pull secret file from the provisioner node to the registry node and modify it to include the authentication information for the new registry node.
