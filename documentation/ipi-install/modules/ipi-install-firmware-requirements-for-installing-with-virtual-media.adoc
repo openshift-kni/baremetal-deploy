@@ -26,7 +26,7 @@ Refer to the hardware documentation for the nodes or contact the hardware vendor
 
 There are no known firmware limitations for HP servers.
 
-For Dell servers, ensure the {product-title} cluster nodes have AutoAttach Enabled through the iDRAC console. The menu path is: *Configuration* -> *Virtual Media* -> *Attach Mode* -> *AutoAttach* . With iDRAC 9 firmware version `04.40.00.00`, the Virtual Console Plugin defaults to `eHTML5`, which causes problems with the *InsertVirtualMedia* workflow. Set the Plugin to `HTML5` to avoid this issue.
+For Dell servers, ensure the {product-title} cluster nodes have AutoAttach Enabled through the iDRAC console. The menu path is: *Configuration* -> *Virtual Media* -> *Attach Mode* -> *AutoAttach* . With iDRAC 9 firmware version `04.40.00.00`, the Virtual Console plug-in defaults to `eHTML5`, which causes problems with the *InsertVirtualMedia* workflow. Set the plug-in to `HTML5` to avoid this issue. The menu path is: *Configuration* -> *Virtual console* -> *Plug-in Type* -> *HTML5* .
 ====
 
 [IMPORTANT]
