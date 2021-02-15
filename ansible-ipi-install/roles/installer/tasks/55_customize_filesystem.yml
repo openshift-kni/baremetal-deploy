@@ -33,8 +33,8 @@
 
   - name: Copy customize_filesystem to tempdir
     copy:
-      src: "{{ custom_path }}"
-      dest: "{{ tempdir }}"
+      src: "{{ custom_path }}/"
+      dest: "{{ tempdir }}/customize_filesystem"
       force: yes
 
   - name: Cleanup Any .gitkeep Files in the Fake Root
