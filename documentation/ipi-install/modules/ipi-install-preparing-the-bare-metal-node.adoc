@@ -23,7 +23,9 @@ Preparing the bare metal node requires executing the following procedure from th
 . Get the `oc` binary, if needed. It should already exist on the provisioner node.
 +
 [source,bash]
+[subs="attributes"]
 ----
+[kni@provisioner ~]$ export VERSION=latest-{release}
 [kni@provisioner ~]$ curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/openshift-client-linux-$VERSION.tar.gz | tar zxvf - oc
 ----
 +
