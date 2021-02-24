@@ -2,10 +2,10 @@
 # Builds documentation for each release in both HTML and PDF versions
 
 # Space separated version list to build
-RELEASES="4.6 4.5 4.4 4.3"
+RELEASES="4.7 4.6 4.5 4.4 4.3"
 
 # Devel releases for static documents and devel docs
-DEVRELEASE="4.7"
+DEVRELEASE="4.8"
 
 # STATIC Release
 STATICRELEASE="${DEVRELEASE}"
@@ -53,21 +53,21 @@ RC=0
 # Build all releases
 for release in ${RELEASES}; do
     for doc in "${DOCS[@]}"; do
-        build_for_release "${doc}" "${release}"
+        build_for_release "${doc}" "${release}" "-a upstream=True"
     done
 done
 
 # Build latest for static
 for release in ${STATICRELEASE}; do
     for doc in "${STATIC[@]}"; do
-        build_for_release "${doc}" "${release}"
+        build_for_release "${doc}" "${release}" "-a upstream=True"
     done
 done
 
 # Build latest for DEVEL
 for release in ${DEVRELEASE}; do
     for doc in "${DEV[@]}"; do
-        build_for_release "${doc}" "${release}" "-a watermark=True"
+        build_for_release "${doc}" "${release}" "-a upstream=True -a watermark=True"
     done
 done
 
