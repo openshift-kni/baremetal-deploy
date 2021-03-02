@@ -55,3 +55,10 @@ chmod 0440 /etc/sudoers.d/kni
 . Enable a `dnf` <<local_repository,local repository>> on the provision host
 
 . Manually install <<packages,`python3-crypto` and `python3-pyghmi`>> packages on the provision host
+
+. If planning to use podman in the provision host (to host the container images or the RHCOS images),
+enable the `container-tools:2.0` dnf module as:
++[source,sh]
+----
+sudo dnf module enable container-tools:2.0
+----
