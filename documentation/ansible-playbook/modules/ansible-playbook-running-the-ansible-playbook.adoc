@@ -21,5 +21,6 @@ With the `playbook.yml` set and in-place, run the `playbook.yml`
 
 [source,bash]
 ----
+$ export ANSIBLE_CONFIG=./ansible.cfg
 $ ansible-playbook -i inventory/hosts playbook.yml
 ----
