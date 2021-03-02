@@ -22,7 +22,7 @@ platform:
 
 For HPE hardware, Red Hat supports RedFish Virtual Media, RedFish, and IPMI.
 
-.BMC address formats for Dell hardware
+.BMC address formats for HPE hardware
 [frame="topbot",options="header"]
 |====
 |Protocol|Address Format
@@ -115,7 +115,7 @@ platform:
           username: <user>
           password: <password>
 ----
-+
+
 [NOTE]
 ====
 IPMI does not encrypt communications. It is suitable for use within a data center or over a secured network. Use RedFish for secure communications over geographically distributed data centers using insecure networks such as the Internet.

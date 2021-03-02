@@ -26,11 +26,15 @@ For Dell hardware, Red Hat supports RedFish Virtual Media, RedFish, and IPMI.
 [frame="topbot",options="header"]
 |====
 |Protocol|Address Format
-|RedFish Virtual Media| `idrac-virtualmedia://<out-of-band-ip>/redfish/v1/Systems/System.Embedded.1` <.>
+|RedFish Virtual Media| `idrac-virtualmedia://<out-of-band-ip>/redfish/v1/Systems/System.Embedded.1`
 |RedFish|`redfish://<out-of-band-ip>/redfish/v1/Systems/System.Embedded.1`
 |IPMI|`ipmi://<out-of-band-ip>`
 |====
-<.> Use `idrac-virtualmedia` as the protocol. `redfish-virtualmedia` will NOT work on Dell hardware.
+
+[IMPORTANT]
+====
+Use `idrac-virtualmedia` as the protocol for RedFish Virtual Media. `redfish-virtualmedia` will NOT work on Dell hardware.
+====
 
 See the following sections for additional details.
 
@@ -144,7 +148,7 @@ platform:
           username: <user>
           password: <password>
 ----
-+
+
 [NOTE]
 ====
 IPMI does not encrypt communications. It is suitable for use within a data center or over a secured network. Use RedFish for secure communications over geographically distributed data centers using insecure networks such as the Internet.
