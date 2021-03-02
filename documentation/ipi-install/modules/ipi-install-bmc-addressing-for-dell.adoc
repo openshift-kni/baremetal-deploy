@@ -33,7 +33,7 @@ For Dell hardware, Red Hat supports RedFish Virtual Media, RedFish, and IPMI.
 
 [IMPORTANT]
 ====
-Use `idrac-virtualmedia` as the protocol for RedFish Virtual Media. `redfish-virtualmedia` will NOT work on Dell hardware.
+Use `idrac-virtualmedia` as the protocol for RedFish Virtual Media. `redfish-virtualmedia` will NOT work on Dell hardware. Dell's `idrac-virtualmedia` uses the Redfish standard with Dell's OEM extensions.
 ====
 
 See the following sections for additional details.
@@ -88,12 +88,14 @@ platform:
 Currently RedFish is only supported on Dell with iDRAC firmware versions `4.20.20.20` through `04.40.00.00` for IPI on bare metal deployments. There is a known issue with version `04.40.00.00`. With iDRAC 9 firmware version `04.40.00.00`, the Virtual Console plug-in defaults to `eHTML5`, which causes problems with the *InsertVirtualMedia* workflow. Set the plug-in to `HTML5` to avoid this issue. The menu path is: *Configuration* -> *Virtual console* -> *Plug-in Type* -> *HTML5* .
 
 Ensure the {product-title} cluster nodes have AutoAttach Enabled through the iDRAC console. The menu path is: *Configuration* -> *Virtual Media* -> *Attach Mode* -> *AutoAttach* .
+
+Use `idrac-virtualmedia://` as the protocol for RedFish Virtual Media. Using `redfish-virtualmedia://` will NOT work on Dell hardware, because the `idrac-virtualmedia://` protocol corresponds to the `idrac` hardware type and the Redfish protocol in Ironic. Dell's `idrac-virtualmedia://` protocol uses the Redfish standard with Dell's OEM extensions. Ironic also supports the `idrac` type with the WSMAN protocol. So you must specify `idrac-virtualmedia://` to avoid unexpected behavior when electing to use RedFish with Virtual Media on Dell hardware.
 ====
 
 
 .RedFish for Dell
 
-To enable RedFish, use `redfish://` or `redfish+http://` to disable TLS. The installer requires both the hostname or the IP address and the path to the system ID. The following example demonstrates a RedFish configuration within the `install-config.yaml` file.
+To enable RedFish, use `redfish://` or `redfish+http://` to disable TLS. The installer requires both the host name or the IP address and the path to the system ID. The following example demonstrates a RedFish configuration within the `install-config.yaml` file.
 
 [source,yaml]
 ----
@@ -129,6 +131,8 @@ platform:
 Currently RedFish is only supported on Dell with iDRAC firmware versions `4.20.20.20` through `04.40.00.00` for IPI on bare metal deployments. There is a known issue with version `04.40.00.00`. With iDRAC 9 firmware version `04.40.00.00`, the Virtual Console plug-in defaults to `eHTML5`, which causes problems with the *InsertVirtualMedia* workflow. Set the plug-in to `HTML5` to avoid this issue. The menu path is: *Configuration* -> *Virtual console* -> *Plug-in Type* -> *HTML5* .
 
 Ensure the {product-title} cluster nodes have AutoAttach Enabled through the iDRAC console. The menu path is: *Configuration* -> *Virtual Media* -> *Attach Mode* -> *AutoAttach* .
+
+The `redfish://`` URL protocol corresponds to the `redfish` hardware type in Ironic.
 ====
 
 

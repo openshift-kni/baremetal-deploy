@@ -68,7 +68,7 @@ platform:
 
 .RedFish for HPE
 
-To enable RedFish, use `redfish://` or `redfish+http://` to disable TLS. The installer requires both the hostname or the IP address and the path to the system ID. The following example demonstrates a RedFish configuration within the `install-config.yaml` file.
+To enable RedFish, use `redfish://` or `redfish+http://` to disable TLS. The installer requires both the host name or the IP address and the path to the system ID. The following example demonstrates a RedFish configuration within the `install-config.yaml` file.
 
 [source,yaml]
 ----
