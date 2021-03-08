@@ -109,9 +109,11 @@ prov_ip=172.22.0.3
 #customize_node_filesystems="/path/to/customized/filesystems"
 
 # (Optional) Modify the path to add external manifests to the deployed nodes.
+# There are two folders manifests/ and openshift/
 # If defined, the playbook will copy manifests from the user provided directory.
 # Otherwise, files will be copied from the default location 'roles/installer/files/manifests/*'
 #customize_extramanifests_path="/path/to/extra/manifests
+#customize_extramanifestsopenshift_path="/path/to/extra/openshift
 
 ######################################
 # Vars regarding install-config.yaml #
