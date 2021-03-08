@@ -132,7 +132,7 @@ Currently RedFish is only supported on Dell with iDRAC firmware versions `4.20.2
 
 Ensure the {product-title} cluster nodes have AutoAttach Enabled through the iDRAC console. The menu path is: *Configuration* -> *Virtual Media* -> *Attach Mode* -> *AutoAttach* .
 
-The `redfish://`` URL protocol corresponds to the `redfish` hardware type in Ironic.
+The `redfish://` URL protocol corresponds to the `redfish` hardware type in Ironic.
 ====
 
 
