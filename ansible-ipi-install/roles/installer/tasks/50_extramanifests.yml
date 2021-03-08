@@ -1,4 +1,18 @@
 ---
+- name: Check if override path is defined for extra openshift manifests
+  set_fact:
+    extramanifestsopenshift_path: "{{ customize_extramanifestsopenshift_path | default( 'roles/installer/files/openshift/*' ) }}"
+
+- name: Add Manifests from files dir
+  copy:
+    src: "{{ item }}"
+    dest: "{{ dir }}/openshift/"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  with_fileglob:
+    - "{{ extramanifestsopenshift_path }}"
+  tags: extramanifests
+
 - name: Check if override path is defined for extramanifests
   set_fact:
     extramanifests_path: "{{ customize_extramanifests_path | default( 'roles/installer/files/manifests/*' ) }}"
@@ -6,7 +20,7 @@
 - name: Add Manifests from files dir
   copy:
     src: "{{ item }}"
-    dest: "{{ dir }}/openshift/"
+    dest: "{{ dir }}/manifests/"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
   with_fileglob:
