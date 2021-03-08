@@ -92,7 +92,7 @@ prov_ip=172.22.0.3
 # By default this feature is enabled and set to true. Uncomment below to disable and use IPMI.
 #redfish_inspection=false
 
-# (Optional) Modify files on the node filesystems, you can augment the "fake" roots for the 
+# (Optional) Modify files on the node filesystems, you can augment the "fake" roots for the
 # control plane and worker nodes.
 # If defined, playbook will look for files in control plane and worker subdirectories.
 # Otherwise, it will look in {{ role_path }}/files/customize_filesystem (default)
@@ -103,8 +103,8 @@ prov_ip=172.22.0.3
 # There are two folders manifests/ and openshift/
 # If defined, the playbook will copy manifests from the user provided directory.
 # Otherwise, files will be copied from the default location 'roles/installer/files/manifests/*'
-#customize_extramanifests_path="/path/to/extra/manifests
-#customize_extramanifestsopenshift_path="/path/to/extra/openshift
+#customize_extramanifests_path="/path/to/extra/manifests"
+#customize_extramanifestsopenshift_path="/path/to/extra/openshift"
 
 ######################################
 # Vars regarding install-config.yaml #
@@ -155,7 +155,7 @@ pullsecret=""
 #provisioningHostIP=<baremetal_net_IP1>
 #bootstrapProvisioningIP=<baremetal_net_IP2>
 
-# (Optional) Change the boot mode of the OpenShift cluster nodes to legacy mode (BIOS). Default is UEFI. 
+# (Optional) Change the boot mode of the OpenShift cluster nodes to legacy mode (BIOS). Default is UEFI.
 #bootmode=legacy
 
 # Master nodes
