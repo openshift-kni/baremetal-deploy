@@ -1,7 +1,7 @@
 [id="ipi-install-configuration-files"]
 = Configuration files
 :context: ipi-install-configuration-files
-//:release: 4.6
+//:release: 4.7
 
 
 include::modules/ipi-install-configuring-the-install-config-file.adoc[leveloffset=+1]
@@ -15,6 +15,10 @@ include::modules/ipi-install-additional-install-config-parameters.adoc[leveloffs
 include::modules/ipi-install-bmc-addressing-for-dell.adoc[leveloffset=+1]
 
 include::modules/ipi-install-bmc-addressing-for-hpe.adoc[leveloffset=+1]
+
+ifeval::[{release} > 4.7]
+include::modules/ipi-install-bmc-addressing-for-fujitsu.adoc[leveloffset=+1]
+endif::[]
 
 include::modules/ipi-install-root-device-hints.adoc[leveloffset=+1]
 
