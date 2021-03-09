@@ -132,7 +132,7 @@ Currently RedFish is only supported on Dell with iDRAC firmware versions `4.20.2
 
 Ensure the {product-title} cluster nodes have AutoAttach Enabled through the iDRAC console. The menu path is: *Configuration* -> *Virtual Media* -> *Attach Mode* -> *AutoAttach* .
 
-The `redfish://`` URL protocol corresponds to the `redfish` hardware type in Ironic.
+The `redfish://` URL protocol corresponds to the `redfish` hardware type in Ironic.
 ====
 
 
@@ -155,5 +155,5 @@ platform:
 
 [NOTE]
 ====
-IPMI does not encrypt communications. It is suitable for use within a data center or over a secured network. Use RedFish for secure communications over geographically distributed data centers using insecure networks such as the Internet.
+IPMI does not encrypt communications. It is suitable for use within a data center over a secured network.
 ====
