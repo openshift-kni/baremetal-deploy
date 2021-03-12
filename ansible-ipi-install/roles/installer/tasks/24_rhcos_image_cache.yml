@@ -36,7 +36,8 @@
     verbosity: 2
   tags: cache
 
-- debug:
+- name: Show url_passed value
+  debug:
     msg: "{{ url_passed }}"
     verbosity: 2
   tags: cache

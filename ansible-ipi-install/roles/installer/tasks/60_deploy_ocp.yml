@@ -5,7 +5,8 @@
     line: "export KUBECONFIG={{ dir }}/auth/kubeconfig"
   tags: install
 
-- debug:
+- name: Show File to monitor for installation status
+  debug:
     msg:
       - "Preparing to deploy the OpenShift cluster."
       - "You can tail the logs at {{ dir }}/.openshift_install.log on {{ groups['provisioner'][0] }} to monitor the progress."

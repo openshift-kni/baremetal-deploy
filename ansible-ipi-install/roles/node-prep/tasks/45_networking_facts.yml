@@ -55,13 +55,15 @@
   tags:
   - network_facts
 
-- debug:
+- name: Show external subnet
+  debug:
     msg: "external subnet {{ extcidrnet }}"
     verbosity: 2
   tags:
   - network_facts
 
-- debug:
+- name: Show provisioning subnet
+  debug:
     msg: "provisioning subnet {{ provisioning_subnet }}"
     verbosity: 2
   when: provisioning_subnet is defined
