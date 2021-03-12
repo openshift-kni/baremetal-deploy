@@ -63,13 +63,13 @@ endif::[]
 ifeval::[{release} > 4.6]
 .Configuring nodes for Secure Boot
 
-Secure Boot prevents a node from booting unless it verifies the node is using only trusted software, such as UEFI firmware drivers, EFI applications and the operating system. Red Hat only supports Secure Boot when deploying with RedFish Virtual Media.
+Secure Boot prevents a node from booting unless it verifies the node is using only trusted software, such as UEFI firmware drivers, EFI applications and the operating system. Red Hat only supports Secure Boot when deploying with Redfish virtual media.
 
 To enable Secure Boot, refer to the hardware guide for the node. To enable Secure Boot, execute the following:
 
 . Boot the node and enter the BIOS menu.
-. Set the node's boot mode to UEFI Enabled.
-. Enable Secure Boot.
+. Set the node's boot mode to "UEFI secure boot".
+. Set Secure Boot to `TRUE` before deployment.
 +
 [IMPORTANT]
 ====
