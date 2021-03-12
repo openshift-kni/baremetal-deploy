@@ -1,6 +1,6 @@
 // This is included in the following assemblies:
 //
-// ipi-install-configuration-files.adoc
+// installing/installing_bare_metal_ipi/ipi-install-configuration-files.adoc
 [id='bmc-addressing-for-fujitsu_{context}']
 
 = BMC addressing for Fujitsu
