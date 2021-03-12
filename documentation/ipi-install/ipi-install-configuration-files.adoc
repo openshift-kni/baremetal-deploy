@@ -12,6 +12,8 @@ include::modules/ipi-install-modifying-install-config-for-no-provisioning-networ
 
 include::modules/ipi-install-additional-install-config-parameters.adoc[leveloffset=+1]
 
+include::modules/ipi-install-bmc-addressing.adoc[leveloffset=+1]
+
 include::modules/ipi-install-bmc-addressing-for-dell.adoc[leveloffset=+1]
 
 include::modules/ipi-install-bmc-addressing-for-hpe.adoc[leveloffset=+1]
