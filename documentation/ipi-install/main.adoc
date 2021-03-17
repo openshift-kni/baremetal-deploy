@@ -1,0 +1,26 @@
+//local build
+
+[id="ipi-install-main"]
+= Deploying Installer Provisioned Infrastructure (IPI) on Bare Metal
+
+:imagesdir: images
+:context: ipi-install-installation-workflow
+:release: 4.7
+:upstream:
+:product-title: OpenShift Container Platform
+:op-system-first: Red Hat Enterprise Linux CoreOS (RHCOS)
+:op-system: RHCOS
+
+// Deploying IPI Baremetal
+include::ipi-install-overview.adoc[leveloffset=+1]
+
+// Prerequisites
+include::ipi-install-prerequisites.adoc[leveloffset=+1]
+
+// Installation Workflow
+include::ipi-install-installation-workflow.adoc[leveloffset=+1]
+
+//Day 2
+include::ipi-install-expanding-the-cluster.adoc[leveloffset=+1]
+
+include::ipi-install-troubleshooting.adoc[leveloffset=+1]
