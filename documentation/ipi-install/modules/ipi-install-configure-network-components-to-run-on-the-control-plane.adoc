@@ -1,0 +1,115 @@
+// This is included in the following assemblies:
+//
+// ipi-install-configuration-files.adoc
+[id='configure-network-components-to-run-on-the-control-plane_{context}']
+
+= Configure network components to run on the control plane
+
+Configure networking components to run exclusively on the control plane nodes. By default, {product-title} allows any node in the Machine Config Pool to host the `apiVIP` and `ingressVIP` virtual IP addresses. However, many environments deploy worker nodes in separate subnets from the control plane nodes. Consequently, you must place the `apiVIP` and `ingressVIP` virtual IP addresses exclusively with the control plane nodes.
+
+.Procedure
+
+. Change to the directory storing the `install-config.yaml` file.
++
+[source,bash]
+----
+$ cd ~/clusterconfigs
+----
+
+. Switch to the `manifests` subdirectory.
++
+[source,bash]
+----
+$ cd manifests
+----
+
+. Create a file named `cluster-network-99-config.yaml`
++
+[source,bash]
+----
+$ touch cluster-network-99-config.yaml
+----
+
+. Open the `cluster-network-99-config.yaml` file in an editor and enter a custom resource (CR) that describes the Operator configuration:
++
+[source,yaml]
+----
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  name: 50-worker-fix-ipi-rwn
+  labels:
+    machineconfiguration.openshift.io/role: worker
+spec:
+  config:
+    ignition:
+      version: 3.1.0
+    systemd:
+      units:
+      - name: nodeip-configuration.service
+        enabled: true
+        contents: |
+          [Unit]
+          Description=Writes IP address configuration so that kubelet and crio services select a valid node IP
+          Wants=network-online.target
+          After=network-online.target ignition-firstboot-complete.service
+          Before=kubelet.service crio.service
+          [Service]
+          Type=oneshot
+          ExecStart=/bin/bash -c "exit 0 "
+          [Install]
+          WantedBy=multi-user.target
+    storage:
+      files:
+        - contents:
+            source: data:,
+            verification: {}
+          filesystem: root
+          mode: 420
+          path: /etc/kubernetes/manifests/keepalived.yaml
+        - contents:
+            source: data:,
+            verification: {}
+          filesystem: root
+          mode: 420
+          path: /etc/kubernetes/manifests/mdns-publisher.yaml
+        - contents:
+            source: data:,
+            verification: {}
+          filesystem: root
+          mode: 420
+          path: /etc/kubernetes/manifests/coredns.yaml
+---
+apiVersion: operator.openshift.io/v1
+kind: IngressController
+metadata:
+  name: default
+  namespace: openshift-ingress-operator
+spec:
+  nodePlacement:
+    nodeSelector:
+      matchLabels:
+        node-role.kubernetes.io/master: ""
+----
++
+This manifest will place the `apiVIP` and `ingressVIP` virtual IP addresses on the congrol plane nodes. Additionally, the following processes will deploy on the control plane nodes only:
++
+* `openshift-ingress`
++
+* `keepalived`
++
+* `openshift-monitoring`
++
+* `imageregistry`
++
+This manifest will also disable the following processes on worker nodes.
++
+* `openshift-cluster-samples-operator`
++
+* `marketplace` (remove default sources)
++
+* `insights`
+
+. Save the `cluster-network-99-config.yml` file and quit the text editor.
+
+. Consider backing up the `manifests` directory. The installer deletes the `manifests/` directory when creating the cluster.
