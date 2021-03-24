@@ -9,7 +9,23 @@ Installer-provisioned installation of {product-title} involves several network r
 
 .Network Time Protocol (NTP)
 
+ifeval::[{release} <= 4.7]
 Each {product-title} node in the cluster must have access to an NTP server.
+endif::[]
+
+ifeval::[{release}> 4.7]
+{product-title} nodes use NTP to synchronize clocks. For example, cluster nodes use SSL certificates that require validation, which might fail if the date and time between the nodes are not in sync.
+
+[IMPORTANT]
+====
+Define a consistent clock date and time format in each cluster node's BIOS settings, or installation will fail.
+====
+
+In {product-title} 4.8 and later releases, the cluster deploys with NTP servers on the control plane nodes. The worker nodes must reference the NTP servers of the control plane nodes. Using this configuration, system administrators can deploy a {product-title} cluster whether it is connected to a routable network or not.
+
+//image::file name[alt text description] <--insert image from Jess
+endif::[]
+
 
 .Configuring NICs
 

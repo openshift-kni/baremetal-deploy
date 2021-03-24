@@ -1,0 +1,8 @@
+[id="ipi-install-post-installation-configuration"]
+= Post-installation Configuration
+include::modules/common-attributes.adoc[]
+:context: ipi-install-post-installation-configuration
+
+After successfully deploying an installer-provisioned cluster, consider the following post-install procedures.
+
+include::modules/ipi-install-configuring-ntp.adoc[leveloffset=+1]
