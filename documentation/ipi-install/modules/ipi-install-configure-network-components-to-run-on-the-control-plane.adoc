@@ -23,14 +23,14 @@ $ cd ~/clusterconfigs
 $ cd manifests
 ----
 
-. Create a file named `cluster-network-99-config.yaml`
+. Create a file named `cluster-network-avoid-workers-99-config.yaml`
 +
 [source,bash]
 ----
-$ touch cluster-network-99-config.yaml
+$ touch cluster-network-avoid-workers-99-config.yaml
 ----
 
-. Open the `cluster-network-99-config.yaml` file in an editor and enter a custom resource (CR) that describes the Operator configuration:
+. Open the `cluster-network-avoid-workers-99-config.yaml` file in an editor and enter a custom resource (CR) that describes the Operator configuration:
 +
 [source,yaml]
 ----
@@ -110,6 +110,6 @@ This manifest will also disable the following processes on worker nodes.
 +
 * `insights`
 
-. Save the `cluster-network-99-config.yml` file and quit the text editor.
+. Save the `cluster-network-avoid-workers-99-config.yaml` file and quit the text editor.
 
 . Consider backing up the `manifests` directory. The installer deletes the `manifests/` directory when creating the cluster.
