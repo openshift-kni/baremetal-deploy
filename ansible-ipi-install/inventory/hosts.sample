@@ -62,6 +62,10 @@ prov_ip=172.22.0.3
 # (Optional) When ipv6_enabled is set to True, but want IPv4 addressing on baremetal network
 #ipv4_baremetal=True
 
+# (Optional) When ipv6_enabled is set to True, but want dual-stack for baremetal network
+# Only one of ipv4_baremetal and dualstack_baremetal can be true
+#dualstack_baremetal=False
+
 # (Optional) A list of clock servers to be used in chrony by the masters and workers
 #clock_servers=["pool.ntp.org","clock.redhat.com"]
 
@@ -114,8 +118,10 @@ prov_ip=172.22.0.3
 domain=""
 # Name of the cluster, i.e. openshift
 cluster=""
-# The public CIDR address, i.e. 10.1.1.0/21
+# The public CIDR address, i.e. 10.1.1.0/21 (for IPv4 only and Dual-Stack deploys)
 extcidrnet=""
+# The public CIDR address for IPv6 only and Dual-Stack deploys
+extcidrnet6=""
 # An IP reserved on the baremetal network.
 # Deprecated in OpenShift 4.5 (https://github.com/openshift/installer/pull/3304)
 #dnsvip=""

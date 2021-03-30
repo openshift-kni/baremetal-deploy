@@ -121,7 +121,7 @@
       when: (not ipv6_enabled|bool) or
             (ipv4_baremetal|bool)
 
-    - name: Create Bridge labeled {{ baremetal_bridge }} for ipv6
+    - name: Create Bridge labeled {{ baremetal_bridge }} for ipv6/dual-stack
       nmcli:
         conn_name: "{{ baremetal_bridge }}"
         type: bridge

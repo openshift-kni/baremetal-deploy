@@ -24,7 +24,7 @@ package_list:
 cache_package_list:
   - podman
 
-qtype: "{{ ((ipv6_enabled|bool and ipv4_baremetal|bool) or (not ipv6_enabled|bool)) | ternary('qtype=A', 'qtype=AAAA') }}"
+qtype: "{{ ((ipv6_enabled|bool and (ipv4_baremetal|bool or dualstack_baremetal)) or (not ipv6_enabled|bool)) | ternary('qtype=A', 'qtype=AAAA') }}"
 
 
 # Temporary state variables for disconnected registry
