@@ -11,7 +11,7 @@ NOTE: This should be done on a system that can access the provision host
 +
 [source,bash]
 ----
-[user@laptop ~]$ git clone https://github.com/openshift-kni/baremetal-deploy.git
+[user@laptop ~]$ git clone --recursive https://github.com/openshift-kni/baremetal-deploy.git
 ----
 +
 NOTE: Ensure `git` is installed on your localhost
