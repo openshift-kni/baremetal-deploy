@@ -92,7 +92,7 @@ spec:
         node-role.kubernetes.io/master: ""
 ----
 +
-This manifest will place the `apiVIP` and `ingressVIP` virtual IP addresses on the congrol plane nodes. Additionally, the following processes will deploy on the control plane nodes only:
+This manifest will place the `apiVIP` and `ingressVIP` virtual IP addresses on the control plane nodes. Additionally, the following processes will deploy on the control plane nodes only:
 +
 * `openshift-ingress`
 +
