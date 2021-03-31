@@ -55,6 +55,10 @@ include::ipi-install-prerequisites.adoc[leveloffset=+1]
 // Installation Workflow
 include::ipi-install-installation-workflow.adoc[leveloffset=+1]
 
+//Post installation configuration.
+ifeval::[{release}>4.7]
+include::ipi-install-post-installation-configuration.adoc[leveloffset=+1]
+endif::[]
 
 // Backing up the cluster configuration
 ifndef::upstream[]
