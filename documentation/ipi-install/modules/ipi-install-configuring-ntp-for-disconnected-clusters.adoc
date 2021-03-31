@@ -1,13 +1,13 @@
 // This is included in the following assemblies:
 //
 // ipi-install-post-installation-configuration.adoc
-[id='configuring-ntp_{context}']
+[id='configuring-ntp-for-disconnected-clusters_{context}']
 
-= Configuring NTP
+= Configuring NTP for disconnected clusters
 
-{product-title} 4.8 and later releases install NTP server on the control plane nodes. After successfully deploying an installer-provisioned cluster, configure the NTP servers on the control plane nodes, and configure worker nodes as NTP clients.
+{product-title} installs the `chrony` Network Time Protocol (NTP) service on the cluster nodes. After successfully deploying an installer-provisioned disconnected cluster, configure NTP servers on the control plane nodes, and configure worker nodes as NTP clients of the control plane nodes.
 
-{product-title} nodes must agree on a date and time to run properly. When worker nodes retrieve the date and time from the NTP servers on the control plane nodes, it enables both the installation of clusters connected to a routable network with access to upstream NTP servers, or clusters that require additional security such that they are not connected to a routable network and thereby don't have access to upstream NTP servers.
+{product-title} nodes must agree on a date and time to run properly. When worker nodes retrieve the date and time from the NTP servers on the control plane nodes, it enables the installation and operation of clusters that are not connected to a routable network and thereby don't have access to a higher stratum NTP server.
 
 .Procedure
 

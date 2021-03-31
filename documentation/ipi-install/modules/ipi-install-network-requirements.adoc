@@ -10,20 +10,24 @@ Installer-provisioned installation of {product-title} involves several network r
 .Network Time Protocol (NTP)
 
 ifeval::[{release} <= 4.7]
-Each {product-title} node in the cluster must have access to an NTP server.
-endif::[]
-
-ifeval::[{release} > 4.7]
-{product-title} nodes use NTP to synchronize clocks. For example, cluster nodes use SSL certificates that require validation, which might fail if the date and time between the nodes are not in sync.
+Each {product-title} node in the cluster must have access to an NTP server. {product-title} nodes use NTP to synchronize their clocks. For example, cluster nodes use SSL certificates that require validation, which might fail if the date and time between the nodes are not in sync.
 
 [IMPORTANT]
 ====
-Define a consistent clock date and time format in each cluster node's BIOS settings, or installation will fail.
+Define a consistent clock date and time format in each cluster node's BIOS settings, or installation might fail.
 ====
-
-In {product-title} 4.8 and later releases, the cluster deploys with NTP servers on the control plane nodes. The worker nodes must reference the NTP servers of the control plane nodes. Using this configuration, system administrators can deploy a {product-title} cluster whether it is connected to a routable network or not.
 endif::[]
 
+ifeval::[{release} > 4.7]
+Each {product-title} node in the cluster must have access to an NTP server. {product-title} nodes use NTP to synchronize their clocks. For example, cluster nodes use SSL certificates that require validation, which might fail if the date and time between the nodes are not in sync.
+
+[IMPORTANT]
+====
+Define a consistent clock date and time format in each cluster node's BIOS settings, or installation might fail.
+====
+
+In {product-title} 4.8 and later releases, you may reconfigure the control plane nodes to act as NTP servers on disconnected clusters, and reconfigure worker nodes to retrieve time from the control plane nodes.
+endif::[]
 
 .Configuring NICs
 
@@ -89,6 +93,14 @@ ifeval::[{release} > 4.6]
 .Reserving IP addresses so they become static IP addresses
 ====
 Some administrators prefer to use static IP addresses so that each node's IP address remains constant in the absence of a DHCP server. To use static IP addresses in the {product-title} cluster, *reserve the IP addresses with an infinite lease*. During deployment, the installer will reconfigure the NICs from DHCP assigned addresses to static IP addresses. NICs with DHCP leases that are not infinite will remain configured to use DHCP.
+====
+endif::[]
+
+ifeval::[{release} > 4.7]
+[IMPORTANT]
+.Networking between external load balancers and control plane nodes
+====
+External load balancing services and the control plane nodes must run on the same L2 network, and on the same VLAN when using VLANs to route traffic between the load balancing services and the control plane nodes.
 ====
 endif::[]
 
