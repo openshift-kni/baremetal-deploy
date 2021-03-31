@@ -155,7 +155,7 @@
 #to revert context. Leaving behavior as it was previously
 #to avoid breaking other user environments.
 - name: Start RHCOS image cache container
-  podman_container:
+  containers.podman.podman_container:
     name: rhcos_image_cache
     image: registry.centos.org/centos/httpd-24-centos7:latest
     state: stopped
@@ -169,8 +169,8 @@
 
 - name: Setting facts about container
   set_fact:
-    rhcos_image_cache_name: "{{ rhcos_image_cache_info.ansible_facts.podman_container.Name }}"
-    rhcos_image_cache_pidfile: "{{ rhcos_image_cache_info.ansible_facts.podman_container.ConmonPidFile }}"
+    rhcos_image_cache_name: "{{ rhcos_image_cache_info.container.Name }}"
+    rhcos_image_cache_pidfile: "{{ rhcos_image_cache_info.container.ConmonPidFile }}"
   tags: cache
 
 - name: Ensuring container restarts upon reboot

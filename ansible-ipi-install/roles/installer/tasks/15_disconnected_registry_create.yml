@@ -269,7 +269,7 @@
       become: true
 
     - name: Create container to serve the registry
-      podman_container:
+      containers.podman.podman_container:
         name: "{{ pod_name_registry }}"
         image: docker.io/library/registry:2
         state: stopped
@@ -289,8 +289,8 @@
 
     - name: Setting facts about container
       set_fact:
-        container_registry_name: "{{ registry_container_info.ansible_facts.podman_container.Name }}"
-        container_registry_pidfile: "{{ registry_container_info.ansible_facts.podman_container.ConmonPidFile }}"
+        container_registry_name: "{{ registry_container_info.container.Name }}"
+        container_registry_pidfile: "{{ registry_container_info.container.ConmonPidFile }}"
 
     - name: Ensure user specific systemd instance are persistent
       command:  |
