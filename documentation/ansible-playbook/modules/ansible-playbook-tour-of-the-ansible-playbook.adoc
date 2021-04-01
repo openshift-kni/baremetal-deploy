@@ -20,8 +20,17 @@ The tree structure is shown below:
     │   ├── defaults
     │   │   └── main.yml
     │   ├── files
+    │   │   ├── customize_filesystem
+    │   │   │   ├── master
+    │   │   │   └── worker -> master
+    │   │   ├── filetranspile-1.1.1.py
+    │   │   ├── ipv6-dual-stack-no-upgrade.yml
+    │   │   ├── manifests
+    │   │   └── openshift
     │   ├── handlers
     │   │   └── main.yml
+    │   ├── library
+    │   │   └── virt.py
     │   ├── meta
     │   │   └── main.yml
     │   ├── tasks
@@ -41,10 +50,13 @@ The tree structure is shown below:
     │   │   ├── 70_cleanup_sub_man_registeration.yml
     │   │   └── main.yml
     │   ├── templates
-    │   │   ├── 99-etc-chrony.conf.j2
     │   │   ├── chrony.conf.j2
+    │   │   ├── etc-chrony.conf.j2
+    │   │   ├── httpd_conf.j2
     │   │   ├── install-config-appends.j2
     │   │   ├── install-config.j2
+    │   │   ├── install-config-virtualmedia.j2
+    │   │   ├── magic.j2
     │   │   └── metal3-config.j2
     │   ├── tests
     │   │   ├── inventory
@@ -61,8 +73,8 @@ The tree structure is shown below:
         ├── meta
         │   └── main.yml
         ├── tasks
-        ├── 100_power_off_cluster_servers.yml
-        ├── 10_validation.yml
+        │   ├── 100_power_off_cluster_servers.yml
+        │   ├── 10_validation.yml
         │   ├── 15_validation_disconnected_registry.yml
         │   ├── 20_sub_man_register.yml
         │   ├── 30_req_packages.yml
@@ -75,10 +87,11 @@ The tree structure is shown below:
         │   ├── 90_create_config_install_dirs.yml
         │   └── main.yml
         ├── templates
-        │   ├── dir.xml.j2
+        │   └── dir.xml.j2
         ├── tests
         │   ├── inventory
         │   └── test.yml
         └── vars
             └── main.yml
+
 ----
