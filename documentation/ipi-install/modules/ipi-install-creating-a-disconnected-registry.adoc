@@ -185,10 +185,13 @@ Replace `<username>` with the user name and `<passwd>` with the password.
 [user@registry ~]$ sudo scp kni@provisioner:/usr/local/bin/oc /usr/local/bin
 ----
 
-. Mirror the remote install images to the local repository.
+. Get the release image and mirror the remote install images to the local repository.
 +
 [source,terminal]
+[subs="attributes"]
 ----
+[user@registry ~]$ export VERSION=latest-{release}
+[user@registry ~]$ UPSTREAM_REPO=$(curl -s https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/$VERSION/release.txt | awk  '/Pull From/ {print $3}')
 [user@registry ~]$ /usr/local/bin/oc adm release mirror \
   -a pull-secret-update.txt
   --from=$UPSTREAM_REPO \
