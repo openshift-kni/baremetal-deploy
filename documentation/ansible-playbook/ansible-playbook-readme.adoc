@@ -8,7 +8,7 @@ Deployment Integration Team
 :toc-title:
 :title: Deployment of IPI on BM using the Ansible Playbook
 :description: Ansible playbook usage for installing OpenShift on baremetal
-:keywords: OpenShift, ansible, baremetal, installation, ipi, Installer provisioned insfrastructure
+:keywords: OpenShift, ansible, baremetal, installation, ipi, Installer provisioned infrastructure
 :imagesdir: images
 :prewrap!:
 :context: ipi-install-troubleshooting

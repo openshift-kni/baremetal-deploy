@@ -8,7 +8,7 @@ Deployment Integration Team
 :toc-title:
 :title: Fully Disconnected Deployment of IPI on BM using the Ansible Playbook
 :description: Ansible playbook usage for installing OpenShift on baremetal in a fully disconnected environment
-:keywords: OpenShift, ansible, baremetal, installation, ipi, Installer provisioned insfrastructure, disconected, isolated
+:keywords: OpenShift, ansible, baremetal, installation, ipi, Installer provisioned infrastructure, disconected, isolated
 :imagesdir: images
 :prewrap!:
 :context: ipi-install-troubleshooting
