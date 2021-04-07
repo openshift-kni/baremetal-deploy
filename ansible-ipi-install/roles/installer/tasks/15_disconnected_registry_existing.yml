@@ -18,10 +18,12 @@
       slurp:
         src: "{{ disconnected_registry_mirrors_file }}"
       register: disconnected_registry_trustbundle
+      no_log: true
 
     - name: Set the install_config_appends fact
       set_fact:
         install_config_appends: "{{ disconnected_registry_trustbundle.content | string | b64decode }}"
+      no_log: true
 
     - name: Get stats of {{ disconnected_registry_auths_file }}
       stat:
@@ -38,14 +40,17 @@
       slurp:
         src: "{{ disconnected_registry_auths_file }}"
       register: disconnected_auths_b64
+      no_log: true
 
     - name: append auth to pullsecret
       shell: |
         echo '{{ pullsecret }}' | jq -c \
           '.auths += {{ disconnected_auths_b64.content | string | b64decode }}'
       register: new_pullsecret
+      no_log: true
 
     - name: set pullsecret with new auth
       set_fact:
         pullsecret: "  {{ new_pullsecret.stdout }}"
+      no_log: true
   delegate_to: localhost
