@@ -59,7 +59,7 @@ Replace `<num>` for the worker number of bare metal node in two `name` fields an
 [NOTE]
 ====
 When using `redfish` or `redfish-virtualmedia`, add the
-appropriate addressing as described in the BMC addressing section. See xref:ipi-install-bmc-addressing_{context}[BMC addressing] for details.
+appropriate addressing as described in the BMC addressing section. See xref:bmc-addressing_{context}[BMC addressing] for details.
 ====
 
 . Create the bare metal node.

@@ -31,7 +31,7 @@ endif::[]
 ifdef::upstream[]
 +
 <1> Scale the worker machines based on the number of worker nodes that are part of the {product-title} cluster.
-<2> Refer to the xref:ipi-install-bmc-addressing_{context}[BMC adressing] for more options
+<2> Refer to the xref:bmc-addressing_{context}[BMC addressing] for more options
 endif::[]
 
 . Create a directory to store cluster configs.
