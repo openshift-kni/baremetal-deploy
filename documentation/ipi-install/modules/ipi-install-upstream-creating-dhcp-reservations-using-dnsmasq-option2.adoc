@@ -102,7 +102,7 @@ log-dhcp
 domain=openshift.example.com,<baremetal-IPv6-cidr>,local
 
 # static host-records
-address=/apps.openshift.example.com/<wildcard-ingress-lb-ip>
+address=/.apps.openshift.example.com/<wildcard-ingress-lb-ip>
 host-record=api.openshift.example.com,<api-ip>
 host-record=ns1.openshift.example.com,<dns-ip>
 host-record=openshift-master-0.openshift.example.com,<ip-of-openshift-master-0>
