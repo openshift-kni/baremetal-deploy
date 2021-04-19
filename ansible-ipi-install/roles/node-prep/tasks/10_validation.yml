@@ -282,6 +282,46 @@
     verbosity: 2
   tags: validation
 
+- name: Fail if dual-stack is requested and build does not support it
+  fail:
+    msg: This release {{ release_version }} does not support dual-stack deployments
+  when: release_version[0]|int == 4 and release_version[2]|int < 6
+  tags:
+  - always
+  - validation
+
+- name: Fail if dualstack_baremetal and ipv4_baremetal are both true
+  fail:
+    msg: Only one of ipv4_baremetal and dualstack_baremetal variables can be true
+  when: ipv4_baremetal and dualstack_baremetal
+  tags:
+  - always
+  - validation
+
+- name: Check for valid extcidrnet (IPv4)
+  fail:
+    msg: extcidrnet should be a valid IPv4 CIDR
+  when: not ipv6_enabled|bool and not extcidrnet|ipv4
+  tags:
+  - always
+  - validation
+
+- name: Check for valid extcidrnet (IPv6)
+  fail:
+    msg: extcidrnet6 should be a valid IPv6 address
+  when: ipv6_enabled|bool and not (ipv4_baremetal or dualstack_baremetal) and not extcidrnet6|ipv6
+  tags:
+  - always
+  - validation
+
+- name: Check for valid extcidrnet and extcidrnet6 (Dual-Stack)
+  fail:
+    msg: extcidrnet should be a valid IPv4 address and extcidrnet6 should be a valid IPv6 address
+  when: ipv6_enabled|bool and dualstack_baremetal|bool and not (extcidrnet|ipv4 and extcidrnet6|ipv6)
+  tags:
+  - always
+  - validation
+
 - name: Check if openshift-client-linux-{{ version }}.tar.gz exists
   uri:
     url: "{{ release_url }}/{{ version }}/openshift-client-linux-{{ release_version }}.tar.gz"

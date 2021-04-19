@@ -1,7 +1,17 @@
 ---
 - name: Check if override path is defined for extra openshift manifests
   set_fact:
-    extramanifestsopenshift_path: "{{ customize_extramanifestsopenshift_path | default( 'roles/installer/files/openshift/*' ) }}"
+    extramanifestsopenshift_path: "{{ customize_extramanifestsopenshift_path | default( 'roles/installer/files/openshift/' ) }}"
+
+- name: Copy Dual-Stack related manifest
+  copy:
+     src: ipv6-dual-stack-no-upgrade.yml
+     dest: "{{ extramanifestsopenshift_path }}/"
+     mode: 0644
+  when:
+    - ipv6_enabled|bool
+    - dualstack_baremetal
+  delegate_to: localhost
 
 - name: Add Manifests from files dir
   copy:
@@ -10,12 +20,12 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
   with_fileglob:
-    - "{{ extramanifestsopenshift_path }}"
+    - "{{ extramanifestsopenshift_path }}/*"
   tags: extramanifests
 
 - name: Check if override path is defined for extramanifests
   set_fact:
-    extramanifests_path: "{{ customize_extramanifests_path | default( 'roles/installer/files/manifests/*' ) }}"
+    extramanifests_path: "{{ customize_extramanifests_path | default( 'roles/installer/files/manifests/' ) }}"
 
 - name: Add Manifests from files dir
   copy:
@@ -24,7 +34,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
   with_fileglob:
-    - "{{ extramanifests_path }}"
+    - "{{ extramanifests_path }}/*"
   tags: extramanifests
 
 - name: Manage chrony configuration
