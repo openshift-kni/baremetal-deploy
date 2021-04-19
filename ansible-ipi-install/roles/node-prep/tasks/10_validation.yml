@@ -285,7 +285,7 @@
 - name: Fail if dual-stack is requested and build does not support it
   fail:
     msg: This release {{ release_version }} does not support dual-stack deployments
-  when: release_version[0]|int == 4 and release_version[2]|int < 6
+  when: release_version[0]|int == 4 and release_version[2]|int < 6 and dualstack_baremetal
   tags:
   - always
   - validation
