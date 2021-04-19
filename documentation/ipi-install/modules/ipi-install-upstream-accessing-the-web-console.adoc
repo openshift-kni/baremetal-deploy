@@ -5,7 +5,7 @@
 
 [id="accessing-the-web-console_{context}"]
 
-= Accessing the web console 
+= Accessing the web console
 
 The web console runs as a pod on the master. The static assets required to run
 the web console are served by the pod. Once {product-title} is successfully
@@ -23,4 +23,3 @@ INFO Login to the console with user: kubeadmin, password: <provided>
 ----
 
 Use those details to log in and access the web console.
-
