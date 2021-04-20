@@ -69,6 +69,7 @@ endif::[]
 
 ifdef::upstream[]
 include::modules/ipi-install-upstream-day2.adoc[leveloffset=+1]
+include::modules/ipi-install-upstream-accessing-the-web-console.adoc[leveloffset=+2]
 include::modules/ipi-install-upstream-backing-up-the-cluster-configuration.adoc[leveloffset=+2]
 include::ipi-install-expanding-the-cluster.adoc[leveloffset=+2]
 include::modules/ipi-install-upstream-preparing-the-provisioner-node-to-be-deployed-as-a-worker-node.adoc[leveloffset=+3]
