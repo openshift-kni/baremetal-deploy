@@ -23,9 +23,7 @@ serviceNetwork:
 - fd03::/112
 ----
 
-Note than in above snippet, the values for the networks must match the ones for your own environment and that IPv4 details must go *before* IPv6 ones, having the `machineNetwork` two entries and same for the `clusterNetwork` and `serviceNetwork`.
-
-
+NOTE: In the above snippet, the values for the networks must match the ones for your own environment and that IPv4 details must go *before* IPv6 ones, having the `machineNetwork` two entries and same for the `clusterNetwork` and `serviceNetwork`.
 
 We also need to deploy an additional manifest for enabling the FeatureGate with the following contents:
 [source,yaml]
