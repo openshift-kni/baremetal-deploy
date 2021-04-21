@@ -1,15 +1,15 @@
 [id="ansible-playbook-inventory-dual-stack"]
 
-= `inventory/hosts.sample` file changes for dual-stack based deployments(optional). 
+= Enabling dual-stack based deployments (optional).
 
-Users now can deploy `dual-stack` based deployments using `ansible-playbook` by including below variables under `inventory/hosts.sample` file. 
+Users now can deploy `dual-stack` based deployments using `ansible-playbook` by including below variables under `inventory/hosts.sample` file.
 
 [source,yaml]
 ```
-ipv6_enabled=True           
+ipv6_enabled=True
 dualstack_baremetal=True
-extcidrnet="<ipv4-subnet-for-your-cluster>"   #Ex: 10.0.0.1/24 
+extcidrnet="<ipv4-subnet-for-your-cluster>"   #Ex: 10.0.0.1/24
 extcidrnet6="<ipv6-subnet-for-your-cluster>"  #Ex: fe80:12:0:4567::/64
 ```
 
-NOTE: Only applicable for OCP versions greater than `4.6`. 
+NOTE: Only applicable for OCP versions greater than `4.6`.
