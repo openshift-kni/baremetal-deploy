@@ -23,3 +23,12 @@ INFO Login to the console with user: kubeadmin, password: <provided>
 ----
 
 Use those details to log in and access the web console.
+
+Additionally, you can execute:
+
+[source,terminal]
+----
+oc whoami --show-console
+----
+
+To obtain the url for the console.
