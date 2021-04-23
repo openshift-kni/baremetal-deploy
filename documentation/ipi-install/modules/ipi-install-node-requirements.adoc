@@ -36,6 +36,19 @@ ifeval::[{release} > 4.3]
 - *Unified Extensible Firmware Interface (UEFI):* Installer-provisioned installation requires UEFI boot on all {product-title} nodes when using IPv6 addressing on the `provisioning` network. In addition, UEFI Device PXE Settings must be set to use the IPv6 protocol on the `provisioning` network NIC, but omitting the `provisioning` network removes this requirement.
 endif::[]
 
-ifeval::[{release} > 4.6]
-- *Secure Boot:* Many production scenarios require nodes with Secure Boot enabled to verify the node only boots with trusted software, such as UEFI firmware drivers, EFI applications and the operating system. To deploy a {product-title} cluster with Secure Boot, you must enable UEFI boot mode and Secure Boot on each control plane node and each worker node. Red Hat supports Secure Boot only when installer-provisioned installation uses Redfish virtual media. Red Hat does not support Secure Boot with self-generated keys. Red Hat supports Secure Boot on 10th generation HPE hardware and 13th generation Dell hardware running firmware version `2.75.75.75` or greater.
+ifeval::[{release} == 4.7]
+- *Secure Boot:* Many production scenarios require nodes with Secure Boot enabled to verify the node only boots with trusted software, such as UEFI firmware drivers, EFI applications and the operating system. To deploy a OpenShift Container Platform cluster with Secure Boot, you must enable UEFI boot mode and Secure Boot on each control plane node and each worker node. Red Hat supports Secure Boot only when installer-provisioned installation uses Red Fish Virtual Media. Red Hat does not support Secure Boot with self-generated keys.
+endif::[]
+
+ifeval::[{release} > 4.7]
+- *Secure Boot:* Many production scenarios require nodes with Secure Boot enabled to verify the node only boots with trusted software, such as UEFI firmware drivers, EFI applications and the operating system. You may deploy with secure boot manually or managed.
++
+. *Manually:* To deploy a {product-title} cluster with Secure Boot manually, you must enable UEFI boot mode and Secure Boot on each control plane node and each worker node. Red Hat supports Secure Boot with manually enabled UEFI and Secure Boot only when installer-provisioned installation uses Redfish virtual media.
++
+. *Managed:* To deploy a {product-title} cluster with managed Secure Boot, you must set the `bootMode` value to `UEFISecureBoot` in the `install-config.yaml` file. Red Hat only supports installer-provisioned installation with managed Secure Boot on 10th generation HPE hardware and 13th generation Dell hardware running firmware version `2.75.75.75` or greater. Deploying with managed Secure Boot does not require Redfish virtual media.
++
+[NOTE]
+====
+Red Hat does not support Secure Boot with self-generated keys.
+====
 endif::[]
