@@ -17,6 +17,10 @@ and the `bmc` parameter for the `install-config.yaml` file.
 |
 | The domain name for the cluster. For example, `example.com`.
 
+| [[bootmode]] `bootMode`
+| `legacy`
+| The boot mode for a node. Options are `legacy` and `UEFISecureBoot.`
+
 | [[sshkey]] `sshKey`
 |
 | The `sshKey` configuration setting contains the key in the `~/.ssh/id_rsa.pub` file required to access the control plane nodes and worker nodes. Typically, this key is from the `provisioner` node.
