@@ -10,7 +10,7 @@ The installer for installer-provisioned {product-title} clusters validates the h
 .Firmware compatibility for Redfish virtual media
 [frame="topbot", options="header"]
 |====
-|Hardware| Model | Management | Minimum Firmware Version
+|Hardware| Model | Management | Firmware Versions
 .2+| HP | 10th Generation | iLO5 | N/A
 | 9th Generation | iLO4 | N/A
 
