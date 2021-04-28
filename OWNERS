@@ -14,8 +14,7 @@ filters:
     reviewers:
       - johnwilkins
     approvers:
-      - rlopez133
-      - iranzo
+      - johnwilkins
 
   "^website/.*":
     labels:
