@@ -45,8 +45,7 @@ Each NIC should be on a separate VLAN corresponding to the appropriate network.
 
 .Configuring the DNS server
 
-Clients access the {product-title} cluster nodes over the `baremetal` network.
-A network administrator must configure a subdomain or subzone where the canonical name extension is the cluster name.
+Clients access the {product-title} cluster nodes over the `baremetal` network. A network administrator must configure a subdomain or subzone where the canonical name extension is the cluster name.
 
 ----
 <cluster-name>.<domain-name>
@@ -57,6 +56,15 @@ For example:
 ----
 test-cluster.example.com
 ----
+
+ifeval::[{release} > 4.7]
+You must also specify an `api.<cluster-name>.<domain>` record in the DNS. In subsequent configuration steps, when you configure network components to run exclusively on the control plane, the internal DNS resolution no longer works. This is an expected outcome.
+
+[IMPORTANT]
+====
+Failure to create a DNS record for the API precludes worker nodes from joining the cluster.
+====
+endif::[]
 
 ifdef::upstream[]
 For assistance in configuring the DNS server, check xref:ipi-install-upstream-appendix[Appendix] section for:
