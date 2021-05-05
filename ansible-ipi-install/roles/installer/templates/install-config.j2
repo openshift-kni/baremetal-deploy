@@ -74,7 +74,8 @@ platform:
           address: redfish://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/1
           disableCertificateVerification: {{ disable_bmc_certificate_verification }}
 {% else %}
-          address: ipmi://{{ hostvars[host]['ipmi_address']|ipwrap }}:{{ hostvars[host]['ipmi_port']|default(623) }}
+          address: ipmi://{{ hostvars[host]['ipmi_address']|ipwrap }}:{{ hostvars[host]['ipmi_port']|default(623) }}{% if hostvars[host]['privilegelevel']|default(False) %}?privilegelevel={{ hostvars[host]['privilegelevel'] }}{% endif %}
+
 {% endif %}
           username: {{ hostvars[host]['ipmi_user'] }}
           password: {{ hostvars[host]['ipmi_password'] }}
@@ -108,7 +109,8 @@ platform:
           address: redfish://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/1
           disableCertificateVerification: {{ disable_bmc_certificate_verification }}
 {% else %}
-          address: ipmi://{{ hostvars[host]['ipmi_address']|ipwrap }}:{{ hostvars[host]['ipmi_port']|default(623) }}
+          address: ipmi://{{ hostvars[host]['ipmi_address']|ipwrap }}:{{ hostvars[host]['ipmi_port']|default(623) }}{% if hostvars[host]['privilegelevel']|default(False) %}?privilegelevel={{ hostvars[host]['privilegelevel'] }}{% endif %}
+
 {% endif %}
           username: {{ hostvars[host]['ipmi_user'] }}
           password: {{ hostvars[host]['ipmi_password'] }}
