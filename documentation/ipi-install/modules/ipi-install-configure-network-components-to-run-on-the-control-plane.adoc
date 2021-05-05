@@ -113,7 +113,7 @@ $ sed -i "s;mastersSchedulable: false;mastersSchedulable: true;g" clusterconfigs
 If control plane nodes are not schedulable, deploying the cluster will fail.
 ====
 
-. Before deploying the cluster, ensure that the `api.<cluster-name>.<domain>` domain name is resolvable in the DNS. When you configure network components to run exclusively on the control plane, the internal DNS resolution no longer works, which is an expected outcome.
+. Before deploying the cluster, ensure that the `api.<cluster-name>.<domain>` domain name is resolvable in the DNS. When you configure network components to run exclusively on the control plane, the internal DNS resolution no longer works for worker nodes, which is an expected outcome.
 +
 [IMPORTANT]
 ====
