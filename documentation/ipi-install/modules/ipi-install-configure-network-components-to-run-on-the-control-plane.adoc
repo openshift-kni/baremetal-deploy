@@ -94,7 +94,7 @@ spec:
 +
 This manifest will place the `apiVIP` and `ingressVIP` virtual IP addresses on the control plane nodes. Additionally, the following processes will deploy on the control plane nodes only:
 +
-* `openshift-ingress-operator`
+* `openshift-ingress`
 +
 * `keepalived`
 +
