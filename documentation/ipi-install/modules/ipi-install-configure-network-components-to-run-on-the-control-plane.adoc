@@ -94,22 +94,28 @@ spec:
 +
 This manifest will place the `apiVIP` and `ingressVIP` virtual IP addresses on the control plane nodes. Additionally, the following processes will deploy on the control plane nodes only:
 +
-* `openshift-ingress`
+* `openshift-ingress-operator`
 +
 * `keepalived`
-+
-* `openshift-monitoring`
-+
-* `imageregistry`
-+
-This manifest will also disable the following processes on worker nodes.
-+
-* `openshift-cluster-samples-operator`
-+
-* `marketplace` (remove default sources)
-+
-* `insights`
 
 . Save the `cluster-network-avoid-workers-99-config.yaml` file and quit the text editor.
 
 . Consider backing up the `manifests` directory. The installer deletes the `manifests/` directory when creating the cluster.
+
+. Modify the `cluster-scheduler-02-config.yml` manifest to make the control plane nodes schedulable by setting the `mastersSchedulable` field to `true`. Control plane nodes are not schedulable by default. For example:
++
+----
+$ sed -i "s;mastersSchedulable: false;mastersSchedulable: true;g" clusterconfigs/manifests/cluster-scheduler-02-config.yml
+----
++
+[NOTE]
+====
+If control plane nodes are not schedulable, deploying the cluster will fail.
+====
+
+. Before deploying the cluster, ensure that the `api.<cluster-name>.<domain>` domain name is resolvable in the DNS. When you configure network components to run exclusively on the control plane, the internal DNS resolution no longer works for worker nodes, which is an expected outcome.
++
+[IMPORTANT]
+====
+Failure to create a DNS record for the API precludes worker nodes from joining the cluster.
+====
