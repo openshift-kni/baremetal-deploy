@@ -1,11 +1,21 @@
 // This is included in the following assemblies:
 //
-// ipi-install-post-installation-configuration.adoc
+// installing/installing_bare_metal_ipi/ipi-install-configuration-files
+// installing/installing_bare_metal_ipi/ipi-install-post-installation-configuration.adoc
 [id='configuring-ntp-for-disconnected-clusters_{context}']
 
-= Configuring NTP for disconnected clusters
+= Configuring NTP for disconnected clusters (optional)
 
-{product-title} installs the `chrony` Network Time Protocol (NTP) service on the cluster nodes. After successfully deploying an installer-provisioned disconnected cluster, configure NTP servers on the control plane nodes, and configure worker nodes as NTP clients of the control plane nodes.
+//This procedure can be executed as a day 1 or day 2 operation with minor differences.
+//The conditional text picks up the context and displays the appropriate alternate steps.
+
+{product-title} installs the `chrony` Network Time Protocol (NTP) service on the cluster nodes.
+ifeval::["{context}" == "ipi-install-configuration-files"]
+Use the following procedure to configure NTP servers on the control plane nodes and configure worker nodes as NTP clients of the control plane nodes before deployment.
+endif::[]
+ifeval::["{context}" == "ipi-install-post-installation-configuration"]
+Use the following procedure to configure NTP servers on the control plane nodes and configure worker nodes as NTP clients of the control plane nodes after a successful deployment.
+endif::[]
 
 image::152_OpenShift_Config_NTP_0421.svg[Configuring NTP for disconnected clusters]
 
@@ -140,19 +150,6 @@ IG9ycGhhbgo=
 +
 Replace the `BASE64ENCODEDCONFIGFILE` string in the `~/ntp-server.yaml` with the base64-encoded string.
 
-. Apply the `ntp-server.yaml` policy to the control plane nodes.
-+
-[source,bash]
-----
-$ oc apply -f ~/ntp-server.yaml
-----
-+
-[source,bash]
-.Example output
-----
-machineconfig.machineconfiguration.openshift.io/99-master-etc-chrony-conf-override-for-server created
-----
-
 . Create a `~/ntp-client.yaml` configuration file for telling the Machine Configuration Operator to apply the `~/worker-chrony.conf` settings to the NTP clients on the worker nodes.
 +
 [source,bash]
@@ -205,6 +202,33 @@ Y2xpZW50bG9nCmxvZ2NoYW5nZSAwLjUKbG9nZGlyIC92YXIvbG9nL2Nocm9ueQo=
 +
 Replace the `BASE64ENCODEDCONFIGFILE` string in the `~/ntp-client.yaml` file with the base64-encoded string.
 
+ifeval::["{context}" == "ipi-install-configuration-files"]
+. Copy the `~/ntp-server.yaml` file to the `~/clusterconfigs/manifests` directory.
++
+----
+$ cp ~/ntp-server.yaml ~/clusterconfigs/manifests
+----
+
+. Copy the `~/ntp-client.yaml` file to the `~/clusterconfigs/manifests` directory.
++
+----
+$ cp ~/ntp-client.yaml ~/clusterconfigs/manifests
+----
+endif::[]
+
+ifeval::["{context}" == "ipi-install-post-installation-configuration"]
+. Apply the `ntp-server.yaml` policy to the control plane nodes.
++
+[source,bash]
+----
+$ oc apply -f ~/ntp-server.yaml
+----
++
+[source,bash]
+.Example output
+----
+machineconfig.machineconfiguration.openshift.io/99-master-etc-chrony-conf-override-for-server created
+----
 
 . Apply the `~/ntp-client.yaml` policy to the worker nodes.
 +
@@ -225,3 +249,4 @@ machineconfig.machineconfiguration.openshift.io/99-master-etc-chrony-conf-overri
 ----
 $ oc describe machineconfigpool
 ----
+endif::[]
