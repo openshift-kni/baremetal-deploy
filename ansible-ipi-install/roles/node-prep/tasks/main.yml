@@ -32,5 +32,3 @@
   tags: storagepool
 - include_tasks: 90_create_config_install_dirs.yml
   tags: clusterconfigs
-- include_tasks: 100_power_off_cluster_servers.yml
-  tags: powerservers
