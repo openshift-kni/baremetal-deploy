@@ -6,3 +6,5 @@ include::modules/common-attributes.adoc[]
 After successfully deploying an installer-provisioned cluster, consider the following post-installation procedures.
 
 include::modules/ipi-install-configuring-ntp-for-disconnected-clusters.adoc[leveloffset=+1]
+
+include::modules/nw-osp-configuring-external-load-balancer.adoc[leveloffset=+1]
