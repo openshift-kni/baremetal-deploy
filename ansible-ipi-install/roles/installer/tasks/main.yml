@@ -47,5 +47,5 @@
   tags: cleanup
 - include_tasks: 60_deploy_ocp.yml
   tags: install
-#- include_tasks: 70_cleanup_sub_man_registeration.yml
+#- include_tasks: 70_cleanup_sub_man_registration.yml
 #  tags: unregister
