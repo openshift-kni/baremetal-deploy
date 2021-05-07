@@ -1,11 +1,11 @@
 [id="ipi-install-installation-workflow"]
-= Deploying Installer Provisioned Infrastructure (IPI) of OpenShift on Bare Metal - {release}
+= Deploying Installer Provisioned Infrastructure (IPI) of OpenShift on Bare Metal - {product-version}
 Deployment Integration Team
 :data-uri:
 :email: https://github.com/openshift-kni/baremetal-deploy
 :experimental:
 :toc-title:
-:title: Deploying Installer Provisioned Infrastructure (IPI) of OpenShift on Bare Metal - {release}
+:title: Deploying Installer Provisioned Infrastructure (IPI) of OpenShift on Bare Metal - {product-version}
 :description: Installation guide for deploying OpenShift on bare metal
 :keywords: OpenShift, baremetal, installation, ipi, Installer provisioned infrastructure
 :imagesdir: images
@@ -56,7 +56,7 @@ include::ipi-install-prerequisites.adoc[leveloffset=+1]
 include::ipi-install-installation-workflow.adoc[leveloffset=+1]
 
 //Post installation configuration.
-ifeval::[{release}>4.7]
+ifeval::[{product-version}>4.7]
 include::ipi-install-post-installation-configuration.adoc[leveloffset=+1]
 endif::[]
 

@@ -12,14 +12,14 @@ Prior to the installation of the {product-title} cluster, gather the following i
 *** Dell (iDRAC) IP
 *** HP (iLO) IP
 
-ifeval::[{release} >= 4.6]
+ifeval::[{product-version} >= 4.6]
 .When using the `provisioning` network
 endif::[]
 
 * NIC1 (`provisioning`) MAC address
 * NIC2 (`baremetal`) MAC address
 
-ifeval::[{release} >= 4.6]
+ifeval::[{product-version} >= 4.6]
 .When omitting the `provisioning` network
 endif::[]
 

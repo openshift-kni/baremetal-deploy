@@ -78,7 +78,7 @@ dhcp-host=<NIC2-mac-address>,openshift-worker-1.openshift.example.com,<ip-of-ope
 ----
 
 ifdef::upstream[]
-ifeval::[{release} >= 4.5]
+ifeval::[{product-version} >= 4.5]
 +
 [discrete]
 === IPv6

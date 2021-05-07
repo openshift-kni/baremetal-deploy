@@ -21,7 +21,7 @@ include::ipi-install-prerequisites.adoc[leveloffset=+1]
 include::ipi-install-installation-workflow.adoc[leveloffset=+1]
 
 //Post installation configuration.
-ifeval::[{release} > 4.7]
+ifeval::[{product-version} > 4.7]
 include::ipi-install-post-installation-configuration.adoc[leveloffset=+1]
 endif::[]
 

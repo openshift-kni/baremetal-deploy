@@ -7,7 +7,7 @@
 
 .When using the `provisioning` network
 
-ifeval::[{release}>4.6]
+ifeval::[{product-version}>4.6]
 * [ ] DHCP reservations use infinite leases to deploy the cluster with static IP addresses. (optional)
 endif::[]
 * [ ] NIC1 VLAN is configured for the `provisioning` network.
@@ -21,7 +21,7 @@ endif::[]
 
 .When omitting the `provisioning` network
 
-ifeval::[{release}>4.6]
+ifeval::[{product-version}>4.6]
 * [ ] DHCP reservations use infinite leases to deploy the cluster with static IP addresses. (optional)
 endif::[]
 * [ ] NICx VLAN is configured for the `baremetal` network.

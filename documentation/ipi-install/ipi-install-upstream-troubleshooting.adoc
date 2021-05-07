@@ -57,11 +57,11 @@ Prior to troubleshooting the installation environment, it is critical to underst
 image:flow1.png[Flow-Diagram-1]
 
 _Workflow 1 of 4_ illustrates a troubleshooting workflow when the `install-config.yaml` file has errors or the {op-system-first} images are inaccessible.  Troubleshooting suggestions can be found at
-ifeval::[{release} == 4.3]
+ifeval::[{product-version} == 4.3]
 xref:ipi-install-troubleshooting-install-config_{context}[Troubleshooting `install-config.yaml] and xref:ipi-install-troubleshooting-post-installation-pod-errors_{context}[Post-installation Pod errors].
 endif::[]
 
-ifeval::[{release} != 4.3]
+ifeval::[{product-version} != 4.3]
 xref:ipi-install-troubleshooting-install-config_{context}[Troubleshooting `install-config.yaml].
 endif::[]
 
@@ -81,7 +81,7 @@ xref:ipi-install-troubleshooting-api-not-accessible_{context}[ a non-accessible 
 
 
 include::modules/ipi-install-troubleshooting-install-config.adoc[leveloffset=+1]
-ifeval::[{release} == 4.3]
+ifeval::[{product-version} == 4.3]
 include::modules/ipi-install-troubleshooting-post-installation-pod-errors.adoc[leveloffset=+1]
 endif::[]
 include::modules/ipi-install-troubleshooting-bootstrap-vm.adoc[leveloffset=+1]
