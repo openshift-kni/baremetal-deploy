@@ -26,7 +26,7 @@ echo "<ul>" >>website/index.html
 for release in ${myreleases}; do
     for doc in "${mydocs[@]}"; do
         doc=$(echo "${doc}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-        echo "<li><a href=\"${release}/${doc}\">${release}-${doc}</a></li>" >>website/index.html
+        echo "<li><a href=\"${product-version}/${doc}\">${product-version}-${doc}</a></li>" >>website/index.html
     done
 done
 echo "</ul>" >>website/index.html
@@ -37,7 +37,7 @@ echo "<ul>" >>website/index.html
 for release in ${mystaticreleases}; do
     for doc in "${mystaticdocs[@]}"; do
         doc=$(echo "${doc}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-        echo "<li><a href=\"${release}/${doc}\">${release}-${doc}</a></li>" >>website/index.html
+        echo "<li><a href=\"${product-version}/${doc}\">${product-version}-${doc}</a></li>" >>website/index.html
     done
 done
 echo "</ul>" >>website/index.html
@@ -48,7 +48,7 @@ echo "<ul>" >>website/index.html
 for release in ${mydevreleases}; do
     for doc in "${mydevprev[@]}"; do
         doc=$(echo "${doc}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-        echo "<li><a href=\"${release}/${doc}\">${release}-${doc}</a></li>" >>website/index.html
+        echo "<li><a href=\"${product-version}/${doc}\">${product-version}-${doc}</a></li>" >>website/index.html
     done
 done
 

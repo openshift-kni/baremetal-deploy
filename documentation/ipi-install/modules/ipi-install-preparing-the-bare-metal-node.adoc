@@ -8,7 +8,7 @@
 
 Expanding the cluster requires a DHCP server. Each node must have a DHCP reservation.
 
-ifeval::[{release}>4.6]
+ifeval::[{product-version}>4.6]
 [IMPORTANT]
 .Reserving IP addresses so they become static IP addresses
 ====
@@ -25,7 +25,7 @@ Preparing the bare metal node requires executing the following procedure from th
 [source,bash]
 [subs="attributes"]
 ----
-[kni@provisioner ~]$ export VERSION=latest-{release}
+[kni@provisioner ~]$ export VERSION=latest-{product-version}
 [kni@provisioner ~]$ curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$VERSION/openshift-client-linux-$VERSION.tar.gz | tar zxvf - oc
 ----
 +

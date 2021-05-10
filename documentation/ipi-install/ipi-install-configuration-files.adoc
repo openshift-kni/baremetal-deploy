@@ -11,11 +11,11 @@ include::modules/ipi-install-setting-proxy-settings-within-install-config.adoc[l
 include::modules/ipi-install-modifying-install-config-for-no-provisioning-network.adoc[leveloffset=+1]
 
 
-ifeval::[{release} > 4.6]
+ifeval::[{product-version} > 4.6]
 include::modules/ipi-install-modifying-install-config-for-dual-stack-network.adoc[leveloffset=+1]
 endif::[]
 
-ifeval::[{release} > 4.7]
+ifeval::[{product-version} > 4.7]
 include::modules/ipi-install-configuring-managed-secure-boot-in-the-install-config-file.adoc[leveloffset=+1]
 endif::[]
 
@@ -27,7 +27,7 @@ include::modules/ipi-install-bmc-addressing-for-dell.adoc[leveloffset=+2]
 
 include::modules/ipi-install-bmc-addressing-for-hpe.adoc[leveloffset=+2]
 
-ifeval::[{release} > 4.7]
+ifeval::[{product-version} > 4.7]
 include::modules/ipi-install-bmc-addressing-for-fujitsu.adoc[leveloffset=+2]
 endif::[]
 
@@ -35,10 +35,10 @@ include::modules/ipi-install-root-device-hints.adoc[leveloffset=+1]
 
 include::modules/ipi-install-creating-the-openshift-manifests.adoc[leveloffset=+1]
 
-ifeval::[{release} > 4.7]
+ifeval::[{product-version} > 4.7]
 include::modules/ipi-install-configuring-ntp-for-disconnected-clusters.adoc[leveloffset=+1]
 endif::[]
 
-ifeval::[{release} > 4.7]
+ifeval::[{product-version} > 4.7]
 include::modules/ipi-install-configure-network-components-to-run-on-the-control-plane.adoc[leveloffset=+1]
 endif::[]

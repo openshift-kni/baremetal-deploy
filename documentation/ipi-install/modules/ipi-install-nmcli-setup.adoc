@@ -32,13 +32,13 @@ ifndef::upstream[]
 ====
 The `ssh` connection might disconnect after executing this step.
 
-ifeval::[{release} >= 4.5]
+ifeval::[{product-version} >= 4.5]
 The IPv6 address can be any address as long as it is not routable via the `baremetal` network.
 
 Ensure that UEFI is enabled and UEFI PXE settings are set to the IPv6 protocol when using IPv6 addressing.
 endif::[]
 
-ifeval::[{release} < 4.5]
+ifeval::[{product-version} < 4.5]
 NOTE: The IPv4 address may be any address as long as it is not routable via the `baremetal` network.
 endif::[]
 ====

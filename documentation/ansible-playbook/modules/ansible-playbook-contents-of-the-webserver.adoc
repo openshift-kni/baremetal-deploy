@@ -10,7 +10,7 @@ to there already existing webserver.
 
 The example provided below showcases how a user adds the required prerequisites
 to the webserver in order install the latest
-{product-title} version {release}.
+{product-title} version {product-version}.
 
 .Automatic Procedure
 . Change to the webserver directory that is to store your OpenShift related binaries
@@ -57,20 +57,20 @@ NOTE: The following manual procedure can be skipped if used the <<helper_script,
 
 .Manual Procedure
 //FIXME This link doesn't exist bc ocp4.5 isn't GA, should we just point to 4.4 as an example? Do we want to provide the dev link too?
-. Download the {product-title} version {release} latest https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-{release}/release.txt[release.txt] file
+. Download the {product-title} version {product-version} latest https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-{product-version}/release.txt[release.txt] file
 +
 [source,bash]
 [subs="attributes"]
 ----
 [user@webserver ~]$ cd /path/to/webserver/dir
-[user@webserver ~]$ wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-{release}/release.txt
+[user@webserver ~]$ wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-{product-version}/release.txt
 ----
 +
 [NOTE]
 ====
-When working with a development version of {product-tile}, use the following link for the
+When working with a development version of {product-title}, use the following link for the
 development version of the
-https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest-{release}/release.txt[release.txt]
+https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest-{product-version}/release.txt[release.txt]
 ====
 +
 . Create a directory with the explict release version of the captured release.txt file

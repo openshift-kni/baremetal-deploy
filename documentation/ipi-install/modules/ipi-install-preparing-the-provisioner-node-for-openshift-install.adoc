@@ -90,10 +90,10 @@ For more information about Red Hat Subscription Manager, see link:https://access
 [kni@provisioner ~]$ sudo virsh pool-start default
 [kni@provisioner ~]$ sudo virsh pool-autostart default
 ----
-ifeval::[{release} > 4.3]
+ifeval::[{product-version} > 4.3]
 include::ipi-install-nmcli-setup.adoc[]
 endif::[]
-ifeval::[{release} <= 4.3]
+ifeval::[{product-version} <= 4.3]
 include::ipi-install-nmcli-setup-4.3.adoc[]
 endif::[]
 . `ssh` back into the `provisioner` node (if required).
