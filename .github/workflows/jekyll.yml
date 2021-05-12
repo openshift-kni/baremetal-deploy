@@ -11,7 +11,7 @@ jobs:
   jekyll:
     runs-on: ubuntu-16.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2.3.4
 
     # Use GitHub Actions' cache to shorten build times and decrease load on servers
     - uses: actions/cache@v2.1.5
