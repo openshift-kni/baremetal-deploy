@@ -1,7 +1,6 @@
 [id="ipi-install-configuration-files"]
 = Configuration files
 :context: ipi-install-configuration-files
-//:release: 4.7
 
 
 include::modules/ipi-install-configuring-the-install-config-file.adoc[leveloffset=+1]
