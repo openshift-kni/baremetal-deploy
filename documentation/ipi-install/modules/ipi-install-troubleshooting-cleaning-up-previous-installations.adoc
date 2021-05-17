@@ -10,15 +10,15 @@ In the event of a previous failed deployment, remove the artifacts from the fail
 
 . Power off all bare metal nodes prior to installing the {product-title} cluster:
 +
-[source,bash]
+[source,terminal]
 ----
-[kni@provisioner ~]$ ipmitool -I lanplus -U <user> -P <password> -H <management-server-ip> power off
+$ ipmitool -I lanplus -U <user> -P <password> -H <management-server-ip> power off
 ----
 
 ifeval::[{product-version} >= 4.6]
 . Remove all old bootstrap resources if any are left over from a previous deployment attempt:
 +
-[source,bash]
+[source,terminal]
 ----
 for i in $(sudo virsh list | tail -n +3 | grep bootstrap | awk {'print $2'});
 do
@@ -35,7 +35,7 @@ endif::[]
 ifeval::[{product-version} < 4.6]
 . Remove all old bootstrap resources if any are left over from a previous deployment attempt:
 +
-[source,bash]
+[source,terminal]
 ----
 for i in $(sudo virsh list | tail -n +3 | grep bootstrap | awk {'print $2'});
 do
@@ -49,7 +49,7 @@ endif::[]
 
 . Remove the following from the `clusterconfigs` directory to prevent Terraform from failing:
 +
-[source,bash]
+[source,terminal]
 ----
-[kni@provisioner ~]$ rm -rf ~/clusterconfigs/auth ~/clusterconfigs/terraform* ~/clusterconfigs/tls ~/clusterconfigs/metadata.json
+$ rm -rf ~/clusterconfigs/auth ~/clusterconfigs/terraform* ~/clusterconfigs/tls ~/clusterconfigs/metadata.json
 ----

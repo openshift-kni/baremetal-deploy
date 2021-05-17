@@ -2,7 +2,6 @@
 = Prerequisites
 include::modules/common-attributes.adoc[]
 :context: ipi-install-prerequisites
-//:release: 4.7
 
 toc::[]
 

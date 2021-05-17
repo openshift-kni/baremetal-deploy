@@ -5,7 +5,7 @@
 
 :imagesdir: images
 :context: ipi-install-installation-workflow
-:release: 4.8
+:product-version: 4.8
 :upstream:
 :product-title: OpenShift Container Platform
 :op-system-first: Red Hat Enterprise Linux CoreOS (RHCOS)
