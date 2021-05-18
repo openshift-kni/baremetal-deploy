@@ -89,10 +89,8 @@ controlPlane:
 |Replicas sets the number of control plane (master) nodes included as part of the {product-title} cluster.
 
 ifeval::[{product-version} >= 4.4]
-ifeval::[{product-version} <= 4.6]
 a| [[provisioningNetworkInterface]]`provisioningNetworkInterface` |  | The name of the network interface on control plane nodes connected to the
 provisioning network.
-endif::[]
 endif::[]
 
 
@@ -191,7 +189,7 @@ endif::[]
 ifeval::[{product-version} >= 4.6]
 Set this parameter to `Managed`, which is the default, to fully manage the provisioning network, including DHCP, TFTP, and so on.
 
-Set this parameter to `Unmanaged` to still enable the provisioning network but take care of manual configuration of DHCP. Virtual Media provisioning is recommended but PXE is still available if required.
+Set this parameter to `Unmanaged` to still enable the provisioning network but take care of manual configuration of DHCP. Virtual media provisioning is recommended but PXE is still available if required.
 endif::[]
 
 ifeval::[{product-version} == 4.6]
