@@ -79,7 +79,20 @@ spec:
           filesystem: root
           mode: 420
           path: /etc/kubernetes/manifests/coredns.yaml
----
+----
++
+This manifest will place the `apiVIP` and `ingressVIP` virtual IP addresses on the control plane nodes. Additionally, the following processes will deploy on the control plane nodes only:
++
+* `openshift-ingress-operator`
++
+* `keepalived`
+
+. Save the `cluster-network-avoid-workers-99-config.yaml` file.
+
+. Create a `manifests/cluster-ingress-default-ingresscontroller.yaml` file.
++
+[source,yaml]
+----
 apiVersion: operator.openshift.io/v1
 kind: IngressController
 metadata:
@@ -91,14 +104,6 @@ spec:
       matchLabels:
         node-role.kubernetes.io/master: ""
 ----
-+
-This manifest will place the `apiVIP` and `ingressVIP` virtual IP addresses on the control plane nodes. Additionally, the following processes will deploy on the control plane nodes only:
-+
-* `openshift-ingress-operator`
-+
-* `keepalived`
-
-. Save the `cluster-network-avoid-workers-99-config.yaml` file and quit the text editor.
 
 . Consider backing up the `manifests` directory. The installer deletes the `manifests/` directory when creating the cluster.
 
