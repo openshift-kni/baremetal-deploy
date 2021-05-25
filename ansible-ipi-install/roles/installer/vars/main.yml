@@ -2,7 +2,9 @@
 # vars file for installer
 pullsecret_file: "{{ dir }}/pull-secret.txt"
 cmd: openshift-baremetal-install
-default_libvirt_pool_dir: /var/lib/libvirt/images/
+default_libvirt_pool_dir:
+  - /var/lib/libvirt/images/
+  - /var/lib/libvirt/openshift-images/
 
 # packages needed for the disconnected registry tasks
 packages_registry:
