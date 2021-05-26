@@ -44,16 +44,23 @@
 
 - name: Find old bootstrap VM Storage
   find:
-    paths: "{{ default_libvirt_pool_dir }}"
+    paths: "{{ item }}"
     patterns: '*-bootstrap,*-bootstrap.ign'
+    file_type: directory
   register: find_results
+  with_items: "{{ default_libvirt_pool_dir }}"
   become: yes
   tags: cleanup
 
+- name: Create list of old paths
+  set_fact:
+    vm_paths: "{{ vm_paths  | default([]) + find_results.results[item|int] | json_query('files[*].path') }}"
+  with_sequence: start=0 count={{ default_libvirt_pool_dir | length }}
+
 - name: Delete old bootstrap VMs Storage
   file:
-    path: "{{ item['path'] }}"
+    path: "{{ item }}"
     state: absent
-  loop: "{{ find_results['files'] }}"
+  loop: "{{ vm_paths }}"
   become: yes
   tags: cleanup
