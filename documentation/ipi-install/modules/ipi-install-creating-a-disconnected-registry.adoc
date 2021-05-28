@@ -217,16 +217,18 @@ $ sed -e 's/^/  /' /opt/registry/certs/domain.crt >> install-config.yaml
 +
 [source,terminal]
 ----
-$ echo "imageContentSources:" >> install-config.yaml
-$ echo "- mirrors:" >> install-config.yaml
-$ echo "  - registry.example.com:5000/ocp4/openshift4" >> install-config.yaml
-$ echo "  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev" >> install-config.yaml
-$ echo "- mirrors:" >> install-config.yaml
-$ echo "  - registry.example.com:5000/ocp4/openshift4" >> install-config.yaml
-$ echo "  source: registry.svc.ci.openshift.org/ocp/release" >> install-config.yaml
-$ echo "- mirrors:" >> install-config.yaml
-$ echo "  - registry.example.com:5000/ocp4/openshift4" >> install-config.yaml
-$ echo "  source: quay.io/openshift-release-dev/ocp-release" >> install-config.yaml
+$ cat <<EOF >> install-config.yaml
+imageContentSources:
+- mirrors:
+  - registry.example.com:5000/ocp4/openshift4
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+- mirrors:
+  - registry.example.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ocp/release
+- mirrors:
+  - registry.example.com:5000/ocp4/openshift4
+  source: quay.io/openshift-release-dev/ocp-release
+EOF
 ----
 +
 NOTE: Replace `registry.example.com` with the registry's fully qualified domain name.
