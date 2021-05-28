@@ -6,7 +6,7 @@
 
 = Modifying the `install-config.yaml` file for dual-stack network (optional)
 
-To deploy an {product-title} cluster with dual-stack, make the following changes to the `install-config.yaml` file.
+To deploy an {product-title} cluster with dual-stack networking, make the following changes to the `install-config.yaml` file.
 
 [source,yaml]
 ----
@@ -23,9 +23,15 @@ serviceNetwork:
 - fd03::/112
 ----
 
-NOTE: In the above snippet, the values for the networks must match the ones for your own environment and that IPv4 details must go *before* IPv6 ones, having the `machineNetwork` two entries and same for the `clusterNetwork` and `serviceNetwork`.
+NOTE: In the above snippet, the network settings must match the settings for the cluster's network environment. The `machineNetwork`, `clusterNetwork`, and `serviceNetwork` configuration settings must have two CIDR entries each. The first CIDR entry is the IPv4 setting and the second CIDR entry is the IPv6 setting.
 
-We also need to deploy an additional manifest for enabling the FeatureGate with the following contents:
+[IMPORTANT]
+====
+The IPv4 entries must go *before* the IPv6 entries.
+====
+
+ifeval::[{product-version} < 4.8]
+To deploy an {product-title} cluster with dual-stack, deploy an additional manifest to enable the `FeatureGate` with the following contents:
 [source,yaml]
 ----
 apiVersion: config.openshift.io/v1
@@ -35,3 +41,4 @@ metadata:
 spec:
   featureSet: IPv6DualStackNoUpgrade
 ----
+endif::[]
