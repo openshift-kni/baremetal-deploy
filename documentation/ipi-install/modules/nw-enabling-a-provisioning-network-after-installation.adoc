@@ -23,27 +23,31 @@ In {product-title} 4.8 and later, you can enable a `provisioning` network after 
 
 . Enable the preboot execution environment (PXE) on the `provisioning` network interface of the cluster nodes.
 
-. Create a provisioning configuration resource file.
+. Retrieve the current state of the `provisioning` network and save it to a provisioning configuration resource (CR) file.
 +
 [source,terminal]
 ----
-$ touch ~/enable-provisioning-nw.yaml
+$ oc get provisioning -o yaml > enable-provisioning-nw.yaml
 ----
+
+. Modify the provisioning CR file.
 +
 [source,terminal]
 ----
 $ vim ~/enable-provisioning-nw.yaml
 ----
 +
+Scroll down to the `provisioningNetwork` configuration setting and change it from `Disabled` to `Managed`. Then, add the `provisioningOSDownloadURL`, `provisioningIP`, `provisioningNetworkCIDR`, `provisioningDHCPRange`, `provisioningInterface`, and `watchAllNameSpaces` configuration settings after the `provisioningNetwork` setting. Provide appropriate values for each setting.
++
 [source,yaml]
 ----
-apiVersion: metal3.io/v1alpha1
-kind: Provisioning
-metadata:
-  name: enable-provisioning-nw
-spec:
-  description: Enables a provisioning network.
-  properties:
+apiVersion: v1
+items:
+- apiVersion: metal3.io/v1alpha1
+  kind: Provisioning
+  metadata:
+    name: provisioning-configuration
+  spec:
     provisioningNetwork: <1>
     provisioningOSDownloadURL: <2>
     provisioningIP: <3>
@@ -69,7 +73,9 @@ Where:
 +
 <7> The default value is `false`. Set this setting to `true` if you want metal3 to watch namespaces other than the default `openshift-machine-api` namespace.
 
-. Apply the Provisioning RC file to the cluster.
+. Save the changes to the provisioning CR file.
+
+. Apply the provisioning CR file to the cluster.
 +
 [source,terminal]
 ----
