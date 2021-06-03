@@ -5,27 +5,27 @@
 
 = Configure network components to run on the control plane
 
-Configure networking components to run exclusively on the control plane nodes. By default, {product-title} allows any node in the Machine Config Pool to host the `apiVIP` and `ingressVIP` virtual IP addresses. However, many environments deploy worker nodes in separate subnets from the control plane nodes. Consequently, you must place the `apiVIP` and `ingressVIP` virtual IP addresses exclusively with the control plane nodes.
+Configure networking components to run exclusively on the control plane nodes. By default, {product-title} allows any node in the machine config pool to host the `apiVIP` and `ingressVIP` virtual IP addresses. However, many environments deploy worker nodes in separate subnets from the control plane nodes. Consequently, you must place the `apiVIP` and `ingressVIP` virtual IP addresses exclusively with the control plane nodes.
 
 .Procedure
 
 . Change to the directory storing the `install-config.yaml` file.
 +
-[source,bash]
+[source,terminal]
 ----
 $ cd ~/clusterconfigs
 ----
 
 . Switch to the `manifests` subdirectory.
 +
-[source,bash]
+[source,terminal]
 ----
 $ cd manifests
 ----
 
-. Create a file named `cluster-network-avoid-workers-99-config.yaml`
+. Create a file named `cluster-network-avoid-workers-99-config.yaml`.
 +
-[source,bash]
+[source,terminal]
 ----
 $ touch cluster-network-avoid-workers-99-config.yaml
 ----
@@ -81,7 +81,7 @@ spec:
           path: /etc/kubernetes/manifests/coredns.yaml
 ----
 +
-This manifest will place the `apiVIP` and `ingressVIP` virtual IP addresses on the control plane nodes. Additionally, the following processes will deploy on the control plane nodes only:
+This manifest places the `apiVIP` and `ingressVIP` virtual IP addresses on the control plane nodes. Additionally, this manifest deploys the following processes on the control plane nodes only:
 +
 * `openshift-ingress-operator`
 +

@@ -28,10 +28,10 @@ endif::[]
 
 When the installation of OpenShift control plane nodes is complete and fully operational, the installer destroys the bootstrap VM automatically and moves the virtual IP addresses (VIPs) to
 ifeval::[{product-version} >= 4.8]
-the control plane nodes accordingly.
+the control plane nodes.
 endif::[]
 ifeval::[{product-version} <= 4.7]
-the appropriate nodes accordingly. The API VIP moves to the control plane nodes and the Ingress VIP moves to the worker nodes.
+the appropriate nodes. The API VIP moves to the control plane nodes and the Ingress VIP moves to the worker nodes.
 endif::[]
 
 
