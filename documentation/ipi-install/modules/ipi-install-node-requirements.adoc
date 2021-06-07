@@ -20,7 +20,12 @@ ifeval::[{product-version} > 4.4]
 - *Baseboard Management Controller:* The `provisioner` node must be able to access the baseboard management controller (BMC) of each {product-title} cluster node. You may use IPMI, Redfish, or a proprietary protocol.
 endif::[]
 
+ifndef::openshift-origin[]
 - *Latest generation:* Nodes must be of the most recent generation. Installer-provisioned installation relies on BMC protocols, which must be compatible across nodes. Additionally, {op-system-base} 8 ships with the most recent drivers for RAID controllers. Ensure that the nodes are recent enough to support {op-system-base} 8 for the `provisioner` node and {op-system} 8 for the control plane and worker nodes.
+endif::[]
+ifdef::openshift-origin[]
+- *Latest generation:* Nodes must be of the most recent generation. Installer-provisioned installation relies on BMC protocols, which must be compatible across nodes. Additionally, {op-system-first} ships with the most recent drivers for RAID controllers. Ensure that the nodes are recent enough to support {op-system} for the `provisioner` node and {op-system} for the control plane and worker nodes.
+endif::[]
 
 - *Registry node:* (Optional) If setting up a disconnected mirrored registry, it is recommended the registry reside in its own node.
 
@@ -43,9 +48,9 @@ endif::[]
 ifeval::[{product-version} > 4.7]
 - *Secure Boot:* Many production scenarios require nodes with Secure Boot enabled to verify the node only boots with trusted software, such as UEFI firmware drivers, EFI applications and the operating system. You may deploy with secure boot manually or managed.
 +
-. *Manually:* To deploy a {product-title} cluster with Secure Boot manually, you must enable UEFI boot mode and Secure Boot on each control plane node and each worker node. Red Hat supports Secure Boot with manually enabled UEFI and Secure Boot only when installer-provisioned installation uses Redfish virtual media.
+. *Manually:* To deploy a {product-title} cluster with Secure Boot manually, you must enable UEFI boot mode and Secure Boot on each control plane node and each worker node. Red Hat supports Secure Boot with manually enabled UEFI and Secure Boot only when installer-provisioned installation uses Redfish virtual media. See xref:configuring-nodes-for-secure-boot_{context}[Configuring nodes for Secure Boot manually] for additional details.
 +
-. *Managed:* To deploy a {product-title} cluster with managed Secure Boot, you must set the `bootMode` value to `UEFISecureBoot` in the `install-config.yaml` file. Red Hat only supports installer-provisioned installation with managed Secure Boot on 10th generation HPE hardware and 13th generation Dell hardware running firmware version `2.75.75.75` or greater. Deploying with managed Secure Boot does not require Redfish virtual media.
+. *Managed:* To deploy a {product-title} cluster with managed Secure Boot, you must set the `bootMode` value to `UEFISecureBoot` in the `install-config.yaml` file. Red Hat only supports installer-provisioned installation with managed Secure Boot on 10th generation HPE hardware and 13th generation Dell hardware running firmware version `2.75.75.75` or greater. Deploying with managed Secure Boot does not require Redfish virtual media. See xref:configuring-managed-secure-boot-in-the-install-config-file_ipi-install-configuration-files[Configuring managed Secure Boot] for details.
 +
 [NOTE]
 ====

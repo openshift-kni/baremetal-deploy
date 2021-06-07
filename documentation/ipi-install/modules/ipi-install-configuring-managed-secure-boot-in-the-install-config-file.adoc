@@ -19,7 +19,7 @@ hosts:
       password: <password>
     bootMACAddress: <NIC1-mac-address>
     rootDeviceHints:
-     deviceName: "/dev/sda"    
+     deviceName: "/dev/sda"
     bootMode: UEFISecureBoot <1>
 ----
 
@@ -27,5 +27,5 @@ hosts:
 
 [NOTE]
 ====
-See *Node requirements* to ensure the nodes can support managed Secure Boot. If not, you can enable Secure Boot manually, which requires Redfish virtual media.
+See xref:configuring-nodes_ipi-install-prerequisites[Configuring nodes for Secure Boot manually] for additional details. to ensure the nodes can support managed Secure Boot. If not, you can xref:configuring-nodes-for-secure-boot_ipi-install-prerequisites[enable Secure Boot manually], which requires Redfish virtual media.
 ====
