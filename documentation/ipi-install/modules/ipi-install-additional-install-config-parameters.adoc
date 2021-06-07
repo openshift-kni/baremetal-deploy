@@ -19,7 +19,7 @@ and the `bmc` parameter for the `install-config.yaml` file.
 
 | [[bootmode]] `bootMode`
 | `legacy`
-| The boot mode for a node. Options are `legacy`, `UEFI` and `UEFISecureBoot.`
+| The boot mode for a node. Options are `legacy`, `UEFI` and `UEFISecureBoot.` If `bootMode` is not set, Ironic sets it while inspecting the node.
 
 | [[sshkey]] `sshKey`
 |

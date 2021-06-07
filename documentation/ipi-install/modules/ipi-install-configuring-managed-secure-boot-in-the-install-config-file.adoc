@@ -18,7 +18,8 @@ hosts:
       username: <user>
       password: <password>
     bootMACAddress: <NIC1-mac-address>
-    hardwareProfile: default
+    rootDeviceHints:
+     deviceName: "/dev/sda"    
     bootMode: UEFISecureBoot <1>
 ----
 

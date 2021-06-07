@@ -27,7 +27,8 @@ platform:
           username: +<user>+
           password: +<password>+
         xref:bootMACAddress[bootMACAddress]: +<NIC1-mac-address>+
-        xref:hardwareProfile[hardwareProfile]: default
+        rootDeviceHints:
+         deviceName: "/dev/sda"
       - xref:name[name]: openshift-master-1
         xref:role[role]: master
         xref:bmc-addressing_{context}[bmc]:
@@ -35,7 +36,8 @@ platform:
           username: +<user>+
           password: +<password>+
         xref:bootMACAddress[bootMACAddress]: +<NIC1-mac-address>+
-        xref:hardwareProfile[hardwareProfile]: default
+        rootDeviceHints:
+         deviceName: "/dev/sda"
       - xref:name[name]: openshift-master-2
         xref:role[role]: master
         xref:bmc-addressing_{context}[bmc]:
@@ -43,7 +45,8 @@ platform:
           username: +<user>+
           password: +<password>+
         xref:bootMACAddress[bootMACAddress]: +<NIC1-mac-address>+
-        xref:hardwareProfile[hardwareProfile]: default
+        rootDeviceHints:
+         deviceName: "/dev/sda"
       - xref:name[name]: openshift-worker-0
         xref:role[role]: worker
         xref:bmc-addressing_{context}[bmc]:
@@ -51,7 +54,8 @@ platform:
           username: +<user>+
           password: +<password>+
         xref:bootMACAddress[bootMACAddress]: +<NIC1-mac-address>+
-        xref:hardwareProfile[hardwareProfile]: unknown
+        rootDeviceHints:
+         deviceName: "/dev/sda"
       - xref:name[name]: openshift-worker-1
         xref:role[role]: worker
         xref:bmc-addressing_{context}[bmc]:
@@ -59,6 +63,7 @@ platform:
           username: +<user>+
           password: +<password>+
         xref:bootMACAddress[bootMACAddress]: +<NIC1-mac-address>+
-        xref:hardwareProfile[hardwareProfile]: unknown
+        rootDeviceHints:
+         deviceName: "/dev/sda"
 xref:pullsecret[pullSecret]: '+<pull_secret>+'
 xref:sshkey[sshKey]: '+<ssh_pub_key>+'
