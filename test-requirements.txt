@@ -1,2 +1,2 @@
-ansible<4.1.0
+ansible<4.2.0
 ansible-lint<6.0.0
