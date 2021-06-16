@@ -7,7 +7,7 @@ data:
   cache_url: ''
   deploy_kernel_url: http://{{ prov_ip|ipwrap }}:6180/images/ironic-python-agent.kernel
   deploy_ramdisk_url: http://{{ prov_ip|ipwrap }}:6180/images/ironic-python-agent.initramfs
-  dhcp_range: 172.22.0.10,172.22.0.100
+  dhcp_range: {{ prov_dhcp_range | default('172.22.0.10,172.22.0.100') }}
   http_port: "6180"
   ironic_endpoint: http://{{ prov_ip|ipwrap }}:6385/v1/
   ironic_inspector_endpoint: http://{{ prov_ip|ipwrap }}:5050/v1/

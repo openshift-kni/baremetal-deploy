@@ -48,6 +48,12 @@
       when:
       - not enable_virtualmedia|bool
 
+    - name: set provisioning network fact
+      set_fact:
+        prov_bridge_ip: "{{ prov_network | next_nth_usable(1) }}/{{ prov_network | ipaddr('prefix') }}"
+      when:
+        - prov_network is defined and prov_network
+
     - name: Create Bridge labeled provisioning bridge ipv4
       nmcli:
         conn_name: "{{ provisioning_bridge }}"
@@ -57,7 +63,7 @@
         ip4_method: manual
         ip6_method: disabled
         stp: off
-        ip4: 172.22.0.1/21
+        ip4: "{{ prov_bridge_ip | default('172.22.0.1/21') }}"
         state: present
       when: (not enable_virtualmedia) and
             ((ipv4_provisioning|bool) or (not ipv6_enabled|bool) or
