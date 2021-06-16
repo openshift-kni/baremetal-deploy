@@ -42,6 +42,10 @@ version=""
 # Empty value results in playbook failing with error message.
 build=""
 
+# Provisioning IP Network and dhcp range (default value)
+# prov_network=172.22.0.0/21
+# prov_dhcp_range="172.22.0.10,172.22.0.100"
+
 # Provisioning IP address (default value)
 prov_ip=172.22.0.3
 
