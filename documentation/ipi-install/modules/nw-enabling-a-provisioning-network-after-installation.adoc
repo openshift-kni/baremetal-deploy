@@ -12,10 +12,10 @@ In {product-title} 4.8 and later, you can enable a `provisioning` network after 
 
 .Prerequisites
 
-. A dedicated physical network must exist, connected to all worker and control plane nodes.
-. You must isolate the native, untagged physical network.
-. The network cannot have a DHCP server when the `provisioningNetwork` configuration setting is set to `Managed`.
-. You must connect the control plane nodes to the network with the same network interface, such as `eth0` or `eno1`.
+* A dedicated physical network must exist, connected to all worker and control plane nodes.
+* You must isolate the native, untagged physical network.
+* The network cannot have a DHCP server when the `provisioningNetwork` configuration setting is set to `Managed`.
+* You must connect the control plane nodes to the network with the same network interface, such as `eth0` or `eno1`.
 
 .Procedure
 
