@@ -42,7 +42,8 @@ version=""
 # Empty value results in playbook failing with error message.
 build=""
 
-# Provisioning IP Network and dhcp range (default value)
+# (Optional) Provisioning IP Network and dhcp range (default value)
+# If defined, make sure to update 'prov_ip' with a valid IP outside of your 'prov_dhcp_range' and update all other places like 'no_proxy_list' 
 # prov_network=172.22.0.0/21
 # prov_dhcp_range="172.22.0.10,172.22.0.100"
 
