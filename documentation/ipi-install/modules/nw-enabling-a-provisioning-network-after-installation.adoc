@@ -12,16 +12,16 @@ In {product-title} 4.8 and later, you can enable a `provisioning` network after 
 
 .Prerequisites
 
-. The `provisioning` network must exist.
-. The `provisioning` network must be enabled.
-. The cluster nodes must be connected to the `provisioning` network using the same network interface on both worker nodes and control plane nodes.
-. The cluster nodes must be homogeneous. If the cluster nodes use different network interface names for the same network interface order, such as `eth0` and `eno1` for the first network interface, the procedure will fail.
+. A dedicated physical network must exist, connected to all worker and control plane nodes.
+. You must isolate the native, untagged physical network.
+. The network cannot have a DHCP server when the `provisioningNetwork` configuration setting is set to `Managed`.
+. You must connect the control plane nodes to the network with the same network interface, such as `eth0` or `eno1`.
 
 .Procedure
 
 . Identify the provisioning interface name for the cluster nodes. For example, `eth0` or `eno1`.
 
-. Enable the preboot execution environment (PXE) on the `provisioning` network interface of the cluster nodes.
+. Enable the Preboot eXecution Environment (PXE) on the `provisioning` network interface of the cluster nodes.
 
 . Retrieve the current state of the `provisioning` network and save it to a provisioning configuration resource (CR) file.
 +
