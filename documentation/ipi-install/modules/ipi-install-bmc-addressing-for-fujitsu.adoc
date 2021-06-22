@@ -30,7 +30,7 @@ For Fujitsu hardware, Red Hat supports iRMC and IPMI.
 |IPMI| `ipmi://<out-of-band-ip>`
 |====
 
-See the following sections for additional details.
+See the following section for additional details.
 
 .iRMC for Fujitsu
 
@@ -49,24 +49,7 @@ platform:
           password: <password>
 ----
 
-.IPMI
-
-Hosts using IPMI use the `ipmi://<out-of-band-ip>:<port>` address format, which defaults to port `623` if not specified. The following example demonstrates an IPMI configuration within the `install-config.yaml` file.
-
-[source,yaml]
-----
-platform:
-  baremetal:
-    hosts:
-      - name: openshift-master-0
-        role: master
-        bmc:
-          address: ipmi://<out-of-band-ip>
-          username: <user>
-          password: <password>
-----
-
 [NOTE]
 ====
-IPMI does not encrypt communications. It is suitable for use within a data center over a secured network.
+Currently Fujitsu supports iRMC S5 firmware version 3.05P and above for  installer-provisioned installation on bare metal.
 ====
