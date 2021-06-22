@@ -51,5 +51,5 @@ platform:
 
 [NOTE]
 ====
-Currently Fujitsu supports iRMC S5 firmware version 3.05P and above for  installer-provisioned installation on bare metal.
+Currently Fujitsu supports iRMC S5 firmware version 3.05P and above for installer-provisioned installation on bare metal.
 ====
