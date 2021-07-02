@@ -1,47 +1,53 @@
 [id="ipi-install-diagnosing-duplicate-mac-address_{context}"]
 = Diagnosing a duplicate MAC address when provisioning a new host in the cluster
 
-[role="_abstract"]
-If the MAC address of an existing bare metal node in the cluster matches the MAC address of a bare metal host that you are attempting to add to the cluster, the Ironic installation Operator associates the bare metal host with the existing node. If the host enrollment, inspection, cleaning, or other Ironic steps fail, the `metal3-baremetal-operator` continuously retries the install. The Operator displays a registration error for the failed bare metal host. You can diagnose a duplicate MAC address by examining the `metal3-baremetal-operator` log.
+If the MAC address of an existing bare-metal node in the cluster matches the MAC address of a bare-metal host you are attempting to add to the cluster, the Bare Metal Operator associates the host with the existing node. If the host enrollment, inspection, cleaning, or other Ironic steps fail, the Bare Metal Operator retries the installation continuously. A registration error is displayed for the failed bare-metal host.
+
+You can diagnose a duplicate MAC address by examining the bare-metal hosts that are running in the `openshift-machine-api` namespace.
 
 .Prerequisites
 
-* Install a {product-title} cluster on bare metal.
+* Install an {product-title} cluster on bare metal.
 * Install the {product-title} CLI `oc`.
 * Log in as a user with `cluster-admin` privileges.
 
 .Procedure
 
-To determine whether a bare metal host that fails provisioning has a duplicate MAC address, do the following:
+To determine whether a bare-metal host that fails provisioning has the same MAC address as an existing node, do the following:
 
-. Get the pods that are running in the `openshift-machine-api`:
+. Get the bare-metal hosts running in the `openshift-machine-api` namespace:
 +
 [source,terminal]
 ----
-$ oc get pods -n openshift-machine-api
+$ oc get bmh -n openshift-machine-api
 ----
 +
 .Example output
 [source,terminal]
 ----
-NAME                                           READY   STATUS    RESTARTS   AGE
-cluster-autoscaler-operator-77c59896d5-vrc5l   2/2     Running   1          20d
-machine-api-controllers-69d94b9d85-qtrnf       7/7     Running   1          20d
-machine-api-operator-6899f4c5d6-n9zh2          2/2     Running   1          20d
-metal3-7cbcc4b66b-2rkrl                        8/8     Running   0          20d
+NAME                 STATUS   PROVISIONING STATUS      CONSUMER
+openshift-master-0   OK       externally provisioned   openshift-zpwpq-master-0
+openshift-master-1   OK       externally provisioned   openshift-zpwpq-master-1
+openshift-master-2   OK       externally provisioned   openshift-zpwpq-master-2
+openshift-worker-0   OK       provisioned              openshift-zpwpq-worker-0-lv84n
+openshift-worker-1   OK       provisioned              openshift-zpwpq-worker-0-zd8lm
+openshift-worker-2   error    registering
 ----
 
-. Copy the full name of the metal3 pod, for example `metal3-7cbcc4b66b-2rkrl`.
-. Get the `metal3-baremetal-operator` log from the metal3 pod and check if there is a "MAC address already exists" error for the host you are trying to provision:
+. To see more detailed information about the status of the failing host, run the following command replacing `<bare_metal_host_name>` with the name of the host:
 +
 [source,terminal]
 ----
-$ oc -n openshift-machine-api logs metal3-7cbcc4b66b-2rkrl metal3-baremetal-operator
+$ oc get -n openshift-machine-api bmh <bare_metal_host_name> -o yaml
 ----
 +
-.Example log entry
-[source,terminal]
+.Example output
+[source,yaml]
 ----
-... A port with MAC address b4:96:91:1d:7c:20 already exists ...
+...
+status:
+  errorCount: 12
+  errorMessage: MAC address b4:96:91:1d:7c:20 conflicts with existing node openshift-worker-1
+  errorType: registration error
+...
 ----
-
