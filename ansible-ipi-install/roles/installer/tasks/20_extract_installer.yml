@@ -83,7 +83,6 @@
           /usr/local/bin/oc adm release extract --registry-config {{ pullsecret_file | quote }} --command={{ cmd |quote }} --to {{ tempdir_loc }} {{ disconnected_installer | ternary(disconnected_installer, release_image) }}
   args:
     chdir: "{{ tempdir }}"
-    executable: /bin/bash
   when: (disconnected_installer|length or the_url.status == 200)
   delegate_to: "{{ disconnected_installer | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
   tags: extract
