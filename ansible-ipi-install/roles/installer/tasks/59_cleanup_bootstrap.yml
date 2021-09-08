@@ -46,7 +46,7 @@
   find:
     paths: "{{ item }}"
     patterns: '*-bootstrap,*-bootstrap.ign'
-    file_type: directory
+    file_type: any
   register: find_results
   with_items: "{{ default_libvirt_pool_dir }}"
   become: yes
