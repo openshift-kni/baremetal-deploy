@@ -16,14 +16,3 @@
   - "{{ dir }}/openshift"
   - "{{ dir }}/manifests"
   tags: manifests
-
-- name: Copy the metal3-config.yaml to {{ dir }}/openshift directory
-  copy:
-    src: "{{ dir }}/metal3-config.yaml"
-    dest: "{{ dir }}/openshift/98_metal3-config.yaml"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: '0644'
-    remote_src: yes
-  when: (release_version[0]|int == 4) and (release_version[2]|int <= 3)
-  tags: manifests

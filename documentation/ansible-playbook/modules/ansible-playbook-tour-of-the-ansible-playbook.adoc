@@ -41,7 +41,6 @@ The tree structure is shown below:
     │   │   ├── 23_rhcos_image_paths.yml
     │   │   ├── 24_rhcos_image_cache.yml
     │   │   ├── 25_create-install-config.yml
-    │   │   ├── 30_create_metal3.yml
     │   │   ├── 40_create_manifest.yml
     │   │   ├── 50_extramanifests.yml
     │   │   ├── 55_customize_filesystem.yml
@@ -57,7 +56,6 @@ The tree structure is shown below:
     │   │   ├── install-config.j2
     │   │   ├── install-config-virtualmedia.j2
     │   │   ├── magic.j2
-    │   │   └── metal3-config.j2
     │   ├── tests
     │   │   ├── inventory
     │   │   └── test.yml

@@ -66,8 +66,7 @@
         ip4: "{{ prov_bridge_ip | default('172.22.0.1/21') }}"
         state: present
       when: (not enable_virtualmedia) and
-            ((ipv4_provisioning|bool) or (not ipv6_enabled|bool) or
-            ((release_version[0]|int == 4) and (release_version[2]|int == 3)))
+            ((ipv4_provisioning|bool) or (not ipv6_enabled|bool))
 
     - name: Create Bridge slave on provisioning nic ipv4
       nmcli:
@@ -79,8 +78,7 @@
         autoconnect: yes
         state: present
       when: (not enable_virtualmedia) and
-            ((ipv4_provisioning|bool) or (not ipv6_enabled|bool) or
-            ((release_version[0]|int == 4) and (release_version[2]|int == 3)))
+            ((ipv4_provisioning|bool) or (not ipv6_enabled|bool))
 
     - name: Create Bridge labeled provisioning bridge ipv6
       nmcli:
@@ -96,8 +94,6 @@
       when:
         - not enable_virtualmedia|bool
         - ipv6_enabled|bool
-        - release_version[0]|int == 4 and release_version[2]|int > 3 or
-          release_version[0]|int > 4
         - not ipv4_provisioning|bool
 
     - name: Create Bridge slave on provisioning nic ipv6
@@ -112,8 +108,6 @@
       when:
         - not enable_virtualmedia|bool
         - ipv6_enabled|bool
-        - release_version[0]|int == 4 and release_version[2]|int > 3 or
-          release_version[0]|int > 4
         - not ipv4_provisioning|bool
 
     - name: Create Bridge labeled {{ baremetal_bridge }} for ipv4

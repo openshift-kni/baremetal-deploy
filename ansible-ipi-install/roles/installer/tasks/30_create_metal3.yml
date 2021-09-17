@@ -1,9 +1,0 @@
----
-- name: Generate metal3-config.yaml
-  template:
-    src: metal3-config.j2
-    dest: "{{ dir }}/metal3-config.yaml"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: '0644'
-  tags: metal3config

@@ -282,10 +282,10 @@
     verbosity: 2
   tags: validation
 
-- name: Fail if dual-stack is requested and build does not support it
+- name: "Fail if release_version isn't supported"
   fail:
-    msg: This release {{ release_version }} does not support dual-stack deployments
-  when: release_version[0]|int == 4 and release_version[2]|int < 6 and dualstack_baremetal
+    msg: This release {{ release_version }} is not supported
+  when: (release_version is version("4.6", "<"))
   tags:
   - always
   - validation
@@ -370,16 +370,6 @@
   when:
     - (masters_prov_nic is undefined) or (masters_prov_nic|length == 0)
     - not enable_virtualmedia|bool
-  tags:
-  - always
-  - validation
-
-- name: Fail if DNSVIP not set (OCP 4.4 or lower)
-  fail:
-    msg: "dnsvip variable is undefined or empty."
-  when:
-  - ((release_version[0]|int == 4) and (release_version[2]|int < 5))
-  - ((dnsvip is undefined) or (dnsvip|length == 0))
   tags:
   - always
   - validation
