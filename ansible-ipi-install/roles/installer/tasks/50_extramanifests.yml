@@ -11,7 +11,7 @@
   when:
     - ipv6_enabled|bool
     - dualstack_baremetal
-    - release_version[0]|int == 4 and release_version[2]|int < 8
+    - release_version.split('.')[0]|int == 4 and release_version.split('.')[1]|int < 8
   delegate_to: localhost
 
 - name: Add Manifests from files dir

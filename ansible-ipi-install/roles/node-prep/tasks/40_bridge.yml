@@ -67,7 +67,7 @@
         state: present
       when: (not enable_virtualmedia) and
             ((ipv4_provisioning|bool) or (not ipv6_enabled|bool) or
-            ((release_version[0]|int == 4) and (release_version[2]|int == 3)))
+            ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int == 3)))
 
     - name: Create Bridge slave on provisioning nic ipv4
       nmcli:
@@ -80,7 +80,7 @@
         state: present
       when: (not enable_virtualmedia) and
             ((ipv4_provisioning|bool) or (not ipv6_enabled|bool) or
-            ((release_version[0]|int == 4) and (release_version[2]|int == 3)))
+            ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int == 3)))
 
     - name: Create Bridge labeled provisioning bridge ipv6
       nmcli:
@@ -96,8 +96,8 @@
       when:
         - not enable_virtualmedia|bool
         - ipv6_enabled|bool
-        - release_version[0]|int == 4 and release_version[2]|int > 3 or
-          release_version[0]|int > 4
+        - release_version.split('.')[0]|int == 4 and release_version.split('.')[1]|int > 3 or
+          release_version.split('.')[0]|int > 4
         - not ipv4_provisioning|bool
 
     - name: Create Bridge slave on provisioning nic ipv6
@@ -112,8 +112,8 @@
       when:
         - not enable_virtualmedia|bool
         - ipv6_enabled|bool
-        - release_version[0]|int == 4 and release_version[2]|int > 3 or
-          release_version[0]|int > 4
+        - release_version.split('.')[0]|int == 4 and release_version.split('.')[1]|int > 3 or
+          release_version.split('.')[0]|int > 4
         - not ipv4_provisioning|bool
 
     - name: Create Bridge labeled {{ baremetal_bridge }} for ipv4
