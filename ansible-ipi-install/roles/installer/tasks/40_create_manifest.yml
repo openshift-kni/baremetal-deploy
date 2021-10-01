@@ -25,5 +25,5 @@
     group: "{{ ansible_user }}"
     mode: '0644'
     remote_src: yes
-  when: (release_version[0]|int == 4) and (release_version[2]|int <= 3)
+  when: (release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int <= 3)
   tags: manifests

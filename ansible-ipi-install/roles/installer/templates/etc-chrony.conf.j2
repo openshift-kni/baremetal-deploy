@@ -11,10 +11,10 @@ spec:
       security:
         tls: {}
       timeouts: {}
-{% if ((release_version[0]|int == 4) and (release_version[2]|int > 5)) %}
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int > 5)) %}
       version: 3.1.0
 {% endif %}
-{% if ((release_version[0]|int == 4) and (release_version[2]|int < 6)) %}
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int < 6)) %}
       version: 2.2.0
 {% endif %}
     networkd: {}
@@ -23,20 +23,20 @@ spec:
       files:
       - contents:
           source: data:text/plain;charset=utf-8;base64,{{ chronyconfig }}
-{% if ((release_version[0]|int == 4) and (release_version[2]|int < 6)) %}
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int < 6)) %}
           verification: {}
         filesystem: root
 {% endif %}
         group:
           name: root
         mode: 420
-{% if ((release_version[0]|int == 4) and (release_version[2]|int > 5)) %}
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int > 5)) %}
         overwrite: true
 {% endif %}
         path: /etc/chrony.conf
         user:
           name: root
-{% if ((release_version[0]|int == 4) and (release_version[2]|int < 6)) %}
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int < 6)) %}
     systemd: {}
 {% endif %}
   osImageURL: ""

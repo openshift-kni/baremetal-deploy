@@ -45,7 +45,7 @@ platform:
   baremetal:
     apiVIP: {{ apivip }}
     ingressVIP: {{ ingressvip }}
-{% if ((release_version[0]|int == 4) and (release_version[2]|int < 5)) %}
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int < 5)) %}
     dnsVIP: {{ dnsvip }}
 {% endif %}
 {% if baremetal_bridge != 'baremetal' %}
@@ -65,10 +65,10 @@ platform:
       - name: {{ hostvars[host]['inventory_hostname'] }}
         role: {{ hostvars[host]['role'] }}
         bmc:
-{% if groups['dell_hosts_redfish'] is defined and host in groups['dell_hosts_redfish'] and ((release_version[0]|int > 4) or ((release_version[0]|int == 4) and (release_version[2]|int >= 6))) and enable_virtualmedia|bool %}
+{% if groups['dell_hosts_redfish'] is defined and host in groups['dell_hosts_redfish'] and ((release_version.split('.')[0]|int > 4) or ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 6))) and enable_virtualmedia|bool %}
           address: idrac-virtualmedia://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/System.Embedded.1
           disableCertificateVerification: {{ disable_bmc_certificate_verification }}
-{% elif groups['hp_hosts_redfish'] is defined and host in groups['hp_hosts_redfish'] and ((release_version[0]|int > 4) or ((release_version[0]|int == 4) and (release_version[2]|int >= 6))) and enable_virtualmedia|bool %}
+{% elif groups['hp_hosts_redfish'] is defined and host in groups['hp_hosts_redfish'] and ((release_version.split('.')[0]|int > 4) or ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 6))) and enable_virtualmedia|bool %}
           address: redfish-virtualmedia://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/1
           disableCertificateVerification: {{ disable_bmc_certificate_verification }}
 {% elif ansible_system_vendor == 'Dell Inc.' %}
@@ -81,14 +81,14 @@ platform:
           username: {{ hostvars[host]['ipmi_user'] }}
           password: {{ hostvars[host]['ipmi_password'] }}
         bootMACAddress: {{ hostvars[host]['provision_mac'] }}
-{% if ((release_version[0]|int == 4) and (release_version[2]|int < 6)) %}
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int < 6)) %}
 {% if 'hardware_profile' in hostvars[host] %}
         hardwareProfile: {{ hostvars[host]['hardware_profile'] }}
 {% else %}
         hardwareProfile: default
 {% endif %}
 {% endif %}
-{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 6)) %}
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 6)) %}
 {% if bootmode is defined and bootmode == 'legacy' %}
         bootMode: legacy
 {% endif %}
@@ -103,10 +103,10 @@ platform:
       - name: {{ hostvars[host]['inventory_hostname'] }}
         role: {{ hostvars[host]['role'] }}
         bmc:
-{% if groups['dell_hosts_redfish'] is defined and host in groups['dell_hosts_redfish'] and ((release_version[0]|int > 4) or ((release_version[0]|int == 4) and (release_version[2]|int >= 6))) and enable_virtualmedia|bool %}
+{% if groups['dell_hosts_redfish'] is defined and host in groups['dell_hosts_redfish'] and ((release_version.split('.')[0]|int > 4) or ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 6))) and enable_virtualmedia|bool %}
           address: idrac-virtualmedia://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/System.Embedded.1
           disableCertificateVerification: {{ disable_bmc_certificate_verification }}
-{% elif groups['hp_hosts_redfish'] is defined and host in groups['hp_hosts_redfish'] and ((release_version[0]|int > 4) or ((release_version[0]|int == 4) and (release_version[2]|int >= 6))) and enable_virtualmedia|bool %}
+{% elif groups['hp_hosts_redfish'] is defined and host in groups['hp_hosts_redfish'] and ((release_version.split('.')[0]|int > 4) or ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 6))) and enable_virtualmedia|bool %}
           address: redfish-virtualmedia://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/1
           disableCertificateVerification: {{ disable_bmc_certificate_verification }}
 {% elif ansible_system_vendor == 'Dell Inc.' %}
@@ -119,14 +119,14 @@ platform:
           username: {{ hostvars[host]['ipmi_user'] }}
           password: {{ hostvars[host]['ipmi_password'] }}
         bootMACAddress: {{ hostvars[host]['provision_mac'] }}
-{% if ((release_version[0]|int == 4) and (release_version[2]|int < 6)) %}
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int < 6)) %}
 {% if 'hardware_profile' in hostvars[host] %}
         hardwareProfile: {{ hostvars[host]['hardware_profile'] }}
 {% else %}
         hardwareProfile: unknown
 {% endif %}
 {% endif %}
-{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 6)) %}
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 6)) %}
 {% if bootmode is defined and bootmode == 'legacy' %}
         bootMode: legacy
 {% endif %}
