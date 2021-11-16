@@ -175,6 +175,7 @@ pullsecret=""
 # ipmi_port is optional for each host. 623 is the common default used if omitted
 # poweroff is optional. True or ommited (by default) indicates the playbook will power off the node before deploying OCP
 #  otherwise set it to false
+# (Optional) irmc_address and imrc_port can be set in addition to ipmi_* if the BMC is Fujitsu irmc
 # (Optional) OpenShift 4.6+, Set Root Device Hints to choose the proper device to install operating system on OpenShift nodes.
 # root device hint options include: ['deviceName','hctl','model','vendor','serialNumber','minSizeGigabytes','wwn','rotational']
 # Root Device Hint values are case sensitive. If incorrect case given, entry omitted from install-config.yaml

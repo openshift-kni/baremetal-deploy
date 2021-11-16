@@ -73,6 +73,8 @@ platform:
 {% elif groups['hp_hosts_redfish'] is defined and host in groups['hp_hosts_redfish'] and ((release_version.split('.')[0]|int > 4) or ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 5))) %}
           address: redfish://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/1
           disableCertificateVerification: {{ disable_bmc_certificate_verification }}
+{% elif hostvars[host]['irmc_address'] is defined %}
+          address: irmc://{{ hostvars[host]['irmc_address']|ipwrap }}:{{ hostvars[host]['irmc_port']|default(443) }}
 {% else %}
           address: ipmi://{{ hostvars[host]['ipmi_address']|ipwrap }}:{{ hostvars[host]['ipmi_port']|default(623) }}
 {% endif %}
@@ -107,6 +109,8 @@ platform:
 {% elif groups['hp_hosts_redfish'] is defined and host in groups['hp_hosts_redfish'] %}
           address: redfish://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/1
           disableCertificateVerification: {{ disable_bmc_certificate_verification }}
+{% elif hostvars[host]['irmc_address'] is defined %}
+          address: irmc://{{ hostvars[host]['irmc_address']|ipwrap }}:{{ hostvars[host]['irmc_port']|default(443) }}
 {% else %}
           address: ipmi://{{ hostvars[host]['ipmi_address']|ipwrap }}:{{ hostvars[host]['ipmi_port']|default(623) }}
 {% endif %}
