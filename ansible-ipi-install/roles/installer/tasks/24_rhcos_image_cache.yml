@@ -93,7 +93,7 @@
 
 - name: Set facts for RHCOS_QEMU_SHA256 and RHCOS_SHA256 (4.8+)
   set_fact:
-    rhcos_qemu_sha256: "{{ rhcos_json | json_query(rhcos_qemu_key) }}"
+    rhcos_qemu_sha256: "{{ rhcos_json | json_query(rhcos_qemu_sha_key) }}"
     rhcos_qemu_sha256_unzipped: "{{ rhcos_json | json_query(rhcos_qemu_sha_unzip_key) }}"
     rhcos_sha256: "{{ rhcos_json | json_query(rhcos_openstack_sha_key) }}"
   vars:
