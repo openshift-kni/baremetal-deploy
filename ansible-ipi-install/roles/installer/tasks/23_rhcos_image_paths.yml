@@ -1,29 +1,59 @@
 ---
-- name: Get COMMIT_ID
-  shell: |
-    /usr/local/bin/openshift-baremetal-install version | grep '^built from commit' | awk '{print $4}'
-  register: commit_id
-  tags: rhcospath
+- name: RHCOS image path (pre 4.8)
+  block:
+    - name: Get COMMIT_ID
+      shell: |
+        /usr/local/bin/openshift-baremetal-install version | grep '^built from commit' | awk '{print $4}'
+      register: commit_id
+      tags: rhcospath
 
-- name: Get the URLs
-  set_fact:
-    offline_url: "{{ webserver_url }}/{{ version }}/rhcos.json"
-    online_url: "https://raw.githubusercontent.com/openshift/installer/{{ commit_id.stdout }}/data/data/rhcos.json"
+    - name: Get the URLs
+      set_fact:
+        offline_url: "{{ webserver_url }}/{{ version }}/rhcos.json"
+        online_url: "https://raw.githubusercontent.com/openshift/installer/{{ commit_id.stdout }}/data/data/rhcos.json"
 
-- name: Get RHCOS JSON File
-  uri:
-    url: "{{ (disconnected_installer|length == 0 and the_url.status == -1) | ternary(offline_url, online_url) }}"
-    return_content: yes
-  until: rhcos_json.status == 200
-  retries: 6 # 1 minute (10 * 6)
-  delay: 10 # Every 10 seconds
-  register: rhcos_json
-  delegate_to: "{{ disconnected_installer | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
-  tags: rhcospath
+    - name: Get RHCOS JSON File
+      uri:
+        url: "{{ (disconnected_installer|length == 0 and the_url.status == -1) | ternary(offline_url, online_url) }}"
+        return_content: yes
+      until: rhcos_json.status == 200
+      retries: 6 # 1 minute (10 * 6)
+      delay: 10 # Every 10 seconds
+      register: rhcos_json
+      delegate_to: "{{ disconnected_installer | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
+      tags: rhcospath
 
-- name: Set Facts for RHCOS_URI and RHCOS_PATH
-  set_fact:
-    rhcos_qemu_uri: "{{ rhcos_json.json | json_query('images.qemu.path') }}"
-    rhcos_uri: "{{ rhcos_json.json | json_query('images.openstack.path') }}"
-    rhcos_path: "{{ rhcos_json.json | json_query('baseURI') }}"
-  tags: rhcospath
+    - name: Set Facts for RHCOS_URI and RHCOS_PATH
+      set_fact:
+        rhcos_qemu_uri: "{{ rhcos_json.json | json_query('images.qemu.path') }}"
+        rhcos_uri: "{{ rhcos_json.json | json_query('images.openstack.path') }}"
+        rhcos_path: "{{ rhcos_json.json | json_query('baseURI') }}"
+      tags: rhcospath
+  when: (release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int <= 7)
+
+- name: RHCOS image path (4.8+)
+  block:
+    - name: Extract rhcos.json
+      shell: |
+        /usr/local/bin/openshift-baremetal-install coreos print-stream-json
+      register: rhcos_json_stream
+      retries: 3
+      delay: 10
+      until: rhcos_json_stream is not failed
+      tags: rhcospath
+
+    - name: Set rhcos_json fact
+      set_fact:
+        rhcos_json: "{{ rhcos_json_stream.stdout | from_json }}"
+      tags: rhcospath
+
+    - name: Set Facts for RHCOS_URI and RHCOS_PATH
+      set_fact:
+        rhcos_qemu_uri: "{{ rhcos_json | json_query(rhcos_qemu_key) | basename }}"
+        rhcos_path: "{{ rhcos_json | json_query(rhcos_qemu_key) | dirname + '/' }}"
+        rhcos_uri: "{{ rhcos_json | json_query(rhcos_openstack_key) | basename }}"
+      vars:
+        rhcos_qemu_key: 'architectures.x86_64.artifacts.qemu.formats."qcow2.gz".disk.location'
+        rhcos_openstack_key: 'architectures.x86_64.artifacts.openstack.formats."qcow2.gz".disk.location'
+      tags: rhcospath
+  when: (release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 8)

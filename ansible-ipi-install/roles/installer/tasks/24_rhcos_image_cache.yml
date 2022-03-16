@@ -83,12 +83,25 @@
   tags: cache
 
 # rhcos_json fact already set in 23_rhcos_image_paths.yaml
-- name: Set facts for RHCOS_QEMU_SHA256 and RHCOS_SHA256
+- name: Set facts for RHCOS_QEMU_SHA256 and RHCOS_SHA256 (pre 4.8)
   set_fact:
     rhcos_qemu_sha256: "{{ rhcos_json.json | json_query('images.qemu.sha256') }}"
     rhcos_qemu_sha256_unzipped: '{{ rhcos_json.json | json_query(''images.qemu."uncompressed-sha256"'') }}'
     rhcos_sha256: "{{ rhcos_json.json | json_query('images.openstack.sha256') }}"
   tags: cache
+  when: (release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int <= 7)
+
+- name: Set facts for RHCOS_QEMU_SHA256 and RHCOS_SHA256 (4.8+)
+  set_fact:
+    rhcos_qemu_sha256: "{{ rhcos_json | json_query(rhcos_qemu_sha_key) }}"
+    rhcos_qemu_sha256_unzipped: "{{ rhcos_json | json_query(rhcos_qemu_sha_unzip_key) }}"
+    rhcos_sha256: "{{ rhcos_json | json_query(rhcos_openstack_sha_key) }}"
+  vars:
+    rhcos_qemu_sha_key: 'architectures.x86_64.artifacts.qemu.formats."qcow2.gz".disk.sha256'
+    rhcos_qemu_sha_unzip_key: 'architectures.x86_64.artifacts.qemu.formats."qcow2.gz".disk."uncompressed-sha256"'
+    rhcos_openstack_sha_key: 'architectures.x86_64.artifacts.openstack.formats."qcow2.gz".disk.sha256'
+  tags: cache
+  when: (release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 8)
 
 - name: Download {{ rhcos_qemu_uri }} for cache
   get_url:
