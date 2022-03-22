@@ -33,6 +33,9 @@ networking:
   - 172.30.0.0/16
   - fd03::/112
 {% endif %}
+{% if fips_enabled is defined and fips_enabled|bool %}
+fips: true
+{% endif %}
 compute:
 - name: worker
   replicas: {{ numworkers }}
