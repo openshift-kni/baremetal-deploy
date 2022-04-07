@@ -254,6 +254,18 @@
     - not drm_set
     - registry_host_exists
 
+- name: Debug delegate_to for Get Release.txt file invocation
+  vars:
+    msg: |
+        delegate_to: {{ (not dra_set and not drm_set and registry_host_exists) | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}
+        dra_set: {{ dra_set }}
+        drm_set: {{ drm_set }}
+        registry_host_exists: {{ registry_host_exists }}
+        groups_registry_host: {{ groups['registry_host'][0] }}
+        groups_provisioner: {{ groups['provisioner'][0] }}
+  debug:
+    msg: "{{ msg.split('\n') }}"
+
 - name: Get Release.txt File
   uri:
     url: "{{ release_url }}/{{ version }}/release.txt"
