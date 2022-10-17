@@ -94,7 +94,7 @@ Make sure in the file above you change <bootstrapProvisioningIp> with the value 
 +
 [source,terminal]
 ----
-[root@1facad6bccff /]# openstack baremetal node list
+[root@1facad6bccff /]# baremetal node list
 ----
 +
 
