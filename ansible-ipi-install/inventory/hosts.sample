@@ -169,7 +169,7 @@ pullsecret=""
 # (Optional) Change the boot mode of the OpenShift cluster nodes to legacy mode (BIOS). Default is UEFI.
 #bootmode=legacy
 
-# Master nodes
+# Master/Worker nodes
 # The hardware_profile is used by the baremetal operator to match the hardware discovered on the host
 # See https://github.com/metal3-io/baremetal-operator/blob/master/docs/api.md#baremetalhost-status
 # ipmi_port is optional for each host. 623 is the common default used if omitted
@@ -181,6 +181,11 @@ pullsecret=""
 # Root Device Hint values are case sensitive. If incorrect case given, entry omitted from install-config.yaml
 # root_device_hint="deviceName"
 # root_device_hint_value="/dev/sda"
+ 
+# (Optional) Modify the path to set custom networking configuration with NMState to the deployed nodes
+# The following variable allows to pass the networkConfig settings from YAML files in NMstate format:
+# master_network_config_file="/path/to/your/master_nmstate_file.yaml"
+# worker_network_config_file="/path/to/your/worker_nmstate_file.yaml"
 
 [masters]
 master-0 name=master-0 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.1 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:58 hardware_profile=default poweroff=true

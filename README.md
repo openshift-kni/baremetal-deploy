@@ -14,8 +14,8 @@ It also contains optional features focused on low-latency workloads, NFV workloa
 - [Performance](features/performance/). Performance-related features like Hugepages, real-time kernel, CPU Manager and Topology Manager.
 - [Bonding](features/bonding/). A helper script to create bonding devices with ignition and/or NMstate.
 - [DPDK](features/dpdk/). Example workload that uses DPDK libraries for packet processing.
-- [Kubernetes NMstate](features/kubernetes-nmstate/). Node-networking configuration driven by Kubernetes and executed
-  by NMstate.
+- [Kubernetes NMstate](features/kubernetes-nmstate/). Node-networking configuration driven by Kubernetes and executed by NMstate.
+- [Kubernetes NMstate day1](features/kubernetes-nmstate/day1/). Node-networking configuration driven by Kubernetes and executed by NMstate during the deployment of a cluster, by adding settings to install-config.yaml
 - [PTP](features/ptp). This operator manages cluster-wide Precision Time Protocol (PTP) configuration.
 - [SCTP](features/sctp). These assets enable Stream Control Transmission Protocol (SCTP) in the RHCOS
   worker nodes.

@@ -479,3 +479,23 @@
   tags:
   - always
   - validation
+
+- name: "Set rendered_master_nmstate_yml from raw value for master nodes"
+  set_fact:
+    rendered_master_nmstate_yml: "{{ master_network_config_raw | to_yaml | trim }}"
+  when: master_network_config_raw is defined
+
+- name: "Set rendered_master_nmstate_yml from file for master nodes"
+  set_fact:
+    rendered_master_nmstate_yml: "{{ lookup('file', master_network_config_file) }}"
+  when: master_network_config_file is defined
+
+- name: "Set rendered_worker_nmstate_yml from raw value for worker nodes"
+  set_fact:
+    rendered_master_nmstate_yml: "{{ worker_network_config_raw | to_yaml | trim }}"
+  when: worker_network_config_raw is defined
+
+- name: "Set rendered_worker_nmstate_yml from file for worker nodes"
+  set_fact:
+    rendered_master_nmstate_yml: "{{ lookup('file', worker_network_config_file) }}"
+  when: worker_network_config_file is defined
