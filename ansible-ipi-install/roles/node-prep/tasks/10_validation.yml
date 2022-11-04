@@ -497,5 +497,5 @@
 
 - name: "Set rendered_worker_nmstate_yml from file for worker nodes"
   set_fact:
-    rendered_master_nmstate_yml: "{{ lookup('file', worker_network_config_file) }}"
+    rendered_worker_nmstate_yml: "{{ lookup('file', worker_network_config_file) }}"
   when: worker_network_config_file is defined
