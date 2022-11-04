@@ -492,7 +492,7 @@
 
 - name: "Set rendered_worker_nmstate_yml from raw value for worker nodes"
   set_fact:
-    rendered_master_nmstate_yml: "{{ worker_network_config_raw | to_yaml | trim }}"
+    rendered_worker_nmstate_yml: "{{ worker_network_config_raw | to_yaml | trim }}"
   when: worker_network_config_raw is defined
 
 - name: "Set rendered_worker_nmstate_yml from file for worker nodes"
