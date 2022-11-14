@@ -55,7 +55,7 @@
         - prov_network is defined and prov_network
 
     - name: Create Bridge labeled provisioning bridge ipv4
-      nmcli:
+      community.general.nmcli:
         conn_name: "{{ provisioning_bridge }}"
         type: bridge
         ifname: "{{ provisioning_bridge }}"
