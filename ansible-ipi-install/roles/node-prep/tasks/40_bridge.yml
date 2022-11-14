@@ -62,6 +62,7 @@
         autoconnect: yes
         ip4_method: manual
         ip6_method: disabled
+        addr_gen_mode6: eui64
         stp: off
         ip4: "{{ prov_bridge_ip | default('172.22.0.1/21') }}"
         state: present
