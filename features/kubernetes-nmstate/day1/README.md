@@ -130,7 +130,7 @@ routes:
 
 
 Finally in your inventory you can add variables per node, and they will be rendered from the templates provided. In this example `static_ip` variable will be rendered per node of each role, but you can include more variables if desired.
-```json
+```
 [masters]
 master-0 name=master-0 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.1 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:58 static_ip="192.168.0.11/24"
 master-1 name=master-1 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.2 ipmi_port=623 provision_mac=ec:f4:bb:da:32:88 static_ip="192.168.0.12/24"
@@ -140,4 +140,4 @@ master-2 name=master-2 role=master ipmi_user=admin ipmi_password=password ipmi_a
 [workers]
 worker-0 name=worker-0 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.4 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:18 static_ip="192.168.0.14/24"
 worker-1 name=worker-1 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.5 ipmi_port=623 provision_mac=ec:f4:bb:da:32:28 static_ip="192.168.0.15/24"
-----
+```
