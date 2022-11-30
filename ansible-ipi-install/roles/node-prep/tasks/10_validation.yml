@@ -495,7 +495,7 @@
     msg: "Variable master_network_config_template is defined but path does not exists"
   when:
     - master_network_config_template is defined
-    - not master_nm_template.exists|bool
+    - not master_nm_template.stat.exists|bool
   tags:
   - always
   - validation
@@ -515,7 +515,7 @@
     msg: "Variable worker_network_config_template is defined but path does not exists"
   when:
     - worker_network_config_template is defined
-    - not worker_nm_template.exists|bool
+    - not worker_nm_template.stat.exists|bool
   tags:
   - always
   - validation
