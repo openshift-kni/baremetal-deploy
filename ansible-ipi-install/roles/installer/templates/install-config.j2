@@ -104,9 +104,9 @@ platform:
 {% endif %}
 {% endif %}
 {% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 10)) %}
-{% if rendered_master_nmstate_yml is defined and rendered_master_nmstate_yml|length %}
+{% if master_network_config_template is defined %}
         networkConfig:
-{{ rendered_master_nmstate_yml | indent(10, true) }}
+{{ lookup('template', master_network_config_template, template_vars=hostvars[host]) | indent(10, true) }}
 {% endif %}
 {% endif %}
 {% endfor %}
@@ -146,9 +146,9 @@ platform:
 {% endif %}
 {% endif %}
 {% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 10)) %}
-{% if rendered_worker_nmstate_yml is defined and rendered_worker_nmstate_yml|length %}
+{% if worker_network_config_template is defined %}
         networkConfig:
-{{ rendered_worker_nmstate_yml | indent(10, true) }}
+{{ lookup('template', worker_network_config_template, template_vars=hostvars[host]) | indent(10, true) }}
 {% endif %}
 {% endif %}
 {% endfor %}

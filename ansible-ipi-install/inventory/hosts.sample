@@ -183,9 +183,10 @@ pullsecret=""
 # root_device_hint_value="/dev/sda"
  
 # (Optional) Modify the path to set custom networking configuration with NMState to the deployed nodes
-# The following variable allows to pass the networkConfig settings from YAML files in NMstate format:
-# master_network_config_file="/path/to/your/master_nmstate_file.yaml"
-# worker_network_config_file="/path/to/your/worker_nmstate_file.yaml"
+# The following variable allows to pass the networkConfig settings from YAML files in NMstate format
+# The files can include jinja format and render defined variables from master/worker nodes
+# master_network_config_template="/path/to/your/master_nmstate_file.yaml"
+# worker_network_config_template="/path/to/your/worker_nmstate_file.yaml"
 
 [masters]
 master-0 name=master-0 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.1 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:58 hardware_profile=default poweroff=true

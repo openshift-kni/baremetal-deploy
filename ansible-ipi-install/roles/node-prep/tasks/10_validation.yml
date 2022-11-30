@@ -480,22 +480,42 @@
   - always
   - validation
 
-- name: "Set rendered_master_nmstate_yml from raw value for master nodes"
-  set_fact:
-    rendered_master_nmstate_yml: "{{ master_network_config_raw | to_yaml | trim }}"
-  when: master_network_config_raw is defined
+- name: Verify if master_network_config_template is defined and exists
+  stat:
+    path: "{{ master_network_config_template }}"
+    get_checksum: false
+  register: master_nm_template
+  when: master_network_config_template is defined
+  tags:
+  - always
+  - validation
 
-- name: "Set rendered_master_nmstate_yml from file for master nodes"
-  set_fact:
-    rendered_master_nmstate_yml: "{{ lookup('file', master_network_config_file) }}"
-  when: master_network_config_file is defined
+- name: Fail when master_network_config_template is defined but not exists
+  fail:
+    msg: "Variable master_network_config_template is defined but path does not exists"
+  when:
+    - master_network_config_template is defined
+    - not master_nm_template.exists|bool
+  tags:
+  - always
+  - validation
 
-- name: "Set rendered_worker_nmstate_yml from raw value for worker nodes"
-  set_fact:
-    rendered_worker_nmstate_yml: "{{ worker_network_config_raw | to_yaml | trim }}"
-  when: worker_network_config_raw is defined
+- name: Verify if worker_network_config_template is defined and exists
+  stat:
+    path: "{{ worker_network_config_template }}"
+    get_checksum: false
+  register: worker_nm_template
+  when: worker_network_config_template is defined
+  tags:
+  - always
+  - validation
 
-- name: "Set rendered_worker_nmstate_yml from file for worker nodes"
-  set_fact:
-    rendered_worker_nmstate_yml: "{{ lookup('file', worker_network_config_file) }}"
-  when: worker_network_config_file is defined
+- name: Fail when worker_network_config_template is defined but not exists
+  fail:
+    msg: "Variable worker_network_config_template is defined but path does not exists"
+  when:
+    - worker_network_config_template is defined
+    - not worker_nm_template.exists|bool
+  tags:
+  - always
+  - validation

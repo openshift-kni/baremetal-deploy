@@ -6,7 +6,7 @@
 
 = Modifying the `install-config.yaml` file to add network config with NMstate at day1 (optional)
 
-1. To deploy an {product-title} cluster with NMstate network config, create an NMState YAML file `nmstate_yaml_file` file.
+1. To deploy an {product-title} cluster with NMstate network config, create an NMState YAML file `nmstate_yaml_file`.
 
 [source,yaml]
 ----
