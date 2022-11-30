@@ -2,7 +2,7 @@ When using [baremetal_repo](https://github.com/openshift-kni/baremetal-deploy) r
 
 1) Set `master_network_config_template` and `worker_network_config_template` variables pointing to a path to your desired configuration:
 
-include the following ansible extra-variables in your deployment:
+include the following ansible extra-variables in your deployment. The files need to be located in the Ansible controller server:
 
 ```yaml
 master_network_config_template: "/path/to/your/master_nmstate_file.yaml"

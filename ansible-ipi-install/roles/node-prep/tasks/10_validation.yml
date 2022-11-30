@@ -485,6 +485,7 @@
     path: "{{ master_network_config_template }}"
     get_checksum: false
   register: master_nm_template
+  delegate_to: localhost
   when: master_network_config_template is defined
   tags:
   - always
@@ -505,6 +506,7 @@
     path: "{{ worker_network_config_template }}"
     get_checksum: false
   register: worker_nm_template
+  delegate_to: localhost
   when: worker_network_config_template is defined
   tags:
   - always
