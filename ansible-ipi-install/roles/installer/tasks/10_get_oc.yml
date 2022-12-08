@@ -10,7 +10,7 @@
 - name: Find any old tmp dirs with OpenShift related binaries
   find:
     paths: /tmp
-    patterns: 'ansible.*'
+    patterns: "baremetal-deploy.*"
     file_type: directory
   register: tmp_results
   tags:
@@ -48,6 +48,7 @@
 - name: Create tmp directory to store OpenShift binaries
   tempfile:
     state: directory
+    prefix: "baremetal-deploy."
     suffix: "{{ release_version }}"
   register: tempdiroutput
   tags: getoc
@@ -60,6 +61,7 @@
 - name: Create tmp directory to store OpenShift binaries on registry host
   tempfile:
     state: directory
+    prefix: "baremetal-deploy."
     suffix: "{{ release_version }}"
   register: registryhost_tempdir
   when: registry_creation|bool
