@@ -8,13 +8,13 @@
   file:
     path: "{{ item }}"
     state: directory
-    recurse: yes
+    recurse: true
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
   with_items:
-  - "{{ dir }}/openshift"
-  - "{{ dir }}/manifests"
+    - "{{ dir }}/openshift"
+    - "{{ dir }}/manifests"
   tags: manifests
 
 - name: Copy the metal3-config.yaml to {{ dir }}/openshift directory
@@ -24,6 +24,6 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
-    remote_src: yes
+    remote_src: true
   when: (release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int <= 3)
   tags: manifests

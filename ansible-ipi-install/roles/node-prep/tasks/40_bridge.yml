@@ -6,7 +6,7 @@
         nmcli device show {{ prov_nic }} | grep GENERAL.CONNECTION | awk '{sub(/[^ ]+[ ]+/,"")}1'
       register: prov_con_name
       when:
-      - not enable_virtualmedia|bool
+        - not enable_virtualmedia|bool
 
     - name: Get the public connection name
       shell: |
@@ -16,9 +16,9 @@
     - name: Disconnect provisioning bridge connection
       command: |
         nmcli dev dis "{{ provisioning_bridge }}"
-      ignore_errors: yes
+      ignore_errors: true
       when:
-      - not enable_virtualmedia|bool
+        - not enable_virtualmedia|bool
 
     - name: Delete {{ prov_con_name.stdout }} due to modify nmcli bug
       nmcli:
@@ -26,8 +26,8 @@
         type: ethernet
         state: absent
       when:
-      - not enable_virtualmedia|bool
-      - prov_con_name.stdout != '--'
+        - not enable_virtualmedia|bool
+        - prov_con_name.stdout != '--'
 
     - name: Delete {{ prov_nic }} due to modify nmcli bug
       nmcli:
@@ -38,15 +38,15 @@
         - "{{ prov_nic }}"
         - "System {{ prov_nic }}"
       when:
-      - not enable_virtualmedia|bool
-      - prov_con_name.stdout != '--'
+        - not enable_virtualmedia|bool
+        - prov_con_name.stdout != '--'
 
     - name: Delete provisioning bridge if it exists
       nmcli:
         conn_name: "{{ provisioning_bridge }}"
         state: absent
       when:
-      - not enable_virtualmedia|bool
+        - not enable_virtualmedia|bool
 
     - name: set provisioning network fact
       set_fact:
@@ -59,10 +59,10 @@
         conn_name: "{{ provisioning_bridge }}"
         type: bridge
         ifname: "{{ provisioning_bridge }}"
-        autoconnect: yes
+        autoconnect: true
         ip4_method: manual
         ip6_method: disabled
-        stp: off
+        stp: false
         ip4: "{{ prov_bridge_ip | default('172.22.0.1/21') }}"
         state: present
       when: (not enable_virtualmedia) and
@@ -73,10 +73,10 @@
       nmcli:
         conn_name: "{{ prov_nic }}"
         type: bridge-slave
-        hairpin: no
+        hairpin: false
         ifname: "{{ prov_nic }}"
         master: "{{ provisioning_bridge }}"
-        autoconnect: yes
+        autoconnect: true
         state: present
       when: (not enable_virtualmedia) and
             ((ipv4_provisioning|bool) or (not ipv6_enabled|bool) or
@@ -87,8 +87,8 @@
         conn_name: "{{ provisioning_bridge }}"
         type: bridge
         ifname: "{{ provisioning_bridge }}"
-        autoconnect: yes
-        stp: off
+        autoconnect: true
+        stp: false
         ip6: fd00:1101::1/64
         state: present
         ip4_method: disabled
@@ -104,10 +104,10 @@
       nmcli:
         conn_name: "{{ prov_nic }}"
         type: bridge-slave
-        hairpin: no
+        hairpin: false
         ifname: "{{ prov_nic }}"
         master: "{{ provisioning_bridge }}"
-        autoconnect: yes
+        autoconnect: true
         state: present
       when:
         - not enable_virtualmedia|bool
@@ -121,8 +121,8 @@
         conn_name: "{{ baremetal_bridge }}"
         type: bridge
         ifname: "{{ baremetal_bridge }}"
-        autoconnect: yes
-        stp: off
+        autoconnect: true
+        stp: false
         state: present
       when: (not ipv6_enabled|bool) or
             (ipv4_baremetal|bool)
@@ -132,8 +132,8 @@
         conn_name: "{{ baremetal_bridge }}"
         type: bridge
         ifname: "{{ baremetal_bridge }}"
-        autoconnect: yes
-        stp: off
+        autoconnect: true
+        stp: false
         state: present
         ip6_dhcp_duid: ll
       when: ipv6_enabled|bool and not ipv4_baremetal|bool
@@ -142,11 +142,11 @@
       nmcli:
         conn_name: "{{ pub_con_name.stdout }}"
         type: bridge-slave
-        hairpin: no
+        hairpin: false
         id: "{{ pub_nic }}"
         ifname: "{{ pub_nic }}"
         master: "{{ baremetal_bridge }}"
-        autoconnect: yes
+        autoconnect: true
         state: present
 
     - name: Reload {{ baremetal_bridge }} bridge and slave interfaces
@@ -164,5 +164,5 @@
         - "{{ prov_nic }}"
       when:
         - not enable_virtualmedia|bool
-  become: yes
+  become: true
   tags: network

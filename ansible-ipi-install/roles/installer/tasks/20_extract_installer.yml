@@ -6,21 +6,21 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
-    force: yes
+    force: true
   tags:
-  - pullsecret
-  - extract
+    - pullsecret
+    - extract
 
 - name: Get the PullSecret from provisioner into temp file on control machine
   fetch:
     dest: /tmp/
-    flat: yes
+    flat: true
     src: "{{ dir }}/pull-secret.txt"
   when:
     - registry_creation|bool
     - groups['registry_host'][0] != groups['provisioner'][0]
   tags:
-  - extract
+    - extract
 
 - name: Create config dir
   file:
@@ -34,7 +34,7 @@
     - groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: "{{ groups['registry_host'][0] }}"
   tags:
-  - extract
+    - extract
 
 - name: Copy the PullSecret from control machine to the registry host
   copy:
@@ -43,13 +43,13 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: 0755
-  become: yes
+  become: true
   when:
     - registry_creation|bool
     - groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: "{{ groups['registry_host'][0] }}"
   tags:
-  - extract
+    - extract
 
 - name: Remove the temporary copy of the PullSecret on control machine
   file:
@@ -60,27 +60,30 @@
     - groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: localhost
   tags:
-  - extract
+    - extract
 
 - name: Confirm whether or not internet connectivity on provisioner host
   uri:
     url: https://www.redhat.com
-    status_code: [-1,200]
+    status_code: [-1, 200]
     timeout: 1
   register: the_url
   tags:
-  - extract
+    - extract
 
 - name: Setting Fact of which ansible temp file to use
   set_fact:
     tempdir_loc: "{{ disconnected_installer | ternary(registry_host_tempdir, tempdir) }}"
   tags:
-  - extract
+    - extract
 
-#on my other system tempdir_loc required .path (in case you need to revert)
+# on my other system tempdir_loc required .path (in case you need to revert)
 - name: Extracting the installer
-  command: |
-          /usr/local/bin/oc adm release extract --registry-config {{ pullsecret_file | quote }} --command={{ cmd |quote }} --to {{ tempdir_loc }} {{ disconnected_installer | ternary(disconnected_installer, release_image) }}
+  command: >
+    /usr/local/bin/oc adm release extract
+    --registry-config {{ pullsecret_file | quote }}
+    --command={{ cmd |quote }}
+    --to {{ tempdir_loc }} {{ disconnected_installer | ternary(disconnected_installer, release_image) }}
   args:
     chdir: "{{ tempdir }}"
   when: (disconnected_installer|length or the_url.status == 200)
@@ -96,11 +99,14 @@
     - groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: "{{ groups['registry_host'][0] }}"
   tags:
-  - extract
+    - extract
 
-#- name: Extracting the installer
-#  shell: |
-#          /usr/local/bin/oc adm release extract --registry-config {{ pullsecret_file | quote }} --command={{ cmd |quote }} --to {{ tempdir | quote }} {{ disconnected_installer | ternary(disconnected_installer, release_image) }}
+# - name: Extracting the installer
+#   shell: >
+#     /usr/local/bin/oc adm release extract
+#     --registry-config {{ pullsecret_file | quote }}
+#     --command={{ cmd |quote }}
+#     --to {{ tempdir | quote }} {{ disconnected_installer | ternary(disconnected_installer, release_image) }}
 #  args:
 #    chdir: "{{ tempdir }}"
 #    executable: /bin/bash
@@ -112,31 +118,31 @@
     dest: "{{ tempdir }}/openshift-baremetal-install"
   when: (the_url.status == -1 and disconnected_installer|length == 0)
   tags:
-  - extract
+    - extract
 
 - name: Copy openshift-baremetal-install binary to /usr/local/bin
   copy:
-    #src: "{{ tempdir_loc.path }}/openshift-baremetal-install"
+    # src: "{{ tempdir_loc.path }}/openshift-baremetal-install"
     src: "{{ tempdir_loc }}/openshift-baremetal-install"
     dest: /usr/local/bin/
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
-    remote_src: yes
+    remote_src: true
   delegate_to: "{{ disconnected_installer | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
-  become: yes
+  become: true
   tags: extract
 
 - name: Get the openshift-baremetal-install from registry host into temp file on control machine
   fetch:
     dest: /tmp/
-    flat: yes
-    #src: "{{ tempdir_loc.path }}/openshift-baremetal-install"
+    flat: true
+    # src: "{{ tempdir_loc.path }}/openshift-baremetal-install"
     src: "{{ tempdir_loc }}/openshift-baremetal-install"
   when: registry_creation|bool
   delegate_to: "{{ groups['registry_host'][0] }}"
   tags:
-  - extract
+    - extract
 
 - name: Copy the openshift-baremetal-install binary from control machine to the provisioner host
   copy:
@@ -145,12 +151,12 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: 0755
-  become: yes
+  become: true
   when:
     - registry_creation|bool
     - groups['registry_host'][0] != groups['provisioner'][0]
   tags:
-  - extract
+    - extract
 
 - name: Remove the temporary copy of the openshift-baremetal-install binary on control machine
   file:
@@ -161,4 +167,4 @@
     - groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: localhost
   tags:
-  - extract
+    - extract

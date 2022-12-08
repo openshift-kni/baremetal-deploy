@@ -14,8 +14,8 @@
     file_type: directory
   register: tmp_results
   tags:
-  - cleanup
-  - getoc
+    - cleanup
+    - getoc
 
 - name: Delete any old tmp dirs with OpenShift related binaries
   file:
@@ -23,8 +23,8 @@
     state: absent
   loop: "{{ tmp_results['files'] }}"
   tags:
-  - cleanup
-  - getoc
+    - cleanup
+    - getoc
 
 - name: Find any existing /usr/local/bin OpenShift binaries
   find:
@@ -32,18 +32,18 @@
     patterns: 'oc,openshift-baremetal-install,kubectl'
   register: binary_results
   tags:
-  - cleanup
-  - getoc
+    - cleanup
+    - getoc
 
 - name: Remove any existing /usr/local/bin OpenShift binaries
   file:
     path: "{{ item['path'] }}"
     state: absent
   loop: "{{ binary_results['files'] }}"
-  become: yes
+  become: true
   tags:
-  - cleanup
-  - getoc
+    - cleanup
+    - getoc
 
 - name: Create tmp directory to store OpenShift binaries
   tempfile:
@@ -67,20 +67,20 @@
   when: registry_creation|bool
   delegate_to: "{{ groups['registry_host'][0] }}"
   tags:
-  - getoc
+    - getoc
 
 - name: Set fact for tmp directory on registry host
   set_fact:
     registry_host_tempdir: "{{ registryhost_tempdir.path }}"
   when: registry_creation|bool
   tags:
-  - getoc
+    - getoc
 
 - name: Setting Fact of which ansible temp file to use
   set_fact:
     temp_directory_loc: "{{ (registry_creation) | ternary(registry_host_tempdir, tempdir) }}"
   tags:
-  - getoc
+    - getoc
 
 - name: Get the ocp client tar gunzip file
   get_url:
@@ -92,17 +92,17 @@
   delegate_to: "{{ registry_creation | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
   tags: getoc
 
-#If the registry host got the tar, lets just copy it to the prov host
+# If the registry host got the tar, lets just copy it to the prov host
 # 15_disconnected_registry_create.yml can handle extracting to the registry host already
 - name: Get the openshift-client-linux-{{ release_version }}.tar.gz from registry host into temp file on control machine
   fetch:
     dest: /tmp/
-    flat: yes
+    flat: true
     src: "{{ temp_directory_loc }}/openshift-client-linux-{{ release_version }}.tar.gz"
   when: registry_creation|bool
   delegate_to: "{{ groups['registry_host'][0] }}"
   tags:
-  - getoc
+    - getoc
 
 - name: Copy the openshift-client-linux-{{ release_version }}.tar.gz from control machine to the provisioner host
   copy:
@@ -111,10 +111,10 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: 0755
-  become: yes
+  become: true
   when: registry_creation|bool
   tags:
-  - getoc
+    - getoc
 
 - name: Remove the temporary copy of the openshift-client-linux-{{ release_version }}.tar.gz on control machine
   file:
@@ -123,7 +123,7 @@
   when: registry_creation|bool
   delegate_to: localhost
   tags:
-  - getoc
+    - getoc
 
 - name: "Untar the openshift-client-linux-{{ release_version }}.tar.gz"
   unarchive:
@@ -132,7 +132,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
-    remote_src: yes
+    remote_src: true
   tags: getoc
 
 - name: Copy oc binary to /usr/local/bin
@@ -142,8 +142,8 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0755'
-    remote_src: yes
-  become: yes
+    remote_src: true
+  become: true
   loop:
     - kubectl
     - oc

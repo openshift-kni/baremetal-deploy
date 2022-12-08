@@ -5,9 +5,9 @@
     org_id: "{{ org_id }}"
     state: present
     pool: '^(Red Hat Enterprise Linux Server, Standard (8 sockets) (Unlimited guests))$'
-    force_register: yes
-  ignore_errors: yes
-  become: yes
+    force_register: true
+  ignore_errors: true
+  become: true
   when:
     - activation_key != ""
     - org_id != ""

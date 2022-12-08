@@ -11,7 +11,7 @@
     - name: Check if the {{ disconnected_registry_mirrors_file }} exists
       fail:
         msg:
-        - "The disconnected_registry_mirrors_file is defined, but does not exist"
+          - "The disconnected_registry_mirrors_file is defined, but does not exist"
       when: drm_file.stat.exists != true
 
     - name: Read the contents of {{ disconnected_registry_mirrors_file }}
@@ -33,7 +33,7 @@
     - name: Check if the {{ disconnected_registry_auths_file }} exists
       fail:
         msg:
-        - "The disconnected_registry_auths_file is defined, but does not exist"
+          - "The disconnected_registry_auths_file is defined, but does not exist"
       when: dra_file.stat.exists != true
 
     - name: Read disconnected auths

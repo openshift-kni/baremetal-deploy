@@ -17,13 +17,13 @@
     - disconnected_registry is defined
     - disconnected_registry == "create"
   tags:
-  - disconnected
-  - create_registry
+    - disconnected
+    - create_registry
 
 - include_tasks: 20_extract_installer.yml
   tags:
-  - pullsecret
-  - extract
+    - pullsecret
+    - extract
 - include_tasks: 23_rhcos_image_paths.yml
   when: ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int <= 3)) or cache_enabled|bool
   tags: rhcospath
@@ -49,5 +49,5 @@
   tags: powerservers
 - include_tasks: 60_deploy_ocp.yml
   tags: install
-#- include_tasks: 70_cleanup_sub_man_registration.yml
+# - include_tasks: 70_cleanup_sub_man_registration.yml
 #  tags: unregister

@@ -6,14 +6,14 @@
 - name: Confirm whether or not internet connectivity on provisioner host
   uri:
     url: https://www.redhat.com
-    status_code: [-1,200]
+    status_code: [-1, 200]
     timeout: 1
   register: the_url
   tags: cache
 
 - name: Check if url status is 200 is true
   set_fact:
-   url_passed : true
+    url_passed: true
   when:
     - the_url.status == 200
   tags: cache
@@ -42,9 +42,9 @@
     verbosity: 2
   tags: cache
 
-#if i made it this far to create a webserver, one of the hosts needs online access
-#if disconnected_installer is true use the registry host as it indeed does have access
-#if not true use the provision host but only do that when: the_url.status == 200
+# if i made it this far to create a webserver, one of the hosts needs online access
+# if disconnected_installer is true use the registry host as it indeed does have access
+# if not true use the provision host but only do that when: the_url.status == 200
 - name: Fail when provision host no online access and registry host not creating registry (can't assume access)
   fail:
     msg: A host with online access is required to create cache webserver (provision host or a registry host)
@@ -53,9 +53,9 @@
     - disconnected_installer|length == 0
   tags: cache
 
-#SELinux when already has httpd_sys_content_t giving issues changing,thus leaving it the same
-#for the provision_cache_store to prevent issues. Also removing ":z" from podman_container for
-#provision_cache_store in the later task.
+# SELinux when already has httpd_sys_content_t giving issues changing,thus leaving it the same
+# for the provision_cache_store to prevent issues. Also removing ":z" from podman_container for
+# provision_cache_store in the later task.
 - name: Create {{ provision_cache_store }} and {{ httpd_cache_files }} on host with online access
   file:
     path: "{{ item[0] }}"
@@ -65,8 +65,8 @@
     setype: "{{ item[1] }}"
     mode: '0775'
   with_nested:
-    - [ "{{ provision_cache_store }}" , "{{ httpd_cache_files }}" ]
-    - [ 'httpd_sys_content_t', '_default' ]
+    - ["{{ provision_cache_store }}", "{{ httpd_cache_files }}"]
+    - ['httpd_sys_content_t', '_default']
   delegate_to: "{{ url_passed | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
   tags: cache
 
@@ -77,8 +77,8 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
   with_nested:
-    - [ 'magic.j2', 'httpd_conf.j2' ]
-    - [ 'magic', 'httpd.conf' ]
+    - ['magic.j2', 'httpd_conf.j2']
+    - ['magic', 'httpd.conf']
   delegate_to: "{{ url_passed | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
   tags: cache
 
@@ -105,7 +105,7 @@
 
 - name: Download {{ rhcos_qemu_uri }} for cache
   get_url:
-    url:  "{{ rhcos_path }}{{ rhcos_qemu_uri }}"
+    url: "{{ rhcos_path }}{{ rhcos_qemu_uri }}"
     dest: "{{ provision_cache_store }}{{ rhcos_qemu_uri }}"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
@@ -119,7 +119,7 @@
 
 - name: Download {{ rhcos_uri }} for cache
   get_url:
-    url:  "{{ rhcos_path }}{{ rhcos_uri }}"
+    url: "{{ rhcos_path }}{{ rhcos_uri }}"
     dest: "{{ provision_cache_store }}{{ rhcos_uri }}"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
@@ -131,9 +131,9 @@
   delegate_to: "{{ url_passed | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
   tags: cache
 
-  #use the hostname from the inventory to groups[registry][0] or provisioner[0] as the http://URL
-  #use a ternary to toggle between the url status
-  #use a ternary for the delegate_to
+  # use the hostname from the inventory to groups[registry][0] or provisioner[0] as the http://URL
+  # use a ternary to toggle between the url status
+  # use a ternary for the delegate_to
 - name: Get URL of host providing the webserver
   set_fact:
     host_url: "{{ the_url.status == 200 | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
@@ -163,10 +163,10 @@
     msg: "{{ clusterosimage }}"
     verbosity: 2
 
-#Leaving SELinux details alone and not using ":z"
-#for the provision_cache_store due to issues attempting
-#to revert context. Leaving behavior as it was previously
-#to avoid breaking other user environments.
+# Leaving SELinux details alone and not using ":z"
+# for the provision_cache_store due to issues attempting
+# to revert context. Leaving behavior as it was previously
+# to avoid breaking other user environments.
 - name: Start RHCOS image cache container
   containers.podman.podman_container:
     name: rhcos_image_cache
@@ -189,7 +189,7 @@
 - name: Ensuring container restarts upon reboot
   block:
     - name: Ensure user specific systemd instance are persistent
-      command:  |
+      command: |
               /usr/bin/loginctl enable-linger {{ ansible_user }}
 
     - name: Create systemd user directory
@@ -221,14 +221,14 @@
 
     - name: Reload systemd service
       systemd:
-        daemon_reexec: yes
+        daemon_reexec: true
         scope: user
       environment:
         DBUS_SESSION_BUS_ADDRESS: "{{ ansible_env.DBUS_SESSION_BUS_ADDRESS|default('unix:path=/run/user/' +  ansible_effective_user_id|string + '/bus') }}"
     - name: Enable container-cache.service
       systemd:
         name: container-cache.service
-        enabled: yes
+        enabled: true
         scope: user
       environment:
         DBUS_SESSION_BUS_ADDRESS: "{{ ansible_env.DBUS_SESSION_BUS_ADDRESS|default('unix:path=/run/user/' +  ansible_effective_user_id|string + '/bus') }}"

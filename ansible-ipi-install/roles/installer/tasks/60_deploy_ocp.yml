@@ -26,7 +26,7 @@
         /usr/local/bin/openshift-baremetal-install --dir {{ dir }} --log-level debug create cluster
       async: 3600
       poll: 0
-      ignore_errors: yes
+      ignore_errors: true
       register: installer_result
 
     - name: Wait for kubeconfig file

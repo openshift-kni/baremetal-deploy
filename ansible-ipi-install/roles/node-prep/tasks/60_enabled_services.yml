@@ -3,20 +3,20 @@
   service:
     name: "{{ item }}"
     state: restarted
-    enabled: yes
-  become: yes
+    enabled: true
+  become: true
   with_items:
-  - libvirtd
+    - libvirtd
   tags: services
 
 - name: Enable Services (iptables)
   service:
     name: "{{ item }}"
     state: restarted
-    enabled: yes
-  become: yes
+    enabled: true
+  become: true
   with_items:
-  - "{{ firewall }}"
+    - "{{ firewall }}"
   tags: services
   when: firewall == "iptables"
 
@@ -24,9 +24,9 @@
   service:
     name: "{{ item }}"
     state: started
-    enabled: yes
-  become: yes
+    enabled: true
+  become: true
   with_items:
-  - "{{ firewall }}"
+    - "{{ firewall }}"
   tags: services
   when: firewall != "iptables"
