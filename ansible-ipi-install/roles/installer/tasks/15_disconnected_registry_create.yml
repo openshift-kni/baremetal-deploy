@@ -2,7 +2,7 @@
 - name: Find any old tmp dirs with OpenShift related binaries on registry host
   find:
     paths: /tmp
-    patterns: 'ansible.*'
+    patterns: "baremetal-deploy.*"
     file_type: directory
   register: registry_tmp_results
   when: groups['registry_host'][0] != groups['provisioner'][0]
@@ -75,6 +75,7 @@
 - name: Create tmp directory to store OpenShift binaries on registry host
   tempfile:
     state: directory
+    prefix: "baremetal-deploy."
     suffix: "{{ release_version }}"
   register: registry_tempdir
   delegate_to: "{{ groups['registry_host'][0] }}"
