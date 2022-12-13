@@ -2,13 +2,11 @@
 filters:
   ".*":
     reviewers:
-      - directedsoul1
-      - iranzo
+      - derekhiggins
     approvers:
       - derekhiggins
       - rlopez133
       - iranzo
-      - directedsoul1
 
   "^documentation/.*":
     labels:
