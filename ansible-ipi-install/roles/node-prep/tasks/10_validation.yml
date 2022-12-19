@@ -479,3 +479,45 @@
   tags:
   - always
   - validation
+
+- name: Verify if master_network_config_template is defined and exists
+  stat:
+    path: "{{ master_network_config_template }}"
+    get_checksum: false
+  register: master_nm_template
+  delegate_to: localhost
+  when: master_network_config_template is defined
+  tags:
+  - always
+  - validation
+
+- name: Fail when master_network_config_template is defined but not exists
+  fail:
+    msg: "Variable master_network_config_template is defined but path does not exists"
+  when:
+    - master_network_config_template is defined
+    - not master_nm_template.stat.exists|bool
+  tags:
+  - always
+  - validation
+
+- name: Verify if worker_network_config_template is defined and exists
+  stat:
+    path: "{{ worker_network_config_template }}"
+    get_checksum: false
+  register: worker_nm_template
+  delegate_to: localhost
+  when: worker_network_config_template is defined
+  tags:
+  - always
+  - validation
+
+- name: Fail when worker_network_config_template is defined but not exists
+  fail:
+    msg: "Variable worker_network_config_template is defined but path does not exists"
+  when:
+    - worker_network_config_template is defined
+    - not worker_nm_template.stat.exists|bool
+  tags:
+  - always
+  - validation

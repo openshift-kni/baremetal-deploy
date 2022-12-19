@@ -1,0 +1,86 @@
+// This is included in the following assemblies:
+//
+// ipi-install-configuration-files.adoc
+
+[id='modifying-install-config-for-nmstate-network-config-day1_{context}']
+
+= Modifying the `install-config.yaml` file to add network config with NMstate at day1 (optional)
+
+1. To deploy an {product-title} cluster with NMstate network config, create an NMState YAML file `nmstate_yaml_file`.
+
+[source,yaml]
+----
+interfaces:
+- name: <nic1_name>
+  type: ethernet
+  state: up
+  ipv4:
+    address:
+    - ip: <ip_address>
+      prefix-length: 24
+    enabled: true
+dns-resolver:
+  config:
+    server:
+    - <dns_ip_address>
+routes:
+  config:
+  - destination: 0.0.0.0/0
+    next-hop-address: <next_hop_ip_address>
+    next-hop-interface: <next_hop_nic1_name>
+----
+
+NOTE: Replace <nic1_name>, <ip_address>, <dns_ip_address>, <next_hop_ip_address> and <next_hop_nic1_name> with appropriate values.
+
+[IMPORTANT]
+====
+Consider installing `nmstate` package and testing the NMState syntax with `nmstatectl gc` before including it in the install-config.yaml file, because the installer will not check the NMState YAML syntax
+====
+
+2. Test the configuration file by running the following command: (Replace <nmstate_yaml_file> with the configuration file name)
+
+[source,bash]
+----
+$ nmstatectl gc <nmstate_yaml_file>
+----
+
+3. Use the networkConfig configuration setting by adding the NMState configuration to hosts within the install-config.yaml file:
+[source,yaml]
+----
+    hosts:
+      - name: openshift-master-0
+        role: master
+        bmc:
+          address: redfish+http://<out_of_band_ip>/redfish/v1/Systems/
+          username: <user>
+          password: <password>
+          disableCertificateVerification: null
+        bootMACAddress: <NIC1_mac_address>
+        bootMode: UEFI
+        rootDeviceHints:
+          deviceName: "/dev/sda"
+        networkConfig:
+          interfaces:
+          - name: <nic1_name>
+            type: ethernet
+            state: up
+            ipv4:
+              address:
+              - ip: <ip_address>
+                prefix-length: 24
+              enabled: true
+          dns-resolver:
+            config:
+              server:
+              - <dns_ip_address>
+          routes:
+            config:
+            - destination: 0.0.0.0/0
+              next-hop-address: <next_hop_ip_address>
+              next-hop-interface: <next_hop_nic1_name>
+----
+
+[IMPORTANT]
+====
+After deploying the cluster, you cannot modify the networkConfig configuration setting of install-config.yaml file to make changes to the host network interface. Use the Kubernetes NMState Operator to make changes to the host network interface after deployment.
+====

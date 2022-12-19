@@ -103,6 +103,12 @@ platform:
           {{ hostvars[host]['root_device_hint'] }}: {{ hostvars[host]['root_device_hint_value'] }}
 {% endif %}
 {% endif %}
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 10)) %}
+{% if master_network_config_template is defined %}
+        networkConfig:
+{{ lookup('template', master_network_config_template, template_vars=hostvars[host]) | indent(10, true) }}
+{% endif %}
+{% endif %}
 {% endfor %}
 {% if groups['workers'] is defined %}
 {% for host in groups['workers'] %}
@@ -137,6 +143,12 @@ platform:
 {% if 'root_device_hint' in hostvars[host] and 'root_device_hint_value' in hostvars[host] %}
         rootDeviceHints:
           {{ hostvars[host]['root_device_hint'] }}: {{ hostvars[host]['root_device_hint_value'] }}
+{% endif %}
+{% endif %}
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 10)) %}
+{% if worker_network_config_template is defined %}
+        networkConfig:
+{{ lookup('template', worker_network_config_template, template_vars=hostvars[host]) | indent(10, true) }}
 {% endif %}
 {% endif %}
 {% endfor %}
