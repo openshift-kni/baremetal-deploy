@@ -61,6 +61,9 @@ platform:
 {% if prov_dhcp_range is defined and prov_dhcp_range|length %}
     provisioningDHCPRange: {{ prov_dhcp_range }}
 {% endif %}    
+{% if externalMACAddress is defined and externalMACAddress|length %}
+    externalMACAddress: '{{ externalMACAddress }}'
+{% endif %}
 {% endif %}
 {% if bootstraposimage is defined and bootstraposimage|length %}
     bootstrapOSImage: {{ bootstraposimage }}
