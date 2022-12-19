@@ -14,7 +14,7 @@
 
     - name: Autostart Storage Pool for default
       virt_pool:
-        autostart: yes
+        autostart: true
         name: default
-  become: yes
+  become: true
   tags: storagepool

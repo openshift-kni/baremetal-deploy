@@ -18,7 +18,7 @@
         user: "{{ hostvars[item]['ipmi_user'] }}"
         password: "{{ hostvars[item]['ipmi_password'] }}"
         port: "{{ hostvars[item]['ipmi_port'] | default(623) }}"
-        state: off
+        state: false
       register: power_off_hosts
       until: power_off_hosts is not failed
       retries: 10

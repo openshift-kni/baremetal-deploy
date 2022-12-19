@@ -5,20 +5,20 @@
   when: ansible_version.full is version('2.9.0', '<')
   delegate_to: localhost
   tags:
-  - always
-  - validation
-  - fully_disconnected
+    - always
+    - validation
+    - fully_disconnected
 
 - name: Ensure Python libraries are installed
   python_requirements_info:
     dependencies:
-    - dnspython
-    - netaddr
+      - dnspython
+      - netaddr
   register: _py_facts
   delegate_to: localhost
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Fail if Python modules are missing
   fail:
@@ -26,32 +26,36 @@
          Missing python module(s) {{ _py_facts.not_found }} on localhost
   when: _py_facts.not_found | length > 0
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Fail if version is undefined or empty.
   fail:
     msg: "The version is undefined or empty. Use a value such as 'latest-4.3' or 'latest-4.4' or an explicit version."
   when: (version is undefined) or (version|length == 0)
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Fail if build is undefined or empty
   fail:
     msg: "The build is undefined or empty. Use a value such as 'dev' or 'ga'."
   when: (build is undefined) or (build|length == 0)
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Fail if a required install-config variable is undefined or empty.
   fail:
     msg: "A variable regarding install-config.yml is undefined or empty."
-  when: (domain is undefined) or (domain|length == 0) or (cluster is undefined) or (cluster|length == 0) or (extcidrnet is undefined) or (extcidrnet|length == 0) or (pullsecret is undefined) or (pullsecret|length == 0)
+  when: >
+    (domain is undefined) or (domain|length == 0) or
+    (cluster is undefined) or (cluster|length == 0) or
+    (extcidrnet is undefined) or (extcidrnet|length == 0) or
+    (pullsecret is undefined) or (pullsecret|length == 0)
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Fail if both bootstraposimage and clusterosimage variables are empty.
   fail:
@@ -60,8 +64,8 @@
     - bootstraposimage is defined and bootstraposimage|length == 0
     - clusterosimage is defined and clusterosimage|length == 0
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Conditions to set cache_enabled to true
   set_fact:
@@ -72,8 +76,8 @@
         (clusterosimage is defined and bootstraposimage|length == 0) or
         (bootstraposimage is defined and clusterosimage|length == 0)
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Conditions to set cache_enabled to false
   set_fact:
@@ -81,8 +85,8 @@
   when: (not cache_enabled|bool) or
         (bootstraposimage is defined and clusterosimage is defined)
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Check whether caching is enabled
   debug:
@@ -95,16 +99,16 @@
     ingressvip: "{{ lookup('dig', 'foo.apps.{{ cluster |quote }}.{{ domain | quote }}.', '{{ qtype }}' ) }}"
   when: ((ingressvip is undefined) or (ingressvip|length == 0))
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Verify DNS records for API VIP
   set_fact:
     apivip: "{{ lookup('dig', 'api.{{ cluster |quote }}.{{ domain | quote }}.', '{{ qtype }}' ) }}"
   when: ((apivip is undefined) or (apivip|length == 0))
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Display API VIP IP
   debug:
@@ -123,41 +127,41 @@
     msg: "The API VIP IP seems to be incorrect. Value was NXDOMAIN or empty string."
   when: (apivip == 'NXDOMAIN') or (apivip|length == 0)
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Fail if incorrect Ingress VIP
   fail:
     msg: "The Ingress VIP IP seems to be incorrect. Value was NXDOMAIN or empty string."
   when: (ingressvip == 'NXDOMAIN') or (ingressvip|length == 0)
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Set release_url for development envs
   set_fact:
     release_url: "{{ (webserver_url|length) | ternary(webserver_url, 'https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview') }}"
   when: build == 'dev'
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Set release_url for GA envs
   set_fact:
     release_url: "{{ (webserver_url|length) | ternary(webserver_url, 'https://mirror.openshift.com/pub/openshift-v4/clients/ocp') }}"
   when: build == 'ga'
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Confirm whether or not internet connectivity on provisioner host
   uri:
     url: https://www.redhat.com
-    status_code: [-1,200]
+    status_code: [-1, 200]
     timeout: 1
   register: check_url
   tags:
-  - validation
+    - validation
 
 - name: Set fact disconnected_registry_auths_file
   set_fact:
@@ -167,7 +171,7 @@
     - groups['registry_host']|length
     - hostvars[groups['registry_host'][0]]['disconnected_registry_auths_file'] is defined
   tags:
-  - validation
+    - validation
 
 - name: Set fact disconnected_registry_mirrors_file
   set_fact:
@@ -177,7 +181,7 @@
     - groups['registry_host']|length
     - hostvars[groups['registry_host'][0]]['disconnected_registry_mirrors_file'] is defined
   tags:
-  - validation
+    - validation
 
 - name: Verify Registry host details
   set_fact:
@@ -186,8 +190,8 @@
     - groups['registry_host'] is defined
     - groups['registry_host']|length
   tags:
-  - validation
-  - create_registry
+    - validation
+    - create_registry
 
 - name: Check if disconnected_registry_auths_file is set
   set_fact:
@@ -197,8 +201,8 @@
     - disconnected_registry_auths_file is not none
     - disconnected_registry_auths_file | trim != ''
   tags:
-  - validation
-  - create_registry
+    - validation
+    - create_registry
 
 - name: Check if disconnected_registry_mirrors_file is set
   set_fact:
@@ -208,8 +212,8 @@
     - disconnected_registry_mirrors_file is not none
     - disconnected_registry_mirrors_file | trim != ''
   tags:
-  - validation
-  - create_registry
+    - validation
+    - create_registry
 
 - name: Fail when provision host no online access and registry host not creating registry (can't assume access)
   fail:
@@ -227,28 +231,28 @@
     - webserver_url|length == 0
 
 - block:
-  - name: Check if Python cryptography libraries are installed
-    python_requirements_info:
-      dependencies:
-      - cryptography>=1.2.3
-    delegate_to: localhost
-    register: _py_crypto
+    - name: Check if Python cryptography libraries are installed
+      python_requirements_info:
+        dependencies:
+          - cryptography>=1.2.3
+      delegate_to: localhost
+      register: _py_crypto
 
-  - name: Check if Python PyOpenSSL libraries are installed
-    python_requirements_info:
-      dependencies:
-      - PyOpenSSL>=0.6
-    delegate_to: localhost
-    register: _py_pyopenssl
+    - name: Check if Python PyOpenSSL libraries are installed
+      python_requirements_info:
+        dependencies:
+          - PyOpenSSL>=0.6
+      delegate_to: localhost
+      register: _py_pyopenssl
 
-  - name: "Fail on missing required cryptography libraries cryptography OR PyOpenSSL"
-    fail:
-      msg: "Required cryptography libraries are missing cryptography OR PyOpenSSL"
-    when: (_py_crypto.not_found != []) and
-          (_py_pyopenssl.not_found != [] )
+    - name: "Fail on missing required cryptography libraries cryptography OR PyOpenSSL"
+      fail:
+        msg: "Required cryptography libraries are missing cryptography OR PyOpenSSL"
+      when: (_py_crypto.not_found != []) and
+            (_py_pyopenssl.not_found != [] )
   tags:
-  - create_registry
-  - validation
+    - create_registry
+    - validation
   when:
     - not dra_set
     - not drm_set
@@ -257,7 +261,7 @@
 - name: Get Release.txt File
   uri:
     url: "{{ release_url }}/{{ version }}/release.txt"
-    return_content: yes
+    return_content: true
   register: result
   until: result.status == 200
   retries: 6 # 1 minute (10 * 6)
@@ -265,16 +269,16 @@
   failed_when: result.content|length == 0 or result.status >= 400
   delegate_to: "{{ (not dra_set and not drm_set and registry_host_exists) | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Set Fact for Release Image
   set_fact:
     release_version: "{{ result.content | regex_search('Version:.*') | regex_replace('Version:\\s*(.*)', '\\1') }}"
     release_image: "{{ result.content | regex_search('Pull From:.*') | regex_replace('Pull From:\\s*(.*)', '\\1') }}"
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Get the release version
   debug:
@@ -287,40 +291,40 @@
     msg: This release {{ release_version }} does not support dual-stack deployments
   when: release_version.split('.')[0]|int == 4 and release_version.split('.')[1]|int < 6 and dualstack_baremetal
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Fail if dualstack_baremetal and ipv4_baremetal are both true
   fail:
     msg: Only one of ipv4_baremetal and dualstack_baremetal variables can be true
   when: ipv4_baremetal and dualstack_baremetal
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Check for valid extcidrnet (IPv4)
   fail:
     msg: extcidrnet should be a valid IPv4 CIDR
   when: not ipv6_enabled|bool and not extcidrnet|ipv4
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Check for valid extcidrnet (IPv6)
   fail:
     msg: extcidrnet6 should be a valid IPv6 address
   when: ipv6_enabled|bool and not (ipv4_baremetal or dualstack_baremetal) and not extcidrnet6|ipv6
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Check for valid extcidrnet and extcidrnet6 (Dual-Stack)
   fail:
     msg: extcidrnet should be a valid IPv4 address and extcidrnet6 should be a valid IPv6 address
   when: ipv6_enabled|bool and dualstack_baremetal|bool and not (extcidrnet|ipv4 and extcidrnet6|ipv6)
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Check if openshift-client-linux-{{ version }}.tar.gz exists
   uri:
@@ -338,31 +342,31 @@
     msg: "The masters group is not defined. Please add masters to the inventory/hosts file"
   when: "'masters' not in groups"
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Set Fact of num of workers and masters based on inventory
   set_fact:
     numworkers: "{{ groups['workers'] | default([]) | length }}"
     nummasters: "{{ groups['masters'] | length }}"
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
-- name:  Gather the rpm package facts
+- name: Gather the rpm package facts
   package_facts:
     manager: auto
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Set Fact for firewall variable
   set_fact:
     firewall: "iptables"
   when: "'iptables-services' in ansible_facts.packages"
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Set Fact for provisioning nic
   set_fact:
@@ -371,18 +375,18 @@
     - (masters_prov_nic is undefined) or (masters_prov_nic|length == 0)
     - not enable_virtualmedia|bool
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Fail if DNSVIP not set (OCP 4.4 or lower)
   fail:
     msg: "dnsvip variable is undefined or empty."
   when:
-  - ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int < 5))
-  - ((dnsvip is undefined) or (dnsvip|length == 0))
+    - ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int < 5))
+    - ((dnsvip is undefined) or (dnsvip|length == 0))
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Get all the chassis results from all the hosts
   redfish_info:
@@ -396,9 +400,9 @@
   retries: 3
   delay: 10
   with_items:
-  - "{{ groups.masters }}"
-  - "{{ groups.workers | default([]) }}"
-  ignore_errors: yes
+    - "{{ groups.masters }}"
+    - "{{ groups.workers | default([]) }}"
+  ignore_errors: true
   when: redfish_inspection|bool
   tags: validation
 
@@ -411,53 +415,53 @@
     password: "{{ hostvars[item]['ipmi_password'] }}"
   register: firmware_result
   with_items:
-  - "{{ groups.masters }}"
-  - "{{ groups.workers | default([]) }}"
-  ignore_errors: yes
+    - "{{ groups.masters }}"
+    - "{{ groups.workers | default([]) }}"
+  ignore_errors: true
   when: redfish_inspection|bool
   tags: validation
 
 - name: Adding hosts to to their dynamic Dell inventory group
   block:
-  - name: Add all the hosts that are Dell to a group with iDRAC firmware higher than 4.20.20.20
-    add_host:
-      groups: dell_hosts_redfish
-      hostname: "{{ chassis_result.results[item|int].item }}"
-    with_sequence: start=0 end="{{ numworkers|int + nummasters|int - 1 }}"
-    when:
-      - not chassis_result.results[{{ item }}].failed|bool
-      - not firmware_result.results[{{ item }}].failed|bool
-      - "'Dell' in chassis_result.results[{{ item }}].redfish_facts.chassis.entries[0].Manufacturer"
-      - firmware_result.results[{{ item }}].redfish_facts.firmware.entries | json_query(query) | max >= "4.20.20.20"
-    vars:
-      query: "[?Name=='Integrated Dell Remote Access Controller'].Version"
-    register: dell_host_redfish_result
-    retries: 6 # 1 minute (10 * 6)
-    delay: 10 # Every 10 seconds
+    - name: Add all the hosts that are Dell to a group with iDRAC firmware higher than 4.20.20.20
+      add_host:
+        groups: dell_hosts_redfish
+        hostname: "{{ chassis_result.results[item|int].item }}"
+      with_sequence: start=0 end="{{ numworkers|int + nummasters|int - 1 }}"
+      when:
+        - not chassis_result.results[{{ item }}].failed|bool
+        - not firmware_result.results[{{ item }}].failed|bool
+        - "'Dell' in chassis_result.results[{{ item }}].redfish_facts.chassis.entries[0].Manufacturer"
+        - firmware_result.results[{{ item }}].redfish_facts.firmware.entries | json_query(query) | max >= "4.20.20.20"
+      vars:
+        query: "[?Name=='Integrated Dell Remote Access Controller'].Version"
+      register: dell_host_redfish_result
+      retries: 6 # 1 minute (10 * 6)
+      delay: 10 # Every 10 seconds
   rescue:
-  - name: Attempt to add all hosts that are part of the Dell group failed
-    debug:
-      msg: 'Adding hosts to dynamic Dell group failed or redfish_inspection was set to false. All inventory systems will use IPMI.'
+    - name: Attempt to add all hosts that are part of the Dell group failed
+      debug:
+        msg: 'Adding hosts to dynamic Dell group failed or redfish_inspection was set to false. All inventory systems will use IPMI.'
   tags: validation
 
 - name: Adding hosts to to their dynamic HP inventory group
   block:
-  - name: Add all the hosts that are HP to a group
-    add_host:
-      groups: hp_hosts_redfish
-      hostname: "{{ chassis_result.results[item|int].item }}"
-    with_sequence: start=0 end="{{ numworkers|int + nummasters|int - 1 }}"
-    when:
-      - not chassis_result.results[{{ item }}].failed|bool
-      - not firmware_result.results[{{ item }}].failed|bool
-      - "'HPE' in chassis_result.results[{{ item }}].redfish_facts.chassis.entries[0].Manufacturer"
-    register: hp_host_redfish_result
-    retries: 6 # 1 minute (10 * 6)
-    delay: 10 # Every 10 seconds
+    - name: Add all the hosts that are HP to a group
+      add_host:
+        groups: hp_hosts_redfish
+        hostname: "{{ chassis_result.results[item|int].item }}"
+      with_sequence: start=0 end="{{ numworkers|int + nummasters|int - 1 }}"
+      when:
+        - not chassis_result.results[{{ item }}].failed|bool
+        - not firmware_result.results[{{ item }}].failed|bool
+        - "'HPE' in chassis_result.results[{{ item }}].redfish_facts.chassis.entries[0].Manufacturer"
+      register: hp_host_redfish_result
+      retries: 6 # 1 minute (10 * 6)
+      delay: 10 # Every 10 seconds
   rescue:
-  - name: Attempt to add all hosts that are part of the HP group failed
-    debug:
-      msg: 'Adding hosts to dynamic HP group failed or redfish_inspection was set to false. All inventory systems will use IPMI.'
+    - name: Attempt to add all hosts that are part of the HP group failed
+      debug:
+        msg: 'Adding hosts to dynamic HP group failed or redfish_inspection was set to false. All inventory systems will use IPMI.'
   tags: validation
 
 - name: Fail when provisioningHostIP and bootstrapProvisioningIP are not set when virtualmedia option is enabled
@@ -467,8 +471,8 @@
     - enable_virtualmedia|bool
     - provisioningHostIP is undefined
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Fail when bootstrapProvisioningIP are not set when virtualmedia option is enabled
   fail:
@@ -477,8 +481,8 @@
     - enable_virtualmedia|bool
     - bootstrapProvisioningIP is undefined
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Verify if master_network_config_template is defined and exists
   stat:
@@ -488,8 +492,8 @@
   delegate_to: localhost
   when: master_network_config_template is defined
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Fail when master_network_config_template is defined but not exists
   fail:
@@ -498,8 +502,8 @@
     - master_network_config_template is defined
     - not master_nm_template.stat.exists|bool
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Verify if worker_network_config_template is defined and exists
   stat:
@@ -509,8 +513,8 @@
   delegate_to: localhost
   when: worker_network_config_template is defined
   tags:
-  - always
-  - validation
+    - always
+    - validation
 
 - name: Fail when worker_network_config_template is defined but not exists
   fail:
@@ -519,5 +523,5 @@
     - worker_network_config_template is defined
     - not worker_nm_template.stat.exists|bool
   tags:
-  - always
-  - validation
+    - always
+    - validation

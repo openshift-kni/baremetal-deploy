@@ -9,8 +9,8 @@
     - "'registry_host' in groups"
     - "groups['registry_host']"
   tags:
-  - disconnected
-  - create_registry
+    - disconnected
+    - create_registry
 
 - include_tasks: 20_sub_man_register.yml
   tags: subscription
@@ -18,10 +18,10 @@
   tags: packages
 - include_tasks: 40_bridge.yml
   tags:
-  - network
+    - network
 - include_tasks: 45_networking_facts.yml
   tags:
-  - network_facts
+    - network_facts
 - include_tasks: 50_modify_sudo_user.yml
   tags: user
 - include_tasks: 60_enabled_services.yml

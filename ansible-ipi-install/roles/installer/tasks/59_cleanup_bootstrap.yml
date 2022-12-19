@@ -3,7 +3,7 @@
   virt:
     command: list_vms
   register: all_vms
-  become: yes
+  become: true
   tags: cleanup
 
 - name: Get list of all running VMs
@@ -11,7 +11,7 @@
     command: list_vms
     state: running
   register: running_vms
-  become: yes
+  become: true
   tags: cleanup
 
 - name: Get list of all paused VMs
@@ -19,7 +19,7 @@
     command: list_vms
     state: paused
   register: paused_vms
-  become: yes
+  become: true
   tags: cleanup
 
 - name: Destroy old bootstrap VMs, if any
@@ -30,7 +30,7 @@
     - "{{ running_vms.list_vms }}"
     - "{{ paused_vms.list_vms }}"
   when: item is search("bootstrap")
-  become: yes
+  become: true
   tags: cleanup
 
 - name: Undefine old bootstrap VMs, if any
@@ -39,7 +39,7 @@
     command: undefine
   with_items: "{{ all_vms.list_vms }}"
   when: item is search("bootstrap")
-  become: yes
+  become: true
   tags: cleanup
 
 - name: Find old bootstrap VM Storage
@@ -49,7 +49,7 @@
     file_type: any
   register: find_results
   with_items: "{{ default_libvirt_pool_dir }}"
-  become: yes
+  become: true
   tags: cleanup
 
 - name: Create list of old paths
@@ -62,5 +62,5 @@
     path: "{{ item }}"
     state: absent
   loop: "{{ vm_paths }}"
-  become: yes
+  become: true
   tags: cleanup

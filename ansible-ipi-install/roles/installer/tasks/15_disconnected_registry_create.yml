@@ -8,7 +8,7 @@
   when: groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: "{{ groups['registry_host'][0] }}"
   tags:
-  - create_registry
+    - create_registry
 
 - name: Delete any old tmp dirs with OpenShift related binaries on registry host
   file:
@@ -18,7 +18,7 @@
   when: groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: "{{ groups['registry_host'][0] }}"
   tags:
-  - create_registry
+    - create_registry
 
 - name: Find any existing /usr/local/bin OpenShift binaries on registry host
   find:
@@ -28,7 +28,7 @@
   when: groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: "{{ groups['registry_host'][0] }}"
   tags:
-  - create_registry
+    - create_registry
 
 - name: Remove any existing /usr/local/bin OpenShift binaries on registry host
   file:
@@ -37,18 +37,18 @@
   loop: "{{ binary_results['files'] }}"
   when: groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: "{{ groups['registry_host'][0] }}"
-  become: yes
+  become: true
   tags:
-  - create_registry
+    - create_registry
 
 - name: Get the oc command from provisioner into temp file on control machine
   fetch:
     dest: /tmp/
-    flat: yes
+    flat: true
     src: /usr/local/bin/oc
   when: groups['registry_host'][0] != groups['provisioner'][0]
   tags:
-  - create_registry
+    - create_registry
 
 - name: Copy the oc command from control machine to the registry host
   copy:
@@ -57,11 +57,11 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: 0755
-  become: yes
+  become: true
   when: groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: "{{ groups['registry_host'][0] }}"
   tags:
-  - create_registry
+    - create_registry
 
 - name: Remove the temporary copy of the oc command on control machine
   file:
@@ -70,7 +70,7 @@
   when: groups['registry_host'][0] != groups['provisioner'][0]
   delegate_to: localhost
   tags:
-  - create_registry
+    - create_registry
 
 - name: Create tmp directory to store OpenShift binaries on registry host
   tempfile:
@@ -80,13 +80,13 @@
   register: registry_tempdir
   delegate_to: "{{ groups['registry_host'][0] }}"
   tags:
-  - create_registry
+    - create_registry
 
 - name: Set fact for tmp directory on registry host
   set_fact:
     tempdir: "{{ registry_tempdir.path }}"
   tags:
-  - create_registry
+    - create_registry
 
 - name: Create disconnected registry
   block:
@@ -101,12 +101,12 @@
     - name: Verify the certificate variables are set
       fail:
         msg:
-        - "Must specify cert_country, cert_state, cert_locality, cert_organization, and cert_organizational_unit"
-        - "cert_country:             {{ cert_country }}"
-        - "cert_state:               {{ cert_state }}"
-        - "cert_locality:            {{ cert_locality }}"
-        - "cert_organization:        {{ cert_organization }}"
-        - "cert_organizational_unit: {{ cert_organizational_unit }}"
+          - "Must specify cert_country, cert_state, cert_locality, cert_organization, and cert_organizational_unit"
+          - "cert_country:             {{ cert_country }}"
+          - "cert_state:               {{ cert_state }}"
+          - "cert_locality:            {{ cert_locality }}"
+          - "cert_organization:        {{ cert_organization }}"
+          - "cert_organizational_unit: {{ cert_organizational_unit }}"
       when: ( cert_country is not defined )
         or  ( cert_country is none )
         or  ( cert_country | trim == '' )
@@ -134,14 +134,14 @@
     - name: Open registry port, zone libvirt and public, for firewalld
       firewalld:
         port: "{{ registry_port }}/tcp"
-        permanent: yes
-        immediate: yes
+        permanent: true
+        immediate: true
         state: enabled
         zone: "{{ item }}"
-      become: yes
+      become: true
       with_items:
-      - libvirt
-      - public
+        - libvirt
+        - public
       when: firewall != "iptables"
 
     - name: Open registry port for iptables
@@ -150,13 +150,13 @@
         protocol: tcp
         destination_port: "{{ registry_port }}"
         jump: ACCEPT
-      become: yes
+      become: true
       when: firewall == "iptables"
 
     - name: Save iptables configuration
       shell: |
         /usr/sbin/iptables-save > /etc/sysconfig/iptables
-      become: yes
+      become: true
       when: firewall == "iptables"
 
     - name: Create directory to hold the registry files
@@ -166,7 +166,7 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: u=rwX,g=rX,o=rX
-        recurse: yes
+        recurse: true
       loop:
         - "{{ registry_dir_auth }}"
         - "{{ registry_dir_cert }}"
@@ -183,8 +183,8 @@
         dest: "{{ registry_dir_auth }}/htpasswd"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
-        backup: yes
-        force: yes
+        backup: true
+        force: true
 
     - name: Set disconnected_auth
       set_fact:
@@ -198,15 +198,15 @@
       copy:
         content: "{{ disconnected_auth }}"
         dest: "{{ ansible_env.HOME }}/{{ registry_auth_file }}"
-        backup: yes
-        force: yes
+        backup: true
+        force: true
 
     - name: Write auth for disconnected to localhost
       copy:
         content: "{{ disconnected_auth }}"
         dest: "{{ lookup ('env', 'PWD') }}/{{ registry_auth_file }}"
-        backup: yes
-        force: yes
+        backup: true
+        force: true
       delegate_to: localhost
 
     - name: append auth to pullsecret
@@ -221,7 +221,7 @@
 
     - name: Generate an OpenSSL private key
       openssl_privatekey:
-       path: "{{ registry_dir_cert }}/domain.key"
+        path: "{{ registry_dir_cert }}/domain.key"
 
     - name: Generate an OpenSSL CSR
       openssl_csr:
@@ -233,8 +233,8 @@
         locality_name: "{{ cert_locality }}"
         organization_name: "{{ cert_organization }}"
         organizational_unit_name: "{{ cert_organizational_unit }}"
-        basic_constraints_critical: yes
-        create_subject_key_identifier: yes
+        basic_constraints_critical: true
+        create_subject_key_identifier: true
         basic_constraints: ['CA:TRUE']
 
     - name: Generate a selfsigned OpenSSL CA Certificate
@@ -250,19 +250,19 @@
         ownca_privatekey_path: "{{ registry_dir_cert }}/domain.key"
         csr_path: "{{ registry_dir_cert }}/domain.csr"
         ownca_path: "{{ registry_dir_cert }}/domainCA.crt"
-        ownca_create_authority_key_identifier: yes
+        ownca_create_authority_key_identifier: true
         provider: ownca
 
     - name: Copy cert to pki directory
       copy:
         src: "{{ registry_dir_cert }}/domain.crt"
         dest: /etc/pki/ca-trust/source/anchors/domain.crt
-        remote_src: yes
+        remote_src: true
         group: "{{ ansible_user }}"
         owner: "{{ ansible_user }}"
         mode: 0644
-        force: yes
-        backup: yes
+        force: true
+        backup: true
       become: true
 
     - name: Update the CA trust files
@@ -294,7 +294,7 @@
         container_registry_pidfile: "{{ registry_container_info.container.ConmonPidFile }}"
 
     - name: Ensure user specific systemd instance are persistent
-      command:  |
+      command: |
               /usr/bin/loginctl enable-linger {{ ansible_user }}
 
     - name: Create systemd user directory
@@ -326,14 +326,14 @@
 
     - name: Reload systemd service
       systemd:
-        daemon_reexec: yes
+        daemon_reexec: true
         scope: user
       environment:
         DBUS_SESSION_BUS_ADDRESS: "{{ ansible_env.DBUS_SESSION_BUS_ADDRESS|default('unix:path=/run/user/' +  ansible_effective_user_id|string + '/bus') }}"
     - name: Enable container-registry.service
       systemd:
         name: container-registry
-        enabled: yes
+        enabled: true
         scope: user
       environment:
         DBUS_SESSION_BUS_ADDRESS: "{{ ansible_env.DBUS_SESSION_BUS_ADDRESS|default('unix:path=/run/user/' +  ansible_effective_user_id|string + '/bus') }}"
@@ -361,35 +361,35 @@
       copy:
         content: "{{ install_config_appends }}"
         dest: "{{ ansible_env.HOME }}/{{ install_config_appends_file }}"
-        backup: yes
-        force: yes
+        backup: true
+        force: true
 
     - name: Create {{ install_config_appends_file }} on localhost
       copy:
         content: "{{ install_config_appends }}"
         dest: "{{ lookup ('env', 'PWD') }}/{{ install_config_appends_file }}"
-        backup: yes
-        force: yes
+        backup: true
+        force: true
       delegate_to: localhost
 
     - name: Information
       debug:
         msg:
-        - "To reuse this disconnected registry for other deployments, you must do the following:"
-        - "Add the authentication from either "
-        - "    {{ ansible_env.HOME }}/{{ registry_auth_file }} on {{ inventory_hostname }}"
-        - "    or {{ ansible_env.HOME }}/{{ registry_auth_file }} on this server to your pull secret."
-        - ""
-        - "Append the contents of either of the "
-        - "    {{ ansible_env.HOME }}/{{ install_config_appends_file }} on {{ inventory_hostname }} "
-        - "    or {{ ansible_env.HOME }}/{{ install_config_appends_file }} on this server to your"
-        - "    install-config.yaml file."
+          - "To reuse this disconnected registry for other deployments, you must do the following:"
+          - "Add the authentication from either "
+          - "    {{ ansible_env.HOME }}/{{ registry_auth_file }} on {{ inventory_hostname }}"
+          - "    or {{ ansible_env.HOME }}/{{ registry_auth_file }} on this server to your pull secret."
+          - ""
+          - "Append the contents of either of the "
+          - "    {{ ansible_env.HOME }}/{{ install_config_appends_file }} on {{ inventory_hostname }} "
+          - "    or {{ ansible_env.HOME }}/{{ install_config_appends_file }} on this server to your"
+          - "    install-config.yaml file."
 
     - name: Create temporary pullsecret file
       copy:
         content: "{{ pullsecret }}"
         dest: "{{ ansible_env.HOME }}/pullsecret.txt"
-        force: yes
+        force: true
 
     - name: Mirror remote registry to local
       command:
@@ -408,23 +408,23 @@
 
   delegate_to: "{{ groups['registry_host'][0] }}"
   tags:
-  - disconnected
-  - create_registry
+    - disconnected
+    - create_registry
 
 - name: Set fact to pull oc installer from disconnected registry
   set_fact:
     disconnected_installer: "{{ local_registry }}/{{ local_repo }}:{{ release_version }}"
   tags:
-  - create_registry
+    - create_registry
 
 - name: Fetch the domain cert from the registry host
   fetch:
     dest: /tmp/domain.crt
     src: "{{ registry_dir_cert }}/domain.crt"
-    flat: yes
+    flat: true
   delegate_to: "{{ groups['registry_host'][0] }}"
   tags:
-  - create_registry
+    - create_registry
 
 - name: Copy the domain cert to the provisioner host
   copy:
@@ -435,10 +435,10 @@
     mode: 0644
   become: true
   tags:
-  - create_registry
+    - create_registry
 
 - name: Update the CA trust files on the provisioner host
   command: update-ca-trust extract
   become: true
   tags:
-  - create_registry
+    - create_registry

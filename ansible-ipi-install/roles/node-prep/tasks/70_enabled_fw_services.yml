@@ -4,19 +4,19 @@
     - name: Enable HTTP for firewalld
       firewalld:
         service: http
-        permanent: yes
+        permanent: true
         state: enabled
-        immediate: yes
-      become: yes
+        immediate: true
+      become: true
 
     - name: Open port {{ webserver_caching_port }}/tcp, zone public, for cache for firewalld
       firewalld:
         port: "{{ webserver_caching_port }}/tcp"
-        permanent: yes
+        permanent: true
         state: enabled
         zone: "public"
-        immediate: yes
-      become: yes
+        immediate: true
+      become: true
       when: cache_enabled|bool
   when: firewall != "iptables"
   tags: firewall
@@ -29,7 +29,7 @@
         protocol: tcp
         destination_port: "80"
         jump: ACCEPT
-      become: yes
+      become: true
 
     - name: Open port {{ webserver_caching_port }}/tcp for cache for iptables
       iptables:
@@ -37,7 +37,7 @@
         protocol: tcp
         destination_port: "{{ webserver_caching_port }}"
         jump: ACCEPT
-      become: yes
+      become: true
       when: cache_enabled|bool
 
     - name: Allow related and established connections for iptables
@@ -45,11 +45,11 @@
         chain: INPUT
         ctstate: ESTABLISHED,RELATED
         jump: ACCEPT
-      become: yes
+      become: true
 
     - name: Save iptables configuration
       shell: |
         /usr/sbin/iptables-save > /etc/sysconfig/iptables
-      become: yes
+      become: true
   when: firewall == "iptables"
   tags: firewall

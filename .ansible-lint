@@ -8,3 +8,5 @@ skip_list:
   - '601'
   - '602'
   - '701'
+  - ignore-errors
+  - var-naming

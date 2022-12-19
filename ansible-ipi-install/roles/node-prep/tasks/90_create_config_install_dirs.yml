@@ -6,7 +6,7 @@
         path: "{{ item }}"
         state: absent
       with_items:
-      - "{{ dir }}"
+        - "{{ dir }}"
 
     - name: Create config dir
       file:
@@ -16,5 +16,5 @@
         group: "{{ ansible_user }}"
         mode: '0755'
       with_items:
-      - "{{ dir }}"
+        - "{{ dir }}"
   tags: clusterconfigs

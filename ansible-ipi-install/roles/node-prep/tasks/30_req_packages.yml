@@ -11,6 +11,6 @@
       name: "{{ package_list }}"
       state: present
       update_cache: true
-      disable_gpg_check: yes
-    become: yes
+      disable_gpg_check: true
+    become: true
   tags: packages

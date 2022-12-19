@@ -4,7 +4,7 @@
     gather_subset:
       - network
   tags:
-  - network_facts
+    - network_facts
 
 - name: Set External Subnet with IPv4
   set_fact:
@@ -16,7 +16,7 @@
     - not ipv6_enabled|bool or
       ipv4_baremetal|bool
   tags:
-  - network_facts
+    - network_facts
 
 - name: Set External Subnet with IPv6
   set_fact:
@@ -28,7 +28,7 @@
     - ipv6_enabled|bool
     - not ipv4_baremetal|bool
   tags:
-  - network_facts
+    - network_facts
 
 - name: set provisioning subnet with IPV4
   set_fact:
@@ -39,7 +39,7 @@
         ((ipv4_provisioning|bool) or (not ipv6_enabled|bool) or
         ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int == 3)))
   tags:
-  - network_facts
+    - network_facts
 
 - name: set provisioning subnet with IPV6
   set_fact:
@@ -53,14 +53,14 @@
     - release_version.split('.')[0]|int == 4 and release_version.split('.')[1]|int > 3 or
       release_version.split('.')[0]|int > 4
   tags:
-  - network_facts
+    - network_facts
 
 - name: Show external subnet
   debug:
     msg: "external subnet {{ extcidrnet }}"
     verbosity: 2
   tags:
-  - network_facts
+    - network_facts
 
 - name: Show provisioning subnet
   debug:
@@ -68,4 +68,4 @@
     verbosity: 2
   when: provisioning_subnet is defined
   tags:
-  - network_facts
+    - network_facts

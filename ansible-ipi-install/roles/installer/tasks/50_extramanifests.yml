@@ -5,9 +5,9 @@
 
 - name: Copy Dual-Stack related manifest
   copy:
-     src: ipv6-dual-stack-no-upgrade.yml
-     dest: "{{ extramanifestsopenshift_path }}/"
-     mode: 0644
+    src: ipv6-dual-stack-no-upgrade.yml
+    dest: "{{ extramanifestsopenshift_path }}/"
+    mode: 0644
   when:
     - ipv6_enabled|bool
     - dualstack_baremetal
@@ -40,18 +40,18 @@
 
 - name: Manage chrony configuration
   block:
-  - name: Create chrony.conf
-    set_fact:
-      chronyconfig: "{{ lookup('template', 'chrony.conf.j2') | b64encode }}"
+    - name: Create chrony.conf
+      set_fact:
+        chronyconfig: "{{ lookup('template', 'chrony.conf.j2') | b64encode }}"
 
-  - name: Inject chrony.conf in a machine-config object
-    template:
-      src: etc-chrony.conf.j2
-      dest: "{{ dir }}/openshift/98-{{ item }}-etc-chrony.conf.yaml"
-      owner: "{{ ansible_user }}"
-      group: "{{ ansible_user }}"
-    with_items:
-      - master
-      - worker
+    - name: Inject chrony.conf in a machine-config object
+      template:
+        src: etc-chrony.conf.j2
+        dest: "{{ dir }}/openshift/98-{{ item }}-etc-chrony.conf.yaml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+      with_items:
+        - master
+        - worker
   when: (clock_servers is defined) and (clock_servers | length > 0)
   tags: extramanifests

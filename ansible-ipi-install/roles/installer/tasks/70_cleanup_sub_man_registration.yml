@@ -4,5 +4,5 @@
     activationkey: "{{ activation_key }}"
     org_id: "{{ org_id }}"
     state: absent
-  ignore_errors: yes
+  ignore_errors: true
   tags: unregister

@@ -3,8 +3,8 @@
   user:
     name: "{{ ansible_user }}"
     groups: libvirt
-    append: yes
+    append: true
     state: present
-    generate_ssh_key: yes
-  become: yes
+    generate_ssh_key: true
+  become: true
   tags: user
