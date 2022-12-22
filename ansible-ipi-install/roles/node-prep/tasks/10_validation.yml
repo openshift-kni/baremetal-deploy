@@ -137,7 +137,9 @@
 - name: Set release_url for development envs
   set_fact:
     release_url: "{{ (webserver_url|length) | ternary(webserver_url, 'https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview') }}"
-  when: build == 'dev'
+  when:
+    - build == 'dev'
+    - release_url is undefined
   tags:
   - always
   - validation
@@ -145,7 +147,9 @@
 - name: Set release_url for GA envs
   set_fact:
     release_url: "{{ (webserver_url|length) | ternary(webserver_url, 'https://mirror.openshift.com/pub/openshift-v4/clients/ocp') }}"
-  when: build == 'ga'
+  when:
+    - build == 'ga'
+    - release_url is undefined
   tags:
   - always
   - validation
