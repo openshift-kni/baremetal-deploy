@@ -7,7 +7,7 @@ gem "asciidoctor-pdf"
 gem "asciidoctor"
 gem "bundle"
 gem "html-proofer"
-gem "jekyll-asciidoc",
+gem "jekyll-asciidoc"
 gem "jekyll-sass-converter", "< 3.0.0"
 gem "jekyll-feed"
 gem "jekyll-paginate"
