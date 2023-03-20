@@ -138,6 +138,57 @@
     - always
     - validation
 
+- name: Validations for IPv6 VIPs in OCP >= 4.12
+  block:
+    - name: Verify DNS records for Wildcard (Ingress) IPv6 VIP
+      set_fact:
+        ingressvip6: "{{ lookup('dig', 'foo.apps.{{ cluster |quote }}.{{ domain | quote }}.', 'qtype=AAAA' ) }}"
+      when: ((ingressvip6 is undefined) or (ingressvip6|length == 0))
+      tags:
+        - always
+        - validation
+
+    - name: Verify DNS records for API IPv6 VIP
+      set_fact:
+        apivip6: "{{ lookup('dig', 'api.{{ cluster |quote }}.{{ domain | quote }}.', 'qtype=AAAA' ) }}"
+      when: ((apivip6 is undefined) or (apivip6|length == 0))
+      tags:
+        - always
+        - validation
+
+    - name: Display API IPv6 VIP
+      debug:
+        msg: "The API IPv6 VIP is {{ apivip6 }}"
+        verbosity: 2
+      tags: validation
+
+    - name: Display Ingress IPv6 VIP
+      debug:
+        msg: "The Wildcard (Ingress) IPv6 VIP is {{ ingressvip6 }}"
+        verbosity: 2
+      tags: validation
+
+    - name: Fail if incorrect API IPv6 VIP
+      fail:
+        msg: "The API IPv6 VIP seems to be incorrect. Value was NXDOMAIN or empty string."
+      when: (apivip6 == 'NXDOMAIN') or (apivip6|length == 0)
+      tags:
+        - always
+        - validation
+
+    - name: Fail if incorrect Ingress IPv6 VIP
+      fail:
+        msg: "The Ingress IPv6 VIP seems to be incorrect. Value was NXDOMAIN or empty string."
+      when: (ingressvip6 == 'NXDOMAIN') or (ingressvip6|length == 0)
+      tags:
+        - always
+        - validation
+  when:
+    - version.split('.')[0]|int == 4 and version.split('.')[1]|int >= 12
+    - ipv6_enabled | bool
+    - dualstack_baremetal | bool
+    - dualstack_vips | bool
+
 - name: Set release_url for development envs
   set_fact:
     release_url: "{{ (webserver_url|length) | ternary(webserver_url, 'https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview') }}"

@@ -71,6 +71,10 @@ prov_ip=172.22.0.3
 # Only one of ipv4_baremetal and dualstack_baremetal can be true
 #dualstack_baremetal=False
 
+# (Optional) When ipv6_enabled and dualstack_baremetal are set to True, and want dual-stack VIPs for baremetal network
+# Requires that the API and Ingress VIPs resolve both A and AAAA DNS records
+#dualstack_vips=False
+
 # (Optional) A list of clock servers to be used in chrony by the masters and workers
 #clock_servers=["pool.ntp.org","clock.redhat.com"]
 
@@ -133,9 +137,15 @@ extcidrnet6=""
 # An IP reserved on the baremetal network for the API endpoint.
 # (Optional) If not set, a DNS lookup verifies that api.<clustername>.<domain> provides an IP
 #apivip=""
+# An IP reserved on the baremetal network for the API IPv6 endpoint.
+# (Optional) Starting in OCP 4.12. IPv6 from DNS lookup of api.<clustername>.<domain>
+#apivip6=""
 # An IP reserved on the baremetal network for the Ingress endpoint.
 # (Optional) If not set, a DNS lookup verifies that *.apps.<clustername>.<domain> provides an IP
 #ingressvip=""
+# An IP reserved on the baremetal network for the Ingress IPv6 endpoint.
+# (Optional) Starting in OCP 4.12. IPv6 from DNS lookup of *.apps.<clustername>.<domain>
+#ingressvip6=""
 # The master hosts provisioning nic
 # (Optional) If not set, the prov_nic will be used
 #masters_prov_nic=""

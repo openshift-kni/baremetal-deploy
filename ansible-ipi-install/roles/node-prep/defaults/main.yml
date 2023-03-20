@@ -11,6 +11,7 @@ https_proxy: ""
 ipv4_baremetal: false
 ipv4_provisioning: false
 dualstack_baremetal: false
+dualstack_vips: false
 provisioning_bridge: "provisioning"
 webserver_url: ""
 baremetal_bridge: "baremetal"

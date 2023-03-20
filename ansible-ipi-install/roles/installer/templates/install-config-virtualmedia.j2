@@ -46,8 +46,25 @@ controlPlane:
     baremetal: {}
 platform:
   baremetal:
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 12)) and dualstack_baremetal|bool and dualstack_vips|bool %}
+    apiVIPs:
+{% if apivip is defined and apivip|ipv4 %}
+      - {{ apivip }}
+{% endif %}
+{% if ipv6_enabled|bool and apivip6 is defined and apivip6|ipv6 %}
+      - {{ apivip6 }}
+{% endif %}
+    ingressVIPs:
+{% if ingressvip is defined and ingressvip|ipv4 %}
+      - {{ ingressvip }}
+{% endif %}
+{% if ipv6_enabled|bool and ingressvip6 is defined and ingressvip6|ipv6 %}
+      - {{ ingressvip6 }}
+{% endif %}
+{% else %}
     apiVIP: {{ apivip }}
     ingressVIP: {{ ingressvip }}
+{% endif %}
 {% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int < 5)) %}
     dnsVIP: {{ dnsvip }}
 {% endif %}
