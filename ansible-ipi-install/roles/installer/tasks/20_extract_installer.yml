@@ -116,6 +116,10 @@
   get_url:
     url: "{{ webserver_url }}/{{ version }}/openshift-baremetal-install"
     dest: "{{ tempdir }}/openshift-baremetal-install"
+  register: result
+  retries: 3
+  delay: 10
+  until: result is not failed
   when: (the_url.status == -1 and disconnected_installer|length == 0)
   tags:
     - extract
