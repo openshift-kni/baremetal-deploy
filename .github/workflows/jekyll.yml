@@ -13,7 +13,7 @@ jobs:
   jekyll:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.4.0
+      - uses: actions/checkout@v3.5.1
 
       # Use GitHub Actions' cache to shorten build times and decrease load on servers
       - uses: actions/cache@v3.3.1
