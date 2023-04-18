@@ -40,5 +40,7 @@ roothint_list:
   - serialNumber
   - minSizeGigabytes
   - wwn
+  - wwnWithExtension
+  - wwnVendorExtension
   - rotational
   - ''
