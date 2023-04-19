@@ -120,7 +120,7 @@ platform:
 {% endif %}
 {% if 'root_device_hint' in hostvars[host] and 'root_device_hint_value' in hostvars[host] and hostvars[host]['root_device_hint'] in roothint_list %}
         rootDeviceHints:
-          {{ hostvars[host]['root_device_hint'] }}: {{ hostvars[host]['root_device_hint_value'] }}
+          {{ hostvars[host]['root_device_hint'] }}: '{{ hostvars[host]['root_device_hint_value'] }}'
 {% endif %}
 {% endif %}
 {% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 10)) %}
