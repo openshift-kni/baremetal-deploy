@@ -218,7 +218,7 @@ $ sed -e 's/^/  /' /opt/registry/certs/domain.crt >> install-config.yaml
 [source,terminal]
 ----
 $ cat <<EOF >> install-config.yaml
-imageContentSources:
+<image-config>: <1>
 - mirrors:
   - registry.example.com:5000/ocp4/openshift4
   source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
@@ -230,5 +230,8 @@ imageContentSources:
   source: quay.io/openshift-release-dev/ocp-release
 EOF
 ----
+Where:
++
+<1> You must replace `<image-config>` with `imageContentSources` for OpenShift 4.13 and below, or `imageDigestSources` for Openshift 4.14 and above.
 +
 NOTE: Replace `registry.example.com` with the registry's fully qualified domain name.
