@@ -18,7 +18,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - uses: actions/setup-python@v4.6.0
+      - uses: actions/setup-python@v4.6.1
 
       - name: Install dependencies
         run: |
