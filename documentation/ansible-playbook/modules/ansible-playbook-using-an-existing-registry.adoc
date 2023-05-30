@@ -36,7 +36,8 @@ Example:
 ====
 
 The `disconnected_registry_mirrors_file` variable should point to a file
-containing the `additionalTrustBundle` and `imageContentSources` for
+containing the `additionalTrustBundle` and `imageContentSources` (OpenShift
+4.13 and below) or `imageDigestSources` (OpenShift 4.14 and above) for
 the disconnected registry. The certificate that goes within the additional
 trust bundle is the disconnected registry node's certificate. The
 `imageContentSources` adds the mirrored information of the registry. The below
@@ -58,7 +59,7 @@ additionalTrustBundle: |
   dC5jb20wHhcNMjAwNDA3MjM1MzI2WhcNMzAwNDA1MjM1MzI2WjCBkDELMAkGA1UE
   -----END CERTIFICATE-----
 
-imageContentSources:
+<image-config>: <1>
 - mirrors:
   - registry.example.com:5000/ocp4/openshift4
   source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
@@ -70,5 +71,8 @@ imageContentSources:
   source: quay.io/openshift-release-dev/ocp-release
 
 ----
+Where:
++
+<1> `<image-config>` is either `imageContentSources` for OpenShift 4.13 and below, or `imageDigestSources` for Openshift 4.14 and above.
 
 NOTE: Indentation is important in the yml file. Ensure your copy of the `install-config-appends.yml` is properly indented as in the example above.

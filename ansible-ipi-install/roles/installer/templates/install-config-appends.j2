@@ -1,6 +1,10 @@
 additionalTrustBundle: |
   {{ trustbundle | regex_replace('\n', '\n  ') }}
+{% if release_version is version('4.14', '<') %}
 imageContentSources:
+{% else %}
+imageDigestSources:
+{% endif %}
 - mirrors:
   - {{ local_registry }}/{{ local_repo }}
   source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
