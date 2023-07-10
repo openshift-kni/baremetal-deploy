@@ -72,8 +72,13 @@ platform:
     externalBridge: {{ baremetal_bridge }}
 {% endif %}
     provisioningNetwork: "Disabled"
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int == 6)) %}
     provisioningHostIP: {{ provisioningHostIP }}
+{% endif %}
     bootstrapProvisioningIP: {{ bootstrapProvisioningIP }}
+{% if externalMACAddress is defined and externalMACAddress|length %}
+    externalMACAddress: '{{ externalMACAddress }}'
+{% endif %}
 {% if bootstraposimage is defined and bootstraposimage|length %}
     bootstrapOSImage: {{ bootstraposimage }}
 {% endif %}
