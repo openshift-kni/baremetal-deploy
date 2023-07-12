@@ -1,0 +1,118 @@
+// This is included in the following assemblies:
+//
+// installing/installing_bare_metal_ipi/ipi-install-configuration-files.adoc
+
+[id='bmc-addressing-for-hpe-ilo_{context}']
+= BMC addressing for KVM with sushy-tools Redfish emulator
+
+The `address` field for each `bmc` entry is a URL for connecting to the {product-title} cluster nodes, including the type of controller in the URL scheme and its location on the network.
+
+[source,yaml]
+----
+platform:
+  baremetal:
+    hosts:
+      - name: <host name>
+        role: <master | worker>
+        bmc:
+          address: <address> <1>
+          username: <user>
+          password: <password>
+----
+<1> The `address` configuration setting specifies the protocol.
+
+For KVM working with sushy-tools Redfish emulator, Red Hat supports Redfish virtual media and Redfish network boot.
+
+.BMC address formats for KVM with sushy-tools Redfish emulator
+[frame="topbot",options="header"]
+|====
+|Protocol|Address Format
+|Redfish virtual media| `redfish-virtualmedia://<out-of-band-ip>:<sushy-tools-port>/redfish/v1/Systems/<system-id>`
+|Redfish network boot| `redfish://<out-of-band-ip>:<sushy-tools-port>/redfish/v1/Systems/<system-id>`
+|====
+
+[NOTE]
+====
+The sushy-tools Redfish emulator runs from the KVM hypervisor and a single instance acts as the virtual BMC for all the guest machines. This means both the out of band IP address and port, will be same and each individual machine must be identified by its System ID.
+
+You may retrieve the System ID of your guest machines with the following command:
+
+[source,bash]
+---
+$ virsh list --all --name --uuid
+d8ac6bf8-3062-4954-84c3-e097faa17025 compute-0
+84971a71-3935-4a92-8d90-a9f8440dac09 compute-1
+92430f42-8805-4412-959a-2a7252c7c540 compute-2
+0fea5296-db95-41d7-9295-f57cfa50255f control-plane-0
+4986e405-fd3a-483d-9210-8cb120b98f80 control-plane-1
+26bf228c-44fd-4c49-9e6f-44f4b5968b34 control-plane-2
+---
+====
+
+See the following sections for additional details.
+
+.Redfish virtual media for KVM with sushy-tools Redfish emulator
+
+To enable Redfish virtual media for KVM environments running the sushy-tools Redfish emulator, use `redfish-virtualmedia://` in the `address` setting. The following example demonstrates using Redfish virtual media within the `install-config.yaml` file.
+
+[source,yaml]
+----
+platform:
+  baremetal:
+    hosts:
+      - name: openshift-master-0
+        role: master
+        bmc:
+          address: redfish-virtualmedia://<out-of-band-ip>:<sushy-tools-port>/redfish/v1/Systems/<system-id>
+          username: <user>
+          password: <password>
+----
+
+While it is recommended to have a certificate of authority for the out-of-band management addresses, you must include `disableCertificateVerification: True` in the `bmc` configuration if using self-signed certificates. The following example demonstrates a Redfish configuration using the `disableCertificateVerification: True` configuration parameter within the `install-config.yaml` file.
+
+[source,yaml]
+----
+platform:
+  baremetal:
+    hosts:
+      - name: openshift-master-0
+        role: master
+        bmc:
+          address: redfish-virtualmedia://<out-of-band-ip>:<sushy-tools-port>/redfish/v1/Systems/<system-id>
+          username: <user>
+          password: <password>
+          disableCertificateVerification: True
+----
+
+.Redfish network boot for KVM with sushy-tools Redfish emulator
+
+To enable Redfish, use `redfish://` or `redfish+http://` to disable TLS. The installer requires the host name or the IP address, the Redfish emulator listening port and the path to the system ID. The following example demonstrates a Redfish configuration within the `install-config.yaml` file.
+
+[source,yaml]
+----
+platform:
+  baremetal:
+    hosts:
+      - name: openshift-master-0
+        role: master
+        bmc:
+          address: redfish://<out-of-band-ip>:<sushy-tools-port>/redfish/v1/Systems/<system-id>
+          username: <user>
+          password: <password>
+----
+
+While it is recommended to have a certificate of authority for the out-of-band management addresses, you must include `disableCertificateVerification: True` in the `bmc` configuration if using self-signed certificates. The following example demonstrates a Redfish configuration using the `disableCertificateVerification: True` configuration parameter within the `install-config.yaml` file.
+
+[source,yaml]
+----
+platform:
+  baremetal:
+    hosts:
+      - name: openshift-master-0
+        role: master
+        bmc:
+          address: redfish://<out-of-band-ip>:<sushy-tools-port>/redfish/v1/Systems/<system-id>
+          username: <user>
+          password: <password>
+          disableCertificateVerification: True
+----

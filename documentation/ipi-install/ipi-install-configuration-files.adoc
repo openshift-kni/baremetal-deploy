@@ -30,6 +30,8 @@ ifeval::[{product-version} > 4.7]
 include::modules/ipi-install-bmc-addressing-for-fujitsu-irmc.adoc[leveloffset=+2]
 endif::[]
 
+include::modules/ipi-install-bmc-addressing-for-kvm-with-sushy-tools.adoc[leveloffset=+2]
+
 include::modules/ipi-install-root-device-hints.adoc[leveloffset=+1]
 
 include::modules/ipi-install-creating-the-openshift-manifests.adoc[leveloffset=+1]
