@@ -76,8 +76,8 @@ platform:
     provisioningHostIP: {{ provisioningHostIP }}
 {% endif %}
     bootstrapProvisioningIP: {{ bootstrapProvisioningIP }}
-{% if externalMACAddress is defined and externalMACAddress|length %}
-    externalMACAddress: '{{ externalMACAddress }}'
+{% if externalMACAddress is defined %}
+    externalMACAddress: {{ externalMACAddress }}
 {% endif %}
 {% if bootstraposimage is defined and bootstraposimage|length %}
     bootstrapOSImage: {{ bootstraposimage }}
@@ -96,6 +96,9 @@ platform:
 {% elif groups['hp_hosts_redfish'] is defined and host in groups['hp_hosts_redfish'] and ((release_version.split('.')[0]|int > 4) or ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 6))) and enable_virtualmedia|bool %}
           address: redfish-virtualmedia://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/1
           disableCertificateVerification: {{ disable_bmc_certificate_verification }}
+{% elif groups['kvm_hosts_redfish'] is defined and host in groups['kvm_hosts_redfish'] %}
+          address: redfish-virtualmedia://{{ hostvars[host]['ipmi_address']|ipwrap }}:{{ hostvars[host]['redfish_port'] }}/redfish/v1/Systems/{{ hostvars[host]['kvm_uuid'] }}
+          disableCertificateVerification: true
 {% elif ansible_system_vendor == 'Dell Inc.' %}
           address: idrac-virtualmedia://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/System.Embedded.1
           disableCertificateVerification: {{ disable_bmc_certificate_verification }}
@@ -140,6 +143,9 @@ platform:
 {% elif groups['hp_hosts_redfish'] is defined and host in groups['hp_hosts_redfish'] and ((release_version.split('.')[0]|int > 4) or ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 6))) and enable_virtualmedia|bool %}
           address: redfish-virtualmedia://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/1
           disableCertificateVerification: {{ disable_bmc_certificate_verification }}
+{% elif groups['kvm_hosts_redfish'] is defined and host in groups['kvm_hosts_redfish'] %}
+          address: redfish-virtualmedia://{{ hostvars[host]['ipmi_address']|ipwrap }}:{{ hostvars[host]['redfish_port'] }}/redfish/v1/Systems/{{ hostvars[host]['kvm_uuid'] }}
+          disableCertificateVerification: true
 {% elif ansible_system_vendor == 'Dell Inc.' %}
           address: idrac-virtualmedia://{{ hostvars[host]['ipmi_address']|ipwrap }}/redfish/v1/Systems/System.Embedded.1
           disableCertificateVerification: {{ disable_bmc_certificate_verification }}
