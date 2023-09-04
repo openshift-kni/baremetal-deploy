@@ -525,6 +525,7 @@
   when:
     - enable_virtualmedia|bool
     - provisioningHostIP is undefined
+    - release_version.split('.')[0]|int == 4 and release_version.split('.')[1]|int == 6
   tags:
     - always
     - validation
