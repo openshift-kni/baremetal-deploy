@@ -9,6 +9,7 @@ install_config_appends_file: install-config-appends.yml
 registry_auth_file: registry-auths.json
 disconnected_registry_user: dummy
 disconnected_registry_password: dummy
+webserver_cache_image: "quay.io/centos7/httpd-24-centos7:latest"
 webserver_caching_port: "{{ webserver_caching_port_container }}"
 webserver_caching_port_container: 8080
 registry_creation: false

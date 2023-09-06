@@ -170,7 +170,7 @@
 - name: Start RHCOS image cache container
   containers.podman.podman_container:
     name: rhcos_image_cache
-    image: registry.centos.org/centos/httpd-24-centos7:latest
+    image: "{{ webserver_cache_image }}"
     state: stopped
     network: host
     volumes:
