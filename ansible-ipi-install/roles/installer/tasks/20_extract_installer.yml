@@ -65,7 +65,7 @@
 - name: Confirm whether or not internet connectivity on provisioner host
   uri:
     url: https://www.redhat.com
-    status_code: [-1, 200]
+    status_code: [-1, 200, 301]
     timeout: 1
   register: the_url
   tags:
@@ -86,7 +86,7 @@
     --to {{ tempdir_loc }} {{ disconnected_installer | ternary(disconnected_installer, release_image) }}
   args:
     chdir: "{{ tempdir }}"
-  when: (disconnected_installer|length or the_url.status == 200)
+  when: (disconnected_installer|length or the_url.status in [200,301])
   delegate_to: "{{ disconnected_installer | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
   tags: extract
 

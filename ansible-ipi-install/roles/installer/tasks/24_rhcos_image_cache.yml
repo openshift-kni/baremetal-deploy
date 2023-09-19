@@ -6,7 +6,7 @@
 - name: Confirm whether or not internet connectivity on provisioner host
   uri:
     url: https://www.redhat.com
-    status_code: [-1, 200]
+    status_code: [-1, 200, 301]
     timeout: 1
   register: the_url
   tags: cache
@@ -15,7 +15,7 @@
   set_fact:
     url_passed: true
   when:
-    - the_url.status == 200
+    - the_url.status in [200,301]
   tags: cache
 
 - name: Get URL of host providing the webserver
@@ -136,7 +136,7 @@
   # use a ternary for the delegate_to
 - name: Get URL of host providing the webserver
   set_fact:
-    host_url: "{{ the_url.status == 200 | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
+    host_url: "{{ the_url.status in [200,301] | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
   tags: cache
 
 - name: Set bootstrap image URL override if not provided by the user
