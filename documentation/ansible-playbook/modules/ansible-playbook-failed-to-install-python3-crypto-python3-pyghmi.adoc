@@ -23,7 +23,7 @@ can be expected
 
 [source,bash]
 ----
-TASK [node-prep : Install required packages] ************************************************************************************************
+TASK [node_prep : Install required packages] ************************************************************************************************
 Thursday 07 May 2020  19:11:35 +0000 (0:00:00.161)       0:00:11.940 **********
 fatal: [provisioner.example.com]: FAILED! => {"changed": false, "failures": ["No package python3-crypto available.", "No package python3-pyghmi available."], "msg": "Failed to install some of the specified packages", "rc": 1, "results": []}
 ----

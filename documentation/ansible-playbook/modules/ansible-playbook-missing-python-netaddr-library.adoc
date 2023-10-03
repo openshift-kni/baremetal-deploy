@@ -11,7 +11,7 @@ The error when running the playbook looks like the following:
 
 [source,bash]
 ----
-TASK [node-prep : Fail if Python modules are missing] ******************************************************************************
+TASK [node_prep : Fail if Python modules are missing] ******************************************************************************
 Tuesday 05 May 2020  19:30:19 +0000 (0:00:00.512)       0:00:13.829 ***********
 fatal: [localhost]: FAILED! => {"changed": false, "msg": "Missing python module(s) ['netaddr'] on localhost\n"}
 ----

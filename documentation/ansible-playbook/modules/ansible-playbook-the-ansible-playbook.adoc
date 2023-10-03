@@ -4,7 +4,7 @@
 
 
 The Ansible playbook connects to your provision host and
-runs through the `node-prep` role and the `installer` role.
+runs through the `node_prep` role and the `installer` role.
 No modification is necessary. All modifications of variables
 may be done within the `inventory/hosts` file. A sample file
 is located in this repository under `inventory/hosts.sample`.
@@ -17,6 +17,6 @@ From the system that is to run the playbook,
 - name: IPI on Baremetal Installation Playbook
   hosts: provisioner
   roles:
-    - node-prep
+    - node_prep
     - installer
 ----

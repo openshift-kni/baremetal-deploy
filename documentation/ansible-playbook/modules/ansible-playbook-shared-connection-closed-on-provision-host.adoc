@@ -9,7 +9,7 @@ following error.
 
 [source,bash]
 ----
-TASK [node-prep : Install required packages] ************************************************************************************************
+TASK [node_prep : Install required packages] ************************************************************************************************
 Thursday 07 May 2020  17:04:21 +0000 (0:00:00.152)       0:00:11.854 **********
 fatal: [provisioner.example.com]: FAILED! => {"changed": false, "module_stderr": "Shared connection to provisioner.example.com closed.\r\n", "module_stdout": "[Errno 101] Network is unreachable\r\n\r\n{\"msg\": \"Nothing to do\", \"changed\": false, \"results\": [], \"rc\": 0, \"invocation\": {\"module_args\": {\"name\": [\"firewalld\", \"tar\", \"libvirt\", \"qemu-kvm\", \"python3-devel\", \"jq\", \"ipmitool\", \"python3-libvirt\", \"python3-lxml\", \"python3-yaml\", \"NetworkManager-libnm\", \"nm-connection-editor\", \"libsemanage-python3\", \"policycoreutils-python3\", \"podman\"], \"state\": \"present\", \"update_cache\": true, \"allow_downgrade\": false, \"autoremove\": false, \"bugfix\": false, \"disable_gpg_check\": false, \"disable_plugin\": [], \"disablerepo\": [], \"download_only\": false, \"enable_plugin\": [], \"enablerepo\": [], \"exclude\": [], \"installroot\": \"/\", \"install_repoquery\": true, \"install_weak_deps\": true, \"security\": false, \"skip_broken\": false, \"update_only\": false, \"validate_certs\": true, \"lock_timeout\": 30, \"conf_file\": null, \"disable_excludes\": null, \"download_dir\": null, \"list\": null, \"releasever\": null}}}\r\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 0}
 ----

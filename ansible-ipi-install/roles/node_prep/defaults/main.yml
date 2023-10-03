@@ -1,5 +1,5 @@
 ---
-# defaults file for node-prep
+# defaults file for node_prep
 activation_key: ""
 org_id: ""
 network_type: "OVNKubernetes"
