@@ -136,7 +136,7 @@
   # use a ternary for the delegate_to
 - name: Get URL of host providing the webserver
   set_fact:
-    host_url: "{{ the_url.status in [200,301] | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
+    host_url: "{{ (the_url.status in [200,301]) | ternary(groups['provisioner'][0], groups['registry_host'][0]) }}"
   tags: cache
 
 - name: Set bootstrap image URL override if not provided by the user
