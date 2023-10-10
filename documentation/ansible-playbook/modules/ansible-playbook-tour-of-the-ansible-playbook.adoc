@@ -5,7 +5,7 @@
 * `inventory` - contains the file `hosts.sample` that:
 ** contains all the modifiable variables, their default values, and their definition. Some variables are empty ensuring users give an explicit value.
 ** the setting up of your provision node, master nodes, and worker nodes. Each section will require additional details (i.e. Management credentials).
-* `roles` - contains two roles: `node-prep` and `installer`. `node-prep` handles all the prerequisites that the provisioner node requires prior to running the installer. The `installer` role handles extracting the installer, setting up the manifests, and running the Red Hat OpenShift installation.
+* `roles` - contains two roles: `node_prep` and `installer`. `node_prep` handles all the prerequisites that the provisioner node requires prior to running the installer. The `installer` role handles extracting the installer, setting up the manifests, and running the Red Hat OpenShift installation.
 
 The tree structure is shown below:
 
@@ -63,7 +63,7 @@ The tree structure is shown below:
     │   │   └── test.yml
     │   └── vars
     │       └── main.yml
-    └── node-prep
+    └── node_prep
         ├── defaults
         │   └── main.yml
         ├── handlers

@@ -1,5 +1,5 @@
 ---
-# vars file for node-prep
+# vars file for node_prep
 # the ternary states if provision host has no online access
 # just verify the python3-crypto, python3-pyghmi packages are present
 # otherwise attempt to install them from trunk.rdoproject.org

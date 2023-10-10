@@ -2,7 +2,7 @@
 
 = Dig lookup requires the python '`dnspython`' library and it is not installed
 
-One of the tasks in the `node-prep` role captures your API VIP and the
+One of the tasks in the `node_prep` role captures your API VIP and the
 Ingress VIP of your environment using a `lookup` via `dig`. It does
 this https://docs.ansible.com/ansible/latest/plugins/lookup/dig.html[DNS query using the `dnspython` library].
 This error is a little deceiving because the `dnspython` package
@@ -12,10 +12,10 @@ your local host** that is running the Ansible playbook.
 
 [source,bash]
 ----
-TASK [node-prep : fail] ************************************************************************************************************
+TASK [node_prep : fail] ************************************************************************************************************
 skipping: [provisioner.example.com]
 
-TASK [node-prep : Verify DNS records for API VIP, Wildcard (Ingress) VIP] **********************************************************
+TASK [node_prep : Verify DNS records for API VIP, Wildcard (Ingress) VIP] **********************************************************
 fatal: [provisioner.example.com]: FAILED! => {"msg": "An unhandled exception occurred while running the lookup plugin 'dig'. Error was a <class 'ansible.errors.AnsibleError'>, original message: The dig lookup requires the python 'dnspython' library and it is not installed"}
 
 PLAY RECAP *************************************************************************************************************************
