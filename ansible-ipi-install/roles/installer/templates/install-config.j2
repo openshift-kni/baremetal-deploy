@@ -104,6 +104,7 @@ platform:
           disableCertificateVerification: true
 {% elif hostvars[host]['irmc_address'] is defined %}
           address: irmc://{{ hostvars[host]['irmc_address']|ipwrap }}:{{ hostvars[host]['irmc_port']|default(443) }}
+          disableCertificateVerification: {{ disable_bmc_certificate_verification }}
 {% else %}
           address: ipmi://{{ hostvars[host]['ipmi_address']|ipwrap }}:{{ hostvars[host]['ipmi_port']|default(623) }}
 {% endif %}
@@ -149,6 +150,7 @@ platform:
           disableCertificateVerification: true
 {% elif hostvars[host]['irmc_address'] is defined %}
           address: irmc://{{ hostvars[host]['irmc_address']|ipwrap }}:{{ hostvars[host]['irmc_port']|default(443) }}
+          disableCertificateVerification: {{ disable_bmc_certificate_verification }}
 {% else %}
           address: ipmi://{{ hostvars[host]['ipmi_address']|ipwrap }}:{{ hostvars[host]['ipmi_port']|default(623) }}
 {% endif %}
