@@ -1,0 +1,5 @@
+---
+collections:
+  - name: redhatci.ocp
+  - name: containers.podman
+    version: "1.10.1"
