@@ -23,11 +23,16 @@
       delegate_to: "{{ disconnected_installer | ternary(groups['registry_host'][0], groups['provisioner'][0]) }}"
       tags: rhcospath
 
+    # The baseURI for pre 4.8 is decomissioned, but old images are still available along newer ones
+    # only when cache_enabled is set to True
     - name: Set Facts for RHCOS_URI and RHCOS_PATH
+      vars:
+        base_version: "{{ release_version.split('.')[:2] | join('.') }}"
+        build_id: "{{ rhcos_json.json | json_query('buildid') }}"
       set_fact:
         rhcos_qemu_uri: "{{ rhcos_json.json | json_query('images.qemu.path') }}"
         rhcos_uri: "{{ rhcos_json.json | json_query('images.openstack.path') }}"
-        rhcos_path: "{{ rhcos_json.json | json_query('baseURI') }}"
+        rhcos_path: "https://rhcos.mirror.openshift.com/art/storage/releases/rhcos-{{ base_version }}/{{ build_id }}/x86_64/"
       tags: rhcospath
   when: (release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int <= 7)
 
