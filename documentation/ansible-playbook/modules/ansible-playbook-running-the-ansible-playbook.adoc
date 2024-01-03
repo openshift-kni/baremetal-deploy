@@ -5,6 +5,7 @@
 The following are the steps to successfully run the Ansible playbook.
 
 include::ansible-playbook-git-clone.adoc[leveloffset=+1]
+include::ansible-playbook-install-collections.adoc[leveloffset=+1]
 include::ansible-playbook-ansiblecfg-file.adoc[leveloffset=+1]
 include::ansible-playbook-ansible-version.adoc[leveloffset=+1]
 include::ansible-playbook-ssh-key.adoc[leveloffset=+1]

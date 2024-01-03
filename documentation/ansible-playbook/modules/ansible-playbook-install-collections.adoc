@@ -1,0 +1,11 @@
+[id="ansible-playbook-install-collections"]
+
+= Install the required Ansible collections
+
+The Ansible playbook makes use of different collections defined in the `requirements.yml` file. Two of the main roles come from the https://github.com/redhatci/ansible-collection-redhatci-ocp[`redhatci.ocp`] collection.
+
+. Install required collections
+[source,bash]
+----
+[user@laptop ~]$ ansible-galaxy collection install -r requirements.yml
+----

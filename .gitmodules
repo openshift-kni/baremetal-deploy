@@ -1,4 +1,0 @@
-[submodule "ansible-ipi-install/collections/ansible_collections/containers/podman"]
-	path = ansible-ipi-install/collections/ansible_collections/containers/podman
-	url = https://github.com/containers/ansible-podman-collections.git
-	shallow = true

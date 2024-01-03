@@ -11,10 +11,8 @@ NOTE: This should be done on a system that can access the provision host
 +
 [source,bash]
 ----
-[user@laptop ~]$ git clone --recursive https://github.com/openshift-kni/baremetal-deploy.git
+[user@laptop ~]$ git clone https://github.com/openshift-kni/baremetal-deploy.git
 ----
-+
-NOTE: Ensure `git` is installed on your localhost and that `--recursive` is used to initialize the git submodules.
 +
 . Change to the `ansible-ipi-install` directory
 +
