@@ -1,10 +1,14 @@
+> [!IMPORTANT]
+> This repository is no longer maintained.
+> For contributions to the ansible-ipi-install roles please visit the [ansible-collection-redhatci-ocp](https://github.com/redhatci/ansible-collection-redhatci-ocp) repository.
+
+
 # OpenShift Baremetal Deploy
 
 This repository stores resources and deployment artifacts for [bare metal](https://github.com/metal3-io/metal3-docs/blob/master/design/bare-metal-style-guide.md) OpenShift KNI clusters
 
 It also contains optional features focused on low-latency workloads, NFV workloads, etc.
 
-For contributions to the ansible-ipi-install roles please visit the [ansible-collection-redhatci-ocp](https://github.com/redhatci/ansible-collection-redhatci-ocp) repository.
 
 ## Installation artifacts
 
