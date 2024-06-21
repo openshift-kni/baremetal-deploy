@@ -19,7 +19,6 @@ include::../../ipi-install/modules/ipi-install-validation-checklist-for-nodes.ad
 == Validation checklist for Ansible playbook installation
 
 * [ ] Create a local repository using a RHEL 8 Installation DVD to install packages
-* [ ] Manually install `python3-crypto` and `python3-pyghmi` on the provision host (packages not part of RHEL installation DVD)
 * [ ] Suppress `Unable to read consumer identity` messages when using `subscription-manager` via `/etc/yum.conf`
 * [ ] Ensure `release.txt` file exists within the webserver path/to/webserver/<ocp_release_version>
 * [ ] Ensure `rhcos.json` file exists within the webserver path/to/webserver/<ocp_release_version>
