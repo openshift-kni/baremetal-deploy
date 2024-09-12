@@ -212,6 +212,22 @@ ifeval::[{product-version} > 4.4]
 | Set this parameter to the appropriate list of exclusions for proxy usage within your environment.
 endif::[]
 
+ifeval::[{product-version} >= 4.12]
+| `bootstrapExternalStaticIP`
+|
+| Set this parameter to the appropriate IP address on the `baremetal` network when the `provisioningNetwork` configuration setting is set to `Disabled`.
+
+| `bootstrapExternalStaticGateway`
+|
+| Set this parameter to the appropriate GW address on the `baremetal` network when the `provisioningNetwork` configuration setting is set to `Disabled`.
+endif::[]
+
+ifeval::[{product-version} >= 4.14]
+| `bootstrapExternalStaticDNS`
+|
+| Set this parameter to the appropriate DNS address on the `baremetal` network when the `provisioningNetwork` configuration setting is set to `Disabled`.
+endif::[]
+
 |===
 
 [id="hoststable"]

@@ -172,9 +172,27 @@ pullsecret=""
 # (Optional) Enable RedFish VirtualMedia/iDRAC VirtualMedia
 #enable_virtualmedia=True
 
-# (Required when enable_virtualmedia is set to True) Set an available IP address from the baremetal net for these two variables
+# (Required when enable_virtualmedia is set to True in OCP 4.6) Set an available IP address from the baremetal net for these two variables
 #provisioningHostIP=<baremetal_net_IP1>
 #bootstrapProvisioningIP=<baremetal_net_IP2>
+
+# (Optional in OCP >= 4.7) Set an available IP address from the provisioning network when provisioning network is enabled. Not used when enable_virtualmedia=True
+#bootstrapProvisioningIP=<provisioning_net_IP>
+
+# (Optional in OCP >= 4.12 ) Allows to set bootstrapExternalStatic* variables starting.
+#static_bootstrap_extnet=false
+
+# (Optional in OCP >= 4.12 ) Set this parameter to the appropriate IP address on the baremetal network
+# when the provisioningNetwork configuration setting is set to Disabled, enable_virtualmedia is set to True and static_bootstrap_extnet is set to True.
+#bootstrapExternalStaticIP=<baremetal_net_IP>
+
+# (Optional in OCP >= 4.12 ) Set this parameter to the appropriate GW address on the baremetal network
+# when the provisioningNetwork configuration setting is set to Disabled, enable_virtualmedia is set to True and static_bootstrap_extnet is set to True.
+#bootstrapExternalStaticGateway=<baremetal_net_GW>
+
+# (Optional in OCP >= 4.14 ) Set this parameter to the appropriate DNS address on the baremetal network
+# when the provisioningNetwork configuration setting is set to Disabled, enable_virtualmedia is set to True and static_bootstrap_extnet is set to True.
+#bootstrapExternalStaticDNS=<baremetal_net_DNS>
 
 # (Optional) Change the boot mode of the OpenShift cluster nodes to legacy mode (BIOS). Default is UEFI.
 #bootmode=legacy
