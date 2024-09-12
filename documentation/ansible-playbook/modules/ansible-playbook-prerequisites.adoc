@@ -53,5 +53,3 @@ chmod 0440 /etc/sudoers.d/kni
 ----
 +
 . Enable a `dnf` <<local_repository,local repository>> on the provision host
-
-. Manually install <<packages,`python3-crypto` and `python3-pyghmi`>> packages on the provision host
