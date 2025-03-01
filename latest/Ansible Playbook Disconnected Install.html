@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="generator" content="Asciidoctor 2.0.23"/>
+<meta name="description" content="Ansible playbook usage for installing OpenShift on baremetal in a fully disconnected environment"/>
+<meta name="keywords" content="OpenShift, ansible, baremetal, installation, ipi, Installer provisioned infrastructure, disconected, isolated"/>
+<meta name="author" content="Deployment Integration Team"/>
+<title>Fully Disconnected Deployment of IPI on BM using the Ansible Playbook</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700"/>
+<style>
+/*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
+/* Uncomment the following line when using as a custom stylesheet */
+/* @import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700"; */
+html{font-family:sans-serif;-webkit-text-size-adjust:100%}
+a{background:none}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+b,strong{font-weight:bold}
+abbr{font-size:.9em}
+abbr[title]{cursor:help;border-bottom:1px dotted #dddddf;text-decoration:none}
+dfn{font-style:italic}
+hr{height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+audio,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type=checkbox],input[type=radio]{padding:0}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,::before,::after{box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;line-height:1;position:relative;cursor:auto;-moz-tab-size:4;-o-tab-size:4;tab-size:4;word-wrap:anywhere;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+img,object,svg{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:0}
+p{line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #dddddf;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ul.square{list-style-type:square}
+ul.circle ul:not([class]),ul.disc ul:not([class]),ul.square ul:not([class]){list-style:inherit}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}
+table{background:#fff;margin-bottom:1.25em;border:1px solid #dedede;word-wrap:normal}
+table thead,table tfoot{background:#f7f8f7}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt{background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{line-height:1.6}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.center{margin-left:auto;margin-right:auto}
+.stretch{width:100%}
+.clearfix::before,.clearfix::after,.float-group::before,.float-group::after{content:" ";display:table}
+.clearfix::after,.float-group::after{clear:both}
+:not(pre).nobreak{word-wrap:normal}
+:not(pre).nowrap{white-space:nowrap}
+:not(pre).pre-wrap{white-space:pre-wrap}
+:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
+pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
+pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
+pre>code{display:block}
+pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
+em em{font-style:normal}
+strong strong{font-weight:400}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background:#f7f7f7;border:1px solid #ccc;border-radius:3px;box-shadow:0 1px 0 rgba(0,0,0,.2),inset 0 0 0 .1em #fff;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menuref{color:#000}
+.menuseq b:not(.caret),.menuref{font-weight:inherit}
+.menuseq{word-spacing:-.02em}
+.menuseq b.caret{font-size:1.25em;line-height:.8}
+.menuseq i.caret{font-weight:bold;text-align:center;width:.45em}
+b.button::before,b.button::after{position:relative;top:-1px;font-weight:400}
+b.button::before{content:"[";padding:0 3px 0 2px}
+b.button::after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin:0 auto;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header::before,#header::after,#content::before,#content::after,#footnotes::before,#footnotes::after,#footer::before,#footer::after{content:" ";display:table}
+#header::after,#content::after,#footnotes::after,#footer::after{clear:both}
+#content{margin-top:1.25em}
+#content::before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
+#header>h1:only-child{border-bottom:1px solid #dddddf;padding-bottom:8px}
+#header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:flex;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span::before{content:"\00a0\2013\00a0"}
+#header .details br+span.author::before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark::before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber::after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #dddddf;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #e7e7e9;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc li{line-height:1.3334;margin-top:.3334em}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
+#toc.toc2{margin-top:0!important;background:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #e7e7e9;left:auto;right:0}}
+@media screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}
+#content #toc{border:1px solid #e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:none;background:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:hsla(0,0%,100%,.8);line-height:1.44}
+#content{margin-bottom:.625em}
+.sect1{padding-bottom:.625em}
+@media screen and (min-width:768px){#content{margin-bottom:1.25em}
+.sect1{padding-bottom:1.25em}}
+.sect1:last-child{padding-bottom:0}
+.sect1+.sect1{border-top:1px solid #e7e7e9}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor::before,h2>a.anchor::before,h3>a.anchor::before,#toctitle>a.anchor::before,.sidebarblock>.content>.title>a.anchor::before,h4>a.anchor::before,h5>a.anchor::before,h6>a.anchor::before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+details,.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+details{margin-left:1.25rem}
+details>summary{cursor:pointer;display:block;position:relative;line-height:1.6;margin-bottom:.625rem;outline:none;-webkit-tap-highlight-color:transparent}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"";border:solid transparent;border-left:solid;border-width:.3em 0 .3em .5em;position:absolute;top:.5em;left:-1.25rem;transform:translateX(15%)}
+details[open]>summary::before{border:solid transparent;border-top:solid;border-width:.5em .3em 0;transform:translateY(15%)}
+details>summary::after{content:"";width:1.25rem;height:1em;position:absolute;top:.3em;left:-1.25rem}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
+.paragraph.lead>p,#preamble>.sectionbody>[class=paragraph]:first-of-type p{font-size:1.21875em;line-height:1.6;color:rgba(0,0,0,.85)}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border:1px solid #e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;border-radius:4px}
+.sidebarblock{border:1px solid #dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;border-radius:4px}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:first-child,.sidebarblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child,.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock>.content>pre{border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
+@media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
+@media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
+.literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class=highlight],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
+.literalblock.output pre{color:#f7f7f8;background:rgba(0,0,0,.9)}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]::before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:inherit;opacity:.5}
+.listingblock:hover code[data-lang]::before{display:block}
+.listingblock.terminal pre .command::before{content:attr(data-prompt);padding-right:.5em;color:inherit;opacity:.5}
+.listingblock.terminal pre .command:not([data-prompt])::before{content:"$"}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.prettyprint{background:#f7f7f8}
+pre.prettyprint .linenums{line-height:1.45;margin-left:2em}
+pre.prettyprint li{background:none;list-style-type:inherit;padding-left:0}
+pre.prettyprint li code[data-lang]::before{opacity:1}
+pre.prettyprint li:not(:first-child) code[data-lang]::before{display:none}
+table.linenotable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.linenotable td[class]{color:inherit;vertical-align:top;padding:0;line-height:inherit;white-space:normal}
+table.linenotable td.code{padding-left:.75em}
+table.linenotable td.linenos,pre.pygments .linenos{border-right:1px solid;opacity:.35;padding-right:.5em;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+pre.pygments span.linenos{display:inline-block;margin-right:.75em}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock:not(.excerpt)>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote::before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.75em;margin-right:.5ex;text-align:right}
+.verseblock{margin:0 1em 1.25em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans-serif;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.025em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract blockquote::before,.quoteblock.excerpt blockquote::before,.quoteblock .quoteblock blockquote::before{display:none}
+.quoteblock.abstract blockquote,.quoteblock.abstract p,.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{line-height:1.6;word-spacing:0}
+.quoteblock.abstract{margin:0 1em 1.25em;display:block}
+.quoteblock.abstract>.title{margin:0 0 .375em;font-size:1.15em;text-align:center}
+.quoteblock.excerpt>blockquote,.quoteblock .quoteblock{padding:0 0 .25em 1em;border-left:.25em solid #dddddf}
+.quoteblock.excerpt,.quoteblock .quoteblock{margin-left:0}
+.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
+.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;font-size:.85rem;text-align:left;margin-right:0}
+p.tableblock:last-child{margin-bottom:0}
+td.tableblock>.content{margin-bottom:1.25em;word-wrap:anywhere}
+td.tableblock>.content>:last-child{margin-bottom:-1.25em}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all>*>tr>*{border-width:1px}
+table.grid-cols>*>tr>*{border-width:0 1px}
+table.grid-rows>*>tr>*{border-width:1px 0}
+table.frame-all{border-width:1px}
+table.frame-ends{border-width:1px 0}
+table.frame-sides{border-width:0 1px}
+table.frame-none>colgroup+*>:first-child>*,table.frame-sides>colgroup+*>:first-child>*{border-top-width:0}
+table.frame-none>:last-child>:last-child>*,table.frame-sides>:last-child>:last-child>*{border-bottom-width:0}
+table.frame-none>*>tr>:first-child,table.frame-ends>*>tr>:first-child{border-left-width:0}
+table.frame-none>*>tr>:last-child,table.frame-ends>*>tr>:last-child{border-right-width:0}
+table.stripes-all>*>tr,table.stripes-odd>*>tr:nth-of-type(odd),table.stripes-even>*>tr:nth-of-type(even),table.stripes-hover>*>tr:hover{background:#f8f8f7}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
+ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
+ul.unstyled,ol.unstyled{margin-left:0}
+li>p:empty:only-child::before{content:"";display:inline-block}
+ul.checklist>li>p:first-child{margin-left:-1em}
+ul.checklist>li>p:first-child>.fa-square-o:first-child,ul.checklist>li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
+ul.checklist>li>p:first-child>input[type=checkbox]:first-child{margin-right:.25em}
+ul.inline{display:flex;flex-flow:row wrap;list-style:none;margin:0 0 .625em -1.25em}
+ul.inline>li{margin-left:1.25em}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
+td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+td.hdlist2{word-wrap:anywhere}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist td:not([class]):first-child{padding:.4em .75em 0;line-height:1;vertical-align:top}
+.colist td:not([class]):first-child img{max-width:none}
+.colist td:not([class]):last-child{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:4px solid #fff;box-shadow:0 0 0 1px #ddd}
+.imageblock.left{margin:.25em .625em 1.25em 0}
+.imageblock.right{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none;display:inline-block}
+a.image object{pointer-events:none}
+sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
+sup.footnote a,sup.footnoteref a{text-decoration:none}
+sup.footnote a:active,sup.footnoteref a:active,#footnotes .footnote a:first-of-type:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
+#footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background:#00fafa}
+.black{color:#000}
+.black-background{background:#000}
+.blue{color:#0000bf}
+.blue-background{background:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background:#fa00fa}
+.gray{color:#606060}
+.gray-background{background:#7d7d7d}
+.green{color:#006000}
+.green-background{background:#007d00}
+.lime{color:#00bf00}
+.lime-background{background:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background:#7d0000}
+.navy{color:#000060}
+.navy-background{background:#00007d}
+.olive{color:#606000}
+.olive-background{background:#7d7d00}
+.purple{color:#600060}
+.purple-background{background:#7d007d}
+.red{color:#bf0000}
+.red-background{background:#fa0000}
+.silver{color:#909090}
+.silver-background{background:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background:#fafa00}
+span.icon>.fa{cursor:default}
+a span.icon>.fa{cursor:inherit}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note::before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip::before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);border-radius:50%;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]::after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
+h1,h2,p,td.content,span.alt,summary{letter-spacing:-.01em}
+p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content,td.hdlist1,span.alt,summary{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background:#fffef7;border-color:#e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@page{margin:1.25cm .75cm}
+@media print{*{box-shadow:none!important;text-shadow:none!important}
+html{font-size:80%}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare)::after,a[href^="https:"]:not(.bare)::after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]{border-bottom:1px dotted}
+abbr[title]::after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
+thead{display:table-header-group}
+svg{max-width:100%}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#header,#content,#footnotes,#footer{max-width:none}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #dddddf!important;padding-bottom:0!important}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span::before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]::before{display:block}
+#footer{padding:0 .9375em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+@media amzn-kf8,print{#header>h1:first-child{margin-top:1.25rem}
+.sect1{padding:0!important}
+.sect1+.sect1{border:0}
+#footer{background:none}
+#footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
+@media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+<style>
+pre.rouge table td { padding: 5px; }
+pre.rouge table pre { margin: 0; }
+pre.rouge, pre.rouge .w {
+  color: #24292f;
+  background-color: #f6f8fa;
+}
+pre.rouge .k, pre.rouge .kd, pre.rouge .kn, pre.rouge .kp, pre.rouge .kr, pre.rouge .kt, pre.rouge .kv {
+  color: #cf222e;
+}
+pre.rouge .gr {
+  color: #f6f8fa;
+}
+pre.rouge .gd {
+  color: #82071e;
+  background-color: #ffebe9;
+}
+pre.rouge .nb {
+  color: #953800;
+}
+pre.rouge .nc {
+  color: #953800;
+}
+pre.rouge .no {
+  color: #953800;
+}
+pre.rouge .nn {
+  color: #953800;
+}
+pre.rouge .sr {
+  color: #116329;
+}
+pre.rouge .na {
+  color: #116329;
+}
+pre.rouge .nt {
+  color: #116329;
+}
+pre.rouge .gi {
+  color: #116329;
+  background-color: #dafbe1;
+}
+pre.rouge .ges {
+  font-weight: bold;
+  font-style: italic;
+}
+pre.rouge .kc {
+  color: #0550ae;
+}
+pre.rouge .l, pre.rouge .ld, pre.rouge .m, pre.rouge .mb, pre.rouge .mf, pre.rouge .mh, pre.rouge .mi, pre.rouge .il, pre.rouge .mo, pre.rouge .mx {
+  color: #0550ae;
+}
+pre.rouge .sb {
+  color: #0550ae;
+}
+pre.rouge .bp {
+  color: #0550ae;
+}
+pre.rouge .ne {
+  color: #0550ae;
+}
+pre.rouge .nl {
+  color: #0550ae;
+}
+pre.rouge .py {
+  color: #0550ae;
+}
+pre.rouge .nv, pre.rouge .vc, pre.rouge .vg, pre.rouge .vi, pre.rouge .vm {
+  color: #0550ae;
+}
+pre.rouge .o, pre.rouge .ow {
+  color: #0550ae;
+}
+pre.rouge .gh {
+  color: #0550ae;
+  font-weight: bold;
+}
+pre.rouge .gu {
+  color: #0550ae;
+  font-weight: bold;
+}
+pre.rouge .s, pre.rouge .sa, pre.rouge .sc, pre.rouge .dl, pre.rouge .sd, pre.rouge .s2, pre.rouge .se, pre.rouge .sh, pre.rouge .sx, pre.rouge .s1, pre.rouge .ss {
+  color: #0a3069;
+}
+pre.rouge .nd {
+  color: #8250df;
+}
+pre.rouge .nf, pre.rouge .fm {
+  color: #8250df;
+}
+pre.rouge .err {
+  color: #f6f8fa;
+  background-color: #82071e;
+}
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cm, pre.rouge .cp, pre.rouge .cpf, pre.rouge .c1, pre.rouge .cs {
+  color: #6e7781;
+}
+pre.rouge .gl {
+  color: #6e7781;
+}
+pre.rouge .gt {
+  color: #6e7781;
+}
+pre.rouge .ni {
+  color: #24292f;
+}
+pre.rouge .si {
+  color: #24292f;
+}
+pre.rouge .ge {
+  color: #24292f;
+  font-style: italic;
+}
+pre.rouge .gs {
+  color: #24292f;
+  font-weight: bold;
+}
+</style>
+<meta property="og:article:title" content="Fully Disconnected Deployment of IPI on BM using the Ansible Playbook" />
+<meta property="og:article:type" content="article" />
+<meta property="og:article:author" content="Deployment Integration Team">
+<meta property="og:article:tag" content="OpenShift, ansible, baremetal, installation, ipi, Installer provisioned infrastructure, disconected, isolated" />
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Fully Disconnected Deployment of IPI on BM using the Ansible Playbook",
+        "author": {
+            "@type": "Person",
+            "name": "Deployment Integration Team"
+        },
+        "keywords": "OpenShift, ansible, baremetal, installation, ipi, Installer provisioned infrastructure, disconected, isolated",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Deployment Integration Team"
+        },
+        "description": "Ansible playbook usage for installing OpenShift on baremetal in a fully disconnected environment"
+    }
+</script>
+
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Fully Disconnected Deployment of IPI on BM using the Ansible Playbook">
+<meta name=twitter:description content="Ansible playbook usage for installing OpenShift on baremetal in a fully disconnected environment">
+</head>
+<body id="ansible-playbook-fully-disconnected" class="book toc2 toc-left">
+<div id="header">
+<h1>Fully Disconnected Deployment of IPI on BM using the Ansible Playbook</h1>
+<div class="details">
+<span id="author" class="author">Deployment Integration Team</span><br/>
+<span id="email" class="email"><a href="https://github.com/openshift-kni/baremetal-deploy" class="bare">https://github.com/openshift-kni/baremetal-deploy</a></span><br/>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#ansible-playbook-disconnected-introduction">1. Introduction</a></li>
+<li><a href="#ansible-playbook-prerequisites">2. Prerequisites</a></li>
+<li><a href="#ansible-playbook-using-an-existing-registry">3. Using an Existing Registry</a></li>
+<li><a href="#ansible-playbook-contents-of-the-webserver">4. Contents of the Webserver</a></li>
+<li><a href="#ansible-playbook-checklist">5. Fully Disconnected Prerequiste Checklist</a>
+<ul class="sectlevel2">
+<li><a href="#validation-checklist-for-nodes_ipi-install-troubleshooting">5.1. Validation checklist for nodes</a></li>
+<li><a href="#_validation_checklist_for_ansible_playbook_installation">5.2. Validation checklist for Ansible playbook installation</a></li>
+</ul>
+</li>
+<li><a href="#ansible-playbook-disconnected-running-the-playbook">6. Running the <code>playbook.yml</code></a>
+<ul class="sectlevel2">
+<li><a href="#ansible-playbook-git-clone">6.1. <code>git</code> clone the Ansible playbook</a></li>
+<li><a href="#ansible-playbook-ansiblecfg-file">6.2. The <code>ansible.cfg</code> file</a></li>
+<li><a href="#ansible-playbook-ansible-version">6.3. Ansible version</a></li>
+<li><a href="#ansible-playbook-ssh-key">6.4. Copy local SSH key to provision node</a></li>
+<li><a href="#ansible-playbook-modifying-the-inventoryhosts-file-for-fully-disconnected-deployments">6.5. Modifying the <code>inventory/hosts</code> file for Fully Disconnected Deployments</a></li>
+<li><a href="#ansible-playbook-the-ansible-playbook">6.6. The Ansible <code>playbook.yml</code></a></li>
+</ul>
+</li>
+<li><a href="#local_repository">Appendix A: Setup a local RHEL8 repository using an ISO</a></li>
+<li><a href="#env_vars">Appendix B: Environment Variable Script</a></li>
+<li><a href="#helper_script">Appendix C: Helper Script</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><a href="Ansible%20Playbook%20Disconnected%20Install.pdf">Download</a> the PDF version of this document or visit <a href="https://openshift-kni.github.io/baremetal-deploy/" class="bare">https://openshift-kni.github.io/baremetal-deploy/</a></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansible-playbook-disconnected-introduction"><a class="link" href="#ansible-playbook-disconnected-introduction">1. Introduction</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This write-up will guide you through the process of deploying a fully-disconnected<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup> Baremetal IPI installation of OpenShift Container Platform 4 via the Ansible
+playbook.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansible-playbook-prerequisites"><a class="link" href="#ansible-playbook-prerequisites">2. Prerequisites</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Best Practice Minimum Setup: 6 Physical servers (1 provision node, 3 master and 2 worker nodes)</p>
+</li>
+<li>
+<p>Best Practice Minimum Setup for disconnected environments: 7 Physical servers (1 provision node, 1 registry node<sup class="footnote" id="_footnote_registry">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup>, 3 master and 2 worker nodes)</p>
+</li>
+<li>
+<p>Minimum Setup: 4 Physical servers (1 provision node, 3 master nodes)</p>
+</li>
+<li>
+<p>Minimum Setup for disconnected environments: 5 Physical servers (1 provision node, 1 registry node<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup>, 3 master nodes)</p>
+</li>
+<li>
+<p>Each server needs 2 NICs pre-configured. NIC1 for the private network and NIC2 for the baremetal network. NIC interface names must be identical across all nodes<sup class="footnote" id="_footnote_issue">[<a id="_footnoteref_3" class="footnote" href="#_footnotedef_3" title="View footnote.">3</a>]</sup></p>
+</li>
+<li>
+<p>It is recommended each server have a RAID-1 configured and initialized (though not enforced)</p>
+</li>
+<li>
+<p>Each server must have IPMI configured</p>
+</li>
+<li>
+<p>Each server must have DHCP setup for the baremetal NICs</p>
+</li>
+<li>
+<p>Each server must have DNS setup for the API, wildcard applications</p>
+</li>
+<li>
+<p>A DNS VIP is IP on the <code>baremetal</code> network is required for reservation. Reservation is done via our DHCP server (though not required).</p>
+</li>
+<li>
+<p>Optional - Include DNS entries for the hostnames for each of the servers</p>
+</li>
+<li>
+<p>Download a copy of your <a href="https://cloud.redhat.com/openshift/install/metal/user-provisioned">Pull Secret</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Due to the complexities of properly configuring an environment, it is
+recommended to review the following steps prior to running the Ansible
+playbook as without proper setup, the Ansible playbook won&#8217;t work.</p>
+</div>
+<div class="paragraph">
+<p>The section to review and ensure proper configuration are as follows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="Deployment#validation-checklist-for-nodesipi-install-prerequisites">Validation checklist for nodes</a></p>
+</li>
+<li>
+<p>One of the Create DNS records sections</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="Deployment#creating-dns-records-on-a-dns-server-option1_ipi-install-prerequisites">Create DNS records on a DNS server (Option 1)</a></p>
+</li>
+<li>
+<p><a href="Deployment#creating-dns-records-using-dnsmasq-option2_ipi-install-prerequisites">Create DNS records using dnsmasq (Option 2)</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>One of the Create DHCP reservation sections</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="Deployment#creating-dhcp-reservations-option1_ipi-install-prerequisites">Create DHCP reservations (Option 1)</a></p>
+</li>
+<li>
+<p><a href="Deployment#creating-dhcp-reservations-using-dnsmasq-option2_ipi-install-prerequisites">Create DHCP reservations using dnsmasq (Option 2)</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>An existing Registry node (details on creating a registry if required below)</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="Deployment#ipi-install-creating-a-disconnected-registry_ipi-install-prerequisites">Create a disconnected registry</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>An existing webserver to cache required files and the RHCOS images (details on creating a webserver if required below)</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="Deployment#ipi-install-creating-an%20rhcos-images-cache_ipi-install-prerequisites">Webserver</a></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Once the above is complete, install Red Hat Enterprise Linux (RHEL) 8.x on your provision node and create a user (i.e. <code>kni</code>) to deploy as non-root and provide that user <code>sudo</code> privileges.</p>
+</div>
+<div class="paragraph">
+<p>For simplicity, the steps to create the user named <code>kni</code> is as follows:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Login into the provision node via <code>ssh</code></p>
+</li>
+<li>
+<p>Create a user (i.e <code>kni</code>) to deploy as non-root and provide that user <code>sudo</code> privileges</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="sh">useradd kni
+passwd kni
+<span class="nb">echo</span> <span class="s2">"kni ALL=(root) NOPASSWD:ALL"</span> | <span class="nb">tee</span> <span class="nt">-a</span> /etc/sudoers.d/kni
+<span class="nb">chmod </span>0440 /etc/sudoers.d/kni</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Enable a <code>dnf</code> <a href="#local_repository">local repository</a> on the provision host</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansible-playbook-using-an-existing-registry"><a class="link" href="#ansible-playbook-using-an-existing-registry">3. Using an Existing Registry</a></h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If no existing registry is already existing for your fully disconnected
+environment, visit <a href="Deployment#ipi-install-creating-a-disconnected-registry_ipi-install-prerequisites">Creating a New Disconnected Registry</a> section.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>When using an existing registry, two variables labeled
+<code>disconnected_registry_auths_file</code> and the <code>disconnected_registry_mirrors_file</code>
+must be set. These variables are located within your inventory/hosts file and
+the inventory/hosts.sample file can be used as reference.</p>
+</div>
+<div class="paragraph">
+<p>The <code>disconnected_registry_auths_file</code> variable should point to a file
+containing json data regarding your registry information. This will be appended
+to the <code>auths</code> section of the pull secret by the Ansible playbook itself.</p>
+</div>
+<div class="paragraph">
+<p>An example of the contents of the <code>disconnected_registry_auths_file</code> is shown
+below.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nb">cat</span> /path/to/registry-auths.json
+<span class="o">{</span><span class="s2">"registry.example.com:5000"</span>: <span class="o">{</span><span class="s2">"auth"</span>: <span class="s2">"ZHVtbXk6ZHsFVtbXk="</span>, <span class="s2">"email"</span>: <span class="s2">"user@example.com"</span> <span class="o">}</span> <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The auth password given base64 encoding of the http credentials used to
+create the htpasswd file.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="paragraph">
+<p>[user@registry ~]$ b64auth=$( echo -n '&lt;username&gt;:&lt;passwd&gt;' | openssl base64 )
+&#160;<br/>
+[user@registry ~]$ echo $b64auth</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code>disconnected_registry_mirrors_file</code> variable should point to a file
+containing the <code>additionalTrustBundle</code> and <code>imageContentSources</code> (OpenShift
+4.13 and below) or <code>imageDigestSources</code> (OpenShift 4.14 and above) for
+the disconnected registry. The certificate that goes within the additional
+trust bundle is the disconnected registry node&#8217;s certificate. The
+<code>imageContentSources</code> adds the mirrored information of the registry. The below
+content from the <code>install-config-appends.yml</code> file gets automatically appended
+by the Ansible playbook.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nb">cat</span> /path/to/install-config-appends.yml
+additionalTrustBundle: |
+  <span class="nt">-----BEGIN</span> CERTIFICATE-----
+  MIIGPDCCBCSgAwIBAgIUWr1DxDq53hrsk6XVLRXUjfF9m+swDQYJKoZIhvcNAQEL
+  BQAwgZAxCzAJBgNVBAYTAlVTMRAwDgYDVQQIDAdNeVN0YXRlMQ8wDQYDVQQHDAZN
+  eUNpdHkxEjAQBgNVBAoMCU15Q29tcGFueTEVMBMGA1UECwwMTXlEZXBhcnRtZW50
+  <span class="nb">.</span>
+  <span class="nb">.</span> <span class="o">[</span>ABBREVIATED CERTIFICATE FOR BREVITY]
+  <span class="nb">.</span>
+  MTMwMQYDVQQDDCpyZWdpc3RyeS5rbmk3LmNsb3VkLmxhYi5lbmcuYm9zLnJlZGhh
+  dC5jb20wHhcNMjAwNDA3MjM1MzI2WhcNMzAwNDA1MjM1MzI2WjCBkDELMAkGA1UE
+  <span class="nt">-----END</span> CERTIFICATE-----
+
+&lt;image-config&gt;: <i class="conum" data-value="1"></i><b>(1)</b>
+- mirrors:
+  - registry.example.com:5000/ocp4/openshift4
+  <span class="nb">source</span>: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+- mirrors:
+  - registry.example.com:5000/ocp4/openshift4
+  <span class="nb">source</span>: registry.svc.ci.openshift.org/ocp/release
+- mirrors:
+  - registry.example.com:5000/ocp4/openshift4
+  <span class="nb">source</span>: quay.io/openshift-release-dev/ocp-release</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Where:</p>
+</div>
+<div class="paragraph">
+<p>+
+&lt;1&gt; <code>&lt;image-config&gt;</code> is either <code>imageContentSources</code> for OpenShift 4.13 and below, or <code>imageDigestSources</code> for Openshift 4.14 and above.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Indentation is important in the yml file. Ensure your copy of the <code>install-config-appends.yml</code> is properly indented as in the example above.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansible-playbook-contents-of-the-webserver"><a class="link" href="#ansible-playbook-contents-of-the-webserver">4. Contents of the Webserver</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When following the details on how to create a <a href="Deployment#ipi-install-creating-an%20rhcos-images-cache_ipi-install-prerequisites">webserver</a>, if one not already in place, there is still additional content required for
+a fully disconnected environment to be successfully deployed with the Ansible playbook.</p>
+</div>
+<div class="paragraph">
+<p>The Ansible playbook requires the end user to additionally include the following
+to there already existing webserver.</p>
+</div>
+<div class="paragraph">
+<p>The example provided below showcases how a user adds the required prerequisites
+to the webserver in order install the latest
+OpenShift Container Platform version 4.9.</p>
+</div>
+<div class="olist arabic">
+<div class="title">Automatic Procedure</div>
+<ol class="arabic">
+<li>
+<p>Change to the webserver directory that is to store your OpenShift related binaries</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@webserver ~]<span class="nv">$ </span><span class="nb">cd</span> /path/to/webserver/dir</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a local copy of <a href="#env_vars">environment variables script</a> and make the script executable.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@webserver ~]<span class="nv">$ </span><span class="nb">chmod</span> +x /path/to/webserver/dir/env_vars.sh</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a local copy of <a href="#helper_script">helper script</a> that downloads all the prerequisites to the webserver</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@webserver ~]<span class="nv">$ </span><span class="nb">chmod</span> +x /path/to/webserver/dir/helper_script.sh</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Open the the <code>env_vars.sh</code> script and fill out the appopriate environment variable values</p>
+</li>
+<li>
+<p>Run the <code>helper_script.sh</code> script</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@webserver ~]<span class="nv">$ </span>/path/to/webserver/dir/helper_script.sh</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Using the <code>helper_script.sh</code> has some caveats. Extracting the
+<code>openshift-baremetal-install</code> binary does not pull from a local registry when
+given a local registry, <a href="https://bugzilla.redhat.com/show_bug.cgi?id=1823143">BZ#1823143</a>
+Due to this, in order to properly extract the installer, the OpenShift disconnected
+mirrored registry that is to be used must be available and have access to quay.io
+temporary to properly extract the binary.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The following manual procedure can be skipped if used the <a href="#helper_script">helper script</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="olist arabic">
+<div class="title">Manual Procedure</div>
+<ol class="arabic">
+<li>
+<p>Download the OpenShift Container Platform version 4.9 latest <a href="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.9/release.txt">release.txt</a> file</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">[user@webserver ~]$ cd /path/to/webserver/dir
+[user@webserver ~]$ wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.9/release.txt</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>When working with a development version of OpenShift Container Platform, use the following link for the
+development version of the
+<a href="https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/latest-4.9/release.txt">release.txt</a></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Create a directory with the explict release version of the captured release.txt file</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nb">export </span><span class="nv">OCP_RELEASE</span><span class="o">=</span><span class="sb">`</span><span class="nb">cat </span>release.txt | <span class="nb">grep </span>Name | <span class="nb">awk</span> <span class="o">{</span><span class="s1">'print $2'</span><span class="o">}</span><span class="sb">`</span>
+<span class="o">[</span>user@webserver ~]<span class="nv">$ </span><span class="nb">mkdir</span> <span class="nv">$OCP_RELEASE</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Move the release.txt file to the newly created release version directory</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@webserver ~]<span class="nv">$ </span><span class="nb">mv </span>release.txt <span class="nv">$OCP_RELEASE</span>/</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Download the <code>oc</code> client and untar its contents</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@webserver ~]<span class="nv">$ </span>wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/<span class="nv">$OCP_RELEASE</span>/openshift-client-linux-<span class="nv">$OCP_RELEASE</span>.tar.gz | <span class="nb">tar </span>zxvf - oc</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Extract the Installer</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Extracting the installer currently has some caveats. Extracting the
+<code>openshift-baremetal-install</code> binary does not pull from a local registry when
+given a local registry, <a href="https://bugzilla.redhat.com/show_bug.cgi?id=1823143">BZ#1823143</a>
+Due to this, in order to properly extract the installer, the OpenShift disconnected
+mirrored registry that is to be used must be available and have access to quay.io
+temporary to properly extract the binary. The following step assumes this.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@webserver ~]<span class="nv">$ </span><span class="nb">export </span><span class="nv">LOCAL_REPOSITORY</span><span class="o">=</span><span class="s1">'ocp4'</span>
+<span class="o">[</span>user@webserver ~]<span class="nv">$ </span><span class="nb">export </span><span class="nv">LOCAL_REGISTRY</span><span class="o">=</span><span class="s1">'registry.example.com:5000'</span>
+<span class="o">[</span>user@webserver ~]<span class="nv">$ </span><span class="nb">export </span><span class="nv">cmd</span><span class="o">=</span>openshift-baremetal-install
+<span class="o">[</span>user@webserver ~]<span class="nv">$ </span><span class="nb">export </span><span class="nv">pullsecret_file</span><span class="o">=</span>~/pull-secret.txt
+<span class="o">[</span>user@webserver ~]<span class="nv">$ </span><span class="nb">export </span><span class="nv">extract_dir</span><span class="o">=</span><span class="si">$(</span><span class="nb">pwd</span><span class="si">)</span>
+<span class="o">[</span>user@webserver ~]<span class="nv">$ </span>oc adm release extract <span class="nt">--registry-config</span> <span class="s2">"</span><span class="k">${</span><span class="nv">pullsecret_file</span><span class="k">}</span><span class="s2">"</span> <span class="nt">--command</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">cmd</span><span class="k">}</span><span class="s2">"</span> <span class="nt">--to</span> <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span> <span class="k">${</span><span class="nv">LOCAL_REGISTRY</span><span class="k">}</span>/<span class="k">${</span><span class="nv">LOCAL_REPOSITORY</span><span class="k">}</span>:<span class="k">${</span><span class="nv">OCP_RELEASE</span><span class="k">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Ensure the <code>openshift-baremetal-install</code> binary points to the appopriate release image (i.e. <code>registry.example.com</code> )</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@webserver ~]<span class="nv">$ </span>./openshift-baremetal-install version
+openshift-baremetal-install 4.4.3
+built from commit 78b817ceb7657f81176bbe182cc6efc73004c841
+release image registry.example.com:5000/ocp4/openshift4@sha256:e805d6a36762e22ecf66fd3f3642e609a00ed25ab44f89f064b5138cf3f0f554</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>The <code>rhcos.json</code> file is required for the disconnected installs as it contains
+the appropriate image name and SHA hash</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This assumes the <code>openshift-baremetal-install</code> has been extracted
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@webserver ~]<span class="nv">$ </span><span class="nb">export </span><span class="nv">COMMIT_ID</span><span class="o">=</span><span class="si">$(</span>./openshift-baremetal-install version | <span class="nb">grep</span> <span class="s1">'^built from commit'</span> | <span class="nb">awk</span> <span class="s1">'{print $4}'</span><span class="si">)</span>
+<span class="o">[</span>user@webserver ~]<span class="nv">$ </span>curl <span class="nt">-s</span> <span class="nt">-S</span> https://raw.githubusercontent.com/openshift/installer/<span class="nv">$COMMIT_ID</span>/data/data/rhcos.json <span class="o">&gt;</span> rhcos.json</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Clean up the <code>oc</code> and <code>kubelet</code> binary extraction as no longer required</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@webserver ~]<span class="nv">$ </span><span class="nb">rm</span> <span class="nt">-f</span> /path/to/<span class="nv">$OCP_RELEASE</span>/oc /path/to/<span class="nv">$OCP_RELEASE</span>/kubelet</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Confirm all four files have been captured within your $OCP_RELEASE directory</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@webserver ~]<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-latr</span> /path/to/<span class="nv">$OCP_RELEASE</span>
+openshift-baremetal-install openshift-client-linux-<span class="nv">$OCP_RELEASE</span>.tar.gz rhcos.json release.txt</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansible-playbook-checklist"><a class="link" href="#ansible-playbook-checklist">5. Fully Disconnected Prerequiste Checklist</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="validation-checklist-for-nodes_ipi-install-troubleshooting"><a class="link" href="#validation-checklist-for-nodes_ipi-install-troubleshooting">5.1. Validation checklist for nodes</a></h3>
+<div class="ulist checklist">
+<div class="title">When using the <code>provisioning</code> network</div>
+<ul class="checklist">
+<li>
+<p><i class="fa fa-square-o"></i> DHCP reservations use infinite leases to deploy the cluster with static IP addresses. (optional)</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> NIC1 VLAN is configured for the <code>provisioning</code> network.</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> NIC2 VLAN is configured for the <code>baremetal</code> network.</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> NIC1 is PXE-enabled on the provisioner, Control Plane (master), and worker nodes.</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> PXE has been disabled on all other NICs.</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Control plane and worker nodes are configured.</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> All nodes accessible via out-of-band management.</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> A separate management network has been created. (optional)</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Required data for installation.</p>
+</li>
+</ul>
+</div>
+<div class="ulist checklist">
+<div class="title">When omitting the <code>provisioning</code> network</div>
+<ul class="checklist">
+<li>
+<p><i class="fa fa-square-o"></i> DHCP reservations use infinite leases to deploy the cluster with static IP addresses. (optional)</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> NICx VLAN is configured for the <code>baremetal</code> network.</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Control plane and worker nodes are configured.</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> All nodes accessible via out-of-band management.</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> A separate management network has been created. (optional)</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Required data for installation.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<div class="title">Summary</div>
+<p>After an environment has been prepared according to the documented prerequisites, the installation process is the same as other installer-provisioned platforms.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_validation_checklist_for_ansible_playbook_installation"><a class="link" href="#_validation_checklist_for_ansible_playbook_installation">5.2. Validation checklist for Ansible playbook installation</a></h3>
+<div class="ulist checklist">
+<ul class="checklist">
+<li>
+<p><i class="fa fa-square-o"></i> Create a local repository using a RHEL 8 Installation DVD to install packages</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Suppress <code>Unable to read consumer identity</code> messages when using <code>subscription-manager</code> via <code>/etc/yum.conf</code></p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Ensure <code>release.txt</code> file exists within the webserver path/to/webserver/&lt;ocp_release_version&gt;</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Ensure <code>rhcos.json</code> file exists within the webserver path/to/webserver/&lt;ocp_release_version&gt;</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Ensure <code>openshift-baremetal-install</code> binary exists within the webserver path/to/webserver/&lt;ocp_release_version&gt;</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Ensure the <code>openshift-baremetal-install</code> binary points to the appopriate release image registry (i.e. <code>registry.example.com</code> )</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Ensure <code>release.txt</code> file exists within the webserver path/to/webserver/&lt;ocp_release_version&gt;</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Ensure <code>openshift-client-linux-&lt;ocp_release_version&gt;.tar.gz</code> tar.gz exists within the webserver path/to/webserver/&lt;ocp_release_version&gt;</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Create <code>registry-auths.json</code></p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Create <code>install-config-appends.json</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansible-playbook-disconnected-running-the-playbook"><a class="link" href="#ansible-playbook-disconnected-running-the-playbook">6. Running the <code>playbook.yml</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following are the steps to successfully run the Ansible playbook.</p>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-git-clone"><a class="link" href="#ansible-playbook-git-clone">6.1. <code>git</code> clone the Ansible playbook</a></h3>
+<div class="paragraph">
+<p>The first step to using the Ansible playbook is to clone the
+<a href="https://github.com/openshift-kni/baremetal-deploy/">baremetal-deploy</a> repository.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This should be done on a system that can access the provision host
+</td>
+</tr>
+</table>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Clone the <code>git</code> repository</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@laptop ~]<span class="nv">$ </span>git clone https://github.com/openshift-kni/baremetal-deploy.git</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Change to the <code>ansible-ipi-install</code> directory</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@laptop ~]<span class="nv">$ </span><span class="nb">cd</span> /path/to/git/repo/baremetal-deploy/ansible-ipi-install</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-ansiblecfg-file"><a class="link" href="#ansible-playbook-ansiblecfg-file">6.2. The <code>ansible.cfg</code> file</a></h3>
+<div class="paragraph">
+<p>While the <code>ansible.cfg</code> may vary upon your environment
+a sample is provided in the repository.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="ini"><span class="nn">[defaults]</span>
+<span class="py">inventory</span><span class="p">=</span><span class="s">./inventory</span>
+<span class="py">remote_user</span><span class="p">=</span><span class="s">kni</span>
+<span class="py">callback_whitelist</span> <span class="p">=</span> <span class="s">profile_tasks</span>
+
+<span class="nn">[privilege_escalation]</span>
+<span class="py">become_method</span><span class="p">=</span><span class="s">sudo</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Ensure to change the <code>remote_user</code> as deemed appropriate for
+your environment. The <code>remote_user</code> is the user previously
+created on the provision node.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-ansible-version"><a class="link" href="#ansible-playbook-ansible-version">6.3. Ansible version</a></h3>
+<div class="paragraph">
+<p>Ensure that your environment is using Ansible 2.9 or
+greater. The following command can be used to verify.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">ansible <span class="nt">--version</span>
+ansible 2.9.1
+  config file <span class="o">=</span> /path/to/baremetal-deploy/ansible-ipi-install/ansible.cfg
+  configured module search path <span class="o">=</span> <span class="o">[</span><span class="s1">'/path/to/.ansible/plugins/modules'</span>, <span class="s1">'/usr/share/ansible/plugins/modules'</span><span class="o">]</span>
+  ansible python module location <span class="o">=</span> /usr/lib/python3.7/site-packages/ansible
+  executable location <span class="o">=</span> /usr/bin/ansible
+  python version <span class="o">=</span> 3.7.2 <span class="o">(</span>default, Jan 16 2019, 19:49:22<span class="o">)</span> <span class="o">[</span>GCC 8.2.1 20181215 <span class="o">(</span>Red Hat 8.2.1-6<span class="o">)]</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The config file section should point to the path of your <code>ansible.cfg</code>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-ssh-key"><a class="link" href="#ansible-playbook-ssh-key">6.4. Copy local SSH key to provision node</a></h3>
+<div class="paragraph">
+<p>With the <code>ansible.cfg</code> file in place, the next step is
+to ensure to copy your public <code>ssh</code> key to your provision
+ node using <code>ssh-copy-id</code>.</p>
+</div>
+<div class="paragraph">
+<p>From the system that is to run the playbook,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nv">$ </span>ssh-copy-id &lt;user&gt;@provisioner.example.com</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+&lt;user&gt; should be the user previously created on the provision node (i.e. <code>kni</code>)
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-modifying-the-inventoryhosts-file-for-fully-disconnected-deployments"><a class="link" href="#ansible-playbook-modifying-the-inventoryhosts-file-for-fully-disconnected-deployments">6.5. Modifying the <code>inventory/hosts</code> file for Fully Disconnected Deployments</a></h3>
+<div class="paragraph">
+<p>While there are many <a href="Deployment#ipi-install-configuration-files">options</a>
+that may be set when deploying IPI on baremetal using the Ansible
+playbook. This portion will strictly focus on what are the
+requirements for including your existing webserver and registry node
+for a successful deployment.</p>
+</div>
+<div class="paragraph">
+<p>A sample of the required variables with regards to the existing
+webserver and registry node are shown below</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="ini"><span class="c"># Provide the webserver URL as shown below if using fully disconnected
+</span><span class="py">webserver_url</span><span class="p">=</span><span class="s">http://example.com:8080'</span>
+
+<span class="nn">[registry_host]</span>
+<span class="err">registry.example.com</span>
+
+<span class="nn">[registry_host:vars]</span>
+<span class="py">disconnected_registry_auths_file</span><span class="p">=</span><span class="s">/path/to/registry-auths.json</span>
+<span class="py">disconnected_registry_mirrors_file</span><span class="p">=</span><span class="s">/path/to/install-config-appends.json</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-the-ansible-playbook"><a class="link" href="#ansible-playbook-the-ansible-playbook">6.6. The Ansible <code>playbook.yml</code></a></h3>
+<div class="paragraph">
+<p>The Ansible playbook connects to your provision host and
+runs through the <code>redhatci.ocp.node_prep</code> role and the
+<code>redhatci.ocp.installer</code> role.
+No modification is necessary. All modifications of variables
+may be done within the <code>inventory/hosts</code> file. A sample file
+is located in this repository under <code>inventory/hosts.sample</code>.
+From the system that is to run the playbook,</p>
+</div>
+<div class="listingblock">
+<div class="title">Sample <code>playbook.yml</code></div>
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="yml"><span class="nn">---</span>
+<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">IPI on Baremetal Installation Playbook</span>
+  <span class="na">hosts</span><span class="pi">:</span> <span class="s">provisioner</span>
+  <span class="na">collections</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">redhatci.ocp</span>
+  <span class="na">roles</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">node_prep</span>
+    <span class="pi">-</span> <span class="s">installer</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With the <code>playbook.yml</code> set and in-place, run the <code>playbook.yml</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nv">$ </span>ansible-playbook <span class="nt">-i</span> inventory/hosts playbook.yml</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="local_repository"><a class="link" href="#local_repository">Appendix A: Setup a local RHEL8 repository using an ISO</a></h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>On the provision host, mount your RHEL8 ISO</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@provisioner ~]<span class="nv">$ </span><span class="nb">sudo </span>mount <span class="nt">-o</span> loop rhel-8.0-x86_64-dvd.iso /mnt/</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Copy <code>media.repo</code> file from mounted directory to <code>/etc/yum.repos.d/</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@provisioner ~]<span class="nv">$ </span><span class="nb">sudo cp</span> /mnt/media.repo /etc/yum.repos.d/rhel8.repo</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Set permissions of the newly created <code>rhel8.repo</code> file</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@provisioner ~]<span class="nv">$ </span><span class="nb">sudo chmod </span>644 /etc/yum.repos.d/rhel8.repo</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Edit the <code>rhel8.repo</code> file to match the following</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>InstallMedia-BaseOS]
+<span class="nv">name</span><span class="o">=</span>Red Hat Enterprise Linux 8 - BaseOS
+<span class="nv">metadata_expire</span><span class="o">=</span><span class="nt">-1</span>
+<span class="nv">gpgcheck</span><span class="o">=</span>1
+<span class="nv">enabled</span><span class="o">=</span>1
+<span class="nv">baseurl</span><span class="o">=</span>file:///mnt/BaseOS/
+<span class="nv">gpgkey</span><span class="o">=</span>file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+
+<span class="o">[</span>InstallMedia-AppStream]
+<span class="nv">name</span><span class="o">=</span>Red Hat Enterprise Linux 8 - AppStream
+<span class="nv">metadata_expire</span><span class="o">=</span><span class="nt">-1</span>
+<span class="nv">gpgcheck</span><span class="o">=</span>1
+<span class="nv">enabled</span><span class="o">=</span>1
+<span class="nv">baseurl</span><span class="o">=</span>file:///mnt/AppStream/
+<span class="nv">gpgkey</span><span class="o">=</span>file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Clear the subscription-manager cache</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@provisioner ~]<span class="nv">$ </span><span class="nb">sudo </span>dnf clean all</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Modify the <code>/etc/yum.conf</code> file and set plugins to zero</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@provisioner ~]<span class="nv">$ </span><span class="nb">sudo echo</span> <span class="s2">"plugins=0"</span> <span class="o">&gt;&gt;</span> /etc/yum.conf</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This is required as certain plugins won&#8217;t properly load when
+not directly subscripted with subscription-manager and may
+give the error of Unable to read consumer identity</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Verify the BaseOS and AppStream repos are available</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@provisioner ~]<span class="nv">$ </span><span class="nb">sudo </span>dnf repolist
+<span class="nv">$ </span><span class="nb">sudo </span>dnf repolist
+Last metadata expiration check: 0:29:59 ago on Tue 12 May 2020 08:15:46 PM UTC.
+repo <span class="nb">id                    </span>repo name                                           status
+InstallMedia-AppStream     Red Hat Enterprise Linux 8 - AppStream              4,820
+InstallMedia-BaseOS        Red Hat Enterprise Linux 8 - BaseOS                 1,661</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="env_vars"><a class="link" href="#env_vars">Appendix B: Environment Variable Script</a></h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="c">#!/bin/bash</span>
+
+<span class="c">#Enter 'dev' for development or 'ga' for Generally Available version of OCP</span>
+<span class="nb">export </span><span class="nv">release</span><span class="o">=</span><span class="s1">''</span>
+
+<span class="c">#Provide build version, i.e. 4.3.18, 4.4.4, nightly build: 4.3.0-0.nightly-2019-10-29-073252</span>
+<span class="nb">export </span><span class="nv">build_version</span><span class="o">=</span><span class="s1">'&lt;desired-build-version&gt;'</span>
+
+<span class="nb">export </span><span class="nv">LOCAL_REPOSITORY</span><span class="o">=</span><span class="s1">'ocp4'</span>
+<span class="nb">export </span><span class="nv">LOCAL_REGISTRY</span><span class="o">=</span><span class="s1">'registry.example.com'</span>
+<span class="nb">export </span><span class="nv">REGISTRY_PORT</span><span class="o">=</span><span class="s1">'5000'</span>
+<span class="nb">export </span><span class="nv">OCP_RELEASE</span><span class="o">=</span><span class="s1">'4.4.3'</span>
+<span class="nb">export </span><span class="nv">LOCAL_PULL_SECRET</span><span class="o">=</span><span class="s1">'&lt;Path-to-your-pull-secret.txt'</span>
+<span class="nb">export </span><span class="nv">cmd</span><span class="o">=</span>openshift-baremetal-install</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="helper_script"><a class="link" href="#helper_script">Appendix C: Helper Script</a></h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="c">#!/bin/bash</span>
+
+<span class="nb">echo</span> <span class="s2">"***This script downloads the files needed for Ansible Automation****"</span>
+<span class="nb">echo</span> <span class="s2">"***Downloads
+      1. Release.txt
+      2. </span><span class="sb">`</span>openshift-client-linux-<span class="nv">$build_version</span>.tar.gz<span class="sb">`</span><span class="s2">
+      3. openshift-baremetal-install binary
+      4. rhcos.json****"</span>
+
+<span class="nb">.</span> ./source_env_vars.sh
+
+<span class="nv">code</span><span class="o">=</span><span class="si">$(</span>curl <span class="nt">-sL</span> <span class="nt">-w</span> <span class="s2">"%{http_code}</span><span class="se">\\</span><span class="s2">n"</span> <span class="s2">"https://mirror.openshift.com/pub/"</span> <span class="nt">-o</span> /dev/null<span class="si">)</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="nv">$code</span> <span class="o">!=</span> 200 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"Did not receive a successful 200 code, exiting..."</span>
+    <span class="nb">exit
+</span><span class="k">fi
+
+if</span> <span class="o">[</span> <span class="nv">$release</span> <span class="o">==</span> <span class="s1">'dev'</span> <span class="o">]</span>
+<span class="k">then
+  </span><span class="nb">export </span><span class="nv">release_version</span><span class="o">=</span><span class="s1">'ocp-dev-preview'</span>
+<span class="k">elif</span> <span class="o">[</span> <span class="nv">$release</span> <span class="o">==</span> <span class="s1">'ga'</span> <span class="o">]</span>
+<span class="k">then
+   </span><span class="nb">export </span><span class="nv">release_version</span><span class="o">=</span><span class="s1">'ocp'</span>
+<span class="k">else
+   </span><span class="nb">echo </span>Provide either dev or ga as a value <span class="k">for </span>release.
+<span class="k">fi
+
+</span><span class="nb">rm</span> <span class="nt">-f</span> release.txt rhcos.json oc kubelet openshift-client-linux-<span class="nv">$build_version</span>.tar.gz
+
+<span class="nb">echo</span> <span class="s2">"****Below are the values that has been set****"</span>
+<span class="nb">echo </span>Local Repo <span class="o">=</span> <span class="nv">$LOCAL_REPOSITORY</span>
+<span class="nb">echo </span>Local Registry <span class="o">=</span> <span class="nv">$LOCAL_REGISTRY</span>
+<span class="nb">echo </span>Registry Port <span class="o">=</span> <span class="nv">$REGISTRY_PORT</span>
+<span class="nb">echo </span>Release <span class="o">=</span> <span class="nv">$OCP_RELEASE</span>
+<span class="nb">echo </span>Pull-Secret File <span class="o">=</span> <span class="nv">$LOCAL_PULL_SECRET</span>
+<span class="nb">echo </span>Build Version <span class="o">=</span> <span class="nv">$build_version</span>
+
+<span class="nv">GREEN</span><span class="o">=</span><span class="s1">'\033[0;32m'</span>
+<span class="nv">NC</span><span class="o">=</span><span class="s1">'\033[0m'</span>
+<span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"**** Download the release.txt for </span><span class="k">${</span><span class="nv">GREEN</span><span class="k">}</span><span class="nv">$build_version</span><span class="k">${</span><span class="nv">NC</span><span class="k">}</span><span class="s2">*******"</span>
+wget https://mirror.openshift.com/pub/openshift-v4/clients/<span class="nv">$release_version</span>/<span class="nv">$build_version</span>/release.txt
+
+<span class="nb">echo</span> <span class="s2">"****Download the openshift-client-linux-</span><span class="nv">$build_version</span><span class="s2">.tar.gz for the </span><span class="nv">$build_version</span><span class="s2">*********"</span>
+wget https://mirror.openshift.com/pub/openshift-v4/clients/<span class="nv">$release_version</span>/<span class="nv">$build_version</span>/openshift-client-linux-<span class="nv">$build_version</span>.tar.gz
+<span class="nb">tar</span> <span class="nt">-xvzf</span> openshift-client-linux-<span class="nv">$build_version</span>.tar.gz
+
+<span class="nb">echo</span> <span class="s2">"******Download the 'openshift-baremetal-install' binary for the </span><span class="nv">$build_version</span><span class="s2"> and extract it*******"</span>
+
+<span class="nv">web_url</span><span class="o">=</span><span class="si">$(</span>curl <span class="nt">-sL</span> <span class="nt">-w</span> <span class="s2">"%{http_code}</span><span class="se">\\</span><span class="s2">n"</span> <span class="s2">"http://</span><span class="k">${</span><span class="nv">LOCAL_REGISTRY</span><span class="k">}</span><span class="s2">/</span><span class="k">${</span><span class="nv">RHCOS_QEMU_URI</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-o</span> /dev/null<span class="si">)</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="nv">$web_url</span> <span class="o">!=</span> 200 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"Did not receive a successful 200 code, exiting..."</span>
+    <span class="nb">echo</span> <span class="s2">"****Extracting the installer currently has some caveats. Extracting the openshift-baremetal-install binary does not pull from a local registry when given a local registry, BZ#1823143 Due to this, in order to properly extract the installer, the OpenShift disconnected mirrored registry that is to be used must be available and have access to quay.io temporary to properly extract the binary. The following step assumes this.*****"</span>
+    <span class="nb">exit</span>    <span class="c"># other actions</span>
+<span class="k">fi
+
+</span>oc adm release extract <span class="nt">--registry-config</span> <span class="s2">"</span><span class="k">${</span><span class="nv">LOCAL_PULL_SECRET</span><span class="k">}</span><span class="s2">"</span> <span class="nt">--command</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">cmd</span><span class="k">}</span><span class="s2">"</span> <span class="nt">--to</span> <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span> <span class="k">${</span><span class="nv">LOCAL_REGISTRY</span><span class="k">}</span>:<span class="k">${</span><span class="nv">REGISTRY_PORT</span><span class="k">}</span>/<span class="k">${</span><span class="nv">LOCAL_REPOSITORY</span><span class="k">}</span>:<span class="k">${</span><span class="nv">OCP_RELEASE</span><span class="k">}</span>
+
+
+<span class="nb">echo</span> <span class="s2">"******Download the rhcos.json file for the </span><span class="nv">$build_version</span><span class="s2">*******"</span>
+<span class="nb">export </span><span class="nv">COMMIT_ID</span><span class="o">=</span><span class="si">$(</span>./openshift-baremetal-install version | <span class="nb">grep</span> <span class="s1">'^built from commit'</span> | <span class="nb">awk</span> <span class="s1">'{print $4}'</span><span class="si">)</span>
+curl <span class="nt">-s</span> <span class="nt">-S</span> https://raw.githubusercontent.com/openshift/installer/<span class="nv">$COMMIT_ID</span>/data/data/rhcos.json <span class="o">&gt;</span> rhcos.json
+
+<span class="nb">ls</span> <span class="nt">-ltr</span> release.txt rhcos.json openshift-baremetal-install openshift-client-linux-<span class="nv">$build_version</span>.tar.gz
+
+<span class="nb">echo</span> <span class="s2">"****Confirm the version*****"</span>
+
+./openshift-baremetal-install version</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<hr/>
+<div class="footnote" id="_footnotedef_1">
+<a href="#_footnoteref_1">1</a>. Fully disconnected infers that no system in the OpenShift Container Platform has deployment access to the internet.
+</div>
+<div class="footnote" id="_footnotedef_2">
+<a href="#_footnoteref_2">2</a>. If creating the mirrored registry, this system will require online access. The registry node may be a virtual machine in order to reduce physical server footprint.
+</div>
+<div class="footnote" id="_footnotedef_3">
+<a href="#_footnoteref_3">3</a>. <a href="https://github.com/openshift/installer/issues/2762" class="bare">https://github.com/openshift/installer/issues/2762</a>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2025-02-28 19:02:55 -0600
+</div>
+</div>
+</body>
+</html>

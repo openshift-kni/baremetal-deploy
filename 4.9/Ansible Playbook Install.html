@@ -1,0 +1,2416 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="generator" content="Asciidoctor 2.0.23"/>
+<meta name="description" content="Ansible playbook usage for installing OpenShift on baremetal"/>
+<meta name="keywords" content="OpenShift, ansible, baremetal, installation, ipi, Installer provisioned infrastructure"/>
+<meta name="author" content="Deployment Integration Team"/>
+<title>Deployment of IPI on BM using the Ansible Playbook</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700"/>
+<style>
+/*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
+/* Uncomment the following line when using as a custom stylesheet */
+/* @import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700"; */
+html{font-family:sans-serif;-webkit-text-size-adjust:100%}
+a{background:none}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+b,strong{font-weight:bold}
+abbr{font-size:.9em}
+abbr[title]{cursor:help;border-bottom:1px dotted #dddddf;text-decoration:none}
+dfn{font-style:italic}
+hr{height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+audio,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type=checkbox],input[type=radio]{padding:0}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,::before,::after{box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;line-height:1;position:relative;cursor:auto;-moz-tab-size:4;-o-tab-size:4;tab-size:4;word-wrap:anywhere;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+img,object,svg{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:0}
+p{line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #dddddf;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ul.square{list-style-type:square}
+ul.circle ul:not([class]),ul.disc ul:not([class]),ul.square ul:not([class]){list-style:inherit}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}
+table{background:#fff;margin-bottom:1.25em;border:1px solid #dedede;word-wrap:normal}
+table thead,table tfoot{background:#f7f8f7}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt{background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{line-height:1.6}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.center{margin-left:auto;margin-right:auto}
+.stretch{width:100%}
+.clearfix::before,.clearfix::after,.float-group::before,.float-group::after{content:" ";display:table}
+.clearfix::after,.float-group::after{clear:both}
+:not(pre).nobreak{word-wrap:normal}
+:not(pre).nowrap{white-space:nowrap}
+:not(pre).pre-wrap{white-space:pre-wrap}
+:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
+pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
+pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
+pre>code{display:block}
+pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
+em em{font-style:normal}
+strong strong{font-weight:400}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background:#f7f7f7;border:1px solid #ccc;border-radius:3px;box-shadow:0 1px 0 rgba(0,0,0,.2),inset 0 0 0 .1em #fff;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menuref{color:#000}
+.menuseq b:not(.caret),.menuref{font-weight:inherit}
+.menuseq{word-spacing:-.02em}
+.menuseq b.caret{font-size:1.25em;line-height:.8}
+.menuseq i.caret{font-weight:bold;text-align:center;width:.45em}
+b.button::before,b.button::after{position:relative;top:-1px;font-weight:400}
+b.button::before{content:"[";padding:0 3px 0 2px}
+b.button::after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin:0 auto;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header::before,#header::after,#content::before,#content::after,#footnotes::before,#footnotes::after,#footer::before,#footer::after{content:" ";display:table}
+#header::after,#content::after,#footnotes::after,#footer::after{clear:both}
+#content{margin-top:1.25em}
+#content::before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
+#header>h1:only-child{border-bottom:1px solid #dddddf;padding-bottom:8px}
+#header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:flex;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span::before{content:"\00a0\2013\00a0"}
+#header .details br+span.author::before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark::before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber::after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #dddddf;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #e7e7e9;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc li{line-height:1.3334;margin-top:.3334em}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
+#toc.toc2{margin-top:0!important;background:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #e7e7e9;left:auto;right:0}}
+@media screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}
+#content #toc{border:1px solid #e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:none;background:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:hsla(0,0%,100%,.8);line-height:1.44}
+#content{margin-bottom:.625em}
+.sect1{padding-bottom:.625em}
+@media screen and (min-width:768px){#content{margin-bottom:1.25em}
+.sect1{padding-bottom:1.25em}}
+.sect1:last-child{padding-bottom:0}
+.sect1+.sect1{border-top:1px solid #e7e7e9}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor::before,h2>a.anchor::before,h3>a.anchor::before,#toctitle>a.anchor::before,.sidebarblock>.content>.title>a.anchor::before,h4>a.anchor::before,h5>a.anchor::before,h6>a.anchor::before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+details,.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+details{margin-left:1.25rem}
+details>summary{cursor:pointer;display:block;position:relative;line-height:1.6;margin-bottom:.625rem;outline:none;-webkit-tap-highlight-color:transparent}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"";border:solid transparent;border-left:solid;border-width:.3em 0 .3em .5em;position:absolute;top:.5em;left:-1.25rem;transform:translateX(15%)}
+details[open]>summary::before{border:solid transparent;border-top:solid;border-width:.5em .3em 0;transform:translateY(15%)}
+details>summary::after{content:"";width:1.25rem;height:1em;position:absolute;top:.3em;left:-1.25rem}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
+.paragraph.lead>p,#preamble>.sectionbody>[class=paragraph]:first-of-type p{font-size:1.21875em;line-height:1.6;color:rgba(0,0,0,.85)}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border:1px solid #e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;border-radius:4px}
+.sidebarblock{border:1px solid #dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;border-radius:4px}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:first-child,.sidebarblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child,.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock>.content>pre{border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
+@media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
+@media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
+.literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class=highlight],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
+.literalblock.output pre{color:#f7f7f8;background:rgba(0,0,0,.9)}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]::before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:inherit;opacity:.5}
+.listingblock:hover code[data-lang]::before{display:block}
+.listingblock.terminal pre .command::before{content:attr(data-prompt);padding-right:.5em;color:inherit;opacity:.5}
+.listingblock.terminal pre .command:not([data-prompt])::before{content:"$"}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.prettyprint{background:#f7f7f8}
+pre.prettyprint .linenums{line-height:1.45;margin-left:2em}
+pre.prettyprint li{background:none;list-style-type:inherit;padding-left:0}
+pre.prettyprint li code[data-lang]::before{opacity:1}
+pre.prettyprint li:not(:first-child) code[data-lang]::before{display:none}
+table.linenotable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.linenotable td[class]{color:inherit;vertical-align:top;padding:0;line-height:inherit;white-space:normal}
+table.linenotable td.code{padding-left:.75em}
+table.linenotable td.linenos,pre.pygments .linenos{border-right:1px solid;opacity:.35;padding-right:.5em;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+pre.pygments span.linenos{display:inline-block;margin-right:.75em}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock:not(.excerpt)>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote::before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.75em;margin-right:.5ex;text-align:right}
+.verseblock{margin:0 1em 1.25em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans-serif;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.025em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract blockquote::before,.quoteblock.excerpt blockquote::before,.quoteblock .quoteblock blockquote::before{display:none}
+.quoteblock.abstract blockquote,.quoteblock.abstract p,.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{line-height:1.6;word-spacing:0}
+.quoteblock.abstract{margin:0 1em 1.25em;display:block}
+.quoteblock.abstract>.title{margin:0 0 .375em;font-size:1.15em;text-align:center}
+.quoteblock.excerpt>blockquote,.quoteblock .quoteblock{padding:0 0 .25em 1em;border-left:.25em solid #dddddf}
+.quoteblock.excerpt,.quoteblock .quoteblock{margin-left:0}
+.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
+.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;font-size:.85rem;text-align:left;margin-right:0}
+p.tableblock:last-child{margin-bottom:0}
+td.tableblock>.content{margin-bottom:1.25em;word-wrap:anywhere}
+td.tableblock>.content>:last-child{margin-bottom:-1.25em}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all>*>tr>*{border-width:1px}
+table.grid-cols>*>tr>*{border-width:0 1px}
+table.grid-rows>*>tr>*{border-width:1px 0}
+table.frame-all{border-width:1px}
+table.frame-ends{border-width:1px 0}
+table.frame-sides{border-width:0 1px}
+table.frame-none>colgroup+*>:first-child>*,table.frame-sides>colgroup+*>:first-child>*{border-top-width:0}
+table.frame-none>:last-child>:last-child>*,table.frame-sides>:last-child>:last-child>*{border-bottom-width:0}
+table.frame-none>*>tr>:first-child,table.frame-ends>*>tr>:first-child{border-left-width:0}
+table.frame-none>*>tr>:last-child,table.frame-ends>*>tr>:last-child{border-right-width:0}
+table.stripes-all>*>tr,table.stripes-odd>*>tr:nth-of-type(odd),table.stripes-even>*>tr:nth-of-type(even),table.stripes-hover>*>tr:hover{background:#f8f8f7}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
+ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
+ul.unstyled,ol.unstyled{margin-left:0}
+li>p:empty:only-child::before{content:"";display:inline-block}
+ul.checklist>li>p:first-child{margin-left:-1em}
+ul.checklist>li>p:first-child>.fa-square-o:first-child,ul.checklist>li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
+ul.checklist>li>p:first-child>input[type=checkbox]:first-child{margin-right:.25em}
+ul.inline{display:flex;flex-flow:row wrap;list-style:none;margin:0 0 .625em -1.25em}
+ul.inline>li{margin-left:1.25em}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
+td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+td.hdlist2{word-wrap:anywhere}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist td:not([class]):first-child{padding:.4em .75em 0;line-height:1;vertical-align:top}
+.colist td:not([class]):first-child img{max-width:none}
+.colist td:not([class]):last-child{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:4px solid #fff;box-shadow:0 0 0 1px #ddd}
+.imageblock.left{margin:.25em .625em 1.25em 0}
+.imageblock.right{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none;display:inline-block}
+a.image object{pointer-events:none}
+sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
+sup.footnote a,sup.footnoteref a{text-decoration:none}
+sup.footnote a:active,sup.footnoteref a:active,#footnotes .footnote a:first-of-type:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
+#footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background:#00fafa}
+.black{color:#000}
+.black-background{background:#000}
+.blue{color:#0000bf}
+.blue-background{background:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background:#fa00fa}
+.gray{color:#606060}
+.gray-background{background:#7d7d7d}
+.green{color:#006000}
+.green-background{background:#007d00}
+.lime{color:#00bf00}
+.lime-background{background:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background:#7d0000}
+.navy{color:#000060}
+.navy-background{background:#00007d}
+.olive{color:#606000}
+.olive-background{background:#7d7d00}
+.purple{color:#600060}
+.purple-background{background:#7d007d}
+.red{color:#bf0000}
+.red-background{background:#fa0000}
+.silver{color:#909090}
+.silver-background{background:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background:#fafa00}
+span.icon>.fa{cursor:default}
+a span.icon>.fa{cursor:inherit}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note::before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip::before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);border-radius:50%;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]::after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
+h1,h2,p,td.content,span.alt,summary{letter-spacing:-.01em}
+p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content,td.hdlist1,span.alt,summary{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background:#fffef7;border-color:#e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@page{margin:1.25cm .75cm}
+@media print{*{box-shadow:none!important;text-shadow:none!important}
+html{font-size:80%}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare)::after,a[href^="https:"]:not(.bare)::after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]{border-bottom:1px dotted}
+abbr[title]::after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
+thead{display:table-header-group}
+svg{max-width:100%}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#header,#content,#footnotes,#footer{max-width:none}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #dddddf!important;padding-bottom:0!important}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span::before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]::before{display:block}
+#footer{padding:0 .9375em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+@media amzn-kf8,print{#header>h1:first-child{margin-top:1.25rem}
+.sect1{padding:0!important}
+.sect1+.sect1{border:0}
+#footer{background:none}
+#footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
+@media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+<style>
+pre.rouge table td { padding: 5px; }
+pre.rouge table pre { margin: 0; }
+pre.rouge, pre.rouge .w {
+  color: #24292f;
+  background-color: #f6f8fa;
+}
+pre.rouge .k, pre.rouge .kd, pre.rouge .kn, pre.rouge .kp, pre.rouge .kr, pre.rouge .kt, pre.rouge .kv {
+  color: #cf222e;
+}
+pre.rouge .gr {
+  color: #f6f8fa;
+}
+pre.rouge .gd {
+  color: #82071e;
+  background-color: #ffebe9;
+}
+pre.rouge .nb {
+  color: #953800;
+}
+pre.rouge .nc {
+  color: #953800;
+}
+pre.rouge .no {
+  color: #953800;
+}
+pre.rouge .nn {
+  color: #953800;
+}
+pre.rouge .sr {
+  color: #116329;
+}
+pre.rouge .na {
+  color: #116329;
+}
+pre.rouge .nt {
+  color: #116329;
+}
+pre.rouge .gi {
+  color: #116329;
+  background-color: #dafbe1;
+}
+pre.rouge .ges {
+  font-weight: bold;
+  font-style: italic;
+}
+pre.rouge .kc {
+  color: #0550ae;
+}
+pre.rouge .l, pre.rouge .ld, pre.rouge .m, pre.rouge .mb, pre.rouge .mf, pre.rouge .mh, pre.rouge .mi, pre.rouge .il, pre.rouge .mo, pre.rouge .mx {
+  color: #0550ae;
+}
+pre.rouge .sb {
+  color: #0550ae;
+}
+pre.rouge .bp {
+  color: #0550ae;
+}
+pre.rouge .ne {
+  color: #0550ae;
+}
+pre.rouge .nl {
+  color: #0550ae;
+}
+pre.rouge .py {
+  color: #0550ae;
+}
+pre.rouge .nv, pre.rouge .vc, pre.rouge .vg, pre.rouge .vi, pre.rouge .vm {
+  color: #0550ae;
+}
+pre.rouge .o, pre.rouge .ow {
+  color: #0550ae;
+}
+pre.rouge .gh {
+  color: #0550ae;
+  font-weight: bold;
+}
+pre.rouge .gu {
+  color: #0550ae;
+  font-weight: bold;
+}
+pre.rouge .s, pre.rouge .sa, pre.rouge .sc, pre.rouge .dl, pre.rouge .sd, pre.rouge .s2, pre.rouge .se, pre.rouge .sh, pre.rouge .sx, pre.rouge .s1, pre.rouge .ss {
+  color: #0a3069;
+}
+pre.rouge .nd {
+  color: #8250df;
+}
+pre.rouge .nf, pre.rouge .fm {
+  color: #8250df;
+}
+pre.rouge .err {
+  color: #f6f8fa;
+  background-color: #82071e;
+}
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cm, pre.rouge .cp, pre.rouge .cpf, pre.rouge .c1, pre.rouge .cs {
+  color: #6e7781;
+}
+pre.rouge .gl {
+  color: #6e7781;
+}
+pre.rouge .gt {
+  color: #6e7781;
+}
+pre.rouge .ni {
+  color: #24292f;
+}
+pre.rouge .si {
+  color: #24292f;
+}
+pre.rouge .ge {
+  color: #24292f;
+  font-style: italic;
+}
+pre.rouge .gs {
+  color: #24292f;
+  font-weight: bold;
+}
+</style>
+<meta property="og:article:title" content="Deployment of IPI on BM using the Ansible Playbook" />
+<meta property="og:article:type" content="article" />
+<meta property="og:article:author" content="Deployment Integration Team">
+<meta property="og:article:tag" content="OpenShift, ansible, baremetal, installation, ipi, Installer provisioned infrastructure" />
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Deployment of IPI on BM using the Ansible Playbook",
+        "author": {
+            "@type": "Person",
+            "name": "Deployment Integration Team"
+        },
+        "keywords": "OpenShift, ansible, baremetal, installation, ipi, Installer provisioned infrastructure",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Deployment Integration Team"
+        },
+        "description": "Ansible playbook usage for installing OpenShift on baremetal"
+    }
+</script>
+
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Deployment of IPI on BM using the Ansible Playbook">
+<meta name=twitter:description content="Ansible playbook usage for installing OpenShift on baremetal">
+</head>
+<body id="ansible-playbook-readme" class="book toc2 toc-left">
+<div id="header">
+<h1>Deployment of IPI on BM using the Ansible Playbook</h1>
+<div class="details">
+<span id="author" class="author">Deployment Integration Team</span><br/>
+<span id="email" class="email"><a href="https://github.com/openshift-kni/baremetal-deploy" class="bare">https://github.com/openshift-kni/baremetal-deploy</a></span><br/>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#ansible-playbook-introduction">1. Introduction</a></li>
+<li><a href="#ansible-playbook-prerequisites">2. Prerequisites</a></li>
+<li><a href="#ansible-playbook-tour-of-the-ansible-playbook">3. Tour of the Ansible Playbook</a></li>
+<li><a href="#ansible-playbook-running-the-ansible-playbook">4. Running the Ansible Playbook</a>
+<ul class="sectlevel2">
+<li><a href="#ansible-playbook-git-clone">4.1. <code>git</code> clone the Ansible playbook</a></li>
+<li><a href="#ansible-playbook-install-collections">4.2. Install the required Ansible collections</a></li>
+<li><a href="#ansible-playbook-ansiblecfg-file">4.3. The <code>ansible.cfg</code> file</a></li>
+<li><a href="#ansible-playbook-ansible-version">4.4. Ansible version</a></li>
+<li><a href="#ansible-playbook-ssh-key">4.5. Copy local SSH key to provision node</a></li>
+<li><a href="#ansible-playbook-modifying-the-inventoryhosts-file">4.6. Modifying the <code>inventory/hosts</code></a>
+<ul class="sectlevel3">
+<li><a href="#ansible-playbook-inventory-dual-stack">4.6.1. Enabling dual-stack based deployments (optional).</a></li>
+</ul>
+</li>
+<li><a href="#ansible-playbook-the-ansible-playbook">4.7. The Ansible <code>playbook.yml</code></a></li>
+<li><a href="#ansible-playbook-customizing-the-node-filesystems">4.8. Customizing the Node Filesystems</a></li>
+<li><a href="#ansible-playbook-adding-extra-configurations-to-the-openshift-installer">4.9. Adding Extra Configurations to the OpenShift Installer</a></li>
+<li><a href="#ansible-playbook-precaching-rhcos-images">4.10. Pre-caching RHCOS Images</a></li>
+<li><a href="#ansible-playbook-disconnected-registry">4.11. Disconnected Registry</a>
+<ul class="sectlevel3">
+<li><a href="#creating_registry">4.11.1. Creating a new disconnected registry</a></li>
+<li><a href="#ansible-playbook-using-an-existing-registry">4.11.2. Using an Existing Registry</a></li>
+</ul>
+</li>
+<li><a href="#_running_the_playbook_yml">4.12. Running the <code>playbook.yml</code></a></li>
+</ul>
+</li>
+<li><a href="#ansible-playbook-verifying-installation">5. Verifying Installation</a></li>
+<li><a href="#ansible-playbook-troubleshooting">6. Troubleshooting</a>
+<ul class="sectlevel2">
+<li><a href="#ansible-playbook-unreachable-host">6.1. Unreachable Host</a></li>
+<li><a href="#ansible-playbook-permission-denied-trying-to-connect-to-host">6.2. Permission Denied Trying To Connect To Host</a></li>
+<li><a href="#ansible-playbook-dig-lookup-requires-the-python-dnspython-library">6.3. Dig lookup requires the python &#8216;dnspython&#8217; library and it is not installed</a></li>
+<li><a href="#ansible-playbook-missing-python-netaddr-library">6.4. Missing python <code>netaddr</code> library</a></li>
+<li><a href="#ansible-playbook-shared-connection-closed-on-provision-host">6.5. Shared connection closed on provision host when installing packages</a></li>
+</ul>
+</li>
+<li><a href="#ansible-playbook-gotchas">7. Gotchas</a>
+<ul class="sectlevel2">
+<li><a href="#ansible-playbook-using-become-yes-within-ansiblecfg-or-inside-playbookyml">7.1. Using <code>become: yes</code> within <code>ansible.cfg</code> or inside <code>playbook.yml</code></a></li>
+<li><a href="#ansible-playbook-failed-to-connect-to-bus-no-file-or-directory">7.2. Failed to connect to bus: No such file or directory</a></li>
+</ul>
+</li>
+<li><a href="#ansible-playbook-appendix-using-ansible-tags-with-the-playbookyml">Appendix A: Using Ansible Tags with the <code>playbook.yml</code></a>
+<ul class="sectlevel2">
+<li><a href="#_how_to_use_the_ansible_tags">A.1. How to use the Ansible tags</a></li>
+<li><a href="#_skipping_particular_tasks_using_ansible_tags">A.2. Skipping particular tasks using Ansible tags</a></li>
+</ul>
+</li>
+<li><a href="#ansible-playbook-appendix-using-a-proxy-with-your-ansible-playbook">Appendix B: Using a proxy with your Ansible playbook</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><a href="Ansible%20Playbook%20Install.pdf">Download</a> the PDF version of this document or visit <a href="https://openshift-kni.github.io/baremetal-deploy/" class="bare">https://openshift-kni.github.io/baremetal-deploy/</a></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansible-playbook-introduction"><a class="link" href="#ansible-playbook-introduction">1. Introduction</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This write-up will guide you through the process of using the Ansible
+playbooks to deploy a Baremetal Installer Provisioned Infrastructure
+(<code>IPI</code>) of Red Hat OpenShift 4.</p>
+</div>
+<div class="paragraph">
+<p>For the manual details, visit our
+<a href="https://openshift-kni.github.io/baremetal-deploy/">Deployment Guide</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansible-playbook-prerequisites"><a class="link" href="#ansible-playbook-prerequisites">2. Prerequisites</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Best Practice Minimum Setup: 6 Physical servers (1 provision node, 3 master and 2 worker nodes)</p>
+</li>
+<li>
+<p>Best Practice Minimum Setup for disconnected environments: 7 Physical servers (1 provision node, 1 registry node<sup class="footnote" id="_footnote_registry">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>, 3 master and 2 worker nodes)</p>
+</li>
+<li>
+<p>Minimum Setup: 4 Physical servers (1 provision node, 3 master nodes)</p>
+</li>
+<li>
+<p>Minimum Setup for disconnected environments: 5 Physical servers (1 provision node, 1 registry node<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>, 3 master nodes)</p>
+</li>
+<li>
+<p>Each server needs 2 NICs pre-configured. NIC1 for the private network and NIC2 for the baremetal network. NIC interface names must be identical across all nodes<sup class="footnote" id="_footnote_issue">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup></p>
+</li>
+<li>
+<p>It is recommended each server have a RAID-1 configured and initialized (though not enforced)</p>
+</li>
+<li>
+<p>Each server must have IPMI configured</p>
+</li>
+<li>
+<p>Each server must have DHCP setup for the baremetal NICs</p>
+</li>
+<li>
+<p>Each server must have DNS setup for the API, wildcard applications</p>
+</li>
+<li>
+<p>A DNS VIP is IP on the <code>baremetal</code> network is required for reservation. Reservation is done via our DHCP server (though not required).</p>
+</li>
+<li>
+<p>Optional - Include DNS entries for the hostnames for each of the servers</p>
+</li>
+<li>
+<p>Download a copy of your <a href="https://cloud.redhat.com/openshift/install/metal/user-provisioned">Pull Secret</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Due to the complexities of properly configuring an environment, it is
+recommended to review the following steps prior to running the Ansible
+playbook as without proper setup, the Ansible playbook won&#8217;t work.</p>
+</div>
+<div class="paragraph">
+<p>The section to review and ensure proper configuration are as follows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="Deployment#validation-checklist-for-nodesipi-install-prerequisites">Validation checklist for nodes</a></p>
+</li>
+<li>
+<p>One of the Create DNS records sections</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="Deployment#creating-dns-records-on-a-dns-server-option1_ipi-install-prerequisites">Create DNS records on a DNS server (Option 1)</a></p>
+</li>
+<li>
+<p><a href="Deployment#creating-dns-records-using-dnsmasq-option2_ipi-install-prerequisites">Create DNS records using dnsmasq (Option 2)</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>One of the Create DHCP reservation sections</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="Deployment#creating-dhcp-reservations-option1_ipi-install-prerequisites">Create DHCP reservations (Option 1)</a></p>
+</li>
+<li>
+<p><a href="Deployment#creating-dhcp-reservations-using-dnsmasq-option2_ipi-install-prerequisites">Create DHCP reservations using dnsmasq (Option 2)</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>An existing Registry node (details on creating a registry if required below)</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="Deployment#ipi-install-creating-a-disconnected-registry_ipi-install-prerequisites">Create a disconnected registry</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>An existing webserver to cache required files and the RHCOS images (details on creating a webserver if required below)</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="Deployment#ipi-install-creating-an%20rhcos-images-cache_ipi-install-prerequisites">Webserver</a></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Once the above is complete, install Red Hat Enterprise Linux (RHEL) 8.x on your provision node and create a user (i.e. <code>kni</code>) to deploy as non-root and provide that user <code>sudo</code> privileges.</p>
+</div>
+<div class="paragraph">
+<p>For simplicity, the steps to create the user named <code>kni</code> is as follows:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Login into the provision node via <code>ssh</code></p>
+</li>
+<li>
+<p>Create a user (i.e <code>kni</code>) to deploy as non-root and provide that user <code>sudo</code> privileges</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="sh">useradd kni
+passwd kni
+<span class="nb">echo</span> <span class="s2">"kni ALL=(root) NOPASSWD:ALL"</span> | <span class="nb">tee</span> <span class="nt">-a</span> /etc/sudoers.d/kni
+<span class="nb">chmod </span>0440 /etc/sudoers.d/kni</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Enable a <code>dnf</code> <a href="#local_repository">local repository</a> on the provision host</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansible-playbook-tour-of-the-ansible-playbook"><a class="link" href="#ansible-playbook-tour-of-the-ansible-playbook">3. Tour of the Ansible Playbook</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><code>inventory</code> - contains the file <code>hosts.sample</code> that:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>contains all the modifiable variables, their default values, and their definition. Some variables are empty ensuring users give an explicit value.</p>
+</li>
+<li>
+<p>the setting up of your provision node, master nodes, and worker nodes. Each section will require additional details (i.e. Management credentials).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>requirements</code> - contains the list of collections required by the playbook.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The collections include two roles: <code>redhatci.ocp.node_prep</code> and <code>redhatci.ocp.installer</code>. <code>redhatci.ocp.node_prep</code> handles all the prerequisites that the provisioner node requires prior to running the installer. The <code>redhatci.ocp.installer</code> role handles extracting the installer, setting up the manifests, and running the Red Hat OpenShift installation.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The tree structure is shown below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">├── ansible.cfg
+├── inventory
+│   └── hosts.sample
+├── playbook.yml
+└── requirements.yml</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansible-playbook-running-the-ansible-playbook"><a class="link" href="#ansible-playbook-running-the-ansible-playbook">4. Running the Ansible Playbook</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following are the steps to successfully run the Ansible playbook.</p>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-git-clone"><a class="link" href="#ansible-playbook-git-clone">4.1. <code>git</code> clone the Ansible playbook</a></h3>
+<div class="paragraph">
+<p>The first step to using the Ansible playbook is to clone the
+<a href="https://github.com/openshift-kni/baremetal-deploy/">baremetal-deploy</a> repository.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This should be done on a system that can access the provision host
+</td>
+</tr>
+</table>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Clone the <code>git</code> repository</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@laptop ~]<span class="nv">$ </span>git clone https://github.com/openshift-kni/baremetal-deploy.git</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Change to the <code>ansible-ipi-install</code> directory</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>user@laptop ~]<span class="nv">$ </span><span class="nb">cd</span> /path/to/git/repo/baremetal-deploy/ansible-ipi-install</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-install-collections"><a class="link" href="#ansible-playbook-install-collections">4.2. Install the required Ansible collections</a></h3>
+<div class="paragraph">
+<p>The Ansible playbook makes use of different collections defined in the <code>requirements.yml</code> file. Two of the main roles come from the <a href="https://github.com/redhatci/ansible-collection-redhatci-ocp"><code>redhatci.ocp</code></a> collection.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Install required collections</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="nowrap">[user@laptop ~]$ ansible-galaxy collection install -r requirements.yml</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-ansiblecfg-file"><a class="link" href="#ansible-playbook-ansiblecfg-file">4.3. The <code>ansible.cfg</code> file</a></h3>
+<div class="paragraph">
+<p>While the <code>ansible.cfg</code> may vary upon your environment
+a sample is provided in the repository.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="ini"><span class="nn">[defaults]</span>
+<span class="py">inventory</span><span class="p">=</span><span class="s">./inventory</span>
+<span class="py">remote_user</span><span class="p">=</span><span class="s">kni</span>
+<span class="py">callback_whitelist</span> <span class="p">=</span> <span class="s">profile_tasks</span>
+
+<span class="nn">[privilege_escalation]</span>
+<span class="py">become_method</span><span class="p">=</span><span class="s">sudo</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Ensure to change the <code>remote_user</code> as deemed appropriate for
+your environment. The <code>remote_user</code> is the user previously
+created on the provision node.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-ansible-version"><a class="link" href="#ansible-playbook-ansible-version">4.4. Ansible version</a></h3>
+<div class="paragraph">
+<p>Ensure that your environment is using Ansible 2.9 or
+greater. The following command can be used to verify.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">ansible <span class="nt">--version</span>
+ansible 2.9.1
+  config file <span class="o">=</span> /path/to/baremetal-deploy/ansible-ipi-install/ansible.cfg
+  configured module search path <span class="o">=</span> <span class="o">[</span><span class="s1">'/path/to/.ansible/plugins/modules'</span>, <span class="s1">'/usr/share/ansible/plugins/modules'</span><span class="o">]</span>
+  ansible python module location <span class="o">=</span> /usr/lib/python3.7/site-packages/ansible
+  executable location <span class="o">=</span> /usr/bin/ansible
+  python version <span class="o">=</span> 3.7.2 <span class="o">(</span>default, Jan 16 2019, 19:49:22<span class="o">)</span> <span class="o">[</span>GCC 8.2.1 20181215 <span class="o">(</span>Red Hat 8.2.1-6<span class="o">)]</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The config file section should point to the path of your <code>ansible.cfg</code>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-ssh-key"><a class="link" href="#ansible-playbook-ssh-key">4.5. Copy local SSH key to provision node</a></h3>
+<div class="paragraph">
+<p>With the <code>ansible.cfg</code> file in place, the next step is
+to ensure to copy your public <code>ssh</code> key to your provision
+ node using <code>ssh-copy-id</code>.</p>
+</div>
+<div class="paragraph">
+<p>From the system that is to run the playbook,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nv">$ </span>ssh-copy-id &lt;user&gt;@provisioner.example.com</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+&lt;user&gt; should be the user previously created on the provision node (i.e. <code>kni</code>)
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-modifying-the-inventoryhosts-file"><a class="link" href="#ansible-playbook-modifying-the-inventoryhosts-file">4.6. Modifying the <code>inventory/hosts</code></a></h3>
+<div class="paragraph">
+<p>The hosts file provides all the definable variables and provides a
+description of each variable. Some of the variables are explicitly left
+ empty and <strong>require</strong> user input for the playbook to run.</p>
+</div>
+<div class="paragraph">
+<p>The hosts file ensures all your nodes that will be used to deploy
+IPI on baremetal are setup. There are 4 groups: <code>masters</code>, <code>workers</code>,
+<code>provisioner</code>, and <code>registry_host</code> (optional). The <code>masters</code> and
+<code>workers</code> group collects information about the host such as its name,
+role, user management (i.e. iDRAC) user, user management (i.e. iDRAC)
+password, <code>ipmi_address</code>, <code>ipmi_port</code> to access the server and the
+provision mac address (NIC1) that resides on the provisioning network.</p>
+</div>
+<div class="paragraph">
+<p>Below is a sample of the inventory/hosts file</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="ini"><span class="nn">[all:vars]</span>
+
+<span class="c">###############################################################################
+# Required configuration variables for IPI on Baremetal Installations         #
+###############################################################################
+</span>
+<span class="c"># The provisioning NIC (NIC1) used on all baremetal nodes
+</span><span class="py">prov_nic</span><span class="p">=</span><span class="s">eno1</span>
+
+<span class="c"># The public NIC (NIC2) used on all baremetal nodes
+</span><span class="py">pub_nic</span><span class="p">=</span><span class="s">eno2</span>
+
+<span class="c"># (Optional) Set the provisioning bridge name. Default value is 'provisioning'.
+#provisioning_bridge=provisioning
+</span>
+<span class="c"># (Optional) Set the baremetal bridge name. Default value is 'baremetal'.
+#baremetal_bridge=baremetal
+</span>
+<span class="c"># (Optional) Activation-key for proper setup of subscription-manager, empty value skips registration
+#activation_key=""
+</span>
+<span class="c"># (Optional) Activation-key org_id for proper setup of subscription-manager, empty value skips registration
+#org_id=""
+</span>
+<span class="c"># The directory used to store the cluster configuration files (install-config.yaml, pull-secret.txt, metal3-config.yaml)
+</span><span class="py">dir</span><span class="p">=</span><span class="s">"{{ ansible_user_dir }}/clusterconfigs"</span>
+
+<span class="c"># The version of the openshift-installer, undefined or empty results in the playbook failing with error message.
+# Values accepted: 'latest-4.3', 'latest-4.4', explicit version i.e. 4.3.0-0.nightly-2019-12-09-035405
+</span><span class="py">version</span><span class="p">=</span><span class="s">""</span>
+
+<span class="c"># Enter whether the build should use 'dev' (nightly builds) or 'ga' for Generally Available version of OpenShift
+# Empty value results in playbook failing with error message.
+</span><span class="py">build</span><span class="p">=</span><span class="s">""</span>
+
+<span class="c"># (Optional) Provisioning IP Network and dhcp range (default value)
+# If defined, make sure to update 'prov_ip' with a valid IP outside of your 'prov_dhcp_range' and update all other places like 'no_proxy_list'
+# prov_network=172.22.0.0/21
+# prov_dhcp_range="172.22.0.10,172.22.0.100"
+</span>
+<span class="c"># Provisioning IP address (default value)
+</span><span class="py">prov_ip</span><span class="p">=</span><span class="s">172.22.0.3</span>
+
+<span class="c"># (Optional) Enable playbook to pre-download RHCOS images prior to cluster deployment and use them as a local
+# cache.  Default is false.
+#cache_enabled=True
+</span>
+<span class="c"># (Optional) Enable IPv6 addressing instead of IPv4 addressing
+#ipv6_enabled=True
+</span>
+<span class="c"># (Optional) When ipv6_enabled is set to True, but want IPv4 addressing on provisioning network
+# Default is false.
+#ipv4_provisioning=True
+</span>
+<span class="c"># (Optional) When ipv6_enabled is set to True, but want IPv4 addressing on baremetal network
+#ipv4_baremetal=True
+</span>
+<span class="c"># (Optional) A list of clock servers to be used in chrony by the masters and workers
+#clock_servers=["pool.ntp.org","clock.redhat.com"]
+</span>
+<span class="c"># (Optional) Provide HTTP proxy settings
+#http_proxy=http://USERNAME:PASSWORD@proxy.example.com:8080
+</span>
+<span class="c"># (Optional) Provide HTTPS proxy settings
+#https_proxy=https://USERNAME:PASSWORD@proxy.example.com:8080
+</span>
+<span class="c"># (Optional) comma-separated list of hosts, IP Addresses, or IP ranges in CIDR format
+# excluded from proxying
+# NOTE: OpenShift does not accept '*' as a wildcard attached to a domain suffix
+# i.e. *.example.com
+# Use '.' as the wildcard for a domain suffix as shown in the example below.
+# i.e. .example.com
+#no_proxy_list="172.22.0.0/24,.example.com"
+</span>
+<span class="c"># The default installer timeouts for the bootstrap and install processes may be too short for some baremetal
+# deployments. The variables below can be used to extend those timeouts.
+</span>
+<span class="c"># (Optional) Increase bootstrap process timeout by N iterations.
+#increase_bootstrap_timeout=2
+</span>
+<span class="c"># (Optional) Increase install process timeout by N iterations.
+#increase_install_timeout=2
+</span>
+<span class="c"># (Optional) Disable RedFish inspection to intelligently choose between IPMI or RedFish protocol.
+# By default this feature is enabled and set to true. Uncomment below to disable and use IPMI.
+#redfish_inspection=false
+</span>
+<span class="c"># (Optional) Modify files on the node filesystems, you can augment the "fake" roots for the
+# control plane and worker nodes.
+# If defined, playbook will look for files in control plane and worker subdirectories.
+# Otherwise, it will look in {{ role_path }}/files/customize_filesystem (default)
+# For more information on modifying node filesystems visit: https://bit.ly/36tD30f
+#customize_node_filesystems="/path/to/customized/filesystems"
+</span>
+<span class="c"># (Optional) Modify the path to add external manifests to the deployed nodes.
+# There are two folders manifests/ and openshift/
+# If defined, the playbook will copy manifests from the user provided directory.
+# Otherwise, files will be copied from the default location 'roles/installer/files/manifests/*'
+#customize_extramanifests_path="/path/to/extra/manifests"
+#customize_extramanifestsopenshift_path="/path/to/extra/ogpenshift"
+</span>
+<span class="c">######################################
+# Vars regarding install-config.yaml #
+######################################
+</span>
+<span class="c"># Base domain, i.e. example.com
+</span><span class="py">domain</span><span class="p">=</span><span class="s">""</span>
+<span class="c"># Name of the cluster, i.e. openshift
+</span><span class="py">cluster</span><span class="p">=</span><span class="s">""</span>
+<span class="c"># The public CIDR address, i.e. 10.1.1.0/21
+</span><span class="py">extcidrnet</span><span class="p">=</span><span class="s">""</span>
+<span class="c"># An IP reserved on the baremetal network.
+</span><span class="py">dnsvip</span><span class="p">=</span><span class="s">""</span>
+<span class="c"># An IP reserved on the baremetal network for the API endpoint.
+# (Optional) If not set, a DNS lookup verifies that api.&lt;clustername&gt;.&lt;domain&gt; provides an IP
+#apivip=""
+# An IP reserved on the baremetal network for the Ingress endpoint.
+# (Optional) If not set, a DNS lookup verifies that *.apps.&lt;clustername&gt;.&lt;domain&gt; provides an IP
+#ingressvip=""
+# The master hosts provisioning nic
+# (Optional) If not set, the prov_nic will be used
+#masters_prov_nic=""
+# Network Type (OpenShiftSDN or OVNKubernetes). Playbook defaults to OVNKubernetes.
+# Uncomment below for OpenShiftSDN
+#network_type="OpenShiftSDN"
+# (Optional) A URL to override the default operating system image for the bootstrap node.
+# The URL must contain a sha256 hash of the image.
+# See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
+#   Example https://mirror.example.com/images/qemu.qcow2.gz?sha256=a07bd...
+#bootstraposimage=""
+# (Optional) A URL to override the default operating system image for the cluster nodes.
+# The URL must contain a sha256 hash of the image.
+# See https://github.com/openshift/installer/blob/master/docs/user/metal/customization_ipi.md
+# Example https://mirror.example.com/images/metal.qcow2.gz?sha256=3b5a8...
+#clusterosimage=""
+# A copy of your pullsecret from https://cloud.redhat.com/openshift/install/metal/user-provisioned
+</span><span class="py">pullsecret</span><span class="p">=</span><span class="s">""</span>
+
+<span class="c"># (Optional) Disable BMC Certification Validation. When using self-signed certificates for your BMC, ensure to set to True.
+# Default value is False.
+#disable_bmc_certificate_verification=True
+</span>
+<span class="c"># (Optional) Enable RedFish VirtualMedia/iDRAC VirtualMedia
+#enable_virtualmedia=True
+</span>
+<span class="c"># (Required when enable_virtualmedia is set to True in OCP 4.6) Set an available IP address from the baremetal net for these two variables
+#provisioningHostIP=&lt;baremetal_net_IP1&gt;
+#bootstrapProvisioningIP=&lt;baremetal_net_IP2&gt;
+</span>
+<span class="c"># (Optional in OCP &gt;= 4.7) Set an available IP address from the provisioning network when provisioning network is enabled. Not used when enable_virtualmedia=True
+#bootstrapProvisioningIP=&lt;provisioning_net_IP&gt;
+</span>
+<span class="c"># (Optional in OCP &gt;= 4.12 ) Allows to set bootstrapExternalStatic* variables starting.
+#static_bootstrap_extnet=false
+</span>
+<span class="c"># (Optional in OCP &gt;= 4.12 ) Set this parameter to the appropriate IP address on the baremetal network
+# when the provisioningNetwork configuration setting is set to Disabled, enable_virtualmedia is set to True and static_bootstrap_extnet is set to True.
+#bootstrapExternalStaticIP=&lt;baremetal_net_IP&gt;
+</span>
+<span class="c"># (Optional in OCP &gt;= 4.12 ) Set this parameter to the appropriate GW address on the baremetal network
+# when the provisioningNetwork configuration setting is set to Disabled, enable_virtualmedia is set to True and static_bootstrap_extnet is set to True.
+#bootstrapExternalStaticGateway=&lt;baremetal_net_GW&gt;
+</span>
+<span class="c"># (Optional in OCP &gt;= 4.14 ) Set this parameter to the appropriate DNS address on the baremetal network
+# when the provisioningNetwork configuration setting is set to Disabled, enable_virtualmedia is set to True and static_bootstrap_extnet is set to True.
+#bootstrapExternalStaticDNS=&lt;baremetal_net_DNS&gt;
+</span>
+<span class="c"># (Optional) A MAC address to use for the external NIC on the bootstrap VM. This is optional and if blank is generated by libvirt.
+#externalMACAddress="52:54:00:XX:XX:XX"
+</span>
+<span class="c"># Master nodes
+# The hardware_profile is used by the baremetal operator to match the hardware discovered on the host
+# See https://github.com/metal3-io/baremetal-operator/blob/master/docs/api.md#baremetalhost-status
+# ipmi_port is optional for each host. 623 is the common default used if omitted
+# poweroff is optional. True or ommited (by default) indicates the playbook will power off the node before deploying OCP
+#  otherwise set it to false
+# (Optional) OpenShift 4.6+, Set Root Device Hints to choose the proper device to install operating system on OpenShift nodes.
+# root device hint options include: ['deviceName','hctl','model','vendor','serialNumber','minSizeGigabytes','wwn','rotational']
+# Root Device Hint values are case sensitive.
+# root_device_hint="deviceName"
+# root_device_hint_value="/dev/sda"
+</span>
+<span class="nn">[masters]</span>
+<span class="err">master-0</span> <span class="py">name</span><span class="p">=</span><span class="s">master-0 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.1 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:58 hardware_profile=default poweroff=true</span>
+<span class="err">master-1</span> <span class="py">name</span><span class="p">=</span><span class="s">master-1 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.2 ipmi_port=623 provision_mac=ec:f4:bb:da:32:88 hardware_profile=default poweroff=true</span>
+<span class="err">master-2</span> <span class="py">name</span><span class="p">=</span><span class="s">master-2 role=master ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.3 ipmi_port=623 provision_mac=ec:f4:bb:da:0d:98 hardware_profile=default poweroff=true</span>
+
+<span class="c"># Worker nodes
+</span><span class="nn">[workers]</span>
+<span class="err">worker-0</span> <span class="py">name</span><span class="p">=</span><span class="s">worker-0 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.4 ipmi_port=623 provision_mac=ec:f4:bb:da:0c:18 hardware_profile=unknown poweroff=true</span>
+<span class="err">worker-1</span> <span class="py">name</span><span class="p">=</span><span class="s">worker-1 role=worker ipmi_user=admin ipmi_password=password ipmi_address=192.168.1.5 ipmi_port=623 provision_mac=ec:f4:bb:da:32:28 hardware_profile=unknown poweroff=true</span>
+
+<span class="c"># Provision Host
+</span><span class="nn">[provisioner]</span>
+<span class="err">provisioner.example.com</span>
+
+<span class="c"># Registry Host
+#   Define a host here to create or use a local copy of the installation registry
+#   Used for disconnected installation
+# [registry_host]
+# registry.example.com
+</span>
+<span class="c"># [registry_host:vars]
+# The following cert_* variables are needed to create the certificates
+#   when creating a disconnected registry. They are not needed to use
+#   an existing disconnected registry.
+# cert_country=US #it must be two letters country
+# cert_state=MyState
+# cert_locality=MyCity
+# cert_organization=MyCompany
+# cert_organizational_unit=MyDepartment
+</span>
+<span class="c"># The port exposed on the disconnected registry host can be changed from
+# the default 5000 to something else by changing the following variable.
+# registry_port=5000
+</span>
+<span class="c"># The directory the mirrored registry files are written to can be modified from teh default /opt/registry by changing the following variable.
+# registry_dir="/opt/registry"
+</span>
+<span class="c"># The following two variables must be set to use an existing disconnected registry.
+#
+# Specify a file that contains extra auth tokens to include in the
+#   pull-secret if they are not already there.
+# disconnected_registry_auths_file=/path/to/registry-auths.json
+</span>
+<span class="c"># Specify a file that contains the addition trust bundle and image
+#   content sources for the local registry. The contents of this file
+#   will be appended to the install-config.yml file.
+</span><span class="err">#</span> <span class="py">disconnected_registry_mirrors_file</span><span class="p">=</span><span class="s">/path/to/install-config-appends.json</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The <code>ipmi_address</code> can take a fully qualified name assuming it is
+resolvable.</p>
+</div>
+<div class="paragraph">
+<p>The <code>ipmi_port</code> examples above show how a user can specify a different
+<code>ipmi_port</code> for each host within their inventory file. If the
+<code>ipmi_port</code> variable is omitted from the inventory file, the default
+of 623 will be used.</p>
+</div>
+<div class="paragraph">
+<p>A detailed description of the <code>vars</code> under the section
+<code>Vars regarding install-config.yaml</code> may be reviewed within
+<a href="Deployment#ipi-install-configuration-files">Configuration Files</a> if unsure how to populate.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="ansible-playbook-inventory-dual-stack"><a class="link" href="#ansible-playbook-inventory-dual-stack">4.6.1. Enabling dual-stack based deployments (optional).</a></h4>
+<div class="paragraph">
+<p>Users now can deploy <code>dual-stack</code> based deployments using <code>ansible-playbook</code> by including below variables under <code>inventory/hosts.sample</code> file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code>ipv6_enabled=True
+dualstack_baremetal=True
+extcidrnet="&lt;ipv4-subnet-for-your-cluster&gt;"   #Ex: 10.0.0.1/24
+extcidrnet6="&lt;ipv6-subnet-for-your-cluster&gt;"  #Ex: fe80:12:0:4567::/64</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Only applicable for OCP versions greater than <code>4.6</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-the-ansible-playbook"><a class="link" href="#ansible-playbook-the-ansible-playbook">4.7. The Ansible <code>playbook.yml</code></a></h3>
+<div class="paragraph">
+<p>The Ansible playbook connects to your provision host and
+runs through the <code>redhatci.ocp.node_prep</code> role and the
+<code>redhatci.ocp.installer</code> role.
+No modification is necessary. All modifications of variables
+may be done within the <code>inventory/hosts</code> file. A sample file
+is located in this repository under <code>inventory/hosts.sample</code>.
+From the system that is to run the playbook,</p>
+</div>
+<div class="listingblock">
+<div class="title">Sample <code>playbook.yml</code></div>
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="yml"><span class="nn">---</span>
+<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">IPI on Baremetal Installation Playbook</span>
+  <span class="na">hosts</span><span class="pi">:</span> <span class="s">provisioner</span>
+  <span class="na">collections</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">redhatci.ocp</span>
+  <span class="na">roles</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">node_prep</span>
+    <span class="pi">-</span> <span class="s">installer</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-customizing-the-node-filesystems"><a class="link" href="#ansible-playbook-customizing-the-node-filesystems">4.8. Customizing the Node Filesystems</a></h3>
+<div class="paragraph">
+<p>If you need to modify files on the node filesystems, you can augment
+the "fake" roots for the masters and workers under the
+<code>roles/installer/files/customize_filesystem/{master,worker}</code>
+directories. Any files added here will be included in the ignition
+config files for each of the machine types, leading to permanent
+changes to the node filesystem.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Do not place any files directly in the "fake" root&#8201;&#8212;&#8201;only in
+subdirectories. Files in the root will cause the ignition process to
+fail. (There is a task in the playbook to cleanup the <code>.gitkeep</code> file
+in the root, if it is left in place.)</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This will utilize the Ignition
+<a href="https://github.com/ashcrow/filetranspiler/blob/master/filetranspile"><code>filetranspiler</code> tool</a>,
+which you can read about for more information on how to use the "fake"
+root directories.</p>
+</div>
+<div class="paragraph">
+<p>An example of using this customization is to disable a network
+interface that you need to not receive a DHCP assignment that is
+outside of the cluster configuration. To do this for the <code>eno1</code>
+interface on the master nodes, create the appropriate
+<code>etc/sysconfig/network-scripts/ifcfg-eno1</code> file in the "fake" root:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nv">IFCFG_DIR</span><span class="o">=</span><span class="s2">"roles/installer/files/customize_filesystem/master/etc/sysconfig/network-scripts"</span>
+<span class="nv">IFNAME</span><span class="o">=</span><span class="s2">"eno1"</span>
+<span class="nb">mkdir</span> <span class="nt">-p</span> <span class="nv">$IFCFG_DIR</span>
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; </span><span class="nv">$IFCFG_DIR</span><span class="sh">/ifcfg-</span><span class="k">${</span><span class="nv">IFNAME</span><span class="k">}</span><span class="sh">
+DEVICE=</span><span class="k">${</span><span class="nv">IFNAME</span><span class="k">}</span><span class="sh">
+BOOTPROTO=none
+ONBOOT=no
+EOF</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>By default these directories are empty, and the <code>worker</code> subdirectory
+is a symbolic link to the <code>master</code> subdirectory so that changes are
+universal.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-adding-extra-configurations-to-the-openshift-installer"><a class="link" href="#ansible-playbook-adding-extra-configurations-to-the-openshift-installer">4.9. Adding Extra Configurations to the OpenShift Installer</a></h3>
+<div class="paragraph">
+<p>Prior to the installation of Red Hat OpenShift, you may want to include
+additional configuration files to be included during the installation.
+The <code>installer</code> role handles this.</p>
+</div>
+<div class="paragraph">
+<p>In order to include the <code>extraconfigs</code>, ensure to place your <code>yaml</code>
+files within the <code>roles/installer/files/manifests</code> directory. All the
+files provided here will be included when the OpenShift manifests are
+created.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+By default this directory is empty.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-precaching-rhcos-images"><a class="link" href="#ansible-playbook-precaching-rhcos-images">4.10. Pre-caching RHCOS Images</a></h3>
+<div class="paragraph">
+<p>If you wish to set up a local cache of RHCOS images on your
+provisioning host, set the <code>cache_enabled</code> variable to <code>True</code> in your
+hosts file. When requested, the playbook will pre-download RHCOS
+images prior to actual cluster deployment.</p>
+</div>
+<div class="paragraph">
+<p>It places these images in an Apache web server container on the
+provisioning host and modifies <code>install-config.yaml</code> to
+instruct the bootstrap VM to download the images from that web server
+during deployment.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If you set the <code>clusterosimage</code> and <code>bootstraposimage</code> variables,
+then <code>cache_enabled</code> will automatically be set to <code>False</code>. Setting
+these variables leaves the responsibility to the end user in ensuring
+the RHCOS images are readily available and accessible to the provision
+host.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-disconnected-registry"><a class="link" href="#ansible-playbook-disconnected-registry">4.11. Disconnected Registry</a></h3>
+<div class="paragraph">
+<p>A disconnected registry can be used to deploy the cluster. This
+registry can exist or can be created.</p>
+</div>
+<div class="paragraph">
+<p>To use a disconnected registry, set the registries host name in the
+<code>[registry_host]</code> group in the inventory file.</p>
+</div>
+<div class="sect3">
+<h4 id="creating_registry"><a class="link" href="#creating_registry">4.11.1. Creating a new disconnected registry</a></h4>
+<div class="paragraph">
+<p>To create a new disconnected registry, the
+<code>disconnected_registry_auths_file</code> and
+<code>disconnected_registry_mirrors_file</code> variables must not be set.</p>
+</div>
+<div class="paragraph">
+<p>The certificate information used to generate the host certificate must
+be defined. These variables must be defined as variables to the
+<code>registry_host</code> group in the inventory file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="ini"><span class="nn">[registry_host:vars]</span>
+<span class="py">cert_country</span><span class="p">=</span><span class="s">US</span>
+<span class="py">cert_state</span><span class="p">=</span><span class="s">MyState</span>
+<span class="py">cert_locality</span><span class="p">=</span><span class="s">MyCity</span>
+<span class="py">cert_organization</span><span class="p">=</span><span class="s">MyCompany</span>
+<span class="py">cert_organizational_unit</span><span class="p">=</span><span class="s">MyDepartment</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>cert_country</code> must be only two letters, i.e. <code>US</code>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ansible-playbook-using-an-existing-registry"><a class="link" href="#ansible-playbook-using-an-existing-registry">4.11.2. Using an Existing Registry</a></h4>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If no existing registry is already existing for your fully disconnected
+environment, visit <a href="Deployment#ipi-install-creating-a-disconnected-registry_ipi-install-prerequisites">Creating a New Disconnected Registry</a> section.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>When using an existing registry, two variables labeled
+<code>disconnected_registry_auths_file</code> and the <code>disconnected_registry_mirrors_file</code>
+must be set. These variables are located within your inventory/hosts file and
+the inventory/hosts.sample file can be used as reference.</p>
+</div>
+<div class="paragraph">
+<p>The <code>disconnected_registry_auths_file</code> variable should point to a file
+containing json data regarding your registry information. This will be appended
+to the <code>auths</code> section of the pull secret by the Ansible playbook itself.</p>
+</div>
+<div class="paragraph">
+<p>An example of the contents of the <code>disconnected_registry_auths_file</code> is shown
+below.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nb">cat</span> /path/to/registry-auths.json
+<span class="o">{</span><span class="s2">"registry.example.com:5000"</span>: <span class="o">{</span><span class="s2">"auth"</span>: <span class="s2">"ZHVtbXk6ZHsFVtbXk="</span>, <span class="s2">"email"</span>: <span class="s2">"user@example.com"</span> <span class="o">}</span> <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The auth password given base64 encoding of the http credentials used to
+create the htpasswd file.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="paragraph">
+<p>[user@registry ~]$ b64auth=$( echo -n '&lt;username&gt;:&lt;passwd&gt;' | openssl base64 )
+&#160;<br/>
+[user@registry ~]$ echo $b64auth</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code>disconnected_registry_mirrors_file</code> variable should point to a file
+containing the <code>additionalTrustBundle</code> and <code>imageContentSources</code> (OpenShift
+4.13 and below) or <code>imageDigestSources</code> (OpenShift 4.14 and above) for
+the disconnected registry. The certificate that goes within the additional
+trust bundle is the disconnected registry node&#8217;s certificate. The
+<code>imageContentSources</code> adds the mirrored information of the registry. The below
+content from the <code>install-config-appends.yml</code> file gets automatically appended
+by the Ansible playbook.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nb">cat</span> /path/to/install-config-appends.yml
+additionalTrustBundle: |
+  <span class="nt">-----BEGIN</span> CERTIFICATE-----
+  MIIGPDCCBCSgAwIBAgIUWr1DxDq53hrsk6XVLRXUjfF9m+swDQYJKoZIhvcNAQEL
+  BQAwgZAxCzAJBgNVBAYTAlVTMRAwDgYDVQQIDAdNeVN0YXRlMQ8wDQYDVQQHDAZN
+  eUNpdHkxEjAQBgNVBAoMCU15Q29tcGFueTEVMBMGA1UECwwMTXlEZXBhcnRtZW50
+  <span class="nb">.</span>
+  <span class="nb">.</span> <span class="o">[</span>ABBREVIATED CERTIFICATE FOR BREVITY]
+  <span class="nb">.</span>
+  MTMwMQYDVQQDDCpyZWdpc3RyeS5rbmk3LmNsb3VkLmxhYi5lbmcuYm9zLnJlZGhh
+  dC5jb20wHhcNMjAwNDA3MjM1MzI2WhcNMzAwNDA1MjM1MzI2WjCBkDELMAkGA1UE
+  <span class="nt">-----END</span> CERTIFICATE-----
+
+&lt;image-config&gt;: <i class="conum" data-value="1"></i><b>(1)</b>
+- mirrors:
+  - registry.example.com:5000/ocp4/openshift4
+  <span class="nb">source</span>: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+- mirrors:
+  - registry.example.com:5000/ocp4/openshift4
+  <span class="nb">source</span>: registry.svc.ci.openshift.org/ocp/release
+- mirrors:
+  - registry.example.com:5000/ocp4/openshift4
+  <span class="nb">source</span>: quay.io/openshift-release-dev/ocp-release</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Where:</p>
+</div>
+<div class="paragraph">
+<p>+
+&lt;1&gt; <code>&lt;image-config&gt;</code> is either <code>imageContentSources</code> for OpenShift 4.13 and below, or <code>imageDigestSources</code> for Openshift 4.14 and above.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Indentation is important in the yml file. Ensure your copy of the <code>install-config-appends.yml</code> is properly indented as in the example above.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_running_the_playbook_yml"><a class="link" href="#_running_the_playbook_yml">4.12. Running the <code>playbook.yml</code></a></h3>
+<div class="paragraph">
+<p>With the <code>playbook.yml</code> set and in-place, run the <code>playbook.yml</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nv">$ </span><span class="nb">export </span><span class="nv">ANSIBLE_CONFIG</span><span class="o">=</span>./ansible.cfg
+<span class="nv">$ </span>ansible-playbook <span class="nt">-i</span> inventory/hosts playbook.yml</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansible-playbook-verifying-installation"><a class="link" href="#ansible-playbook-verifying-installation">5. Verifying Installation</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Once the playbook has successfully completed, verify that your
+environment is up and running.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Log into the provision node</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">ssh kni@provisioner.example.com</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>kni</code> user is my privileged user.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Export the <code>kubeconfig</code> file located in the <code>~/clusterconfigs/auth</code> directory</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nb">export </span><span class="nv">KUBECONFIG</span><span class="o">=</span>~/clusterconfigs/auth/kubeconfig</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Verify the nodes in the OpenShift cluster</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>kni@worker-0 ~]<span class="nv">$ </span>oc get nodes
+NAME                                         STATUS   ROLES           AGE   VERSION
+master-0.openshift.example.com               Ready    master          19h   v1.16.2
+master-1.openshift.example.com               Ready    master          19h   v1.16.2
+master-2.openshift.example.com               Ready    master          19h   v1.16.2
+worker-0.openshift.example.com               Ready    worker          19h   v1.16.2
+worker-1.openshift.example.com               Ready    worker          19h   v1.16.2</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansible-playbook-troubleshooting"><a class="link" href="#ansible-playbook-troubleshooting">6. Troubleshooting</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following section troubleshoots common errors that
+may arise when running the Ansible playbook.</p>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-unreachable-host"><a class="link" href="#ansible-playbook-unreachable-host">6.1. Unreachable Host</a></h3>
+<div class="paragraph">
+<p>One of the most common errors is not being able to reach the
+<code>provisioner</code> host and seeing an error similar to</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nv">$ </span>ansible-playbook <span class="nt">-i</span> inventory/hosts playbook.yml
+
+PLAY <span class="o">[</span>IPI on Baremetal Installation Playbook] <span class="k">**********************************</span>
+
+TASK <span class="o">[</span>Gathering Facts] <span class="k">*********************************************************</span>
+fatal: <span class="o">[</span>provisioner.example.com]: UNREACHABLE! <span class="o">=&gt;</span> <span class="o">{</span><span class="s2">"changed"</span>: <span class="nb">false</span>, <span class="s2">"msg"</span>: <span class="s2">"Failed to connect to the host via ssh: ssh: Could not resolve hostname provisioner.example.com: Name or service not known"</span>, <span class="s2">"unreachable"</span>: <span class="nb">true</span><span class="o">}</span>
+
+PLAY RECAP <span class="k">*********************************************************************</span>
+provisioner.example.com    : <span class="nv">ok</span><span class="o">=</span>0    <span class="nv">changed</span><span class="o">=</span>0    <span class="nv">unreachable</span><span class="o">=</span>1    <span class="nv">failed</span><span class="o">=</span>0    <span class="nv">skipped</span><span class="o">=</span>0    <span class="nv">rescued</span><span class="o">=</span>0    <span class="nv">ignored</span><span class="o">=</span>0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In order to solve this issue, ensure your <code>provisioner</code> hostname is
+pingable.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The system you are currently on can <code>ping</code> the <code>provisioner.example.com</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">ping provisioner.example.com</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Once pingable, ensure that you have copied your public SSH key from your local system to the privileged user via the <code>ssh-copy-id</code> command.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">ssh-copy-id kni@provisioner.example.com</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+When prompted, enter the password of your privileged user (i.e. <code>kni</code>).
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Verify connectivity using the <code>ping</code> module in Ansible</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">ansible <span class="nt">-i</span> inventory/hosts provisioner <span class="nt">-m</span> ping
+provisioner.example.com | SUCCESS <span class="o">=&gt;</span> <span class="o">{</span>
+    <span class="s2">"ansible_facts"</span>: <span class="o">{</span>
+        <span class="s2">"discovered_interpreter_python"</span>: <span class="s2">"/usr/libexec/platform-python"</span>
+    <span class="o">}</span>,
+    <span class="s2">"changed"</span>: <span class="nb">false</span>,
+    <span class="s2">"ping"</span>: <span class="s2">"pong"</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Re-run the Ansible playbook</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nv">$ </span>ansible-playbook <span class="nt">-i</span> inventory/hosts playbook.yml</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-permission-denied-trying-to-connect-to-host"><a class="link" href="#ansible-playbook-permission-denied-trying-to-connect-to-host">6.2. Permission Denied Trying To Connect To Host</a></h3>
+<div class="paragraph">
+<p>Another very common error is getting a permission denied error similar
+to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nv">$ </span>ansible-playbook <span class="nt">-i</span> inventory/hosts playbook.yml
+
+PLAY <span class="o">[</span>IPI on Baremetal Installation Playbook] <span class="k">*****************************************************************************************************</span>
+
+TASK <span class="o">[</span>Gathering Facts] <span class="k">****************************************************************************************************************************</span>
+fatal: <span class="o">[</span>provisioner.example.com]: UNREACHABLE! <span class="o">=&gt;</span> <span class="o">{</span><span class="s2">"changed"</span>: <span class="nb">false</span>, <span class="s2">"msg"</span>: <span class="s2">"Failed to connect to the host via ssh: rlopez@provisioner.example.com: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password)."</span>, <span class="s2">"unreachable"</span>: <span class="nb">true</span><span class="o">}</span>
+
+PLAY RECAP <span class="k">****************************************************************************************************************************************</span>
+provisioner.example.com : <span class="nv">ok</span><span class="o">=</span>0    <span class="nv">changed</span><span class="o">=</span>0    <span class="nv">unreachable</span><span class="o">=</span>1    <span class="nv">failed</span><span class="o">=</span>0    <span class="nv">skipped</span><span class="o">=</span>0    <span class="nv">rescued</span><span class="o">=</span>0    <span class="nv">ignored</span><span class="o">=</span>0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above issue is typically related to a problem with your
+<code>ansible.cfg</code> file. Either it does not exist, has errors inside it, or
+you have not copied your SSH public key onto the
+provisioner.example.com system. If you notice closely, the Ansible
+playbook attempted to use my <code>rlopez</code> user instead of my <code>kni</code> user
+since my local <code>ansible.cfg</code> did not exist <strong>AND</strong> I had not yet set
+the <code>remote_user</code> parameter to <code>kni</code> (my privileged user).</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>When working with the Ansible playbook ensure you have an <code>ansible.cfg</code> located in the same directory as your <code>playbook.yml</code> file. The contents of the <code>ansible.cfg</code> should look similar to the below with the exception of changing your inventory path (location of <code>inventory</code> directory) and potentially your privileged user if not using <code>kni</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="ini"><span class="err">$</span> <span class="err">cat</span> <span class="err">ansible.cfg</span>
+<span class="nn">[defaults]</span>
+<span class="py">inventory</span><span class="p">=</span><span class="s">/path/to/baremetal-deploy/ansible-ipi-install/inventory</span>
+<span class="py">remote_user</span><span class="p">=</span><span class="s">kni</span>
+
+<span class="nn">[privilege_escalation]</span>
+<span class="py">become</span><span class="p">=</span><span class="s">true</span>
+<span class="py">become_method</span><span class="p">=</span><span class="s">sudo</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Next, ensure that you have copied your public SSH key from your local system to the privileged user via the <code>ssh-copy-id</code> command.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">ssh-copy-id kni@provisioner.example.com</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+When prompted, enter the password of your privileged user (i.e. <code>kni</code>).
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Verify connectivity using the <code>ping</code> module in Ansible</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">ansible <span class="nt">-i</span> inventory/hosts provisioner <span class="nt">-m</span> ping
+provisioner.example.com | SUCCESS <span class="o">=&gt;</span> <span class="o">{</span>
+    <span class="s2">"ansible_facts"</span>: <span class="o">{</span>
+        <span class="s2">"discovered_interpreter_python"</span>: <span class="s2">"/usr/libexec/platform-python"</span>
+    <span class="o">}</span>,
+    <span class="s2">"changed"</span>: <span class="nb">false</span>,
+    <span class="s2">"ping"</span>: <span class="s2">"pong"</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Re-run the Ansible playbook</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nv">$ </span>ansible-playbook <span class="nt">-i</span> inventory/hosts playbook.yml</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-dig-lookup-requires-the-python-dnspython-library"><a class="link" href="#ansible-playbook-dig-lookup-requires-the-python-dnspython-library">6.3. Dig lookup requires the python &#8216;dnspython&#8217; library and it is not installed</a></h3>
+<div class="paragraph">
+<p>One of the tasks in the <code>node_prep</code> role captures your API VIP and the
+Ingress VIP of your environment using a <code>lookup</code> via <code>dig</code>. It does
+this <a href="https://docs.ansible.com/ansible/latest/plugins/lookup/dig.html">DNS query using the <code>dnspython</code> library</a>.
+This error is a little deceiving because the <code>dnspython</code> package
+does <strong>not need to be installed on the remote server</strong>
+(i.e. <code>provisioner.example.com</code>) but the package must be <strong>installed on
+your local host</strong> that is running the Ansible playbook.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">TASK <span class="o">[</span>node_prep : fail] <span class="k">************************************************************************************************************</span>
+skipping: <span class="o">[</span>provisioner.example.com]
+
+TASK <span class="o">[</span>node_prep : Verify DNS records <span class="k">for </span>API VIP, Wildcard <span class="o">(</span>Ingress<span class="o">)</span> VIP] <span class="k">**********************************************************</span>
+fatal: <span class="o">[</span>provisioner.example.com]: FAILED! <span class="o">=&gt;</span> <span class="o">{</span><span class="s2">"msg"</span>: <span class="s2">"An unhandled exception occurred while running the lookup plugin 'dig'. Error was a &lt;class 'ansible.errors.AnsibleError'&gt;, original message: The dig lookup requires the python 'dnspython' library and it is not installed"</span><span class="o">}</span>
+
+PLAY RECAP <span class="k">*************************************************************************************************************************</span>
+provisioner.example.com : <span class="nv">ok</span><span class="o">=</span>2    <span class="nv">changed</span><span class="o">=</span>0    <span class="nv">unreachable</span><span class="o">=</span>0    <span class="nv">failed</span><span class="o">=</span>1    <span class="nv">skipped</span><span class="o">=</span>3    <span class="nv">rescued</span><span class="o">=</span>0    <span class="nv">ignored</span><span class="o">=</span>0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above issue can be fixed by simply installing <code>python3-dns</code> on
+your local system (assuming your using an OS such as Fedora, Red Hat)</p>
+</div>
+<div class="paragraph">
+<p>On a local host running Red Hat 8.x, run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="c"># sudo dnf install python3-dns</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On a local host running Red Hat 7.x, run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="c"># sudo yum install python2-dns</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On a local host running Fedora, run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="c"># sudo dnf install python3-dns</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Re-run the Ansible playbook</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nv">$ </span>ansible-playbook <span class="nt">-i</span> inventory/hosts playbook.yml</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-missing-python-netaddr-library"><a class="link" href="#ansible-playbook-missing-python-netaddr-library">6.4. Missing python <code>netaddr</code> library</a></h3>
+<div class="paragraph">
+<p>The Ansible playbook takes advantage of certain filters such as the
+<a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters_ipaddr.html"><code>ipaddr</code></a>
+filter. In order to use this filter, your localhost running the
+Ansible playbook requires the python <code>netaddr</code> library.</p>
+</div>
+<div class="paragraph">
+<p>The error when running the playbook looks like the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">TASK <span class="o">[</span>node_prep : Fail <span class="k">if </span>Python modules are missing] <span class="k">******************************************************************************</span>
+Tuesday 05 May 2020  19:30:19 +0000 <span class="o">(</span>0:00:00.512<span class="o">)</span>       0:00:13.829 <span class="k">***********</span>
+fatal: <span class="o">[</span>localhost]: FAILED! <span class="o">=&gt;</span> <span class="o">{</span><span class="s2">"changed"</span>: <span class="nb">false</span>, <span class="s2">"msg"</span>: <span class="s2">"Missing python module(s) ['netaddr'] on localhost</span><span class="se">\n</span><span class="s2">"</span><span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above issue can be fixed by simply installing <code>python3-netaddr</code> on
+your local system (assuming your using an OS such as Fedora, Red Hat)</p>
+</div>
+<div class="paragraph">
+<p>On a local host running Red Hat 8.x, run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="c"># sudo dnf install python3-netaddr</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On a local host running Red Hat 7.x, run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="c"># sudo yum install python2-netaddr</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On a local host running Fedora, run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="c"># sudo dnf install python3-netaddr</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Re-run the Ansible playbook</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nv">$ </span>ansible-playbook <span class="nt">-i</span> inventory/hosts playbook.yml</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-shared-connection-closed-on-provision-host"><a class="link" href="#ansible-playbook-shared-connection-closed-on-provision-host">6.5. Shared connection closed on provision host when installing packages</a></h3>
+<div class="paragraph">
+<p>When deploying in an environment where subscription manager is not
+being used and a local repository is being setup on the provision host
+due to the nature that the provision host is offline, you may see the
+following error.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">TASK <span class="o">[</span>node_prep : Install required packages] <span class="k">************************************************************************************************</span>
+Thursday 07 May 2020  17:04:21 +0000 <span class="o">(</span>0:00:00.152<span class="o">)</span>       0:00:11.854 <span class="k">**********</span>
+fatal: <span class="o">[</span>provisioner.example.com]: FAILED! <span class="o">=&gt;</span> <span class="o">{</span><span class="s2">"changed"</span>: <span class="nb">false</span>, <span class="s2">"module_stderr"</span>: <span class="s2">"Shared connection to provisioner.example.com closed.</span><span class="se">\r\n</span><span class="s2">"</span>, <span class="s2">"module_stdout"</span>: <span class="s2">"[Errno 101] Network is unreachable</span><span class="se">\r\n\r\n</span><span class="s2">{</span><span class="se">\"</span><span class="s2">msg</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">Nothing to do</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">changed</span><span class="se">\"</span><span class="s2">: false, </span><span class="se">\"</span><span class="s2">results</span><span class="se">\"</span><span class="s2">: [], </span><span class="se">\"</span><span class="s2">rc</span><span class="se">\"</span><span class="s2">: 0, </span><span class="se">\"</span><span class="s2">invocation</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">module_args</span><span class="se">\"</span><span class="s2">: {</span><span class="se">\"</span><span class="s2">name</span><span class="se">\"</span><span class="s2">: [</span><span class="se">\"</span><span class="s2">firewalld</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">tar</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">libvirt</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">qemu-kvm</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">python3-devel</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">jq</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">ipmitool</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">python3-libvirt</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">python3-lxml</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">python3-yaml</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">NetworkManager-libnm</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">nm-connection-editor</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">libsemanage-python3</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">policycoreutils-python3</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">podman</span><span class="se">\"</span><span class="s2">], </span><span class="se">\"</span><span class="s2">state</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">present</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">update_cache</span><span class="se">\"</span><span class="s2">: true, </span><span class="se">\"</span><span class="s2">allow_downgrade</span><span class="se">\"</span><span class="s2">: false, </span><span class="se">\"</span><span class="s2">autoremove</span><span class="se">\"</span><span class="s2">: false, </span><span class="se">\"</span><span class="s2">bugfix</span><span class="se">\"</span><span class="s2">: false, </span><span class="se">\"</span><span class="s2">disable_gpg_check</span><span class="se">\"</span><span class="s2">: false, </span><span class="se">\"</span><span class="s2">disable_plugin</span><span class="se">\"</span><span class="s2">: [], </span><span class="se">\"</span><span class="s2">disablerepo</span><span class="se">\"</span><span class="s2">: [], </span><span class="se">\"</span><span class="s2">download_only</span><span class="se">\"</span><span class="s2">: false, </span><span class="se">\"</span><span class="s2">enable_plugin</span><span class="se">\"</span><span class="s2">: [], </span><span class="se">\"</span><span class="s2">enablerepo</span><span class="se">\"</span><span class="s2">: [], </span><span class="se">\"</span><span class="s2">exclude</span><span class="se">\"</span><span class="s2">: [], </span><span class="se">\"</span><span class="s2">installroot</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">/</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">install_repoquery</span><span class="se">\"</span><span class="s2">: true, </span><span class="se">\"</span><span class="s2">install_weak_deps</span><span class="se">\"</span><span class="s2">: true, </span><span class="se">\"</span><span class="s2">security</span><span class="se">\"</span><span class="s2">: false, </span><span class="se">\"</span><span class="s2">skip_broken</span><span class="se">\"</span><span class="s2">: false, </span><span class="se">\"</span><span class="s2">update_only</span><span class="se">\"</span><span class="s2">: false, </span><span class="se">\"</span><span class="s2">validate_certs</span><span class="se">\"</span><span class="s2">: true, </span><span class="se">\"</span><span class="s2">lock_timeout</span><span class="se">\"</span><span class="s2">: 30, </span><span class="se">\"</span><span class="s2">conf_file</span><span class="se">\"</span><span class="s2">: null, </span><span class="se">\"</span><span class="s2">disable_excludes</span><span class="se">\"</span><span class="s2">: null, </span><span class="se">\"</span><span class="s2">download_dir</span><span class="se">\"</span><span class="s2">: null, </span><span class="se">\"</span><span class="s2">list</span><span class="se">\"</span><span class="s2">: null, </span><span class="se">\"</span><span class="s2">releasever</span><span class="se">\"</span><span class="s2">: null}}}</span><span class="se">\r\n</span><span class="s2">"</span>, <span class="s2">"msg"</span>: <span class="s2">"MODULE FAILURE</span><span class="se">\n</span><span class="s2">See stdout/stderr for the exact error"</span>, <span class="s2">"rc"</span>: 0<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The error basically means that <code>dnf</code> was not able to load particular
+plugins, specifically the <code>product-id</code> and the <code>subscription-manager</code>
+plugins. However,since this is a local repository with offline access,
+we will want to disable these plugins when this error occurs.</p>
+</div>
+<div class="paragraph">
+<p>On the provision host, if you run the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>kni@provisioner ~]<span class="nv">$ </span><span class="nb">sudo </span>dnf info dnf
+Updating Subscription Management repositories.
+Unable to <span class="nb">read </span>consumer identity
+<span class="o">[</span>Errno 101] Network is unreachable
+Last metadata expiration check: 0:08:49 ago on Thu 07 May 2020 08:11:19 PM UTC.
+Installed Packages
+Name         : dnf
+Version      : 4.2.7
+Release      : 7.el8_1
+Architecture : noarch
+Size         : 1.7 M
+Source       : dnf-4.2.7-7.el8_1.src.rpm
+Repository   : @System
+From repo    : rhel-8-for-x86_64-baseos-rpms
+Summary      : Package manager
+URL          : https://github.com/rpm-software-management/dnf
+License      : GPLv2+ and GPLv2 and GPL
+Description  : Utility that allows <span class="nb">users </span>to manage packages on their systems.
+             : It supports RPMs, modules and comps <span class="nb">groups</span> &amp; environments.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To ensure the issue is plugin related, we can attempt to run the same command
+with plugins disabled as such:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>kni@provisioner ~]<span class="nv">$ </span><span class="nb">sudo </span>dnf info dnf <span class="nt">--disableplugin</span><span class="o">=</span>product-id,subscription-manager
+Last metadata expiration check: 0:11:17 ago on Thu 07 May 2020 08:11:19 PM UTC.
+Installed Packages
+Name         : dnf
+Version      : 4.2.7
+Release      : 7.el8_1
+Architecture : noarch
+Size         : 1.7 M
+Source       : dnf-4.2.7-7.el8_1.src.rpm
+Repository   : @System
+From repo    : rhel-8-for-x86_64-baseos-rpms
+Summary      : Package manager
+URL          : https://github.com/rpm-software-management/dnf
+License      : GPLv2+ and GPLv2 and GPL
+Description  : Utility that allows <span class="nb">users </span>to manage packages on their systems.
+             : It supports RPMs, modules and comps <span class="nb">groups</span> &amp; environments.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you notice, the portion that says</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">Unable to <span class="nb">read </span>consumer identity
+<span class="o">[</span>Errno 101] Network is unreachable</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>is no longer stated.</p>
+</div>
+<div class="paragraph">
+<p>For this fix to be permanent, modify the <code>/etc/yum.conf</code> file and include
+the <code>plugins=0</code> into the <code>[main]</code> section of the configuration file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="o">[</span>kni@provisioner ~]<span class="nv">$ </span><span class="nb">cat</span> /etc/yum.conf
+
+<span class="o">[</span>main]
+<span class="nv">gpgcheck</span><span class="o">=</span>1
+<span class="nv">installonly_limit</span><span class="o">=</span>3
+<span class="nv">clean_requirements_on_remove</span><span class="o">=</span>True
+<span class="nv">best</span><span class="o">=</span>True
+<span class="nv">plugins</span><span class="o">=</span>0</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansible-playbook-gotchas"><a class="link" href="#ansible-playbook-gotchas">7. Gotchas</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="ansible-playbook-using-become-yes-within-ansiblecfg-or-inside-playbookyml"><a class="link" href="#ansible-playbook-using-become-yes-within-ansiblecfg-or-inside-playbookyml">7.1. Using <code>become: yes</code> within <code>ansible.cfg</code> or inside <code>playbook.yml</code></a></h3>
+<div class="paragraph">
+<p>This Ansible playbook takes advantage of the <code>ansible_user_dir</code>
+variable. As such, it is important to note that if within your
+<code>ansible.cfg</code> or within the <code>playbook.yml</code> file the privilege
+escalation of <code>become: yes</code> is used, this will modify the home
+directory to that of the root user (i.e. <code>/root</code>) instead of using the
+home directory of your privileged user, <code>kni</code> with a home directory of
+<code>/home/kni</code></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ansible-playbook-failed-to-connect-to-bus-no-file-or-directory"><a class="link" href="#ansible-playbook-failed-to-connect-to-bus-no-file-or-directory">7.2. Failed to connect to bus: No such file or directory</a></h3>
+<div class="paragraph">
+<p>The Ansible playbook creates two containers (when enabled) to
+store a mirored registry and a caching webserver.
+When these containers are created, the playbook also creates a
+<code>systemd</code> unit file to ensure these containers are restarted upon
+the reboot of the host serving them.</p>
+</div>
+<div class="paragraph">
+<p>Since these are <code>systemd</code> user services, when logging into a
+system to attempt a command such as
+<code>systemctl --user status container-cache.service</code> for the
+webserver or <code>systemctl --user status container-registry.service</code>
+for the mirrored registry, you may get an error such as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="nowrap">[kni@provisioner ~]$ systemctl --user status container-cache
+Failed to connect to bus: No such file or directory</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>What the following error is trying to address is that the
+parameter, <code>DBUS_SESSIONBUS_ADDRESS</code>, is not set.</p>
+</div>
+<div class="paragraph">
+<p>In order to set this variable, we can <code>export</code> as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="nowrap">export DBUS_SESSIONBUS_ADDRESS="unix:path/run/user/$id/bus"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once that has been set, if you re-attempt the <code>systemctl</code> command, you should
+see output as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="nowrap">[kni@provisioner ~]$ systemctl --user status container-cache.service
+● container-cache.service - Podman container-cache.service
+   Loaded: loaded (/home/kni/.config/systemd/user/container-cache.service; enabled; vendor preset: enabled)
+   Active: active (running) since Mon 2020-06-01 19:52:04 UTC; 49min ago
+  Process: 36380 ExecStart=/usr/bin/podman start rhcos_image_cache (code=exited, status=0/SUCCESS)
+ Main PID: 36410 (conmon)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansible-playbook-appendix-using-ansible-tags-with-the-playbookyml"><a class="link" href="#ansible-playbook-appendix-using-ansible-tags-with-the-playbookyml">Appendix A: Using Ansible Tags with the <code>playbook.yml</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As this playbook continues to grow, there may be times when it is
+useful to run specific portions of the playbook rather than running
+everything the Ansible playbook offers.</p>
+</div>
+<div class="paragraph">
+<p>For example, a user may only want to run the networking piece of the
+playbook or create just the pull-secret.txt file, or just clean up the
+environment&#8201;&#8212;&#8201;just to name a few.</p>
+</div>
+<div class="paragraph">
+<p>As such the existing playbook has many tags that can be used for such
+purposes. By running the following command you can see what options
+are available.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="nv">$ </span>ansible-playbook <span class="nt">-i</span> inventory/hosts playbook.yml <span class="nt">--list-tasks</span> <span class="nt">--list-tags</span>
+
+playbook: playbook.yml
+
+  play <span class="c">#1 (provisioner): IPI on Baremetal Installation Playbook	TAGS: []</span>
+    tasks:
+      include_tasks	TAGS: <span class="o">[</span>validation]
+      include_tasks	TAGS: <span class="o">[</span>subscription]
+      include_tasks	TAGS: <span class="o">[</span>packages]
+      include_tasks	TAGS: <span class="o">[</span>network]
+      include_tasks	TAGS: <span class="o">[</span>network_facts]
+      include_tasks	TAGS: <span class="o">[</span>user]
+      include_tasks	TAGS: <span class="o">[</span>services]
+      include_tasks	TAGS: <span class="o">[</span>firewall]
+      include_tasks	TAGS: <span class="o">[</span>storagepool]
+      include_tasks	TAGS: <span class="o">[</span>clusterconfigs]
+      include_tasks	TAGS: <span class="o">[</span>powerservers]
+      include_tasks	TAGS: <span class="o">[</span>cleanup, getoc]
+      include_tasks	TAGS: <span class="o">[</span>extract, pullsecret]
+      include_tasks	TAGS: <span class="o">[</span>rhcospath]
+      include_tasks	TAGS: <span class="o">[</span>cache]
+      include_tasks	TAGS: <span class="o">[</span>installconfig]
+      include_tasks	TAGS: <span class="o">[</span>metal3config]
+      include_tasks	TAGS: <span class="o">[</span>customfs]
+      include_tasks	TAGS: <span class="o">[</span>manifests]
+      include_tasks	TAGS: <span class="o">[</span>extramanifests]
+      include_tasks	TAGS: <span class="o">[</span>cleanup]
+      include_tasks	TAGS: <span class="o">[</span><span class="nb">install</span><span class="o">]</span>
+      TASK TAGS: <span class="o">[</span>cache, cleanup, clusterconfigs, customfs, extract, extramanifests, firewall, getoc, <span class="nb">install</span>, installconfig, manifests, metal3config, network, network_facts, packages, powerservers, pullsecret, rhcospath, services, storagepool, subscription, user, validation]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To break this down further, the following is a description of each tag.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Table Playbook Tag Description</caption>
+<colgroup>
+<col style="width: 50%;"/>
+<col style="width: 50%;"/>
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">tag</th>
+<th class="tableblock halign-left valign-top">description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>validation</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It is <em><strong>always</strong></em> required. It verifies that everything in your environment is set and ready for OpenShift deployment and sets some required internal variables</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>subscription</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">subscribe via Red Hat subscription manager</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>packages</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">install required package for OpenShift</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>network</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">setup the provisioning and baremetal network bridges and bridge slaves</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>network_facts</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">regather networking facts of environment</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>user</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">add remote user to <code>libvirt</code> group and generate SSH keys</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>services</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enable appropriate services for OpenShift</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>firewall</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">set firewall rules for OpenShift</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>storagepool</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">define, create, auto start the default storage pool</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>clusterconfigs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">directory that stores all configuration files for OpenShift</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>powerservers</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">power off all servers that will be part of the OpenShift cluster</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>getoc</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">get the appropriate <code>oc</code> binary, extract it and place within <code>/usr/local/bin</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>extract</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">extract the OpenShift installer</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>pullsecret</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">copy the <code>pullsecret</code> to the <code>pull-secret.txt</code> file under the remote user home directory</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>rhcospath</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">set the RHCOS path</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cache</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">tasks related to enabling RHCOS image caching</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>installconfig</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">generates the install-config.YAML</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>metal3config</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">generates the metal3-config.YAML</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>customfs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deals with customizing the filesystem via ignition files</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>manifests</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">create the manifests directory</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>extramanifests</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">include any extra manifests files</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>install</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Deploy OpenShift</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cleanup</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">clean up the environment within the provisioning node. Does not remove networking</p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect2">
+<h3 id="_how_to_use_the_ansible_tags"><a class="link" href="#_how_to_use_the_ansible_tags">A.1. How to use the Ansible tags</a></h3>
+<div class="paragraph">
+<p>The following is an example on how to use the <code>--tags</code> option. In this example, we will just install the packages to the provision node.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example 1</div>
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">ansible-playbook <span class="nt">-i</span> inventory/hosts playbook.yml <span class="nt">--tags</span> <span class="s2">"validation,packages"</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The example above calls for the setup of the networking and
+installation of the packages from the Ansible playbook. Only the tasks
+with these specific tags will run.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Due to the dependencies in the playbook, the <code>validation</code> tag is always required.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_skipping_particular_tasks_using_ansible_tags"><a class="link" href="#_skipping_particular_tasks_using_ansible_tags">A.2. Skipping particular tasks using Ansible tags</a></h3>
+<div class="paragraph">
+<p>In the event that you want to always skip certain tasks of the
+playbook this can be done via the <code>--skip-tag</code> option.</p>
+</div>
+<div class="paragraph">
+<p>We will use similar example as above where we want to skip the network
+setup and the package installation.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example 1</div>
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash">ansible-playbook <span class="nt">-i</span> inventory/hosts playbook.yml <span class="nt">--skip-tags</span> <span class="s2">"network,packages"</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ansible-playbook-appendix-using-a-proxy-with-your-ansible-playbook"><a class="link" href="#ansible-playbook-appendix-using-a-proxy-with-your-ansible-playbook">Appendix B: Using a proxy with your Ansible playbook</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When running behind a proxy, it is important to properly set the environment
+to handle such scenario such that you can run the Ansible playbook. In order
+to use a proxy for the ansible playbook set the appropriate variables within
+your <code>inventory/hosts</code> file. These values will also be included within your
+generated <code>install-config.yaml</code> file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="bash"><span class="c"># (Optional) Provide HTTP proxy settings</span>
+<span class="c">#http_proxy=http://USERNAME:PASSWORD@proxy.example.com:8080</span>
+
+<span class="c"># (Optional) Provide HTTPS proxy settings</span>
+<span class="c">#https_proxy=https://USERNAME:PASSWORD@proxy.example.com:8080</span>
+
+<span class="c"># (Optional) comma-separated list of hosts, IP Addresses, or IP ranges in CIDR format</span>
+<span class="c"># excluded from proxying</span>
+<span class="c"># NOTE: OpenShift does not accept '*' as a wildcard attached to a domain suffix</span>
+<span class="c"># i.e. *.example.com</span>
+<span class="c"># Use '.' as the wildcard for a domain suffix as shown in the example below.</span>
+<span class="c"># i.e. .example.com</span>
+<span class="c">#no_proxy_list="172.22.0.0/24,.example.com"</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<hr/>
+<div class="footnote" id="_footnotedef_1">
+<a href="#_footnoteref_1">1</a>. If creating the mirrored registry, this system will require online access. The registry node may be a virtual machine in order to reduce physical server footprint.
+</div>
+<div class="footnote" id="_footnotedef_2">
+<a href="#_footnoteref_2">2</a>. <a href="https://github.com/openshift/installer/issues/2762" class="bare">https://github.com/openshift/installer/issues/2762</a>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2025-02-28 19:02:55 -0600
+</div>
+</div>
+</body>
+</html>
