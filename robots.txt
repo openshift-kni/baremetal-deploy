@@ -1,0 +1,1 @@
+Sitemap: https://openshift-kni.github.io/baremetal-deploy/sitemap.xml
